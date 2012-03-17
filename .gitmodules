@@ -1,0 +1,3 @@
+[submodule "checkouts/clj-facebook-graph"]
+	path = checkouts/clj-facebook-graph
+	url = https://github.com/maxweber/clj-facebook-graph.git
