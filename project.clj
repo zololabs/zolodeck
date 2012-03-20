@@ -1,5 +1,8 @@
 (defproject zolodeck "0.1.0-SNAPSHOT"
   :description "Zolodeck"
+  :repositories {"jboss" "http://repository.jboss.org/nexus/content/groups/public/"
+                 "local" ~(str (.toURI (java.io.File. 
+                                 (str (System/getProperty "user.name") "/.zolo.mvn"))))}
   :dev-resources-path "script"
   :dependencies [[org.clojure/clojure "1.2.1"]
                  [org.clojure/clojure-contrib "1.2.0"]
@@ -13,6 +16,10 @@
                  [clj-facebook-graph "0.2.0"]
                  [bouncycastle/bcprov-jdk16-nosign "140"]
                  [clj-http "0.1.3"]
+                 [joda-time "1.6"]
+
+                 [org.clojars.nakkaya.javax.mail/imap "1.4.3"]
+                 [org.clojars.nakkaya.javax.mail/mail "1.4.3"]
 
                  [commons-io "1.4"]
                  [org.apache.commons/commons-exec "1.1"]
@@ -30,6 +37,8 @@
                  [storm/carbonite "1.0.0"]
                  [org.yaml/snakeyaml "1.9"]
                  [org.apache.httpcomponents/httpclient "4.1.1"]
+
+                 [datomic/peer "0.1.2678"]
 
 ]
   :dev-dependencies [[swank-clojure "1.2.1"]]

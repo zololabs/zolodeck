@@ -4,3 +4,6 @@
 [submodule "checkouts/storm"]
 	path = checkouts/storm
 	url = https://github.com/nathanmarz/storm.git
+[submodule "checkouts/clj-time"]
+	path = checkouts/clj-time
+	url = https://github.com/KirinDave/clj-time.git
