@@ -12,10 +12,25 @@
                  [org.slf4j/slf4j-log4j12 "1.6.1"]
                  [clj-facebook-graph "0.2.0"]
                  [bouncycastle/bcprov-jdk16-nosign "140"]
-                 [log4j "1.2.15" :exclusions [javax.mail/mail
-                                              javax.jms/jms
-                                              com.sun.jdmk/jmxtools
-                                              com.sun.jmx/jmxri]]
-                 [clj-http "0.1.3"]]
+                 [clj-http "0.1.3"]
+
+                 [commons-io "1.4"]
+                 [org.apache.commons/commons-exec "1.1"]
+                 [storm/libthrift7 "0.7.0"]
+                 [clj-time "0.3.0"]
+                 [log4j/log4j "1.2.16"]
+                 [com.netflix.curator/curator-framework "1.0.1"]
+                 [backtype/jzmq "2.1.0"]
+                 [com.googlecode.json-simple/json-simple "1.1"]
+                 [com.googlecode/kryo "1.04"]
+                 [compojure "0.6.4"]
+                 [hiccup "0.3.6"]
+                 [ring/ring-jetty-adapter "0.3.11"]
+                 [org.slf4j/slf4j-log4j12 "1.5.8"]
+                 [storm/carbonite "1.0.0"]
+                 [org.yaml/snakeyaml "1.9"]
+                 [org.apache.httpcomponents/httpclient "4.1.1"]
+
+]
   :dev-dependencies [[swank-clojure "1.2.1"]]
   :resources-path "config")
