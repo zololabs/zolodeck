@@ -17,3 +17,5 @@ log/*
 all.js
 furtive.iml
 .idea
+
+api/lib/*
