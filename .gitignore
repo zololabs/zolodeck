@@ -8,6 +8,7 @@ classes/*
 .classpath
 .project
 .lein-deps-sum
+.lein-plugins
 config/config.clj
 scripts/furtive
 logs/*
