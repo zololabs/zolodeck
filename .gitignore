@@ -20,3 +20,4 @@ furtive.iml
 .idea
 
 api/lib/*
+/api/.lein-failures

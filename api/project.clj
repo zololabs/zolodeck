@@ -40,18 +40,15 @@
 
                  [com.datomic/datomic "0.1.2753"]]
 
-  :plugins [[lein-swank "1.4.3"]
-            [lein-pprint "1.0.0"]
-            [lein-checkouts "1.0.0"]]
+  :plugins [[lein-swank "1.4.4"]
+            [lein-pprint "1.1.0"]
+            [lein-ring "0.6.2"]]
   
-  :profiles {:dev {:resource-paths ["script"]
-                   :dependencies [[clj-stacktrace "0.2.4"]
-                                  [swank-clojure "1.3.3"]
-                                  [lein-ring "0.5.2"]
-                                  [ring-serve "0.1.2"]]}}
+  :profiles {:dev {:dependencies [[clj-stacktrace "0.2.4"]
+                                  [swank-clojure "1.3.3"]]}}
   
   :min-lein-version "1.7.0"
-  :test-selectors {:default (fn [t] (not (or (:integration v) (:regression v))))
+  :test-selectors {:default (fn [t] (not (or (:integration t) (:regression t))))
                    :integration :integration
                    :regression :regression
                    :all (fn [t] true)}
