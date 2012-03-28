@@ -48,9 +48,8 @@
                                   [swank-clojure "1.3.3"]]}}
   
   :min-lein-version "1.7.0"
-  :test-selectors {:default (fn [t] (not (or (:integration t) (:regression t))))
+  :test-selectors {:default (fn [t] (not (:integration t)))
                    :integration :integration
-                   :regression :regression
                    :all (fn [t] true)}
   
   :project-init (require 'clojure.pprint)
