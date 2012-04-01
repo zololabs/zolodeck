@@ -4,7 +4,7 @@
              :redirect-uri "http://localhost:10080/facebook-callback"
              :scope  ["user_photos" "friends_photos"]}
     
-  :datomic-db "zolodeck-dev"}
+  :datomic-db "datomic:mem://zolodeck-dev"}
    
  :testing
  {}
