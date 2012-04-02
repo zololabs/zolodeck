@@ -1,6 +1,7 @@
 (ns zolo.test-utils
   (:use [clojure.test :only [run-tests deftest is are testing]])
-  (:use [zolo.infra.datomic :only [in-datomic-demarcation DATOMIC-TEST]])
+  (:use [zolo.infra.datomic :only [in-datomic-demarcation]])
+  (:use [zolo.infra.datomic-helper :only [DATOMIC-TEST]])
   (:use zolo.utils.debug)
   (:import (java.sql Time Date Timestamp)))
 

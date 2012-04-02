@@ -1,7 +1,8 @@
 (ns zolo.infra.datomic-test
   (:use zolo.domain.user zolo.test-utils)
   (:use [clojure.test :only [run-tests deftest is are testing]])
-  (:use [zolo.infra.datomic :only [DATOMIC-TEST in-datomic-demarcation] :as datomic]))
+  (:use [zolo.infra.datomic :only [in-datomic-demarcation] :as datomic])
+  (:use [zolo.infra.datomic-helper :only [DATOMIC-TEST]]))
 
 (deftest test-datomic-test-infra
   (testing "nothing exists to start"
