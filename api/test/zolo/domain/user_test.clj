@@ -3,8 +3,6 @@
   (:use [clojure.test :only [run-tests deftest is are testing use-fixtures]])
   (:use [zolo.infra.datomic :only [datomic-fixture] :as datomic]))
 
-(use-fixtures :each datomic/datomic-fixture)
-
 (zolotest test-new-user-persistence
   (is (nil? (:db/id (find-by-facebook-id "amitrathore@gmail.com"))))
   (insert-new-user "amit" "rathore" "amitrathore@gmail.com" "sekrit")

@@ -3,13 +3,16 @@
         [slingshot.slingshot :only [throw+]]
         [zolo.setup.config :only [datomic-db-name] :as conf]
         [zolo.setup.datomic-schema :only [SCHEMA-TX] :as datomic-setup]
-        zolo.utils.debug))
+        zolo.utils.debug
+        zolo.utils.clojure))
 
 (declare CONN assert-numbered-migrations init-db)
 
 (def ^:dynamic TX-DATA)
 
 (def ^:dynamic DATOMIC-DB)
+
+(def ^:dynamic DATOMIC-TEST false)
 
 (defn datomic-fixture [test-fn]
   (init-db)
@@ -39,18 +42,21 @@
 (defn get-db []
   (db/db CONN))
 
-(defn init-db []
-  (db/delete-database (conf/datomic-db-name))
+(defrunonce init-db []
+  ;(db/delete-database (conf/datomic-db-name))
   (db/create-database (conf/datomic-db-name))
   (def CONN (db/connect (conf/datomic-db-name)))
   (setup-schema datomic-setup/SCHEMA-TX))
+
+(init-db)
 
 (defn run-transaction [tx-data]
   (swap! TX-DATA concat tx-data)
   (swap! DATOMIC-DB db/with tx-data))
 
 (defn commit-pending-transactions []
-  @(db/transact CONN @TX-DATA))
+  (if-not DATOMIC-TEST
+    @(db/transact CONN @TX-DATA)))
 
 (defn run-in-datomic-demarcation [thunk]
   (binding [TX-DATA (atom [])
