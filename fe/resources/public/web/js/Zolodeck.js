@@ -12,23 +12,19 @@
         },
         
         initialize:function () {
+            this.homeView = new HomeView({
+                model: window.currentUser
+            });
             this.headerView = new HeaderView({
                 model: window.currentUser
             });
         },
         
         home:function () {
-            // Since the home view never changes, we instantiate it and render it only once
-            if (!this.homeView) {
-                this.homeView = new HomeView({
-                    model: window.currentUser
-                });
-                this.homeView.render();
-            }
             $('.header').html(this.headerView.render().el);
-            $('#content').html(this.homeView.el);
+            $('#content').html(this.homeView.render().el);
         }
-        
+
     });
     
     $(document).ready(function () {	

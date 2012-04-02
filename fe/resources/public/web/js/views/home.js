@@ -11,6 +11,7 @@
         },
         
         render: function (eventName) {
+            console.log('Rendering Home');
             $(this.el).html(this.template());
             return this;
         },
@@ -19,7 +20,8 @@
             var that = this;
             FB.login(function(response){
                 if (response.authResponse){
-                    that.model.login("FACEBOOK");
+                    // Not needed as we listen to Facebook AuthChange Event
+                    // that.model.login("FACEBOOK"); 
                 }else{
                     opts.error(response);
                 }

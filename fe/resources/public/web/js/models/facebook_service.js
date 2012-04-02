@@ -18,7 +18,6 @@
                 });
                 
                 FB.Event.subscribe('auth.statusChange', function(response) {
-                    console.log("auth.statusChange", response);
                     if (response && ("connected" == response.status)){
                         user.login("FACEBOOK");
                     } else {

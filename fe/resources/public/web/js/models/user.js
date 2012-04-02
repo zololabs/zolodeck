@@ -7,10 +7,12 @@
         },
 
         login: function(service){
+            console.log("Logged In : " , service);
             this.set({'service':service, 'state':'LOGGED_IN'});
         },
 
         logout: function(){
+            console.log("Logged Out");
             this.set({'service':null, 'state':'LOGGED_OUT'});
         },
 
