@@ -6,12 +6,12 @@
             'state': 'LOGGED_OUT'
         },
 
-        logIn: function(service){
+        login: function(service){
             this.set({'service':service, 'state':'LOGGED_IN'});
-            console.log("Logged in using " , service, this);
         },
 
-        logOut: function(){
+        logout: function(){
+            this.set({'service':null, 'state':'LOGGED_OUT'});
         },
 
         isLoggedIn: function(){

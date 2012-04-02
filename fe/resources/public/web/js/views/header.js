@@ -10,8 +10,8 @@
         
         render:function (eventName) {
             console.log('Rendering Header');
-            console.log("Current User :" ,this.model.isLoggedIn(), this.el);
-            if (this.model.isLoggedIn()){
+            var user = this.model;
+            if (user.isLoggedIn()){
                 $(this.el).html(this.user_template());
             } else {
                 $(this.el).html(this.guest_template());

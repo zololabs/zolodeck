@@ -19,7 +19,7 @@
             var that = this;
             FB.login(function(response){
                 if (response.authResponse){
-                    that.model.logIn("FACEBOOK");
+                    that.model.login("FACEBOOK");
                 }else{
                     opts.error(response);
                 }
