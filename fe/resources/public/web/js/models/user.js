@@ -14,6 +14,10 @@
             this.set({'service':null, 'state':'LOGGED_OUT'});
         },
 
+        service: function(){
+            return this.get('service');
+        },
+
         isLoggedIn: function(){
             return (this.get('state') == 'LOGGED_IN');
         }
