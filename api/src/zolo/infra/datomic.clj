@@ -45,21 +45,21 @@
   (def CONN (db/connect (conf/datomic-db-name)))
   (setup-schema datomic-setup/SCHEMA-TX))
 
-;; (defn ^:dynamic run-transaction [tx-data]
-;;   @(db/transact CONN tx-data))
-
 (defn run-transaction [tx-data]
   (swap! TX-DATA concat tx-data)
   (swap! DATOMIC-DB db/with tx-data))
 
-(defn commit-transactions []
+(defn commit-pending-transactions []
   @(db/transact CONN @TX-DATA))
 
-(defn insert-new [a-map]
-  (-> {:db/id #db/id[:db.part/user]}
-      (merge a-map)
-      vector
-      run-transaction))
+(defn run-in-datomic-demarcation [thunk]
+  (binding [TX-DATA (atom [])
+            DATOMIC-DB (atom (get-db))]
+    (thunk)
+    (commit-pending-transactions)))
+
+(defmacro in-datomic-demarcation [& body]
+  `(run-in-datomic-demarcation (fn [] ~@body)))
 
 (defn run-query [query & extra-inputs]
   (apply q query @DATOMIC-DB extra-inputs))
@@ -67,12 +67,9 @@
 (defn load-entity [eid]
   (db/entity (get-db) eid))
 
-(defn run-in-datomic-demarcation [thunk]
-  (binding [TX-DATA (atom [])
-            DATOMIC-DB (atom (get-db))]
-    (thunk)
-    (commit-transactions)))
-
-(defmacro in-datomic-demarcation [& body]
-  `(run-in-datomic-demarcation (fn [] ~@body)))
+(defn insert-new [a-map]
+  (-> {:db/id #db/id[:db.part/user]}
+      (merge a-map)
+      vector
+      run-transaction))
 
