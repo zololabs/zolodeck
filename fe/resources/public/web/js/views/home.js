@@ -1,33 +1,29 @@
 (function($) {
     window.HomeView = Backbone.View.extend({
         events: {
-            'click #facebook_login': 'login_using_facebook'
+            'click #facebook_login': 'loginUsingFacebook'
         },
         
-        initialize:function () {
+        initialize: function () {
             console.log('Initializing Home View');
+            _.bindAll(this, 'render', 'loginUsingFacebook');
             this.template = _.template(tpl.get('home'));
         },
         
-        render:function (eventName) {
+        render: function (eventName) {
             $(this.el).html(this.template());
             return this;
         },
 
-        login_using_facebook:function(){
-            opts = {
-                scope   : 'email,friends_about_me,friends_birthday,friends_relationship_details,friends_location,friends_likes,friends_website',
-                success : function (response) { console.log("You are authorized"); console.dir(response);},
-                error   : function (response) { console.log("You are not authorized : "); console.dir(response);}
-            };
-            
+        loginUsingFacebook: function(){
+            var that = this;
             FB.login(function(response){
                 if (response.authResponse){
-                    opts.success(response);
+                    that.model.logIn("FACEBOOK");
                 }else{
                     opts.error(response);
                 }
-            },{scope : opts.scope});
+            },{scope : 'email,friends_about_me,friends_birthday,friends_relationship_details,friends_location,friends_likes,friends_website'});
         }
         
     });

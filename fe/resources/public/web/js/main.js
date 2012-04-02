@@ -1,30 +1,36 @@
 (function($) {
-    var AppRouter = Backbone.Router.extend({
+    window.currentUser = new User();
+
+    window.Zolodeck = Backbone.Router.extend({
 
         routes:{
             "":"home"
         },
         
         initialize:function () {
-            this.headerView = new HeaderView();
-            $('.header').html(this.headerView.render().el);
+            this.headerView = new HeaderView({
+                model: window.currentUser
+            });
         },
         
         home:function () {
         // Since the home view never changes, we instantiate it and render it only once
             if (!this.homeView) {
-                this.homeView = new HomeView();
-            this.homeView.render();
+                this.homeView = new HomeView({
+                    model: window.currentUser
+                });
+                this.homeView.render();
             }
+            $('.header').html(this.headerView.render().el);
             $('#content').html(this.homeView.el);
         }
         
     });
     
     $(document).ready(function () {	
-        tpl.loadTemplates(['home', 'header'],
+        tpl.loadTemplates(['home', 'header_user', 'header_guest'],
     	                  function () {
-        	              app = new AppRouter();
+        	              app = new Zolodeck();
         	              Backbone.history.start();
     		      });
     });
