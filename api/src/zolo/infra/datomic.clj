@@ -1,11 +1,7 @@
 (ns zolo.infra.datomic
   (:use [datomic.api :only [q db] :as db]
-        [slingshot.slingshot :only [throw+]]
-        [zolo.setup.config :only [datomic-db-name] :as conf]
-        [zolo.setup.datomic-schema :only [SCHEMA-TX] :as datomic-setup]
         zolo.infra.datomic-helper
-        zolo.utils.debug
-        zolo.utils.clojure))
+        zolo.utils.debug))
 
 (defmacro in-datomic-demarcation [& body]
   `(run-in-datomic-demarcation (fn [] ~@body)))
