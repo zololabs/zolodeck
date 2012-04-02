@@ -1,14 +1,15 @@
 (ns zolo.test-utils
   (:use [clojure.test :only [run-tests deftest is are testing]])
-  (:use [zolo.setup.datomic :only [get-db]])
+  (:use [zolo.infra.datomic :only [in-datomic-demarcation]])
   (:use zolo.utils.debug)
   (:import (java.sql Time Date Timestamp)))
 
 (defmacro is-not [body]
   `(is (not ~body)))
 
-(defn in-datomic-test [test-fn]
-  (binding []))
+(defmacro zolotest [test-name & body]
+  `(deftest ~test-name
+     (in-datomic-demarcation ~@body)))
 
 (defn timestamp-for-test [time-in-millis]
   (str (.toString (Date. time-in-millis)) " " (.toString (Time. time-in-millis))))
