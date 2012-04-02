@@ -43,7 +43,6 @@
   (db/db CONN))
 
 (defrunonce init-db []
-  ;(db/delete-database (conf/datomic-db-name))
   (db/create-database (conf/datomic-db-name))
   (def CONN (db/connect (conf/datomic-db-name)))
   (setup-schema datomic-setup/SCHEMA-TX))
@@ -71,9 +70,9 @@
   (apply q query @DATOMIC-DB extra-inputs))
 
 (defn load-entity [eid]
-  (db/entity (get-db) eid))
+  (db/entity @DATOMIC-DB eid))
 
-(defn insert-new [a-map]
+(defn upsert [a-map]
   (-> {:db/id #db/id[:db.part/user]}
       (merge a-map)
       vector
