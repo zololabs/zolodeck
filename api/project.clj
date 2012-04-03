@@ -15,13 +15,9 @@
                  [com.datomic/datomic "0.1.2753"]]
 
   :plugins [[lein-swank "1.4.4"]
-            [lein-pprint "1.1.0"]
+            [lein-pprint "1.1.1"]
             [lein-ring "0.6.2"]]
   
-  ;; :profiles {:dev {:dependencies [[clj-stacktrace "0.2.4"]
-  ;;                                 [swank-clojure "1.3.3"]
-  ;;                                 [storm "0.7.0"]]}}
-
   :dev-dependencies [[clj-stacktrace "0.2.4"]
                      [swank-clojure "1.3.3"]
                      [storm "0.7.0"]]
