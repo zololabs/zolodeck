@@ -6,8 +6,8 @@
     
   :datomic-db "datomic:mem://zolodeck-dev"}
    
- :testing
- {}
+ :test
+ {:datomic-db "datomic:mem://zolodeck-test"}     
    
  :production
  {}}
