@@ -28,7 +28,7 @@
     });
     
     $(document).ready(function () {	
-        tpl.loadTemplates(['home', 'header_user', 'header_guest'],
+        tpl.loadTemplates(['home', 'header'],
     	                  function () {
         	              app = new Zolodeck();
         	              Backbone.history.start();

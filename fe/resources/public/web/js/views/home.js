@@ -22,8 +22,9 @@
                 if (response.authResponse){
                     // Not needed as we listen to Facebook AuthChange Event
                     // that.model.login("FACEBOOK"); 
+                    console.log("Logged in successfully");
                 }else{
-                    opts.error(response);
+                    console.log(response);
                 }
             },{scope : 'email,friends_about_me,friends_birthday,friends_relationship_details,friends_location,friends_likes,friends_website'});
         }
