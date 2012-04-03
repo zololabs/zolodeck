@@ -8,7 +8,7 @@
     window.Zolodeck = Backbone.Router.extend({
 
         routes:{
-            "":"home"
+            ""         : "home"
         },
         
         initialize:function () {

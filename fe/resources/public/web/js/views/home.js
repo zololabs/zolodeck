@@ -5,14 +5,19 @@
         },
         
         initialize: function () {
-            console.log('Initializing Home View');
             _.bindAll(this, 'render', 'loginUsingFacebook');
+            this.model.bind('change:state', this.render)
             this.template = _.template(tpl.get('home'));
         },
         
         render: function (eventName) {
             console.log('Rendering Home');
+            var user = this.model;
+
             $(this.el).html(this.template());
+            $(this.el).find(".after-login").toggle(user.isLoggedIn());
+            $(this.el).find(".before-login").toggle(!user.isLoggedIn());
+
             return this;
         },
 
