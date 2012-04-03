@@ -6,6 +6,7 @@
   <link rel="stylesheet" type="text/css" href="lib/jasmine-1.0.2/jasmine.css">
   <script type="text/javascript" src="lib/jasmine-1.0.2/jasmine.js"></script>
   <script type="text/javascript" src="lib/jasmine-1.0.2/jasmine-html.js"></script>
+  <script type="text/javascript" src="lib/sinon-1.3.2.js"></script>
 
   <!-- include source files here... -->
   <script src="../lib/jquery-1.7.1.min.js"></script>
@@ -13,18 +14,25 @@
   <script src="../lib/backbone-min.js"></script>
   <script src="../lib/bootstrap-dropdown.js"></script>
 
+  <script src="../js/utils.js"></script>
+
   <script src="../js/models/user.js"></script>
+  <script src="../js/models/facebook_service.js"></script>
+
+  <script src="../js/views/header.js"></script>
+  <script src="../js/views/home.js"></script>
+
+  <script src="../js/Zolodeck.js"></script>
 
   <!-- include spec files here... -->
-  <script type="text/javascript" src="spec/UserSpec.js"></script>
+  <script type="text/javascript" src="spec/models/user-spec.js"></script>
 
 </head>
 <body>
-
-<script type="text/javascript">
-  jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
-  jasmine.getEnv().execute();
-</script>
+  <script type="text/javascript">
+    jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
+    jasmine.getEnv().execute();
+  </script>
 
 </body>
 </html>

@@ -21,7 +21,7 @@ describe ("User" , function() {
         
         beforeEach(function () {
             this.user = new User();
-            this.user.login("Facebook");
+            this.user.login("FACEBOOK");
             this.user.logout();
         });
 
@@ -30,5 +30,6 @@ describe ("User" , function() {
         });
 
     });
+
 });
 
