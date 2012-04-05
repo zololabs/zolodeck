@@ -7,7 +7,7 @@
 
 (defn load-config [config-file env]
   (def ENV env)
-  (def CONFIG-MAP (print-vals (load-string (slurp config-file)))))
+  (def CONFIG-MAP (load-string (slurp config-file))))
 
 (defn production-mode? []
   (= :production ENV))

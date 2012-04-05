@@ -2,10 +2,10 @@
   :description "Zolodeck API"
 
   :dependencies [[org.clojure/clojure "1.4.0-beta3"]
-                 [compojure "1.0.1"]
-                 [ring "1.0.1"]
-                 [sandbar/sandbar "0.4.0-SNAPSHOT"]
-                 [clj-facebook-graph "0.4.0"]
+                 [compojure "1.0.1" :exclude [org.clojure/clojure]]
+                 [ring "1.0.1" :exclude [org.clojure/clojure]]
+                 [sandbar/sandbar "0.4.0-SNAPSHOT" :exclude [org.clojure/clojure]]
+                 [clj-facebook-graph "0.4.0" :exclude [org.clojure/clojure]]
                  [joda-time "1.6"]
                  [slingshot "0.10.2"]
 
@@ -19,8 +19,7 @@
             [lein-ring "0.6.2"]]
   
   :dev-dependencies [[clj-stacktrace "0.2.4"]
-                     [swank-clojure "1.3.3"]
-                     [storm "0.7.0"]]
+                     [swank-clojure "1.3.3"]]
   
   :min-lein-version "1.7.0"
   :test-selectors {:default (fn [t] (not (:integration t)))
