@@ -4,5 +4,5 @@
   (:require [zolo.ext.facebook :as facebook]))
 
 (defn upsert-user [request-params]
-  (println "Not Yet Implemented"))
+  {:user "OK Need to Implement"})
 

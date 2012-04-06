@@ -5,6 +5,7 @@ config/insta.conf
 db/schema.rb
 classes/*
 fe/classes/*
+api/classes/*
 .clojure.conf
 .classpath
 .project

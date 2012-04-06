@@ -1,28 +1,29 @@
 (ns zolo.web
-  (:use slingshot.slingshot
-        zolo.web.status-codes
-        zolo.utils.debug)
-  (:require [clojure.data.json :as json]))
+  (:use [slingshot.slingshot :only [throw+ try+]]
+        zolo.utils.debug
+        clojure.stacktrace)
+  (:require [clojure.data.json :as json]
+            [zolo.web.status-codes :as http-status]))
 
 (defn json-response [data & [status]]
   {:status (or status 200)
    :headers {"Content-Type" "application/json"}
-   :body (json/json-str data)})
+   :body (json/json-str (print-vals "Data" data))})
 
 (defn error-response [error-object]
-  (json-response {:error (:message error-object)} ((:type error-object) codes)))
+  (json-response {:error (:message error-object)} ((:type error-object) http-status/codes)))
 
 (defn wrap-error-handling [handler]
   (fn [request]
+    (print-vals "wrap-error-handling")
     (try+
-     (handler request)
+     (json-response (handler request))
      (catch [:type :bad-request] e
-         (error-response e))
+       (error-response e))
      (catch [:type :not-found] e
-         (error-response e))
+       (error-response e))
      (catch Exception e
-       ;;TODO Need to print Clojure Stacktrace0
-       ;;(clojure.stacktrace/print-stack-trace e)
+       (print-stack-trace e)
        (json-response {:error (.getMessage e)} 500)))))
 
 (defn valid-version? [accept-header-value]
@@ -30,11 +31,12 @@
 
 (defn run-accept-header-validation [{:keys [headers]}]
   (if-not (valid-version? (headers "accept"))
-    (throw+ :type :bad-request
-            :message "Invalid API version requested")))
+    (throw+ {:type :bad-request
+             :message "Invalid API version requested"})))
 
 (defn wrap-accept-header-validation [handler]
   (fn [request]
+    (print-vals "wrap-accept-header-validation")
     (run-accept-header-validation request)
     (handler request)))
 

@@ -12,7 +12,7 @@
         zolo.web)
   (:require [compojure.route :as route]
             [compojure.handler :as handler]
-            [zolo.auth :as auth]
+;;            [zolo.auth :as auth]
             [zolo.api.user-api :as user-api]))
 
 (def security-policy
@@ -31,18 +31,15 @@
 
 (defn wrap-request-logging [handler]
   (fn [request]
+    (print-vals "wrap-request-logging")
     (print-vals "REQUEST : " request)
     (let [response (handler request)]
       (print-vals "RESPONSE : " response)
       response)))
 
-(defn evaluate-generate [function-or-value request]
-  (if (fn? function-or-value)
-    (function-or-value request)
-    function-or-value))
-
 (defn wrap-options [handler]
   (fn [request]
+    (print-vals "wrap-options")
     (if (= :options (request :request-method))
       { :headers    {"Access-Control-Allow-Origin"  "*"
                      "Access-Control-Allow-Methods"  "POST,PUT,OPTIONS"
@@ -54,8 +51,8 @@
 (def app
      (wrap-options
       (-> (handler/api application-routes)
-          (with-security security-policy auth/authenticator)
-          wrap-stateful-session
+;;          (with-security security-policy auth/authenticator)
+;;          wrap-stateful-session
           wrap-accept-header-validation
           wrap-error-handling
           wrap-request-logging)))
