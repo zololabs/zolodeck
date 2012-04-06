@@ -17,7 +17,7 @@
   (fn [request]
     (print-vals "wrap-error-handling")
     (try+
-     (json-response (handler request))
+     (handler request)
      (catch [:type :bad-request] e
        (error-response e))
      (catch [:type :not-found] e

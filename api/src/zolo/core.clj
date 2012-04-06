@@ -12,7 +12,7 @@
         zolo.web)
   (:require [compojure.route :as route]
             [compojure.handler :as handler]
-;;            [zolo.auth :as auth]
+            [zolo.auth :as auth]
             [zolo.api.user-api :as user-api]))
 
 (def security-policy
@@ -51,8 +51,8 @@
 (def app
      (wrap-options
       (-> (handler/api application-routes)
-;;          (with-security security-policy auth/authenticator)
-;;          wrap-stateful-session
+          (with-security security-policy auth/authenticator)
+          wrap-stateful-session
           wrap-accept-header-validation
           wrap-error-handling
           wrap-request-logging)))
