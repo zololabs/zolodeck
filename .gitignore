@@ -23,3 +23,4 @@ furtive.iml
 
 api/lib/*
 /api/.lein-failures
+/api/pom.xml
