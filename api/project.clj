@@ -23,7 +23,9 @@
   :plugins [[lein-swank "1.4.4"]
             [lein-pprint "1.1.1"]
             [lein-ring "0.6.2"]]
-  
+
+  :hooks [leiningen.hooks.difftest]
+
   :dev-dependencies [[clj-stacktrace "0.2.4"]
                      [swank-clojure "1.3.3"]
                      [ring-serve "0.1.2"]]
