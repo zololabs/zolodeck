@@ -18,6 +18,6 @@
      (-> (handler/site application-routes)))
 
 (defn -main []
-  (run-jetty (var app) {:port 8080
+  (run-jetty (var app) {:port 3000
                         :join? false}))
 

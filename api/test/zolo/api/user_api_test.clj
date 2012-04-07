@@ -3,7 +3,7 @@
         zolo.scenario
         zolo.utils.debug))
 
-(deftest test-upsert-user
+(deftest ^:integration test-upsert-user
   ;; (testing "No User present in DB"
   ;;          (let [scenario (-> (scenario)
   ;;                             login-as-valid-facebook-user
