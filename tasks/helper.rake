@@ -1,4 +1,5 @@
 require 'erb'
+require 'readline'
 
 def info(message)
   puts "============================================"
