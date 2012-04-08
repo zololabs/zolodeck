@@ -89,6 +89,11 @@ namespace :fe do
     sh "git submodule init; git submodule update"
     info "Getting Deps and Building projects in Checkout folder"
     sh "cd fe ; lein deps"
+    info "Setting Ruby Gems needed to ran Jasmine Spec"
+    sh "sudo gem install --version '= 0.9.2.2' rake"
+    sh "sudo gem install --version '= 2.9.0' rspec"
+    sh "sudo gem install --version '= 0.2.5' selenium"
+    sh "sudo gem install --version '= 1.1.2' jasmine"
   end
   
   namespace :test do
