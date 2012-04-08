@@ -1,3 +1,5 @@
+#Dir['tasks/*.rake'].each { |file| load(file) }
+
 def info(message)
   puts "============================================"
   puts message
@@ -92,7 +94,10 @@ namespace :fe do
   namespace :test do
     
     desc "Runs FrontEnd Unit tests"
-    task :unit => []
+    task :unit do
+      info "Running FrontEnd Unit Tests"
+      sh "cd fe/resources ; rake jasmine:ci"
+    end
 
     desc "Runs FrontEnd Integration tests"
     task :integration => []
