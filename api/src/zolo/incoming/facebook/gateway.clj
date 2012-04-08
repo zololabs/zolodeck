@@ -1,4 +1,4 @@
-(ns zolo.ext.facebook
+(ns zolo.incoming.facebook.gateway
   (:use zolo.utils.debug)
   (:require [clj-facebook-graph.auth :as fb-auth]
             [clj-facebook-graph.client :as fb-client]))
@@ -16,17 +16,19 @@
    :grant-type 'authorization-code})
 
 (defn decode-signed-request [encoded-signed-request] 
-  (fb-auth/decode-signed-request encoded-signed-request APP-SECRET)
-)
+  (fb-auth/decode-signed-request encoded-signed-request APP-SECRET))
 
 (defn code->token [code]
-  (fb-auth/get-access-token facebook-oauth2 {:code code})
-)
+  (fb-auth/get-access-token facebook-oauth2 {:code code}))
 
 (defn friends-list [auth-token]
   (fb-auth/with-facebook-auth {:access-token auth-token} 
     (fb-client/get [:me :friends]
                    {:query-params {:fields "link,name,gender,bio,birthday,relationship_status,significant_other,website"} 
                     :extract :data 
-                    :paging true}))
-)
+                    :paging true})))
+
+(defn run-fql [auth-token query-string]
+  (fb-auth/with-facebook-auth {:access-token auth-token} 
+    (fb-client/get :fql
+                   {:fql query-string})))
