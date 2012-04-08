@@ -24,3 +24,4 @@ furtive.iml
 api/lib/*
 /api/.lein-failures
 /api/pom.xml
+/api/config/zolo.clj

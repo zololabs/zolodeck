@@ -1,0 +1,8 @@
+{
+ :development
+ {:datomic-db "datomic:mem://<%= bag[:datomic][:development][:db] %>"}
+   
+ :test
+ {:datomic-db "datomic:mem://<%= bag[:datomic][:test][:db] %>"}     
+
+}

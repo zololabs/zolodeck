@@ -16,7 +16,7 @@
   (get-in CONFIG-MAP [ENV :datomic-db]))
 
 (defrunonce setup-config []
-  (let [config-file (java-io/resource "zolo.conf")
+  (let [config-file (java-io/resource "zolo.clj")
         env (keyword (or (.get (System/getenv) "ZOLODECK_ENV") "development"))]
     (load-config config-file env)))
 

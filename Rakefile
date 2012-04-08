@@ -1,9 +1,3 @@
-def info(message)
-  puts "============================================"
-  puts message
-  puts "============================================"
-end
-
 Dir['tasks/*.rake'].each { |file| load(file) }
 
 task :default => [:'zolo:test:all']
