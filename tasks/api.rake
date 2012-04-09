@@ -7,6 +7,7 @@ namespace :api do
     sh "git submodule init; git submodule sync ; git submodule update"
     info "Getting Deps and Building projects in Checkout folder"
     sh "cd api ; lein deps; lein build-checkouts;"
+    sh "lein plugin install lein-difftest 1.3.7"
     Rake::Task["api:config:generate"].execute
   end
   
