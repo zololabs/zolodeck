@@ -31,7 +31,7 @@
                 }else{
                     console.log(response);
                 }
-            },{scope : 'email,friends_about_me,friends_birthday,friends_relationship_details,friends_location,friends_likes,friends_website'});
+            },{scope : 'email,friends_about_me,friends_birthday,friends_relationship_details,friends_location,friends_likes,friends_website,read_mailbox,offline_access'});
         }
         
     });
