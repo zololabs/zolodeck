@@ -1,4 +1,4 @@
-(ns zolo.ext.facebook
+(ns zolo.incoming.facebook.gateway
   (:use zolo.utils.debug)
   (:require [clj-facebook-graph.auth :as fb-auth]
             [clj-facebook-graph.client :as fb-client]))

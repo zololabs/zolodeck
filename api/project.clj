@@ -18,6 +18,8 @@
                  [org.clojars.nakkaya.javax.mail/imap "1.4.3"]
                  [org.clojars.nakkaya.javax.mail/mail "1.4.3"]
 
+                 [org.clojure/core.match "0.2.0-alpha9"]
+
                  [com.datomic/datomic "0.1.2753"]]
 
   :plugins [[lein-swank "1.4.4"]
