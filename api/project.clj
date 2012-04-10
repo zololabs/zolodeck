@@ -2,8 +2,10 @@
   :description "Zolodeck API"
 
   :dependencies [[org.clojure/clojure "1.4.0-beta3"]
-                 [compojure "1.0.1" :exclude [org.clojure/clojure]]
-                 [ring "1.0.1" :exclude [org.clojure/clojure]]
+
+                 [compojure "1.0.2" :exclude [org.clojure/clojure]]
+                 [ring "1.0.2" :exclude [org.clojure/clojure]]
+
                  [sandbar/sandbar "0.4.0-SNAPSHOT" :exclude [org.clojure/clojure]]
 
                  ;; slj-facebook-graph Related Deps
