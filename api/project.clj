@@ -8,7 +8,7 @@
 
                  [sandbar/sandbar "0.4.0-SNAPSHOT" :exclude [org.clojure/clojure]]
 
-                 ;; slj-facebook-graph Related Deps
+                 ;; clj-facebook-graph Related Deps
                  ;;[zololabs/zolo-clj-facebook-graph "0.4.0"]
                  [org.clojure/data.json "0.1.2"  :exclude [org.clojure/clojure]]
                  [clj-http "0.3.6"]
