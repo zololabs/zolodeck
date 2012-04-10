@@ -23,15 +23,18 @@
   (route/resources "/")
 
   ;;---- USER
-  (POST "/users" [& params] (user-api/upsert-user params))
+  (POST "/users" [& params] (json-response (user-api/upsert-user params)))
  
+  ;;---- FRIENDS
+  (GET "/friends" [& params] (json-response (user-api/friends-list params)))
+  
   ;;---- GENERAL
-  (GET "/permission-denied*" [] {:status 403 :body "Permission Denied"})
+  (GET "/permission-denied*" []  (json-response {:error "Permission Denied"} 403))
+
   (route/not-found "Page not found"))
 
 (defn wrap-request-logging [handler]
   (fn [request]
-    (print-vals "wrap-request-logging")
     (print-vals "REQUEST : " request)
     (let [response (handler request)]
       (print-vals "RESPONSE : " response)
@@ -39,7 +42,6 @@
 
 (defn wrap-options [handler]
   (fn [request]
-    (print-vals "wrap-options")
     (if (= :options (request :request-method))
       { :headers    {"Access-Control-Allow-Origin"  "*"
                      "Access-Control-Allow-Methods"  "POST,PUT,OPTIONS"
@@ -55,7 +57,8 @@
           wrap-stateful-session
           wrap-accept-header-validation
           wrap-error-handling
-          wrap-request-logging)))
+          wrap-request-logging
+          )))
 
 (defn -main []
   (run-jetty (var app) {:port 4000
