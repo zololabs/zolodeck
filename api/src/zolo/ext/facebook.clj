@@ -21,7 +21,7 @@
   (fb-auth/get-access-token facebook-oauth2 {:code code}))
 
 (defn friends-list [auth-token]
-  (take 2 (fb-auth/with-facebook-auth {:access-token auth-token} 
+  (take 10 (fb-auth/with-facebook-auth {:access-token auth-token} 
             (fb-client/get [:me :friends]
                            {:query-params 
                             {:fields "link,name,gender,bio,birthday,relationship_status,significant_other,website"} 
