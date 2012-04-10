@@ -7,7 +7,8 @@
 
 (defn json-response [data & [status]]
   {:status (or status 200)
-   :headers {"Content-Type" "application/json"}
+   :headers {"Content-Type" "application/json; charset=utf-8"
+             "Access-Control-Allow-Origin", "*"}
    :body (json/json-str data)})
 
 (defn error-response [error-object]
