@@ -7,15 +7,15 @@
 
 (defn json-response [data & [status]]
   {:status (or status 200)
-   :headers {"Content-Type" "application/json"}
-   :body (json/json-str (print-vals "Data" data))})
+   :headers {"Content-Type" "application/json; charset=utf-8"
+             "Access-Control-Allow-Origin", "*"}
+   :body (json/json-str data)})
 
 (defn error-response [error-object]
   (json-response {:error (:message error-object)} ((:type error-object) http-status/codes)))
 
 (defn wrap-error-handling [handler]
   (fn [request]
-    (print-vals "wrap-error-handling")
     (try+
      (handler request)
      (catch [:type :bad-request] e
@@ -36,7 +36,6 @@
 
 (defn wrap-accept-header-validation [handler]
   (fn [request]
-    (print-vals "wrap-accept-header-validation")
     (run-accept-header-validation request)
     (handler request)))
 

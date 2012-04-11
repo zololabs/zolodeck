@@ -16,11 +16,15 @@ src_files:
     - public/web/lib/backbone-min.js
     - public/web/lib/bootstrap-dropdown.js
     - public/web/js/utils/*.js
+    - public/web/js/models/friend.js
+    - public/web/js/collections/friends.js
     - public/web/js/models/user.js
     - public/web/js/models/facebook.js
     - public/web/js/models/**.js
+    - public/web/js/collections/**.js
     - public/web/js/views/*.js
     - public/web/js/*.js
+    - public/web/templates/*.html
 
 # stylesheets
 #
@@ -58,6 +62,7 @@ helpers:
 #   - **/*[sS]pec.js
 #
 spec_files:
+   - **/*[sS]pec.js
 
 # src_dir
 #

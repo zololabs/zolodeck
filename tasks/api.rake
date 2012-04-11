@@ -33,6 +33,13 @@ namespace :api do
   task :swank  do
     port = "4005"
     info ("Starting API swank in port: " + port)
+    info <<-EOS
+         To start API server
+            -  In slime
+               1) (use 'ring.util.serve)
+               2) Eval zolo.core
+               3) (serve-headless zolo.core/app 4000)
+    EOS
     sh ("cd api; lein swank " + port)
   end
 

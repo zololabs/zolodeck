@@ -1,0 +1,85 @@
+<mockup version="1.0" skin="sketch" measuredW="1399" measuredH="1000" mockupW="960" mockupH="1000">
+  <controls>
+    <control controlID="2" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="439" y="0" w="960" h="1000" measuredW="450" measuredH="400" zOrder="0" locked="true" isInGroup="-1">
+      <controlProperties>
+        <text>Zolodeck%0Ahttp%3A//www.zolodeck.com</text>
+      </controlProperties>
+    </control>
+    <control controlID="4" controlTypeID="__group__" x="439" y="886" w="960" h="30" measuredW="960" measuredH="30" zOrder="4" locked="false" isInGroup="-1">
+      <groupChildrenDescriptors>
+        <control controlID="0" controlTypeID="com.balsamiq.mockups::HRule" x="0" y="0" w="960" h="-1" measuredW="100" measuredH="5" zOrder="0" locked="false" isInGroup="4"/>
+        <control controlID="1" controlTypeID="com.balsamiq.mockups::Title" x="437" y="13" w="-1" h="-1" measuredW="36" measuredH="17" zOrder="1" locked="false" isInGroup="4">
+          <controlProperties>
+            <size>10</size>
+            <text>Footer</text>
+          </controlProperties>
+        </control>
+      </groupChildrenDescriptors>
+    </control>
+    <control controlID="27" controlTypeID="com.balsamiq.mockups::HSplitter" x="703" y="110" w="-1" h="776" measuredW="12" measuredH="100" zOrder="1" locked="false" isInGroup="-1"/>
+    <control controlID="29" controlTypeID="com.balsamiq.mockups::Label" x="537" y="122" w="47" h="24" measuredW="47" measuredH="24" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <bold>false</bold>
+        <italic>false</italic>
+        <size>16</size>
+        <text>Alerts</text>
+        <textOrientation>right</textOrientation>
+        <underline>false</underline>
+      </controlProperties>
+    </control>
+    <control controlID="33" controlTypeID="com.balsamiq.mockups::Component" x="441" y="68" w="956" h="42" measuredW="956" measuredH="42" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <src>./assets/symbols.bmml#TopBar-Logged In</src>
+      </controlProperties>
+    </control>
+    <control controlID="34" controlTypeID="com.balsamiq.mockups::Component" x="456" y="153" w="232" h="70" measuredW="232" measuredH="70" zOrder="5" locked="false" isInGroup="-1">
+      <controlProperties>
+        <src>./assets/symbols.bmml#Alert</src>
+      </controlProperties>
+    </control>
+    <control controlID="35" controlTypeID="com.balsamiq.mockups::Component" x="456" y="238" w="232" h="70" measuredW="232" measuredH="70" zOrder="6" locked="false" isInGroup="-1">
+      <controlProperties>
+        <src>./assets/symbols.bmml#Alert</src>
+      </controlProperties>
+    </control>
+    <control controlID="36" controlTypeID="com.balsamiq.mockups::Component" x="456" y="323" w="232" h="70" measuredW="232" measuredH="70" zOrder="7" locked="false" isInGroup="-1">
+      <controlProperties>
+        <src>./assets/symbols.bmml#Alert</src>
+      </controlProperties>
+    </control>
+    <control controlID="37" controlTypeID="com.balsamiq.mockups::Component" x="456" y="408" w="232" h="70" measuredW="232" measuredH="70" zOrder="8" locked="false" isInGroup="-1">
+      <controlProperties>
+        <src>./assets/symbols.bmml#Alert</src>
+      </controlProperties>
+    </control>
+    <control controlID="38" controlTypeID="com.balsamiq.mockups::Image" x="749" y="122" w="632" h="716" measuredW="77" measuredH="79" zOrder="9" locked="false" isInGroup="-1"/>
+    <control controlID="39" controlTypeID="com.balsamiq.mockups::Label" x="713" y="440" w="-1" h="-1" measuredW="21" measuredH="69" zOrder="11" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Full%20Screen</text>
+        <textOrientation>down</textOrientation>
+      </controlProperties>
+    </control>
+    <control controlID="40" controlTypeID="com.balsamiq.mockups::Canvas" x="713" y="431" w="26" h="85" measuredW="100" measuredH="70" zOrder="10" locked="false" isInGroup="-1"/>
+    <control controlID="41" controlTypeID="com.balsamiq.mockups::HSlider" x="967" y="851" w="196" h="-1" measuredW="33" measuredH="11" zOrder="12" locked="false" isInGroup="-1"/>
+    <control controlID="42" controlTypeID="com.balsamiq.mockups::Icon" x="1324" y="853" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="13" locked="false" isInGroup="-1">
+      <controlProperties>
+        <icon>FacebookIcon%7Csmall</icon>
+      </controlProperties>
+    </control>
+    <control controlID="43" controlTypeID="com.balsamiq.mockups::Icon" x="1357" y="853" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="14" locked="false" isInGroup="-1">
+      <controlProperties>
+        <icon>TwitterIcon%7Csmall</icon>
+      </controlProperties>
+    </control>
+    <control controlID="45" controlTypeID="com.balsamiq.mockups::Label" x="942" y="861" w="-1" h="-1" measuredW="45" measuredH="21" zOrder="15" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Strong</text>
+      </controlProperties>
+    </control>
+    <control controlID="46" controlTypeID="com.balsamiq.mockups::Label" x="1137" y="862" w="-1" h="-1" measuredW="41" measuredH="21" zOrder="16" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Weak</text>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>

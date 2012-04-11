@@ -1,0 +1,37 @@
+<mockup version="1.0" skin="sketch" measuredW="1399" measuredH="1000" mockupW="960" mockupH="1000">
+  <controls>
+    <control controlID="2" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="439" y="0" w="960" h="1000" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Zolodeck%0Ahttp%3A//www.zolodeck.com</text>
+      </controlProperties>
+    </control>
+    <control controlID="3" controlTypeID="__group__" x="441" y="68" w="956" h="42" measuredW="956" measuredH="42" zOrder="1" locked="false" isInGroup="-1">
+      <groupChildrenDescriptors>
+        <control controlID="0" controlTypeID="com.balsamiq.mockups::Canvas" x="0" y="0" w="956" h="42" measuredW="100" measuredH="70" zOrder="0" locked="false" isInGroup="3"/>
+        <control controlID="1" controlTypeID="com.balsamiq.mockups::Title" x="7" y="7" w="-1" h="-1" measuredW="103" measuredH="33" zOrder="1" locked="false" isInGroup="3">
+          <controlProperties>
+            <size>24</size>
+            <text>Zolodeck</text>
+          </controlProperties>
+        </control>
+        <control controlID="2" controlTypeID="com.balsamiq.mockups::LinkBar" x="136" y="10" w="-1" h="-1" measuredW="152" measuredH="21" zOrder="2" locked="false" isInGroup="3">
+          <controlProperties>
+            <text>Home%2C%20Logout%2C%20Help</text>
+          </controlProperties>
+        </control>
+        <control controlID="3" controlTypeID="com.balsamiq.mockups::SearchBox" x="769" y="8" w="172" h="-1" measuredW="65" measuredH="25" zOrder="3" locked="false" isInGroup="3"/>
+      </groupChildrenDescriptors>
+    </control>
+    <control controlID="4" controlTypeID="__group__" x="439" y="886" w="960" h="30" measuredW="960" measuredH="30" zOrder="2" locked="false" isInGroup="-1">
+      <groupChildrenDescriptors>
+        <control controlID="0" controlTypeID="com.balsamiq.mockups::HRule" x="0" y="0" w="960" h="-1" measuredW="100" measuredH="5" zOrder="0" locked="false" isInGroup="4"/>
+        <control controlID="1" controlTypeID="com.balsamiq.mockups::Title" x="437" y="13" w="-1" h="-1" measuredW="36" measuredH="17" zOrder="1" locked="false" isInGroup="4">
+          <controlProperties>
+            <size>10</size>
+            <text>Footer</text>
+          </controlProperties>
+        </control>
+      </groupChildrenDescriptors>
+    </control>
+  </controls>
+</mockup>

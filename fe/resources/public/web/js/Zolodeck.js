@@ -28,7 +28,7 @@
     });
     
     $(document).ready(function () {	
-        tpl.loadTemplates(['home', 'header'],
+        tpl.loadTemplates(['home', 'header', 'friends-list-item'],
     	                  function () {
         	              app = new Zolodeck();
         	              Backbone.history.start();
