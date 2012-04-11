@@ -13,6 +13,7 @@
                  [clj-oauth2 "0.2.0"]
 
                  [joda-time "1.6"]
+                 [clj-time "0.3.7"]
                  [slingshot "0.10.2"]
 
                  [org.clojars.nakkaya.javax.mail/imap "1.4.3"]
