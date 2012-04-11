@@ -34,9 +34,6 @@
         },
         
         render:function () {
-            console.log('Rendering FriendsListItemView : ' +  this.model.get('name'));
-            console.log(this.model.toJSON());
-            console.log("ID : " + this.model.id);
             $(this.el).html(this.template(this.model.toJSON()));
             return this;
         }

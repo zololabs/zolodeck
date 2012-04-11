@@ -1,0 +1,58 @@
+<mockup version="1.0" skin="sketch" measuredW="1013" measuredH="303" mockupW="956" mockupH="283">
+  <controls>
+    <control controlID="1" controlTypeID="__group__" x="57" y="261" w="956" h="42" measuredW="956" measuredH="42" zOrder="1" locked="false" isInGroup="-1">
+      <controlProperties>
+        <controlName>TopBar-Logged%20In</controlName>
+      </controlProperties>
+      <groupChildrenDescriptors>
+        <control controlID="0" controlTypeID="com.balsamiq.mockups::Canvas" x="0" y="0" w="956" h="42" measuredW="100" measuredH="70" zOrder="0" locked="false" isInGroup="1"/>
+        <control controlID="1" controlTypeID="com.balsamiq.mockups::Title" x="7" y="7" w="-1" h="-1" measuredW="103" measuredH="33" zOrder="1" locked="false" isInGroup="1">
+          <controlProperties>
+            <size>24</size>
+            <text>Zolodeck</text>
+          </controlProperties>
+        </control>
+        <control controlID="2" controlTypeID="com.balsamiq.mockups::SearchBox" x="715" y="8" w="172" h="-1" measuredW="65" measuredH="25" zOrder="2" locked="false" isInGroup="1"/>
+        <control controlID="3" controlTypeID="com.balsamiq.mockups::Icon" x="902" y="9" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="3" locked="false" isInGroup="1">
+          <controlProperties>
+            <icon>ContactIcon%7Csmall</icon>
+          </controlProperties>
+        </control>
+      </groupChildrenDescriptors>
+    </control>
+    <control controlID="7" controlTypeID="__group__" x="60" y="20" w="232" h="70" measuredW="232" measuredH="70" zOrder="0" locked="false" isInGroup="-1">
+      <controlProperties>
+        <controlName>Alert</controlName>
+      </controlProperties>
+      <groupChildrenDescriptors>
+        <control controlID="0" controlTypeID="com.balsamiq.mockups::Canvas" x="0" y="0" w="232" h="70" measuredW="100" measuredH="70" zOrder="0" locked="false" isInGroup="7">
+          <controlProperties>
+            <borderStyle>roundedSolid</borderStyle>
+          </controlProperties>
+        </control>
+        <control controlID="1" controlTypeID="com.balsamiq.mockups::Paragraph" x="58" y="17" w="148" h="40" measuredW="200" measuredH="140" zOrder="1" locked="false" isInGroup="7">
+          <controlProperties>
+            <text>You%20havn%27t%20talked%20with%20Siva%20in%2030%20days</text>
+          </controlProperties>
+        </control>
+        <control controlID="2" controlTypeID="com.balsamiq.mockups::Icon" x="15" y="19" w="-1" h="-1" measuredW="32" measuredH="32" zOrder="2" locked="false" isInGroup="7">
+          <controlProperties>
+            <icon>ContactIcon%7Cmedium</icon>
+          </controlProperties>
+        </control>
+        <control controlID="4" controlTypeID="com.balsamiq.mockups::Icon" x="197" y="8" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="3" locked="false" isInGroup="7">
+          <controlProperties>
+            <icon>XIcon%7Csmall</icon>
+          </controlProperties>
+        </control>
+        <control controlID="5" controlTypeID="com.balsamiq.mockups::Icon" x="197" y="42" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="4" locked="false" isInGroup="7">
+          <controlProperties>
+            <icon>PencilIcon%7Csmall</icon>
+          </controlProperties>
+        </control>
+        <control controlID="6" controlTypeID="com.balsamiq.mockups::VRule" x="188" y="2" w="-1" h="68" measuredW="5" measuredH="100" zOrder="5" locked="false" isInGroup="7"/>
+        <control controlID="7" controlTypeID="com.balsamiq.mockups::HRule" x="188" y="34" w="44" h="-1" measuredW="100" measuredH="5" zOrder="6" locked="false" isInGroup="7"/>
+      </groupChildrenDescriptors>
+    </control>
+  </controls>
+</mockup>
