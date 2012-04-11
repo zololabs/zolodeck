@@ -1,7 +1,6 @@
 (ns zolo.api.user-api
   (:use zolo.domain.user
         zolo.utils.debug)
-  (:require ]))
   (:require [zolo.incoming.facebook.gateway :as gateway]
             [sandbar.auth :as sandbar]))
 
