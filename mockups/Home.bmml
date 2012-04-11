@@ -52,5 +52,34 @@
         <src>./assets/symbols.bmml#Alert</src>
       </controlProperties>
     </control>
+    <control controlID="38" controlTypeID="com.balsamiq.mockups::Image" x="749" y="122" w="632" h="716" measuredW="77" measuredH="79" zOrder="9" locked="false" isInGroup="-1"/>
+    <control controlID="39" controlTypeID="com.balsamiq.mockups::Label" x="713" y="440" w="-1" h="-1" measuredW="21" measuredH="69" zOrder="11" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Full%20Screen</text>
+        <textOrientation>down</textOrientation>
+      </controlProperties>
+    </control>
+    <control controlID="40" controlTypeID="com.balsamiq.mockups::Canvas" x="713" y="431" w="26" h="85" measuredW="100" measuredH="70" zOrder="10" locked="false" isInGroup="-1"/>
+    <control controlID="41" controlTypeID="com.balsamiq.mockups::HSlider" x="967" y="851" w="196" h="-1" measuredW="33" measuredH="11" zOrder="12" locked="false" isInGroup="-1"/>
+    <control controlID="42" controlTypeID="com.balsamiq.mockups::Icon" x="1324" y="853" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="13" locked="false" isInGroup="-1">
+      <controlProperties>
+        <icon>FacebookIcon%7Csmall</icon>
+      </controlProperties>
+    </control>
+    <control controlID="43" controlTypeID="com.balsamiq.mockups::Icon" x="1357" y="853" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="14" locked="false" isInGroup="-1">
+      <controlProperties>
+        <icon>TwitterIcon%7Csmall</icon>
+      </controlProperties>
+    </control>
+    <control controlID="45" controlTypeID="com.balsamiq.mockups::Label" x="942" y="861" w="-1" h="-1" measuredW="45" measuredH="21" zOrder="15" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Strong</text>
+      </controlProperties>
+    </control>
+    <control controlID="46" controlTypeID="com.balsamiq.mockups::Label" x="1137" y="862" w="-1" h="-1" measuredW="41" measuredH="21" zOrder="16" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Weak</text>
+      </controlProperties>
+    </control>
   </controls>
 </mockup>
