@@ -20,3 +20,12 @@
   (insert-fb-user SIVA)
   (is-not (nil? (:db/id (find-by-fb-id (:id SIVA))))))
 
+(zolotest test-load-user-from-datomic
+  (insert-fb-user SIVA)
+  (let [user-from-db (find-by-fb-id (:id SIVA))]
+    (is (= (:gender SIVA) (:user/gender user-from-db)))))
+
+
+
+
+
