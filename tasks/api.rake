@@ -8,7 +8,13 @@ namespace :api do
     info "Getting Deps and Building projects in Checkout folder"
     sh "cd api ; lein deps; lein build-checkouts;"
     sh "lein plugin install lein-difftest 1.3.7"
+    sh "lein plugin install lein-notes 0.0.1"
     Rake::Task["api:config:generate"].execute
+  end
+
+  desc "Todos from API project"
+  task :todos do
+    sh "cd api ; lein notes;"
   end
   
   namespace :test do
