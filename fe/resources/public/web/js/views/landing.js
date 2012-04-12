@@ -1,5 +1,5 @@
 (function($) {
-    window.HomeView = Backbone.View.extend({
+    window.LandingView = Backbone.View.extend({
         events: {
             'click #facebook_login': 'loginUsingFacebook'
         },
@@ -10,11 +10,11 @@
             this.user = this.model;
 
             this.user.bind('change:state', this.render)
-            this.template = _.template(tpl.get('home'));
+            this.template = _.template(tpl.get('landing'));
         },
         
         render: function (eventName) {
-            console.log('Rendering Home');
+            console.log('Rendering Landing');
             var user = this.model;
             this.friendsListView = new FriendsListView({model:user.friends()});
 
