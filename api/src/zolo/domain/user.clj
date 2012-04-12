@@ -1,5 +1,6 @@
 (ns zolo.domain.user
-  (:use [zolo.infra.datomic :only [upsert run-query load-entity] :as datomic])
+  (:use [zolo.infra.datomic :only [upsert run-query load-entity] :as datomic]
+        zolo.utils.debug)
   (:require [zolo.utils.maps :as maps]
             [zolo.incoming.facebook.gateway :as fb-gateway]
             [zolo.utils.string :as zolo-str]))
@@ -18,9 +19,9 @@
   (maps/update-all-map-keys fb-user FB-USER-KEYS))
 
 (defn insert-fb-user [fb-user]
-  (-> fb-user
-      fb-user->user
-      datomic/upsert))
+  (let [zolo-user (fb-user->user fb-user)]
+    (datomic/upsert zolo-user)
+    zolo-user))
 
 (defn find-by-fb-id [fb-id]
   (let [entity (-> (datomic/run-query '[:find ?u :in $ ?fb :where [?u :user/fb-id ?fb]]
@@ -31,12 +32,9 @@
       entity)))
 
 (defn load-from-fb [{:keys [code]}]
-  (let [auth-token (fb-gateway/code->token code)
-        me (fb-gateway/me auth-token)
-        me (assoc me :auth-token auth-token)
-        zolo-user (fb-user->user me)]
-    (insert-fb-user zolo-user)
-    zolo-user))
+  (-> (fb-gateway/code->token code)
+      fb-gateway/me
+      insert-fb-user))
 
 (defn find-by-fb-signed-request [fb-sr]
   (if-let [zolo-user (find-by-fb-id (:user_id fb-sr))]

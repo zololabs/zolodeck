@@ -21,8 +21,10 @@
   (fb-auth/get-access-token facebook-oauth2 {:code code}))
 
 (defn me [auth-token]
-  (:body (fb-auth/with-facebook-auth {:access-token auth-token} 
-           (fb-client/get [:me]))))
+  (assoc 
+      (:body (fb-auth/with-facebook-auth {:access-token auth-token} 
+               (fb-client/get [:me])))
+    :auth-token auth-token))
 
 (defn friends-list [auth-token]
   (take 10 (fb-auth/with-facebook-auth {:access-token auth-token} 
