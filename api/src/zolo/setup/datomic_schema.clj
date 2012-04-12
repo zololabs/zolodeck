@@ -1,7 +1,8 @@
-(ns zolo.setup.datomic-schema)
+(ns zolo.setup.datomic-schema
+  (:use [datomic.api :only [tempid] :as db]))
 
 (defn fact-schema [attribute value-type fulltext? doc]
-  {:db/id #db/id[:db.part/db]
+  {:db/id (db/tempid :db.part/db)
    :db/ident attribute
    :db/valueType value-type
    :db/cardinality :db.cardinality/one
