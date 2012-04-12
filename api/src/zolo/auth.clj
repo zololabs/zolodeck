@@ -16,7 +16,7 @@
 (defn authenticator [req]
   (if-let [auth-token ((:headers req) "authorization")]
     (let [[auth-type auth-cred] (zolo-str/split " " auth-token)]
-          (if-let [user (authenticate auth-type auth-cred (:params req))]
-            (merge user
-                   {:username (:user/fb-email user)
-                    :roles #{:user}})))))
+      (if-let [user (authenticate auth-type auth-cred (:params req))]
+        (merge {:username (:user/fb-email user)
+                :roles #{:user}}
+               user)))))
