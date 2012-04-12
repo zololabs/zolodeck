@@ -8,27 +8,30 @@
     window.Zolodeck = Backbone.Router.extend({
 
         routes:{
-            ""         : "landing"
+            ""         : "zolodeck"
         },
         
         initialize:function () {
-            this.landingView = new LandingView({
+            this.zolodeckView = new ZolodeckView({
                 model: window.currentUser
             });
+
             this.headerView = new HeaderView({
                 model: window.currentUser
             });
+
+
         },
         
-        landing:function () {
+        zolodeck:function () {
             $('.header').html(this.headerView.render().el);
-            $('#content').html(this.landingView.render().el);
+            this.zolodeckView.render();
         }
 
     });
     
     $(document).ready(function () {	
-        tpl.loadTemplates(['landing', 'header', 'friends-list-item'],
+        tpl.loadTemplates(['landing', 'header', 'home', 'friends-list-item'],
     	                  function () {
         	              app = new Zolodeck();
         	              Backbone.history.start();

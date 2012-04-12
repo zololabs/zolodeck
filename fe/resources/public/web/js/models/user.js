@@ -29,6 +29,10 @@
 
         isLoggedIn: function(){
             return (this.get('state') == 'LOGGED_IN');
+        },
+
+        isLoggedOut: function(){
+            return !this.isLoggedIn();
         }
 
     });
