@@ -42,9 +42,8 @@ namespace :api do
     info <<-EOS
          To start API server
             -  In slime
-               1) (use 'ring.util.serve)
-               2) Eval zolo.core
-               3) (serve-headless zolo.core/app 4000)
+               1) Eval zolo.core
+               2) (serve-headless zolo.core/app 4000)
     EOS
     sh ("cd api; lein swank " + port)
   end
@@ -57,9 +56,8 @@ namespace :api do
          If you want to do incremental development. Start the server by 
             1) rake api:swank
             2) In slime
-               a) (use 'ring.util.serve)
-               b) Eval zolo.core
-               c) (serve-headless zolo.core/app 4000)
+               a) Eval zolo.core
+               b) (serve-headless zolo.core/app 4000)
     EOS
     sh ("cd api; lein run")
   end

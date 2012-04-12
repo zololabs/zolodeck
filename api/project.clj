@@ -42,7 +42,10 @@
                    :integration :integration
                    :all (fn [t] true)}
   
-  :project-init (require 'clojure.pprint)
+  :project-init (do (use 'ring.util.serve) 
+                    (use 'clojure.pprint)
+                    (use 'clojure.test))
+
   :warn-on-reflection false
   
   :repositories {"jboss" "http://repository.jboss.org/nexus/content/groups/public/"
