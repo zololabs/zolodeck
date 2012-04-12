@@ -55,6 +55,6 @@
 (defn run-in-datomic-demarcation [thunk]
   (binding [TX-DATA (atom [])
             DATOMIC-DB (atom (get-db))]
-    (thunk)
-    (commit-pending-transactions)))
-
+    (let [res (thunk)]
+      (commit-pending-transactions)
+      res)))

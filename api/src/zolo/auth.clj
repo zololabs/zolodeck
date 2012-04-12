@@ -1,16 +1,14 @@
 (ns zolo.auth
   (:use zolo.utils.debug)
   (:require [zolo.incoming.facebook.gateway :as facebook]
+            [zolo.domain.user :as user]
             [zolo.utils.string :as zolo-str]))
 
 (defmulti authenticate (fn [auth-type auth-cred params] (clojure.string/lower-case (clojure.string/trim auth-type))))
 
 (defmethod authenticate "fb" [_ auth-cred params]
-  (if-let [signed-request (facebook/decode-signed-request auth-cred) ]
-    {:email "sova@goo.com"
-     :signed-request signed-request
-     ;; TODO this is expensive ... we should store in datomic and load user 
-     :access-token (facebook/code->token (:code signed-request))}))
+  (if-let [signed-request (facebook/decode-signed-request auth-cred)]
+    (user/find-by-fb-signed-request signed-request)))
 
 (defmethod authenticate :default [_ _ _]
   nil)
@@ -20,5 +18,5 @@
     (let [[auth-type auth-cred] (zolo-str/split " " auth-token)]
           (if-let [user (authenticate auth-type auth-cred (:params req))]
             (merge user
-                   {:username (:email user)
+                   {:username (:user/fb-email user)
                     :roles #{:user}})))))

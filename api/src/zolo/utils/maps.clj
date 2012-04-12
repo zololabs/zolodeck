@@ -14,3 +14,17 @@
   (-> a-map
       walk/stringify-keys
       stringify-vals))
+
+(defn- kv-updater-for-key [key-tester key-updater [k v]]
+  (if-let [new-key (key-updater k)]
+    (if (key-tester k)
+      {new-key v}
+      {k v})))
+
+;;TODO need to add tests
+
+(defn update-map-keys [m key-tester key-updater]
+  (apply merge (map (partial kv-updater-for-key key-tester key-updater) m)))
+
+(defn update-all-map-keys [m key-updater]
+  (update-map-keys m (constantly true) key-updater))

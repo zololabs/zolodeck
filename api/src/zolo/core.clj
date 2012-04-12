@@ -13,7 +13,8 @@
   (:require [compojure.route :as route]
             [compojure.handler :as handler]
             [zolo.auth :as auth]
-            [zolo.api.user-api :as user-api]))
+            [zolo.api.user-api :as user-api]
+            [zolo.infra.datomic :as datomic]))
 
 (def security-policy
      [#"/permission-denied*" :any
@@ -57,6 +58,7 @@
           wrap-stateful-session
           wrap-accept-header-validation
           wrap-error-handling
+          datomic/wrap-datomic-demarcation
           wrap-request-logging
           )))
 

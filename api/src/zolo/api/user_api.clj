@@ -8,5 +8,5 @@
   {:user "OK Need to Implement"})
 
 (defn friends-list [request-params]
-  (gateway/friends-list (:access-token (sandbar/current-user))))
+  (gateway/friends-list (:user/fb-auth-token (sandbar/current-user))))
 

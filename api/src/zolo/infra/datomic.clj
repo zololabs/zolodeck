@@ -6,6 +6,10 @@
 (defmacro in-datomic-demarcation [& body]
   `(run-in-datomic-demarcation (fn [] ~@body)))
 
+(defn wrap-datomic-demarcation [handler]
+  (fn [request]
+    (in-datomic-demarcation (handler request))))
+
 (defn run-query [query & extra-inputs]
   (apply q query @DATOMIC-DB extra-inputs))
 
@@ -18,3 +22,7 @@
       vector
       run-transaction))
 
+(defn delete [entity-id]
+  (-> [:db.fn/retractEntity entity-id]
+      vector
+      run-transaction))

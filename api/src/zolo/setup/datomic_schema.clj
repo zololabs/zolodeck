@@ -1,35 +1,34 @@
 (ns zolo.setup.datomic-schema)
 
+(defn fact-schema [attribute value-type fulltext? doc]
+  {:db/id #db/id[:db.part/db]
+   :db/ident attribute
+   :db/valueType value-type
+   :db/cardinality :db.cardinality/one
+   :db/fulltext fulltext?
+   :db/doc doc
+   :db.install/_attribute :db.part/db})
+
+(defn string-fact-schema [attribute fulltext? doc]
+  (fact-schema attribute :db.type/string fulltext? doc))
+
 (def SCHEMA-TX {
-     000 {:db/id #db/id[:db.part/db]
-          :db/ident :user/first-name
-          :db/valueType :db.type/string
-          :db/cardinality :db.cardinality/one
-          :db/fulltext true
-          :db/doc "A user's first name"
-          :db.install/_attribute :db.part/db}
+     000 (string-fact-schema :user/first-name true "A user's first name") 
 
-     001 {:db/id #db/id[:db.part/db]
-          :db/ident :user/last-name
-          :db/valueType :db.type/string
-          :db/cardinality :db.cardinality/one
-          :db/fulltext true
-          :db/doc "A user's last name"
-          :db.install/_attribute :db.part/db}
+     001 (string-fact-schema :user/last-name true "A user's last name") 
 
-     002 {:db/id #db/id[:db.part/db]
-          :db/ident :user/facebook-id
-          :db/valueType :db.type/string
-          :db/cardinality :db.cardinality/one
-          :db/fulltext false
-          :db/doc "A user's Facebook ID"
-          :db.install/_attribute :db.part/db}
+     002 (string-fact-schema :user/gender false "A user's gender") 
 
-     003 {:db/id #db/id[:db.part/db]
-          :db/ident :user/fb-auth-token
-          :db/valueType :db.type/string
-          :db/cardinality :db.cardinality/one
-          :db/fulltext false
-          :db/doc "A user's Facebook authentication token"
-          :db.install/_attribute :db.part/db}             
+     ; Facebook Information
+
+     003 (string-fact-schema :user/fb-id false "A user's Facebook ID") 
+
+     004 (string-fact-schema :user/fb-auth-token false "A user's Facebook auth token") 
+
+     005 (string-fact-schema :user/fb-email false "A user's Facebook email") 
+
+     006 (string-fact-schema :user/fb-link false "A user's Facebook link") 
+
+     007 (string-fact-schema :user/fb-username false "A user's Facebook username") 
+
 })

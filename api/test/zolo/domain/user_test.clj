@@ -2,8 +2,21 @@
   (:use zolo.domain.user zolo.test-utils)
   (:use [clojure.test :only [run-tests deftest is are testing]]))
 
+(def SIVA {:gender "male",
+           :last_name "Jagadeesan",
+           :link "http://www.facebook.com/sivajag",
+           :timezone -7,
+           :name "Siva Jagadeesan",
+           :locale "en_US",
+           :username "sivajag",
+           :email "sivajag@gmail.com",
+           :updated_time "2012-02-17T17:36:14+0000",
+           :first_name "Siva",
+           :verified true,
+           :id "1014524783"})
+
 (zolotest test-new-user-persistence
-  (is (nil? (:db/id (find-by-facebook-id "amitrathore@gmail.com"))))
-  (insert-new-user "amit" "rathore" "amitrathore@gmail.com" "sekrit")
-  (is-not (nil? (:db/id (find-by-facebook-id "amitrathore@gmail.com")))))
+  (is (nil? (:db/id (find-by-fb-id (:id SIVA)))))
+  (insert-fb-user SIVA)
+  (is-not (nil? (:db/id (find-by-fb-id (:id SIVA))))))
 
