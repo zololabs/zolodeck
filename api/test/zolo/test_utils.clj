@@ -22,4 +22,17 @@
 (defn is-same-seq? [seq-a seq-b]
   (is (= (sort seq-a) (sort seq-b))))
 
+(defn has-datomic-id? [entity]
+  (not (nil? (:db/id entity))))
+
+(defn assert-datomic-id-present [entity]
+  (is (has-datomic-id? entity)))
+
+(defn assert-datomic-id-not-present [entity]
+  (is (not (has-datomic-id? entity))))
+
+(defn signed-request-for [fb-user-map]
+  {:user_id (:id fb-user-map)})
+
+
 

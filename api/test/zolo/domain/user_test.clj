@@ -1,6 +1,8 @@
 (ns zolo.domain.user-test
-  (:use zolo.domain.user zolo.test-utils)
-  (:use [clojure.test :only [run-tests deftest is are testing]]))
+  (:use [zolo.domain.user :as user] 
+        zolo.test-utils
+        [clojure.test :only [run-tests deftest is are testing]]
+        [org.rathore.amit.conjure.core :as conjure]))
 
 (def SIVA {:gender "male",
            :last_name "Jagadeesan",
@@ -26,6 +28,26 @@
     (is (= (:gender SIVA) (:user/gender user-from-db)))))
 
 
+(zolotest test-find-by-fb-signed-request
+  (testing "when the user is not present in datomic"
+    (testing "it should load from fb"
+      (conjure/mocking [load-from-fb]
+        (assert-datomic-id-not-present (find-by-fb-id (:id SIVA)))
+        (user/find-by-fb-signed-request (signed-request-for SIVA)))
+      (conjure/verify-call-times-for load-from-fb 1))
 
+    (testing "it should load from fb and save the user to datomic"
+      (conjure/stubbing [load-from-fb SIVA]
+        (assert-datomic-id-not-present (find-by-fb-id (:id SIVA)))
+        (user/find-by-fb-signed-request (signed-request-for SIVA))
+        (assert-datomic-id-present (find-by-fb-id (:id SIVA))))))
+          
+  (testing "when the user is present in datomic"
+    (testing "it should NOT load the user from facebook")
+    (testing "it should load the user from datomic")))
+
+(zolotest test-load-from-fb 
+          (testing "given a signed request, it loads the user from facebook")
+)
 
 

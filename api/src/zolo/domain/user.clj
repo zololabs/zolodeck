@@ -31,12 +31,12 @@
     (when (:db/id entity)
       entity)))
 
-(defn load-from-fb [{:keys [code]}]
+(defn ^:dynamic load-from-fb [{:keys [code]}]
   (-> (fb-gateway/code->token code)
-      fb-gateway/me
-      insert-fb-user))
+      fb-gateway/me))
 
 (defn find-by-fb-signed-request [fb-sr]
   (if-let [zolo-user (find-by-fb-id (:user_id fb-sr))]
     zolo-user
-    (load-from-fb fb-sr)))
+    (-> (load-from-fb fb-sr)
+        insert-fb-user)))
