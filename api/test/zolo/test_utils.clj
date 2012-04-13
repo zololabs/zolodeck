@@ -13,6 +13,11 @@
      (binding [DATOMIC-TEST true]
        (in-datomic-demarcation ~@body))))
 
+(defmacro zolo-testing [message & body]
+  `(testing ~message
+     (binding [DATOMIC-TEST true]
+       (in-datomic-demarcation ~@body))))
+
 (defn timestamp-for-test [time-in-millis]
   (str (.toString (Date. time-in-millis)) " " (.toString (Time. time-in-millis))))
 
