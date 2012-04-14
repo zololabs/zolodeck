@@ -8,7 +8,9 @@
 
 (defn wrap-datomic-demarcation [handler]
   (fn [request]
-    (in-datomic-demarcation (handler request))))
+    (if-not DATOMIC-TEST
+      (in-datomic-demarcation (handler request))
+      (handler request))))
 
 (defn run-query [query & extra-inputs]
   (apply q query @DATOMIC-DB extra-inputs))

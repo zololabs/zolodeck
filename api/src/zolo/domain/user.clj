@@ -24,13 +24,15 @@
     zolo-user))
 
 (defn find-by-fb-id [fb-id]
-  (let [entity (-> (datomic/run-query '[:find ?u :in $ ?fb :where [?u :user/fb-id ?fb]]
-                                      fb-id)
-                   ffirst
-                   datomic/load-entity)]
-    (when (:db/id entity)
-      entity)))
+  (when fb-id
+    (let [entity (-> (datomic/run-query '[:find ?u :in $ ?fb :where [?u :user/fb-id ?fb]]
+                                        fb-id)
+                     ffirst
+                     datomic/load-entity)]
+      (when (:db/id entity)
+        entity))))
 
+; TODO - remove this dynamic annotation once conjure is upgraded to handle clojure 1.4
 (defn ^:dynamic load-from-fb [{:keys [code]}]
   (-> (fb-gateway/code->token code)
       fb-gateway/me))

@@ -12,7 +12,7 @@
    :body (json/json-str data)})
 
 (defn error-response [error-object]
-  (json-response {:error (:message error-object)} ((:type error-object) http-status/codes)))
+  (json-response {:error (:message error-object)} ((:type error-object) http-status/STATUS-CODES)))
 
 (defn wrap-error-handling [handler]
   (fn [request]

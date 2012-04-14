@@ -1,8 +1,9 @@
 (ns zolo.infra.datomic-test
-  (:use zolo.domain.user zolo.test-utils)
-  (:use [clojure.test :only [run-tests deftest is are testing]])
-  (:use [zolo.infra.datomic :only [in-datomic-demarcation delete] :as datomic])
-  (:use [zolo.infra.datomic-helper :only [DATOMIC-TEST]]))
+  (:use zolo.domain.user 
+        zolo.test.core-utils
+        [clojure.test :only [run-tests deftest is are testing]]
+        [zolo.infra.datomic :only [in-datomic-demarcation delete] :as datomic]
+        [zolo.infra.datomic-helper :only [DATOMIC-TEST]]))
 
 (def SIVA {:gender "male",
            :last_name "Jagadeesan",

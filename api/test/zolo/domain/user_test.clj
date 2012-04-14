@@ -1,6 +1,6 @@
 (ns zolo.domain.user-test
   (:use [zolo.domain.user :as user] 
-        zolo.test-utils
+        zolo.test.core-utils
         [clojure.test :only [run-tests deftest is are testing]]
         [org.rathore.amit.conjure.core]))
 
@@ -23,9 +23,14 @@
   (is-not (nil? (:db/id (find-by-fb-id (:id SIVA))))))
 
 (zolotest test-load-user-from-datomic
-  (insert-fb-user SIVA)
-  (let [user-from-db (find-by-fb-id (:id SIVA))]
-    (is (= (:gender SIVA) (:user/gender user-from-db)))))
+
+  (testing "when passing with a valid fb-id"
+    (insert-fb-user SIVA)
+    (let [user-from-db (find-by-fb-id (:id SIVA))]
+      (is (= (:gender SIVA) (:user/gender user-from-db)))))
+
+  (testing "when passing nil"
+    (is (nil? (find-by-fb-id nil)))))
 
 (deftest test-find-by-fb-signed-request
   (testing "when the user is not present in datomic"

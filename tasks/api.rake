@@ -28,6 +28,7 @@ namespace :api do
     desc "Runs API integration tests"
     task :integration do
       info "Running API Integration Tests"
+      info "Example : (deftest ^:integration test-upsert-user)"
       sh "cd api; ZOLODECK_ENV=test lein test :integration"
     end
 
@@ -42,8 +43,7 @@ namespace :api do
     info <<-EOS
          To start API server
             -  In slime
-               1) Eval zolo.core
-               2) (serve-headless zolo.core/app 4000)
+               1) (serve-headless zolo.core/app 4000)
     EOS
     sh ("cd api; lein swank " + port)
   end
@@ -56,8 +56,7 @@ namespace :api do
          If you want to do incremental development. Start the server by 
             1) rake api:swank
             2) In slime
-               a) Eval zolo.core
-               b) (serve-headless zolo.core/app 4000)
+               a) (serve-headless zolo.core/app 4000)
     EOS
     sh ("cd api; lein run")
   end
