@@ -18,11 +18,12 @@
 (defn load-entity [eid]
   (db/entity @DATOMIC-DB eid))
 
-(defn upsert [a-map]
+(defn insert [a-map]
   (-> {:db/id #db/id[:db.part/user]}
       (merge a-map)
       vector
-      run-transaction))
+      run-transaction)
+  a-map)
 
 (defn delete [entity-id]
   (-> [:db.fn/retractEntity entity-id]

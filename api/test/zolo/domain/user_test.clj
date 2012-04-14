@@ -1,6 +1,7 @@
 (ns zolo.domain.user-test
   (:use [zolo.domain.user :as user] 
         zolo.test.core-utils
+        zolo.utils.debug
         [clojure.test :only [run-tests deftest is are testing]]
         [org.rathore.amit.conjure.core]))
 
@@ -54,4 +55,5 @@
       (mocking [load-from-fb]
         (let [user (user/find-by-fb-signed-request (signed-request-for SIVA))]
           (is (= (:gender SIVA) (:user/gender user)))))
-      (verify-call-times-for load-from-fb 0))))
+      (verify-call-times-for load-from-fb 0)))
+)

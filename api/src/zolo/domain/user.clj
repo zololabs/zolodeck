@@ -1,5 +1,5 @@
 (ns zolo.domain.user
-  (:use [zolo.infra.datomic :only [upsert run-query load-entity] :as datomic]
+  (:use [zolo.infra.datomic :only [insert run-query load-entity] :as datomic]
         zolo.utils.debug)
   (:require [zolo.utils.maps :as maps]
             [zolo.facebook.gateway :as fb-gateway]
@@ -19,9 +19,9 @@
   (maps/update-all-map-keys fb-user FB-USER-KEYS))
 
 (defn insert-fb-user [fb-user]
-  (let [zolo-user (fb-user->user fb-user)]
-    (datomic/upsert zolo-user)
-    zolo-user))
+  (-> fb-user
+      fb-user->user
+      datomic/insert))
 
 (defn find-by-fb-id [fb-id]
   (when fb-id
