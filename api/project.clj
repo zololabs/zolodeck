@@ -44,8 +44,7 @@
   
   :project-init (do (use 'ring.util.serve) 
                     (use 'clojure.pprint)
-                    (use 'clojure.test)
-                    (require 'zolo.core))
+                    (use 'clojure.test))
 
   :warn-on-reflection false
   

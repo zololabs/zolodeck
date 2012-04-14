@@ -1,6 +1,6 @@
 (ns zolo.auth
   (:use zolo.utils.debug)
-  (:require [zolo.incoming.facebook.gateway :as facebook]
+  (:require [zolo.facebook.gateway :as facebook]
             [zolo.domain.user :as user]
             [zolo.utils.string :as zolo-str]))
 

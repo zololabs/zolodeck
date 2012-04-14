@@ -1,7 +1,7 @@
 (ns zolo.api.user-api
   (:use zolo.domain.user
         zolo.utils.debug)
-  (:require [zolo.incoming.facebook.gateway :as gateway]
+  (:require [zolo.facebook.gateway :as gateway]
             [sandbar.auth :as sandbar]))
 
 (defn upsert-user [request-params]  

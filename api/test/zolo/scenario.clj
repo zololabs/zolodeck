@@ -8,7 +8,7 @@
          [zolo.infra.datomic :only [in-datomic-demarcation]]
          org.rathore.amit.conjure.core)
   (:require [zolo.domain.user :as user]
-            [zolo.incoming.facebook.gateway :as gateway]))
+            [zolo.facebook.gateway :as gateway]))
 
 (defn new-scenario []
   {:datomic true})

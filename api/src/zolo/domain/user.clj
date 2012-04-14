@@ -2,7 +2,7 @@
   (:use [zolo.infra.datomic :only [upsert run-query load-entity] :as datomic]
         zolo.utils.debug)
   (:require [zolo.utils.maps :as maps]
-            [zolo.incoming.facebook.gateway :as fb-gateway]
+            [zolo.facebook.gateway :as fb-gateway]
             [zolo.utils.string :as zolo-str]))
 
 (def FB-USER-KEYS 
