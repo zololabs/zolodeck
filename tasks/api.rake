@@ -28,6 +28,7 @@ namespace :api do
     desc "Runs API integration tests"
     task :integration do
       info "Running API Integration Tests"
+      info "Example : (deftest ^:integration test-upsert-user)"
       sh "cd api; ZOLODECK_ENV=test lein test :integration"
     end
 

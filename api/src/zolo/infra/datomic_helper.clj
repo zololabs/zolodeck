@@ -49,7 +49,7 @@
   (swap! DATOMIC-DB db/with tx-data))
 
 (defn commit-pending-transactions []
-  (if-not DATOMIC-TEST
+  (when-not DATOMIC-TEST
     @(db/transact CONN @TX-DATA)))
 
 (defn run-in-datomic-demarcation [thunk]

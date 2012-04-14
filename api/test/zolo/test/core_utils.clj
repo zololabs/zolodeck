@@ -1,4 +1,4 @@
-(ns zolo.test-utils
+(ns zolo.test.core-utils
   (:use [clojure.test :only [run-tests deftest is are testing]])
   (:use [zolo.infra.datomic :only [in-datomic-demarcation]])
   (:use [zolo.infra.datomic-helper :only [DATOMIC-TEST]])
@@ -8,10 +8,17 @@
 (defmacro is-not [body]
   `(is (not ~body)))
 
+(defmacro with-datomic-demarcation [in-test? body]
+  `(binding [DATOMIC-TEST ~in-test?]
+     (in-datomic-demarcation ~@body)))
+
 (defmacro zolotest [test-name & body]
   `(deftest ~test-name
-     (binding [DATOMIC-TEST true]
-       (in-datomic-demarcation ~@body))))
+     (with-datomic-demarcation true ~body)))
+
+(defmacro zolo-testing [message & body]
+  `(testing ~message
+     (with-datomic-demarcation true ~body)))
 
 (defn timestamp-for-test [time-in-millis]
   (str (.toString (Date. time-in-millis)) " " (.toString (Time. time-in-millis))))
@@ -22,4 +29,15 @@
 (defn is-same-seq? [seq-a seq-b]
   (is (= (sort seq-a) (sort seq-b))))
 
+(defn has-datomic-id? [entity]
+  (not (nil? (:db/id entity))))
+
+(defn assert-datomic-id-present [entity]
+  (is (has-datomic-id? entity)))
+
+(defn assert-datomic-id-not-present [entity]
+  (is (not (has-datomic-id? entity))))
+
+(defn signed-request-for [fb-user-map]
+  {:user_id (:id fb-user-map)})
 

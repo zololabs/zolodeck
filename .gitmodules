@@ -1,3 +1,6 @@
 [submodule "api/checkouts/clj-facebook-graph"]
 	path = api/checkouts/clj-facebook-graph
 	url = git@github.com:sivajag/clj-facebook-graph.git
+[submodule "api/checkouts/conjure"]
+	path = api/checkouts/conjure
+	url = git@github.com:amitrathore/conjure.git

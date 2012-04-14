@@ -1,4 +1,4 @@
-(ns zolo.incoming.facebook.gateway
+(ns zolo.facebook.gateway
   (:use zolo.utils.debug)
   (:require [clj-facebook-graph.auth :as fb-auth]
             [clj-facebook-graph.client :as fb-client]))
@@ -14,7 +14,9 @@
    :access-query-param :access_token
    :grant-type "authorization_code"})
 
-(defn decode-signed-request [encoded-signed-request] 
+
+; TODO - remove this dynamic annotation once conjure is upgraded to handle clojure 1.4
+(defn ^:dynamic decode-signed-request [encoded-signed-request] 
   (fb-auth/decode-signed-request encoded-signed-request APP-SECRET))
 
 (defn code->token [code]

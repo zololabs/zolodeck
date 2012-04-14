@@ -1,6 +1,6 @@
-(ns zolo.incoming.facebook.inbox
+(ns zolo.facebook.inbox
   (:use [clojure.core.match :only [match]]
-        zolo.incoming.facebook.gateway))
+        zolo.facebook.gateway))
 
 
 (defn fetch-inbox-threads

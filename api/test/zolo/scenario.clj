@@ -1,49 +1,52 @@
 (ns zolo.scenario
   (:use  [clojure.test :only [is are]]
+         zolo.utils.debug
          zolo.test.web-utils
+         zolo.test.core-utils
          zolo.scenarios.user
-         clj-facebook-graph.auth))
+         [zolo.infra.datomic-helper :only [DATOMIC-TEST]]
+         [zolo.infra.datomic :only [in-datomic-demarcation]]
+         org.rathore.amit.conjure.core)
+  (:require [zolo.domain.user :as user]
+            [zolo.facebook.gateway :as gateway]))
 
-(defn scenario []
-  {})
+(defn new-scenario []
+  {:datomic true})
 
-(defmacro with-stubs [scenario & {:as bindings}]
-  `(update-in ~scenario [:stubs]
-     (fn [mocks#]
-       (merge
-	 mocks#
-	 (zipmap
-	   (list ~@(map #(if-let [v (resolve %)] v (throw (Exception. (str "Can't resolve " %)))) (keys bindings)))
-	   (list ~@(map (fn [v] `(constantly ~v)) (vals bindings))))))))
-
+(defn mocked-decode-signed-request [scenario encoded-signed-request]
+  (when (:fb-user scenario) 
+    {:code "123" :user_id (get-in scenario [:fb-user :id])}))
 
 (defmacro with-scenario [scenario & body]
-  `(let [scenario# ~scenario]
-     (do
-       (with-bindings (or (:stubs scenario#) {})
-         (let [response# (do ~@body)]
-           (-> scenario#
-               (assoc :response response#)))))))
+  `(binding [gateway/decode-signed-request (partial mocked-decode-signed-request ~scenario)]
+     (stubbing [user/load-from-fb (:fb-user ~scenario)]
+       ~@body)))
 
-(defn request-successful? [scenario]
-  (is (= 200 (-> scenario :response :status)))
+(defn assert-user-in-datomic [scenario assertion-function]
+  (with-scenario scenario 
+    (-> scenario
+        :fb-user
+        :id
+        user/find-by-fb-id
+        assertion-function))
   scenario)
+
+(defn assert-user-not-present-in-datomic [scenario]
+  (assert-user-in-datomic scenario assert-datomic-id-not-present))
+
+(defn assert-user-present-in-datomic [scenario]
+  (assert-user-in-datomic scenario assert-datomic-id-present))
 
 (defn login-as-valid-facebook-user 
   ([scenario]
-     (login-as-valid-facebook-user scenario default-user))
+     (login-as-valid-facebook-user scenario default-fb-user))
   ([scenario user]
-      (merge scenario
-             {:current-user user})))
+     (assoc scenario :fb-user user)))
 
 (defn post-new-user 
   ([scenario]
      (post-new-user scenario (:current-user scenario)))
   ([scenario user]
-     (-> scenario
-         (with-stubs decode-signed-request true)
-         (with-scenario 
-           (web-request :post (new-user-url) user)))))
-
-
-
+     (with-scenario scenario
+       (-> scenario
+           (assoc :web-response (web-request :post (new-user-url) user))))))

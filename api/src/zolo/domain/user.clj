@@ -2,7 +2,7 @@
   (:use [zolo.infra.datomic :only [upsert run-query load-entity] :as datomic]
         zolo.utils.debug)
   (:require [zolo.utils.maps :as maps]
-            [zolo.incoming.facebook.gateway :as fb-gateway]
+            [zolo.facebook.gateway :as fb-gateway]
             [zolo.utils.string :as zolo-str]))
 
 (def FB-USER-KEYS 
@@ -24,19 +24,21 @@
     zolo-user))
 
 (defn find-by-fb-id [fb-id]
-  (let [entity (-> (datomic/run-query '[:find ?u :in $ ?fb :where [?u :user/fb-id ?fb]]
-                                      fb-id)
-                   ffirst
-                   datomic/load-entity)]
-    (when (:db/id entity)
-      entity)))
+  (when fb-id
+    (let [entity (-> (datomic/run-query '[:find ?u :in $ ?fb :where [?u :user/fb-id ?fb]]
+                                        fb-id)
+                     ffirst
+                     datomic/load-entity)]
+      (when (:db/id entity)
+        entity))))
 
-(defn load-from-fb [{:keys [code]}]
+; TODO - remove this dynamic annotation once conjure is upgraded to handle clojure 1.4
+(defn ^:dynamic load-from-fb [{:keys [code]}]
   (-> (fb-gateway/code->token code)
-      fb-gateway/me
-      insert-fb-user))
+      fb-gateway/me))
 
 (defn find-by-fb-signed-request [fb-sr]
   (if-let [zolo-user (find-by-fb-id (:user_id fb-sr))]
     zolo-user
-    (load-from-fb fb-sr)))
+    (-> (load-from-fb fb-sr)
+        insert-fb-user)))
