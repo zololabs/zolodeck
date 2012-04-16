@@ -1,4 +1,4 @@
-(ns zolo.incoming.gmail
+(ns zolo.incoming.gateway
    (:use clojure.contrib.java-utils
          zolo.utils.calendar)
    (:import (javax.mail Session Folder Flags)
