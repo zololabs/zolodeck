@@ -1,4 +1,4 @@
-(ns zolo.auth
+(ns zolo.web.auth
   (:use zolo.utils.debug)
   (:require [zolo.facebook.gateway :as facebook]
             [zolo.domain.user :as user]

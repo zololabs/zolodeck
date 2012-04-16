@@ -13,7 +13,7 @@
   (:require [compojure.route :as route]
             [compojure.handler :as handler]
             [zolodeck.demonic.core :as demonic]
-            [zolo.auth :as auth]
+            [zolo.web.auth :as auth]
             [zolo.api.user-api :as user-api]))
 
 (def security-policy
