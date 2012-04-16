@@ -4,7 +4,7 @@
         zolo.test.core-utils
         zolo.utils.debug
         [clojure.test :only [run-tests deftest is are testing]]
-        [org.rathore.amit.conjure.core]))
+        conjure.core))
 
 (def SIVA {:gender "male",
            :last_name "Jagadeesan",

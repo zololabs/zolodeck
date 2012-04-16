@@ -33,8 +33,7 @@
       (when (:db/id entity)
         entity))))
 
-; TODO - remove this dynamic annotation once conjure is upgraded to handle clojure 1.4
-(defn ^:dynamic load-from-fb [{:keys [code]}]
+(defn load-from-fb [{:keys [code]}]
   (-> (fb-gateway/code->token code)
       fb-gateway/me))
 

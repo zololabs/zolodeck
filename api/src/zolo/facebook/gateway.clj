@@ -14,9 +14,7 @@
    :access-query-param :access_token
    :grant-type "authorization_code"})
 
-
-; TODO - remove this dynamic annotation once conjure is upgraded to handle clojure 1.4
-(defn ^:dynamic decode-signed-request [encoded-signed-request] 
+(defn decode-signed-request [encoded-signed-request] 
   (fb-auth/decode-signed-request encoded-signed-request APP-SECRET))
 
 (defn code->token [code]

@@ -4,19 +4,20 @@
          zolo.test.web-utils
          zolo.test.core-utils
          zolo.scenarios.user
-         org.rathore.amit.conjure.core)
+         conjure.core)
   (:require [zolo.domain.user :as user]
             [zolo.facebook.gateway :as gateway]))
 
 (defn new-scenario []
   {:datomic true})
 
-(defn mocked-decode-signed-request [scenario encoded-signed-request]
-  (when (:fb-user scenario) 
-    {:code "123" :user_id (get-in scenario [:fb-user :id])}))
+(defn decode-signed-request-for-scenarios [scenario]
+  (fn [encoded-signed-request]
+    (when (:fb-user scenario) 
+      {:code "123" :user_id (get-in scenario [:fb-user :id])})))
 
 (defmacro with-scenario [scenario & body]
-  `(binding [gateway/decode-signed-request (partial mocked-decode-signed-request ~scenario)]
+  `(with-redefs [gateway/decode-signed-request decode-signed-request-for-scenarios]
      (stubbing [user/load-from-fb (:fb-user ~scenario)]
        ~@body)))
 
