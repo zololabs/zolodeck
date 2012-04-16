@@ -1,5 +1,6 @@
 (ns zolo.domain.user
-  (:use [zolo.infra.datomic :only [insert run-query load-entity] :as datomic]
+  (:use zolo.setup.datomic-setup
+        [zolodeck.demonic.core :only [insert run-query load-entity] :as demonic]
         zolo.utils.debug)
   (:require [zolo.utils.maps :as maps]
             [zolo.facebook.gateway :as fb-gateway]
@@ -21,14 +22,14 @@
 (defn insert-fb-user [fb-user]
   (-> fb-user
       fb-user->user
-      datomic/insert))
+      demonic/insert))
 
 (defn find-by-fb-id [fb-id]
   (when fb-id
-    (let [entity (-> (datomic/run-query '[:find ?u :in $ ?fb :where [?u :user/fb-id ?fb]]
+    (let [entity (-> (demonic/run-query '[:find ?u :in $ ?fb :where [?u :user/fb-id ?fb]]
                                         fb-id)
                      ffirst
-                     datomic/load-entity)]
+                     demonic/load-entity)]
       (when (:db/id entity)
         entity))))
 

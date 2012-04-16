@@ -1,5 +1,6 @@
 (ns zolo.domain.user-test
-  (:use [zolo.domain.user :as user] 
+  (:use [zolo.domain.user :as user]
+        zolodeck.demonic.test
         zolo.test.core-utils
         zolo.utils.debug
         [clojure.test :only [run-tests deftest is are testing]]
@@ -18,12 +19,12 @@
            :verified true,
            :id "1014524783"})
 
-(zolotest test-new-user-persistence
+(demonictest test-new-user-persistence
   (is (nil? (:db/id (find-by-fb-id (:id SIVA)))))
   (insert-fb-user SIVA)
   (is-not (nil? (:db/id (find-by-fb-id (:id SIVA))))))
 
-(zolotest test-load-user-from-datomic
+(demonictest test-load-user-from-datomic
 
   (testing "when passing with a valid fb-id"
     (insert-fb-user SIVA)
@@ -35,20 +36,20 @@
 
 (deftest test-find-by-fb-signed-request
   (testing "when the user is not present in datomic"
-    (zolo-testing "it should load from fb"
+    (demonic-testing "it should load from fb"
       (mocking [load-from-fb]
         (assert-datomic-id-not-present (find-by-fb-id (:id SIVA)))
         (user/find-by-fb-signed-request (signed-request-for SIVA)))
       (verify-call-times-for load-from-fb 1))
     
-    (zolo-testing "it should save the user to datomic"
+    (demonic-testing "it should save the user to datomic"
       (stubbing [load-from-fb SIVA]
         (assert-datomic-id-not-present (find-by-fb-id (:id SIVA)))
         (let [user (user/find-by-fb-signed-request (signed-request-for SIVA))]
           (is (= (:gender SIVA) (:user/gender user))))
         (assert-datomic-id-present (find-by-fb-id (:id SIVA))))))
   
-  (zolo-testing "when the user is present in datomic"
+  (demonic-testing "when the user is present in datomic"
     (insert-fb-user SIVA)                
     (testing "it should load user from datomic and NOT facebook"
       (assert-datomic-id-present (find-by-fb-id (:id SIVA)))

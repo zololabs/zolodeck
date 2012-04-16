@@ -4,3 +4,6 @@
 [submodule "api/checkouts/conjure"]
 	path = api/checkouts/conjure
 	url = git@github.com:amitrathore/conjure.git
+[submodule "api/checkouts/demonic"]
+	path = api/checkouts/demonic
+	url = git@github.com:amitrathore/demonic.git

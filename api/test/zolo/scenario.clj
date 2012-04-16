@@ -4,8 +4,6 @@
          zolo.test.web-utils
          zolo.test.core-utils
          zolo.scenarios.user
-         [zolo.infra.datomic-helper :only [DATOMIC-TEST]]
-         [zolo.infra.datomic :only [in-datomic-demarcation]]
          org.rathore.amit.conjure.core)
   (:require [zolo.domain.user :as user]
             [zolo.facebook.gateway :as gateway]))
