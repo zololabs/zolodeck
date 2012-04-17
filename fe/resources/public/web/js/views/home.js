@@ -12,7 +12,7 @@
             this.friendsListView = new FriendsListView({model:this.user.friends()});
             
             $(this.el).html(this.template());
-            $(this.el).find("#friends-list").append(this.friendsListView.render().el);
+            //$(this.el).find("#friends-list").append(this.friendsListView.render().el);
            
             return this;
         }  
