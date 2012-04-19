@@ -17,6 +17,6 @@
   (if-let [auth-token ((:headers req) "authorization")]
     (let [[auth-type auth-cred] (zolo-str/split " " auth-token)]
       (if-let [user (authenticate auth-type auth-cred (:params req))]
-        (merge {:username (:user/fb-email user)
+        (merge {:username (:email (print-vals user))
                 :roles #{:user}}
                user)))))

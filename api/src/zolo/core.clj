@@ -36,9 +36,9 @@
 
 (defn wrap-request-logging [handler]
   (fn [request]
-    (print-vals "REQUEST : " request)
+    ;(print-vals "REQUEST : " request)
     (let [response (handler request)]
-      (print-vals "RESPONSE : " response)
+      ;(print-vals "RESPONSE : " response)
       response)))
 
 (defn wrap-options [handler]
