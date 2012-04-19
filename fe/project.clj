@@ -1,9 +1,11 @@
 (defproject com.currylogic/zolodeck-fe "0.1.0-SNAPSHOT"
   :description "Zolodeck FrontEnd"
 
-  :dependencies [[org.clojure/clojure "1.4.0-beta3"]
-                 [compojure "1.0.1"]
-                 [ring "1.0.1"]
+  :dependencies [[org.clojure/clojure "1.4.0"]
+
+                 [compojure "1.0.2" :exclude [org.clojure/clojure]]
+                 [ring "1.0.2" :exclude [org.clojure/clojure]]
+
                  [slingshot "0.10.2"]]
 
   :plugins [[lein-swank "1.4.4"]
@@ -11,7 +13,8 @@
             [lein-ring "0.6.2"]]
   
   :dev-dependencies [[clj-stacktrace "0.2.4"]
-                     [swank-clojure "1.3.3"]]
+                     [swank-clojure "1.3.3"]
+                     [ring-serve "0.1.2"]]
   
   :min-lein-version "1.7.0"
   :test-selectors {:default (fn [t] (not (:integration t)))
