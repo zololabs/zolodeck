@@ -1,15 +1,13 @@
 (defproject com.currylogic/zolodeck-api "0.1.0-SNAPSHOT"
   :description "Zolodeck API"
 
-  :dependencies [[org.clojure/clojure "1.4.0-beta3"]
+  :dependencies [[org.clojure/clojure "1.4.0"]
 
                  [compojure "1.0.2" :exclude [org.clojure/clojure]]
                  [ring "1.0.2" :exclude [org.clojure/clojure]]
 
                  [sandbar/sandbar "0.4.0-SNAPSHOT" :exclude [org.clojure/clojure]]
 
-                 ;; clj-facebook-graph Related Deps
-                 ;;[zololabs/zolo-clj-facebook-graph "0.4.0"]
                  [org.clojure/data.json "0.1.2"  :exclude [org.clojure/clojure]]
                  [clj-http "0.3.6"]
                  [clj-oauth2 "0.2.0"]
@@ -23,7 +21,7 @@
 
                  [org.clojure/core.match "0.2.0-alpha9"]
 
-                 [com.datomic/datomic "0.1.2753"]]
+                 [com.datomic/datomic "0.1.3007"]]
 
   :plugins [[lein-swank "1.4.4"]
             [lein-pprint "1.1.1"]
