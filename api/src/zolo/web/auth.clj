@@ -4,7 +4,8 @@
             [zolo.domain.user :as user]
             [zolo.utils.string :as zolo-str]))
 
-(defmulti authenticate (fn [auth-type auth-cred params] (clojure.string/lower-case (clojure.string/trim auth-type))))
+(defmulti authenticate (fn [auth-type auth-cred params] 
+                         (clojure.string/lower-case (clojure.string/trim auth-type))))
 
 (defmethod authenticate "fb" [_ auth-cred params]
   (if-let [signed-request (facebook/decode-signed-request auth-cred)]
@@ -17,6 +18,6 @@
   (if-let [auth-token ((:headers req) "authorization")]
     (let [[auth-type auth-cred] (zolo-str/split " " auth-token)]
       (if-let [user (authenticate auth-type auth-cred (:params req))]
-        (merge {:username (:email (print-vals user))
+        (merge {:username (:email user)
                 :roles #{:user}}
                user)))))
