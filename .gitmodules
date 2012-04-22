@@ -7,3 +7,6 @@
 [submodule "api/checkouts/demonic"]
 	path = api/checkouts/demonic
 	url = git@github.com:amitrathore/demonic.git
+[submodule "api/checkouts/clj-social-lab"]
+	path = api/checkouts/clj-social-lab
+	url = git@github.com:sivajag/clj-social-lab.git
