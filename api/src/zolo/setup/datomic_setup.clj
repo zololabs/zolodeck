@@ -5,7 +5,12 @@
         [zolo.setup.datomic-schema :only [SCHEMA-TX] :as datomic-setup]
         zolo.utils.clojure))
 
-(declare assert-numbered-migrations)
+(defn assert-numbered-migrations [numbers schema]
+  (doseq [n numbers]
+    (if (nil? (schema n))
+      (throw+ {:severity :fatal :type :datomic}
+              (str "Missing datomic schema number: " n))))
+  schema)
 
 (defn validate-schema [schema]
   (-> schema 
@@ -13,13 +18,6 @@
       count
       range
       (assert-numbered-migrations schema)))
-
-(defn assert-numbered-migrations [numbers schema]
-  (doseq [n numbers]
-    (if (nil? (schema n))
-      (throw+ {:severity :fatal :type :datomic}
-              (str "Missing datomic schema number: " n))))
-  schema)
 
 (defn validated-schema-tx [schema-tx-map]
   (->> schema-tx-map
