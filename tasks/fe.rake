@@ -8,6 +8,7 @@ namespace :fe do
     info "Getting Deps and Building projects in Checkout folder"
     sh "cd fe ; lein deps"
     info "Setting Ruby Gems needed to ran Jasmine Spec"
+    sh "sudo gem update --system"
     sh "sudo gem install --version '= 0.9.2.2' rake"
     sh "sudo gem install --version '= 2.9.0' rspec"
     sh "sudo gem install --version '= 0.2.5' selenium"
