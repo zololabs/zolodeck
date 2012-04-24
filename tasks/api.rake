@@ -24,6 +24,8 @@ namespace :api do
       info "Running API Unit Tests"
       sh "cd api; ZOLODECK_ENV=test lein test"
       sh "cd api/checkouts/demonic; lein test"
+      sh "cd api/checkouts/clj-social-lab; lein test"
+      sh "cd api/checkouts/zolo-utils; lein test"
     end
 
     desc "Runs API integration tests"
@@ -32,6 +34,8 @@ namespace :api do
       info "Example : (deftest ^:integration test-upsert-user)"
       sh "cd api; ZOLODECK_ENV=test lein test :integration"
       sh "cd api/checkouts/demonic; lein test :integration"
+      sh "cd api/checkouts/clj-social-lab; lein test :integration"
+      sh "cd api/checkouts/zolo-utils; lein test :integration"
     end
 
     desc "Runs API all tests"
