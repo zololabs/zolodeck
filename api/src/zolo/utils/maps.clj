@@ -28,3 +28,13 @@
 
 (defn update-all-map-keys [m key-updater]
   (update-map-keys m (constantly true) key-updater))
+
+
+(defn keywordize-string [s]
+  (-> s
+      name      
+      (clojure.string/replace "_" "-")
+      keyword))
+
+(defn keywordize-map [m]
+  (update-all-map-keys m keywordize-string))
