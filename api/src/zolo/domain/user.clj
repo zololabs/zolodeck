@@ -9,13 +9,13 @@
 (defn insert-fb-user [fb-user]
   (-> fb-user
       fb-user->user
-      (demonic/insert-and-transform-with convert-to-regular-map)))
+      demonic/insert))
 
 (defn find-by-fb-id [fb-id]
   (if fb-id
     (-> (demonic/run-query '[:find ?u :in $ ?fb :where [?u :user/fb-id ?fb]] fb-id)
         ffirst
-        (demonic/load-and-transform-with convert-to-regular-map))))
+        demonic/load-entity)))
 
 (defn load-from-fb [{:keys [code]}]
   (-> code

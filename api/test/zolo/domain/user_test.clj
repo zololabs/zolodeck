@@ -28,7 +28,7 @@
   (testing "when passing with a valid fb-id"
     (insert-fb-user SIVA)
     (let [user-from-db (find-by-fb-id (:id SIVA))]
-      (is (= (:gender SIVA) (:gender user-from-db)))))
+      (is (= (:gender SIVA) (:user/gender user-from-db)))))
 
   (testing "when passing nil"
     (is (nil? (find-by-fb-id nil)))))
@@ -45,7 +45,7 @@
       (stubbing [load-from-fb SIVA]
         (assert-datomic-id-not-present (find-by-fb-id (:id SIVA)))
         (let [user (user/find-by-fb-signed-request (signed-request-for SIVA))]
-          (is (= (:gender SIVA) (:gender user))))
+          (is (= (:gender SIVA) (:user/gender user))))
         (assert-datomic-id-present (find-by-fb-id (:id SIVA))))))
   
   (demonic-testing "when the user is present in datomic"
@@ -54,19 +54,6 @@
       (assert-datomic-id-present (find-by-fb-id (:id SIVA)))
       (mocking [load-from-fb]
         (let [user (user/find-by-fb-signed-request (signed-request-for SIVA))]
-          (is (= (:gender SIVA) (:gender user)))))
-      (verify-call-times-for load-from-fb 0)))
-
-  (deftest test-transform-to-regular-map
-    (demonic-testing "reading from datomic, should return a transformed map"
-      (insert-fb-user SIVA)
-      (let [from-datomic (user/find-by-fb-id (:id SIVA))]
-        (is (= (:first_name SIVA) (:first-name from-datomic)))
-        (is (= (:last_name SIVA)  (:last-name from-datomic)))
-        (is (= (:gender SIVA)     (:gender from-datomic)))
-        (is (= (:link SIVA)       (:link from-datomic)))
-        (is (= (:username SIVA)   (:username from-datomic)))
-        (is (= (:email SIVA)      (:email from-datomic)))
-        (is (= (:id SIVA)         (:id from-datomic)))
-        (is (= (:auth-token SIVA) (:auth-token from-datomic)))))))
+          (is (= (:gender SIVA) (:user/gender user)))))
+      (verify-call-times-for load-from-fb 0))))
 
