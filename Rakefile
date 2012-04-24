@@ -5,19 +5,22 @@ task :default => [:'zolo:test:all']
 namespace :zolo do
   
   desc "Bootstrap"
-  task :boot => [:'api:boot', :'api:test:all', :'fe:boot', :'fe:test:all']
+  task :boot => [:'api:boot', :'api:test:all',:'lib.test:all', :'fe:boot', :'fe:test:all']
 
   namespace :test do
     
     desc "Run Unit tests"
-    task :unit => [:'api:test:unit', :'fe:test:unit']
+    task :unit => [:'api:test:unit',:'lib:test:unit',  :'fe:test:unit']
 
     desc "Run Integration tests"
-    task :integration => [:'api:test:integration', :'fe:test:integration']
+    task :integration => [:'api:test:integration', :'lib:test:integration',:'fe:test:integration']
 
     desc "Run All tests"
-    task :all => [:'api:test:all', :'fe:test:all']
+    task :all => [:'api:test:all',:'lib:test:all', :'fe:test:all']
 
   end
+
+  desc "Todos from All project"
+  task :todos  => [:'api:todos']
 
 end
