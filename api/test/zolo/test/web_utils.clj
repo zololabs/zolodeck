@@ -24,3 +24,6 @@
 
 (defn new-user-url []
   "/users")
+
+(defn friends-list-url []
+  "/friends")

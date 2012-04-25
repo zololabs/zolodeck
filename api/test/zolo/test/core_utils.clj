@@ -3,6 +3,8 @@
   (:use zolo.utils.debug)
   (:import (java.sql Time Date Timestamp)))
 
+(def ^:dynamic INTEGRATION-TEST?)
+
 (defmacro is-not [body]
   `(is (not ~body)))
 
@@ -26,4 +28,9 @@
 
 (defn signed-request-for [fb-user-map]
   {:user_id (:id fb-user-map)})
+
+(defmacro integration-test [name & body]
+  `(deftest ^:integration ~name
+     (binding [INTEGRATION-TEST? true]
+       ~@body)))
 

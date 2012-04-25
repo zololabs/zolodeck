@@ -6,20 +6,24 @@
          zolo.scenarios.user
          conjure.core)
   (:require [zolo.domain.user :as user]
-            [zolo.facebook.gateway :as gateway]))
+            [zolo.facebook.gateway :as gateway]
+            [clojure.data.json :as json]))
 
 (defn new-scenario []
   {:datomic true})
 
 (defn decode-signed-request-for-scenarios [scenario]
   (fn [encoded-signed-request]
-    (when (:fb-user scenario) 
-      {:code "123" :user_id (get-in scenario [:fb-user :id])})))
+    (print-vals "Decoded SR" (when (:fb-user scenario) 
+                               {:code "123" :user_id (get-in scenario [:fb-user :id])}))))
 
 (defmacro with-scenario [scenario & body]
   `(with-redefs [gateway/decode-signed-request decode-signed-request-for-scenarios]
-     (stubbing [user/load-from-fb (:fb-user ~scenario)]
-       ~@body)))
+     (if INTEGRATION-TEST?
+       (stubbing [gateway/code->token (get-in ~scenario [:fb-user :access-token])]
+                 ~@body)
+       (stubbing [user/load-from-fb (:fb-user ~scenario)]
+                 ~@body))))
 
 (defn assert-user-in-datomic [scenario assertion-function]
   (with-scenario scenario 
@@ -42,10 +46,22 @@
   ([scenario user]
      (assoc scenario :fb-user user)))
 
+(defn run-web-request [scenario method url params-map]
+  (let [response (web-request method url params-map)]
+    (assoc scenario :web-response (assoc response :body (json/read-json (:body response))))))
+
 (defn post-new-user 
   ([scenario]
      (post-new-user scenario (:current-user scenario)))
   ([scenario user]
      (with-scenario scenario
        (-> scenario
-           (assoc :web-response (web-request :post (new-user-url) user))))))
+           (run-web-request :post (new-user-url) user)))))
+
+(defn get-friends-list
+  ([scenario]
+     (get-friends-list scenario (:current-user scenario)))
+  ([scenario user]
+     (with-scenario scenario
+       (-> scenario
+           (run-web-request :get (friends-list-url) user)))))
