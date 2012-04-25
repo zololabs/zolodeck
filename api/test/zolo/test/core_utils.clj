@@ -28,9 +28,3 @@
 
 (defn signed-request-for [fb-user-map]
   {:user_id (:id fb-user-map)})
-
-(defmacro integration-test [name & body]
-  `(deftest ^:integration ~name
-     (binding [INTEGRATION-TEST? true]
-       ~@body)))
-

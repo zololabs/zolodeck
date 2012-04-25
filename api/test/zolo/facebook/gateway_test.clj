@@ -10,7 +10,7 @@
             [zolo.facebook.gateway :as gateway]
             [zolo.api.user-api :as user-api]))
 
-(integration-test test-friends-list
+(deftest ^:integration test-friends-list
   (in-facebook-lab 
    gateway/APP-ID gateway/APP-SECRET
    (let [jack (test-user/create "jack")

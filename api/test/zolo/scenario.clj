@@ -14,16 +14,13 @@
 
 (defn decode-signed-request-for-scenarios [scenario]
   (fn [encoded-signed-request]
-    (print-vals "Decoded SR" (when (:fb-user scenario) 
-                               {:code "123" :user_id (get-in scenario [:fb-user :id])}))))
+    (when (:fb-user scenario) 
+      {:code "123" :user_id (get-in scenario [:fb-user :id])})))
 
 (defmacro with-scenario [scenario & body]
   `(with-redefs [gateway/decode-signed-request decode-signed-request-for-scenarios]
-     (if INTEGRATION-TEST?
-       (stubbing [gateway/code->token (get-in ~scenario [:fb-user :access-token])]
-                 ~@body)
-       (stubbing [user/load-from-fb (:fb-user ~scenario)]
-                 ~@body))))
+     (stubbing [user/load-from-fb (:fb-user ~scenario)]
+       ~@body)))
 
 (defn assert-user-in-datomic [scenario assertion-function]
   (with-scenario scenario 
@@ -46,9 +43,15 @@
   ([scenario user]
      (assoc scenario :fb-user user)))
 
+(defn jsonify-body-if-needed [response]
+  (if (not (empty? (:body response)))
+    (assoc response :body (json/read-json (:body response)))
+    response))
+
 (defn run-web-request [scenario method url params-map]
-  (let [response (web-request method url params-map)]
-    (assoc scenario :web-response (assoc response :body (json/read-json (:body response))))))
+  (->> (web-request method url params-map)
+       jsonify-body-if-needed
+       (assoc scenario :web-response)))
 
 (defn post-new-user 
   ([scenario]
