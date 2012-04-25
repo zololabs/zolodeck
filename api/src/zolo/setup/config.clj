@@ -1,6 +1,6 @@
 (ns zolo.setup.config
-  (:use zolo.utils.clojure
-        zolo.utils.debug)
+  (:use zolodeck.utils.clojure
+        zolodeck.utils.debug)
   (:require [clojure.java.io :as java-io]))
 
 (declare CONFIG-MAP ENV)

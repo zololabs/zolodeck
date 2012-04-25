@@ -1,5 +1,5 @@
 (ns zolo.utils.domain
-  (:require [zolo.utils.maps :as maps]))
+  (:require [zolodeck.utils.maps :as maps]))
 
 (def FB-USER-KEYS 
      {:first_name :user/first-name

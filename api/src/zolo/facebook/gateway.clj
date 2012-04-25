@@ -1,5 +1,5 @@
 (ns zolo.facebook.gateway
-  (:use zolo.utils.debug)
+  (:use zolodeck.utils.debug)
   (:require [clj-facebook-graph.auth :as fb-auth]
             [clj-facebook-graph.client :as fb-client]))
 

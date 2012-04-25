@@ -1,6 +1,6 @@
 (ns zolo.incoming.gateway
    (:use clojure.contrib.java-utils
-         zolo.utils.calendar)
+         zolodeck.utils.calendar)
    (:import (javax.mail Session Folder Flags)
             (javax.mail.search FlagTerm ComparisonTerm ReceivedDateTerm)
             (javax.mail Flags$Flag)))

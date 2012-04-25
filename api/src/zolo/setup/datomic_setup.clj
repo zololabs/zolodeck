@@ -3,7 +3,7 @@
         [zolodeck.demonic.core :as demonic]
         [slingshot.slingshot :only [throw+]]
         [zolo.setup.datomic-schema :only [SCHEMA-TX] :as datomic-setup]
-        zolo.utils.clojure))
+        zolodeck.utils.clojure))
 
 (defn assert-numbered-migrations [numbers schema]
   (doseq [n numbers]

@@ -2,7 +2,7 @@
   (:use [zolo.domain.user :as user]
         zolodeck.demonic.test
         zolo.test.core-utils
-        zolo.utils.debug
+        zolodeck.utils.debug
         [clojure.test :only [run-tests deftest is are testing]]
         conjure.core))
 

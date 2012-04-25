@@ -1,6 +1,6 @@
 (ns zolo.web
   (:use [slingshot.slingshot :only [throw+ try+]]
-        zolo.utils.debug
+        zolodeck.utils.debug
         clojure.stacktrace)
   (:require [clojure.data.json :as json]
             [zolo.web.status-codes :as http-status]))

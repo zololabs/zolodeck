@@ -1,8 +1,8 @@
 (ns zolo.web.auth
-  (:use zolo.utils.debug)
+  (:use zolodeck.utils.debug)
   (:require [zolo.facebook.gateway :as facebook]
             [zolo.domain.user :as user]
-            [zolo.utils.string :as zolo-str]))
+            [zolodeck.utils.string :as zolo-str]))
 
 (defmulti authenticate (fn [auth-type auth-cred params] 
                          (clojure.string/lower-case (clojure.string/trim auth-type))))

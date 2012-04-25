@@ -1,6 +1,6 @@
 (ns zolo.test.core-utils
   (:use [clojure.test :only [run-tests deftest is are testing]])
-  (:use zolo.utils.debug)
+  (:use zolodeck.utils.debug)
   (:import (java.sql Time Date Timestamp)))
 
 (def ^:dynamic INTEGRATION-TEST?)

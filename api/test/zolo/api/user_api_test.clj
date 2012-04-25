@@ -4,7 +4,7 @@
         zolo.scenario
         zolo.test.core-utils
         zolo.test.web-utils
-        zolo.utils.debug
+        zolodeck.utils.debug
         zolo.web.status-codes))
 
 (deftest test-upsert-user

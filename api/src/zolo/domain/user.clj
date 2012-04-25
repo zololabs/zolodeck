@@ -2,9 +2,9 @@
   (:use zolo.setup.datomic-setup
         [zolodeck.demonic.core :only [insert run-query load-entity] :as demonic]
         zolo.utils.domain
-        zolo.utils.debug)
+        zolodeck.utils.debug)
   (:require [zolo.facebook.gateway :as fb-gateway]
-            [zolo.utils.string :as zolo-str]))
+            [zolodeck.utils.string :as zolo-str]))
 
 (defn insert-fb-user [fb-user]
   (-> fb-user

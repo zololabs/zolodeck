@@ -3,7 +3,7 @@
         zolo.scenario
         zolo.test.core-utils
         zolo.test.web-utils
-        zolo.utils.debug
+        zolodeck.utils.debug
         zolo.web.status-codes
         zolodeck.clj-social-lab.facebook)
   (:require [zolodeck.clj-social-lab.facebook.user :as test-user]
