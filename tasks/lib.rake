@@ -1,13 +1,5 @@
 namespace :lib do
 
-  desc "BootStraps all Lib projects"
-  task :boot do
-    info "Bootstrapping lib projects"
-    info "Getting submodules for lib projects"
-    sh "cd api/checkouts/demonic; git submodule init; git submodule sync ; git submodule update"
-    sh "cd api/checkouts/clj-social-lab; git submodule init; git submodule sync ; git submodule update"
-  end
-
   desc "Todos from API project"
   task :todos do
       sh "cd api/checkouts/demonic; lein notes"

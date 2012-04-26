@@ -5,12 +5,11 @@ namespace :api do
     info "Bootstrapping API project"
     info "Updating submodules"
     sh "git submodule init; git submodule sync ; git submodule update"
-    info "Updating submodules of lib projects"
-    Rake::Task["lib:boot"].execute
     info "Getting Deps and Building projects in Checkout folder"
     sh "cd api ; lein deps; lein build-checkouts;"
     sh "lein plugin install lein-difftest 1.3.7"
     sh "lein plugin install lein-notes 0.0.1"
+    sh "lein plugin install lein-clojars 0.8.0"
     Rake::Task["api:config:generate"].execute
   end
 
