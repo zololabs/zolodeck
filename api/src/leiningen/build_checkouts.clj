@@ -13,8 +13,11 @@
 (defn user-dir []
   (-> "user.dir" System/getProperty File.))
 
+(defn has-project-clj [^File dir]
+  (not (nil? (read-project (.getAbsolutePath (File. dir "project.clj"))))))
+
 (defn list-checkouts [^File dir]
-  (seq (.listFiles (File. dir "checkouts"))))
+  (filter has-project-clj (seq (.listFiles (File. dir "checkouts")))))
 
 (defn create-project [^File dir]
   (read-project (.getAbsolutePath (File. dir "project.clj"))))
@@ -28,6 +31,4 @@
   (doseq [p (map create-project (list-checkouts (:dir project)))]
     (run-lein-task "compile" p)))
 
-;; (add-hook #'leiningen.clean/clean
-;;           build-checkouts)
 
