@@ -27,12 +27,12 @@
     :auth-token auth-token))
 
 (defn friends-list [auth-token]
-  (take 10 (fb-auth/with-facebook-auth {:access-token auth-token} 
-             (fb-client/get [:me :friends]
-                            {:query-params 
-                             {:fields "link,name,gender,bio,birthday,relationship_status,significant_other,website"}
-                             :extract :data 
-                             :paging true}))))
+  (fb-auth/with-facebook-auth {:access-token auth-token} 
+    (fb-client/get [:me :friends]
+                   {:query-params 
+                    {:fields "link,name,gender,bio,birthday,relationship_status,significant_other,website"}
+                    :extract :data 
+                    :paging true})))
 
 (defn run-fql [auth-token query-string]
   (fb-auth/with-facebook-auth {:access-token auth-token} 

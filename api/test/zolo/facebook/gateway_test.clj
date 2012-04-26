@@ -10,6 +10,17 @@
             [zolo.facebook.gateway :as gateway]
             [zolo.api.user-api :as user-api]))
 
+(deftest ^:integration test-me
+  (in-facebook-lab 
+   gateway/APP-ID gateway/APP-SECRET
+   (let [jack (test-user/create "jack")]
+     (login-as jack)
+
+     (let [jack-details (gateway/me (test-user/access-token))]
+       ;;TODO Better way to test these
+       (is (= "jack" (:first_name jack-details)))
+       (is (= "jack" (:last_name jack-details)))))))
+
 (deftest ^:integration test-friends-list
   (in-facebook-lab 
    gateway/APP-ID gateway/APP-SECRET
@@ -22,7 +33,7 @@
 
      (let [friends-of-jack (gateway/friends-list (test-user/access-token))]
        (is (= 2 (count friends-of-jack)))
-       ;;TODO We need to verify the return values
+       ;;TODO We need to verify the return values in a better way
        (is (some #(= "jill" (:name %)) friends-of-jack))
        (is (some #(= "mary" (:name %)) friends-of-jack))))))
 
