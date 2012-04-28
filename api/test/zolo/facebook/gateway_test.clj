@@ -34,8 +34,8 @@
      (let [friends-of-jack (gateway/friends-list (test-user/access-token))]
        (is (= 2 (count friends-of-jack)))
        ;;TODO We need to verify the return values in a better way
-       (is (some #(= "jill" (:name %)) friends-of-jack))
-       (is (some #(= "mary" (:name %)) friends-of-jack))))))
+       (is (some #(= "jill" (:first_name %)) friends-of-jack))
+       (is (some #(= "mary" (:first_name %)) friends-of-jack))))))
 
 
 
