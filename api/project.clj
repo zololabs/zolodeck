@@ -21,7 +21,8 @@
 
                  [org.clojure/core.match "0.2.0-alpha9"]
 
-                 [com.datomic/datomic "0.1.3007"]]
+                 [zolodeck/demonic "0.1.0-SNAPSHOT"]
+                 [zolodeck/zolo-utils "0.1.0-SNAPSHOT"]]
 
   :plugins [[lein-swank "1.4.4"]
             [lein-pprint "1.1.1"]
@@ -33,7 +34,8 @@
 
   :dev-dependencies [[clj-stacktrace "0.2.4"]
                      [swank-clojure "1.3.3"]
-                     [ring-serve "0.1.2"]]
+                     [ring-serve "0.1.2"]
+                     [zolodeck/clj-social-lab "1.0.0-SNAPSHOT"]]
   
   :min-lein-version "1.7.0"
 

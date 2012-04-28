@@ -7,6 +7,8 @@ namespace :api do
     sh "git submodule init; git submodule sync ; git submodule update"
     info "Getting Deps and Building projects in Checkout folder"
     sh "cd api ; lein deps; lein build-checkouts;"
+    info "Deleting Zolodeck Libs from local m2"
+    sh " rm -rf ~/.m2/repository/zolodeck/"
     sh "lein plugin install lein-difftest 1.3.7"
     sh "lein plugin install lein-notes 0.0.1"
     sh "lein plugin install lein-clojars 0.8.0"
