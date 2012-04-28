@@ -30,7 +30,7 @@
   (fb-auth/with-facebook-auth {:access-token auth-token} 
     (fb-client/get [:me :friends]
                    {:query-params 
-                    {:fields "link,name,gender,bio,birthday,relationship_status,significant_other,website"}
+                    {:fields "id,first_name,last_name,gender,locale,link,username,installed,bio,birthday,education,email,hometown,interested_in,location,picture,relationship_status,significant_other,website"}
                     :extract :data 
                     :paging true})))
 
