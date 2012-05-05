@@ -15,7 +15,7 @@
         renderForceGraph:function(){
             var width = 960;
             var height = 900;
-            var r = 10;
+            var r = 5;
             
             var color = d3.scale.category20();
             
@@ -49,7 +49,10 @@
                 .data(json.nodes)
                 .enter().append("circle")
                 .attr("class", "node")
-                .attr("r", r)
+                .attr("r", function(d) { if(d.center) {
+                    return (r + 10 ); 
+                } else {
+                    return r;}})
                 .style("fill", function(d) { return color(d.group); })
                 .call(force.drag);
 
@@ -101,7 +104,10 @@
                 node.each(function(d) { d.display = fisheye(d); })
                     .attr("cx", function(d) { return d.display.x; })
                     .attr("cy", function(d) { return d.display.y; })
-                    .attr("r", function(d) { return d.display.z * 4.5; });
+                    .attr("r", function(d) { if(d.center) {
+                        return (r + 10); 
+                    } else {
+                        return d.display.z * 4.5;}});
                 
                 link.attr("x1", function(d) { return d.source.display.x; })
                     .attr("y1", function(d) { return d.source.display.y; })

@@ -25,6 +25,6 @@
 
 (defmethod contact-strengths "d3" [request-params]
   (let [no-of-nodes 200]
-    {"nodes" (reduce (fn [v no] (conj v (node no))) [{"name" "ME" "group" 1000}] (range 1 (+ no-of-nodes 1)))
+    {"nodes" (reduce (fn [v no] (conj v (node no))) [{"name" "ME" "group" 1000 "center" true}] (range 1 (+ no-of-nodes 1)))
      "links" (reduce (fn [v no] (conj v (link no))) [] (range 1 (+ no-of-nodes 1)))}))
 
