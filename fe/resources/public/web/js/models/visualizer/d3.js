@@ -1,6 +1,6 @@
 (function($){
     
-    window.VizualizerD3 = Backbone.Model.extend({
+    window.VisualizerD3 = Backbone.Model.extend({
 
         url: "http://localhost:4000/contact-strengths?client=d3",
 

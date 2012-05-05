@@ -5,7 +5,7 @@
             'service': null,  //Facebook , LinkedIn, Gmail etc
             'state': 'LOGGED_OUT',
             'friends': new Friends(),
-            'contactStrengthsD3':  new VizualizerD3()
+            'contactStrengthsD3':  new VisualizerD3()
         },
 
         friends: function(){
@@ -30,7 +30,7 @@
             this.set({'service':null, 
                       'state':'LOGGED_OUT', 
                       'friends' : new Friends(),
-                      'contactStrengthsD3':  new VizualizerD3()});
+                      'contactStrengthsD3':  new VisualizerD3()});
         },
 
         service: function(){
