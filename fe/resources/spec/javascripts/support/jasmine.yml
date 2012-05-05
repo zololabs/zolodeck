@@ -15,13 +15,16 @@ src_files:
     - public/web/lib/underscore-min.js
     - public/web/lib/backbone-min.js
     - public/web/lib/bootstrap-dropdown.js
+    - public/web/lib/d3.v2.min.js
     - public/web/js/utils/*.js
+    - public/web/js/models/vizualizer/*.js
     - public/web/js/models/friend.js
     - public/web/js/collections/friends.js
     - public/web/js/models/user.js
     - public/web/js/models/facebook.js
     - public/web/js/models/**.js
     - public/web/js/collections/**.js
+    - public/web/js/views/vizualizer/*.js
     - public/web/js/views/*.js
     - public/web/js/*.js
     - public/web/templates/*.html
