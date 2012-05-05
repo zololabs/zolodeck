@@ -4,23 +4,33 @@
         defaults: {
             'service': null,  //Facebook , LinkedIn, Gmail etc
             'state': 'LOGGED_OUT',
-            'friends': new Friends()
+            'friends': new Friends(),
+            'contactStrengthsD3':  new VizualizerD3()
         },
 
         friends: function(){
             return this.get('friends');
         },
 
+        contactStrengthsD3: function(){
+            return this.get('contactStrengthsD3');
+        },
+
         login: function(service){
             console.log("Logged In : " , service);
             this.set({'service':service, 'state':'LOGGED_IN'});
-            this.friends().fetch();
+            //this.friends().fetch();
             this.set({'friends':this.friends()});
+            this.contactStrengthsD3().fetch();
+            this.set({'contactStrengthsD3':this.contactStrengthsD3()});
         },
 
         logout: function(){
             console.log("Logged Out");
-            this.set({'service':null, 'state':'LOGGED_OUT', 'friends' : new Friends()});
+            this.set({'service':null, 
+                      'state':'LOGGED_OUT', 
+                      'friends' : new Friends(),
+                      'contactStrengthsD3':  new VizualizerD3()});
         },
 
         service: function(){

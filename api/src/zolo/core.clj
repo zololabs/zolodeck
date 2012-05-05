@@ -28,6 +28,9 @@
  
   ;;---- FRIENDS
   (GET "/friends" [& params] (json-response (user-api/friends-list params)))
+
+  ;;---- Contact Strength
+  (GET "/contact-strengths" [& params] (json-response (user-api/contact-strengths params)))
   
   ;;---- GENERAL
   (GET "/permission-denied*" []  (json-response {:error "Permission Denied"} 403))
