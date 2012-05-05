@@ -13,48 +13,17 @@
 
 (defmulti contact-strengths :client)
 
+;;TODO Dummy functions which returns JSON that D3 lib needs
+(defn- node [no]
+  {"name" (str "Friend-" no)
+   "group" (rand-int 10)})
+
+(defn- link [no]
+  {"source" 0
+   "target" no
+   "value" (rand-int 200)})
+
 (defmethod contact-strengths "d3" [request-params]
-  {"nodes" [{
-              "name" "One"
-              "group" 1
-              }
-             {
-              "name" "Two"
-              "group" 2
-              }
-             {
-              "name" "Three"
-              "group" 3
-              }
-             {
-              "name" "Four"
-              "group" 2
-              }
-             
-             {
-              "name" "Five"
-              "group" 3
-              }
-             ]
-   "links" [{
-              "source" 0
-              "target" 1
-              "value" 150
-              }
-             {
-              "source" 0
-              "target" 2
-              "value" 500
-              }		
-             {
-              "source" 0
-              "target" 3
-              "value" 100
-              }		
-             {
-              "source" 0
-              "target" 4
-              "value" 500
-              }]
-   })
+  {"nodes" (reduce (fn [v no] (conj v (node no))) [{"name" "ME" "group" 1000}] (range 1 101))
+   "links" (reduce (fn [v no] (conj v (link no))) [] (range 1 101))})
 

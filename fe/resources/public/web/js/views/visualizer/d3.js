@@ -42,7 +42,7 @@
                 .data(json.nodes)
                 .enter().append("circle")
                 .attr("class", "node")
-                .attr("r", 20)
+                .attr("r", 10)
                 .style("fill", function(d) { return color(d.group); })
                 .call(force.drag);
 
