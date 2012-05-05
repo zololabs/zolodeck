@@ -1,6 +1,8 @@
 (function($) {
 
-    window.VizualizerD3View = Backbone.View.extend({
+    window.VisualizerD3View = Backbone.View.extend({
+        
+        id: "graph",
 
         initialize:function () {
             var self = this;
@@ -10,7 +12,7 @@
             this.model.bind("change", this.render, this);
         },
 
-        renderForce:function(){
+        renderForceGraph:function(){
             var width = 960, height = 900;
             
             var color = d3.scale.category20();
@@ -20,10 +22,9 @@
                 .linkDistance(function(link, index) { return link.value; })
                 .size([width, height]);
             
-            var svg = d3.select("#vizualizer").append("svg")
+            var svg = d3.select(this.el).append("svg")
                 .attr("width", width)
                 .attr("height", height);
-
            
             var json = (this.contactStrengthsD3.toJSON());
 
@@ -36,7 +37,6 @@
                 .data(json.links)
                 .enter().append("line")
                 .attr("class", "link");
-            // .style("stroke-width", function(d) { return Math.sqrt(d.value); });
 
             var node = svg.selectAll("circle.node")
                 .data(json.nodes)
@@ -45,14 +45,6 @@
                 .attr("r", 20)
                 .style("fill", function(d) { return color(d.group); })
                 .call(force.drag);
-
-            // node.append("svg:image")
-            //     .attr("class", "circle")
-            //     .attr("xlink:href", "https://d3nwyuy0nl342s.cloudfront.net/images/icons/public.png")
-            //     .attr("x", "-8px")
-            //     .attr("y", "-8px")
-            //     .attr("width", "16px")
-            //     .attr("height", "16px");
 
             node.append("title")
                 .text(function(d) { return d.name; });
@@ -67,11 +59,12 @@
                     .attr("cy", function(d) { return d.y; });
             });
 
+            return this.el;
         },
         
         render:function () {
             console.log("Rendering Vizualizer D3");
-            this.renderForce();
+            $("#visualizer").append(this.renderForceGraph());
             return this;
         }
         
