@@ -1,5 +1,6 @@
 (ns zolo.utils.domain
-  (:require [zolodeck.utils.maps :as maps]))
+  (:require [zolodeck.utils.maps :as maps]
+            [zolodeck.utils.calendar :as calendar]))
 
 (def FB-USER-KEYS 
      {:first_name :user/first-name
@@ -11,18 +12,20 @@
       :id :user/fb-id
       :auth-token :user/fb-auth-token})
 
-(defn datomic-key->regular-key [datomic-key]
-  (-> datomic-key
-      name
-      (.replace "fb-" "")
-      keyword))
+(def FB-FRIEND-KEYS
+    {:first_name :contact/first-name
+     :last_name :contact/last-name
+     :gender :contact/gender
 
-(defn convert-to-regular-map [user-entity]
-  (if user-entity
-    (-> user-entity
-        (select-keys (vals FB-USER-KEYS))
-        (maps/update-all-map-keys datomic-key->regular-key)
-        (merge {:db/id (:db/id user-entity)}))))
+     :id :contact/fb-id
+     :link :contact/fb-link
+     :birthday :contact/fb-birthday
+     :picture :contact/fb-picture-link})
 
 (defn fb-user->user [fb-user]
   (maps/update-all-map-keys fb-user FB-USER-KEYS))
+
+(defn fb-friend->contact [fb-friend]
+  (-> fb-friend
+      (assoc :birthday (calendar/date-string->instant "MM/dd/yyyy" (:birthday fb-friend)))
+      (maps/update-all-map-keys FB-FRIEND-KEYS)))

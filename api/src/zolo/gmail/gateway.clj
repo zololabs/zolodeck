@@ -24,5 +24,5 @@
 
 (defn fetch-mail [from-date username password]
   (let [gmail-folder (gmail-all-mail-folder username password)
-        newer-than (ReceivedDateTerm. ComparisonTerm/GT (java-date-from-string from-date))]
+        newer-than (ReceivedDateTerm. ComparisonTerm/GT (date-string->instant :date from-date))]
     (.search gmail-folder newer-than)))

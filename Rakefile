@@ -24,3 +24,15 @@ namespace :zolo do
   task :todos  => [:'api:todos']
 
 end
+
+
+namespace :utils do
+
+  desc "Clean up Zolodeck jars from local maven repo"
+  task :m2clean do
+    info "Deleting Zolodeck Libs from local m2"
+    sh " rm -rf ~/.m2/repository/zolodeck/"
+    sh "cd api ; lein deps; lein build-checkouts;"
+  end
+
+end

@@ -1,10 +1,13 @@
 (ns zolo.domain.user
-  (:use zolo.setup.datomic-setup
+  (:use zolo.setup.datomic-setup        
         [zolodeck.demonic.core :only [insert run-query load-entity] :as demonic]
         zolo.utils.domain
         zolodeck.utils.debug)
   (:require [zolo.facebook.gateway :as fb-gateway]
-            [zolodeck.utils.string :as zolo-str]))
+            [zolodeck.utils.string :as zolo-str]
+            [zolodeck.utils.maps :as zolo-maps]
+            [zolo.domain.contact :as contact ]
+            [clojure.set :as set]))
 
 (defn insert-fb-user [fb-user]
   (-> fb-user
@@ -21,6 +24,15 @@
   (-> code
       fb-gateway/code->token
       fb-gateway/me))
+
+(defn update-facebook-friends [fb-id]
+  (let [user (find-by-fb-id fb-id)]
+    (->> user
+         :user/fb-auth-token
+         fb-gateway/friends-list
+         (map fb-friend->contact)
+         (contact/merge-contacts user)
+         demonic/insert)))
 
 (defn find-by-fb-signed-request [fb-sr]
   (if-let [zolo-user (find-by-fb-id (:user_id fb-sr))]
