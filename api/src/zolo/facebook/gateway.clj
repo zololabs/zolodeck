@@ -35,6 +35,6 @@
                     :paging true})))
 
 (defn run-fql [auth-token query-string]
-  (fb-auth/with-facebook-auth {:access-token auth-token} 
-    (fb-client/get :fql
-                   {:fql query-string})))
+  (:body (fb-auth/with-facebook-auth {:access-token auth-token} 
+           (fb-client/get :fql
+                          {:fql query-string}))))
