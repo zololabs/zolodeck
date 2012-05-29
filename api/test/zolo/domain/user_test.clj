@@ -1,7 +1,7 @@
 (ns zolo.domain.user-test
   (:use [zolo.domain.user :as user]
         [zolo.facebook.gateway :as fb-gateway]
-        [zolodeck.clj-social-lab.facebook.data-factory :as fb-factory]
+        [zolodeck.clj-social-lab.facebook.factory :as fb-factory]
         zolodeck.demonic.test
         zolo.test.core-utils
         zolodeck.utils.debug
@@ -61,27 +61,27 @@
 
 
 (deftest test-update-friends-list
-  (let [fb-user (fb-factory/user)]
+  (let [fb-user (fb-factory/new-user)]
 
     (demonic-testing "When there are no friends"
-      (stubbing [fb-gateway/friends-list (fb-factory/friends 2)]
+      (stubbing [fb-gateway/friends-list (fb-factory/sample-friends 2)]
         (user/insert-fb-user fb-user)
         (is (empty? (:user/contacts (user/find-by-fb-id (:id fb-user)))))
         (update-facebook-friends (:id fb-user))
         (is (= 2 (count (map :user/first-name (:user/contacts (user/find-by-fb-id (:id fb-user)))))))))
 
     (demonic-testing "When new friend got added"
-      (let [friends (fb-factory/friends 2)]
+      (let [friends (fb-factory/sample-friends 2)]
         (stubbing [fb-gateway/friends-list friends]
           (user/insert-fb-user fb-user)
           (update-facebook-friends (:id fb-user))
           (is (= 2 (count (:user/contacts (user/find-by-fb-id (:id fb-user)))))))
-        (stubbing [fb-gateway/friends-list (concat friends (fb-factory/friends 3))]
+        (stubbing [fb-gateway/friends-list (concat friends (fb-factory/sample-friends 3))]
           (update-facebook-friends (:id fb-user))
           (is (= 5 (count (:user/contacts (user/find-by-fb-id (:id fb-user)))))))))
 
     (demonic-testing "When a old friend is updated"
-      (let [friends (fb-factory/friends 1)]
+      (let [friends (fb-factory/sample-friends 1)]
         (stubbing [fb-gateway/friends-list friends]
           (user/insert-fb-user fb-user)
           (update-facebook-friends (:id fb-user))

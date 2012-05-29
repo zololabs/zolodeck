@@ -5,8 +5,8 @@
         zolo.test.web-utils
         zolodeck.utils.debug
         zolo.web.status-codes
-        zolodeck.clj-social-lab.facebook)
-  (:require [zolodeck.clj-social-lab.facebook.user :as test-user]
+        zolodeck.clj-social-lab.facebook.core)
+  (:require ;;[zolodeck.clj-social-lab.facebook.user :as test-user]
             [zolo.facebook.inbox :as inbox]
             [zolo.api.user-api :as user-api]))
 
