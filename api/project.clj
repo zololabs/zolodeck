@@ -19,6 +19,8 @@
                  [org.clojars.nakkaya.javax.mail/imap "1.4.3"]
                  [org.clojars.nakkaya.javax.mail/mail "1.4.3"]
 
+;;                 [com.novemberain/validateur "1.1.0"  :exclude [org.clojure/clojure]]
+
                  [org.clojure/core.match "0.2.0-alpha9"]
 
                  [zolodeck/demonic "0.1.0-SNAPSHOT"]
