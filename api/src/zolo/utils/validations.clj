@@ -6,10 +6,17 @@
     (when-not (func (m attribute))
       (str attribute " " msg))))
 
+(defn validator-nilok-fn- [func msg]
+  (fn [m attribute]
+    (when-not (or (nil? (m attribute)) 
+                  (func (m attribute)))
+      (str attribute " " msg))))
+
 (def val-optional (constantly nil))
 (def val-required (validator-fn- (complement nil?) "is required"))
-(def val-string (validator-fn- string? "is not string"))
-(def val-integer (validator-fn- integer? "is not integer"))
+;;TODO Have this be okay with nil as we need to support optional ... Need to fix this. More to go
+(def val-string (validator-nilok-fn- string? "is not string"))
+(def val-integer (validator-nilok-fn- integer? "is not integer"))
 (def val-vector (validator-fn- vector? "is not vector"))
 
 (def VALIDATOR-KEY-TO-VALIDATOR-FN
