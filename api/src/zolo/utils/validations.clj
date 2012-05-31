@@ -1,24 +1,25 @@
 (ns zolo.utils.validations
   (:use zolodeck.utils.debug))
 
-(defn validator-fn- [func msg]
-  (fn [m attribute]
-    (when-not (func (m attribute))
-      (str attribute " " msg))))
+(defn optional-validator-present? [validators]
+  (contains? (set validators) :optional))
 
-(defn validator-nilok-fn- [func msg]
-  (fn [m attribute]
-    (when-not (or (nil? (m attribute)) 
-                  (func (m attribute)))
-      (str attribute " " msg))))
+(defn validator-fn- [func msg]
+  (fn [m attribute validators]
+    (when-not (and 
+               (optional-validator-present? validators)
+               (nil? (m attribute)))
+      (when-not (func (m attribute))
+        (str attribute " " msg)))))
 
 (def val-optional (constantly nil))
 (def val-required (validator-fn- (complement nil?) "is required"))
+
 (def val-vector (validator-fn- vector? "is not vector"))
 (def val-empty-not-allowed (validator-fn- (complement empty?) "is empty"))
-;;TODO Have this be okay with nil as we need to support optional ... Need to fix this. More to go
-(def val-string (validator-nilok-fn- string? "is not string"))
-(def val-integer (validator-nilok-fn- integer? "is not integer"))
+
+(def val-string (validator-fn- string? "is not string"))
+(def val-integer (validator-fn- integer? "is not integer"))
 
 (def VALIDATOR-KEY-TO-VALIDATOR-FN
      {:required val-required
@@ -43,7 +44,7 @@
 
 (defn validate-attribute [attribute validators m]
   (reduce (fn [errors validator]
-            (if-let [error ((VALIDATOR-KEY-TO-VALIDATOR-FN validator) m attribute)]
+            (if-let [error ((VALIDATOR-KEY-TO-VALIDATOR-FN validator) m attribute validators)]
               (conj errors error)
               errors))
           []

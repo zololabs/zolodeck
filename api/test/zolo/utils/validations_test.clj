@@ -24,18 +24,23 @@
          ;;String
          []     [:a]      [:string]      {:a "apple"}
          []     [:a]      [:string]      {:a ""}
-         []     [:a]      [:string]      {:a nil}
-         []     [:a]      [:string]      {:b 1}
          ["[:a] is not string"]  [:a]     [:string]    {:a 1}
+         ["[:a] is not string"]  [:a]     [:string]    {:a nil}
+         ["[:a] is not string"]  [:a]     [:string]    {:b 1}
 
          ;; Required String
-         ["[:a] is not string"]  [:a]     [:required :string]    {:a 1}
-         ["[:a] is required"]    [:a]     [:required :string]    {:a nil}
+         ["[:a] is not string"]    [:a]     [:required :string]    {:a 1}
+         ["[:a] is required"
+          "[:a] is not string"]    [:a]     [:required :string]    {:a nil}
+
+         ;; Optional String
+         ["[:a] is not string"]    [:a]     [:optional :string]    {:a 1}
+         []                        [:a]     [:optional :string]    {:a nil}
 
          ;;Integer
          []     [:a]      [:integer]      {:a 1}
-         []     [:a]      [:integer]      {:a nil}
-         []     [:a]      [:integer]      {:b 1}
+         ["[:a] is not integer"]  [:a]      [:integer]      {:a nil}
+         ["[:a] is not integer"]  [:a]      [:integer]      {:b 1}
          ["[:a] is not integer"]  [:a]     [:integer]    {:a "one"}
          ["[:a] is not integer"]  [:a]     [:integer]    {:a 1.1}
 
@@ -48,9 +53,20 @@
          ["[:a] is not vector"]  [:a]     [:vector]    {:a nil}
          ["[:a] is not vector"]  [:a]     [:vector]    {:b 1}
 
-         ;;Empty Not Allowed
-         []                    [:a]      [:empty-not-allowed]      {:a [:b]}
-         ["[:a] is empty"]     [:a]      [:empty-not-allowed]      {:a []}
+         ;;Required Vector
+         []                         [:a]      [:required :vector]      {:a [:b]}
+         []                         [:a]      [:required :vector]      {:a []}
+         ["[:a] is required" 
+          "[:a] is not vector"]     [:a]      [:required :vector]      {:a nil}
+
+         ;;Optional Vector
+         []     [:a]      [:optional :vector]      {:a [:b]}
+         []     [:a]      [:optional :vector]      {:a nil}
+         []     [:a]      [:optional :vector]      {:a []}
+
+         ;;Empty Not Allowed Vector
+         []                         [:a]      [:empty-not-allowed :vector]      {:a [:b]}
+         ["[:a] is empty"]          [:a]      [:empty-not-allowed :vector]      {:a []}
 
 ))
 
@@ -92,8 +108,9 @@
     (are [expected m] (= expected (valid? vs m))
            
          [true []]                          {:a "1"}       
-         [true []]                          {:a "1" :b "two"}
-         [false ["[:b] is not string"]]     {:a "1" :b 2}))) 
+         ;; [true []]                          {:a "1" :b "two"}
+         ;; [false ["[:b] is not string"]]     {:a "1" :b 2}
+))) 
 
 
 (deftest test-extra-fields
