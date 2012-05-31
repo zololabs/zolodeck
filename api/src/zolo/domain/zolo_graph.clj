@@ -1,82 +1,45 @@
 (ns zolo.domain.zolo-graph
-  (:use zolodeck.utils.debug)
-  (:require [zolo.utils.validations :as validations]))
+  (:use zolodeck.utils.debug))
 
-;;TODO Zolo ID should be part of value not just in keys
+(defn user-zolo-id [zg]
+  (first (keys zg)))
 
-(def MAIN-VALIDATION-MAP
-     {:about 
-      {:first-name [:required :string]
-       :last-name [:required :string]
-       :gender [:required :string]
-       :facebook {:link [:required :string]
-                  :username [:required :string]
-                  :email [:required :string] ;;TODO Email format validation 
-                  :id [:required :string]
-                  :auth-token [:required :string]}}
-      :contacts [:required :vector]})
+(defn contact-zolo-id [zg-contact]
+  (first (keys zg-contact)))
 
-(def CONTACT-VALIDATION-MAP
-     {:about 
-      {:first-name [:required :string]
-       :last-name [:required :string]
-       :gender [:required :string]
-       :facebook {:id [:required :string]
-                  :link [:required :string]
-                  :birthday [:required :string] ;;TODO Date Format Validation
-                  :picture [:required :string]}}
+(defn contact-zolo-ids [zg]
+  (keys (get-in zg [(user-zolo-id zg) :contacts])))
 
-      :scores [:required :vector]
-      
-      :messages [:required :vector]})
+(defn contacts [zg]
+  (get-in zg [(user-zolo-id zg) :contacts]))
 
-(def SCORE-VALIDATION-MAP
-     {:value [:required :integer] 
-      :at [:required :integer]}) ;;TODO Timestamp Format Validation
+(defn contact [zg c-id]
+  (get-in zg [(user-zolo-id zg) :contacts c-id]))
 
-(def MESSAGE-VALIDATION-MAP
-     {:id [:required :string]
-      :platform [:required :string] ;;TODO Enum Valur Validation
-      :mode [:required :string] ;;TODO Enum Valur Validation
-      :text [:required :string]
-      :date [:required :integer] ;;TODO Timestamp Format Validation
-      :from [:required :string]
-      :to [:required :string]
-      :thread-id [:optional :string]
-      :reply-to [:optional :string]})
+(defn add-contact [zg c]
+  (update-in zg [(user-zolo-id zg) :contacts] #(merge % c)))
 
-(defn main [g]
-  (first (vals g)))
+;;TODO too much duplication to access messages and scores 
+(defn messages [zg c-id]
+  (get-in zg [(user-zolo-id zg) :contacts c-id :messages]))
 
-(defn contacts [g]
-  (map (fn [m] (first (vals m))) (:contacts (main g))))
-
-(defn scores [g]
-  (apply concat (map :scores (contacts g))))
-
-(defn messages [g]
-  (apply concat (map :messages (contacts g))))
-
-(defn validate-vector- [vm v]
-  (reduce (fn [acc m]
-            (concat acc (validations/valid? vm m)))
+(defn all-messages [zg]
+  (reduce (fn [acc c-id]
+            (concat acc (messages zg c-id)))
           []
-          v))
+          (contact-zolo-ids zg)))
 
-(defn format-errors- [errors]
-  (let [tmp (partition 2 errors)] 
-    (map second tmp)))
+(defn scores [zg c-id]
+  (get-in zg [(user-zolo-id zg) :contacts c-id :scores]))
 
-(defn valid? [g]
-  (let [errors (format-errors- (concat []
-                                       (validations/valid? MAIN-VALIDATION-MAP (first (vals g)))
-                                       (validate-vector- CONTACT-VALIDATION-MAP (contacts g))
-                                       (validate-vector- SCORE-VALIDATION-MAP (scores g))
-                                       (validate-vector- MESSAGE-VALIDATION-MAP (messages g))))]
-    (every? empty? errors)))
+(defn all-scores [zg]
+  (reduce (fn [acc c-id]
+            (concat acc (scores zg c-id)))
+          []
+          (contact-zolo-ids zg)))
+
 
 (defn load-from-datomic [])
-
 
 (defn format-for-d3 [g]
   )

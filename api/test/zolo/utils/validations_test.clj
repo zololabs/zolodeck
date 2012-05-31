@@ -48,6 +48,10 @@
          ["[:a] is not vector"]  [:a]     [:vector]    {:a nil}
          ["[:a] is not vector"]  [:a]     [:vector]    {:b 1}
 
+         ;;Empty Not Allowed
+         []                    [:a]      [:empty-not-allowed]      {:a [:b]}
+         ["[:a] is empty"]     [:a]      [:empty-not-allowed]      {:a []}
+
 ))
 
 

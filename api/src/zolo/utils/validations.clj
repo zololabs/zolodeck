@@ -14,20 +14,22 @@
 
 (def val-optional (constantly nil))
 (def val-required (validator-fn- (complement nil?) "is required"))
+(def val-vector (validator-fn- vector? "is not vector"))
+(def val-empty-not-allowed (validator-fn- (complement empty?) "is empty"))
 ;;TODO Have this be okay with nil as we need to support optional ... Need to fix this. More to go
 (def val-string (validator-nilok-fn- string? "is not string"))
 (def val-integer (validator-nilok-fn- integer? "is not integer"))
-(def val-vector (validator-fn- vector? "is not vector"))
 
 (def VALIDATOR-KEY-TO-VALIDATOR-FN
      {:required val-required
       :optional val-optional
       :string val-string
       :integer val-integer
-      :vector val-vector})
+      :vector val-vector
+      :empty-not-allowed val-empty-not-allowed})
 
 (defn flatten-keys* [a ks m]
-  (if (map? m)
+  (if (and (map? m) (not (empty? m)))
     (reduce into (map (fn [[k v]] (flatten-keys* a (conj ks k) v)) (seq m)))
     (assoc a ks m)))
 
