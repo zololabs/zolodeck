@@ -19,7 +19,6 @@
 (defn add-contact [zg c]
   (update-in zg [(user-zolo-id zg) :contacts] #(merge % c)))
 
-;;TODO too much duplication to access messages and scores 
 (defn messages [zg c-id]
   (get-in zg [(user-zolo-id zg) :contacts c-id :messages]))
 

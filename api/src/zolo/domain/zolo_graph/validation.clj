@@ -50,7 +50,7 @@
       :at [:required :integer]}) ;;TODO Timestamp Format Validation
 
 (def MESSAGE-VALIDATION-MAP
-     {:id [:required :string]
+     {:zolo-id [:required :string]
       :platform [:required :string] ;;TODO Enum Valur Validation
       :mode [:required :string] ;;TODO Enum Valur Validation
       :text [:required :string]

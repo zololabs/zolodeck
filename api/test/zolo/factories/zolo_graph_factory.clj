@@ -39,19 +39,25 @@
   ([]
      (contact (str (random-guid)))))
 
-(defn message []
-  {:id "message-100"
-   :platform "Facebook"
-   :mode "Message"
-   :text "Hey how are you?"
-   :date 12312312312
-   :from "user-100"
-   :to "contact-101"
-   :thread-id nil
-   :reply-to nil})
+(defn message 
+  ([zolo-id]
+     {:zolo-id zolo-id
+      :platform "Facebook"
+      :mode "Message"
+      :text (str "This is message : " zolo-id)
+      :date 12312312312
+      :from "user-100"
+      :to "contact-101"
+      :thread-id nil
+      :reply-to nil})
+  ([]
+     (message (str (random-guid)))))
 
-(defn score []
-  {:value 20 :at 31231231231})
+(defn score 
+  ([value]
+     {:value value :at 31231231231})
+  ([]
+     (score (rand-int 100))))
 
 (defn contact-zolo-id [c]
   (first (keys c)))
