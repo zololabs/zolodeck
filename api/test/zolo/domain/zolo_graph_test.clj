@@ -31,7 +31,6 @@
   (let [contact1 (-> (zg-factory/contact "contact-100")
                      (zg-factory/add-message {:zolo-id "msg-100"})
                      (zg-factory/add-message {:zolo-id "msg-101"}))
-
         contact2 (-> (zg-factory/contact "contact-200")
                      (zg-factory/add-message {:zolo-id "msg-200"})
                      (zg-factory/add-message {:zolo-id "msg-201"}))
@@ -47,7 +46,6 @@
   (let [contact1 (-> (zg-factory/contact "contact-100")
                      (zg-factory/add-score {:value 100})
                      (zg-factory/add-score {:value 101}))
-
         contact2 (-> (zg-factory/contact "contact-200")
                      (zg-factory/add-score {:value 200})
                      (zg-factory/add-score {:value 201}))

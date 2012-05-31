@@ -12,7 +12,7 @@
      :gender [:required :string]
      :facebook {:link [:required :string]
                 :username [:required :string]
-                :email [:required :string] ;;TODO Email format validation 
+                :email [:required :string] 
                 :id [:required :string]
                 :auth-token [:required :string]}}
     :contacts {}
@@ -27,7 +27,7 @@
      :gender [:required :string]
      :facebook {:id [:required :string]
                 :link [:required :string]
-                :birthday [:required :string] ;;TODO Date Format Validation
+                :birthday [:required :string] 
                 :picture [:required :string]}}
 
     :scores [:required :vector]
@@ -47,14 +47,14 @@
 
 (def SCORE-VALIDATION-MAP
      {:value [:required :integer] 
-      :at [:required :integer]}) ;;TODO Timestamp Format Validation
+      :at [:required :integer]}) 
 
 (def MESSAGE-VALIDATION-MAP
      {:zolo-id [:required :string]
-      :platform [:required :string] ;;TODO Enum Valur Validation
-      :mode [:required :string] ;;TODO Enum Valur Validation
+      :platform [:required :string] 
+      :mode [:required :string] 
       :text [:required :string]
-      :date [:required :integer] ;;TODO Timestamp Format Validation
+      :date [:required :integer] 
       :from [:required :string]
       :to [:required :string]
       :thread-id [:optional :string]
@@ -84,13 +84,13 @@
                                        (validate-contacts-present- zg)
                                        (validate-vector- SCORE-VALIDATION-MAP (zg/all-scores zg))
                                        (validate-vector- MESSAGE-VALIDATION-MAP (zg/all-messages zg))
-                                       ))]
+                                       ))
+        valid (every? empty? errors)]
 
-    ;;TODO Need to clean up this code
-    (if-not (every? empty? errors)
-      (print-vals errors))
+    (when-not valid 
+      (print-vals "ZOLO-GRAPH Validation Errors : " errors))
     
-    (every? empty? errors)))
+    valid))
 
 
 (defn assert-zolo-graph [zg]
