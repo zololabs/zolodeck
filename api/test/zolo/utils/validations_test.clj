@@ -108,8 +108,8 @@
     (are [expected m] (= expected (valid? vs m))
            
          [true []]                          {:a "1"}       
-         ;; [true []]                          {:a "1" :b "two"}
-         ;; [false ["[:b] is not string"]]     {:a "1" :b 2}
+         [true []]                          {:a "1" :b "two"}
+         [false ["[:b] is not string"]]     {:a "1" :b 2}
 ))) 
 
 
