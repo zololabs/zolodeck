@@ -8,23 +8,23 @@
 (deftest test-zolo-graph-validation
   (testing "With All Fields"
     (testing "It should be valid"
-      (is (zg-validation/valid? (-> (zg-factory/base)
+      (is (zg-validation/valid? (-> (zg-factory/user)
                                     (zg-factory/add-contact-with-message-and-score))))))
 
   (testing "Without no Contact"
     (testing "It should be invalid"
-      (is (not (zg-validation/valid? (zg-factory/base))))))
+      (is (not (zg-validation/valid? (zg-factory/user))))))
 
   (testing "Without zolo-id"
     (testing "it should be invalid"
-      (is (not (zg-validation/valid? (-> (zg-factory/base nil)
+      (is (not (zg-validation/valid? (-> (zg-factory/user nil)
                                          (zg-factory/add-contact)))))))
 
   (testing "Without Messages"
     (testing "it should be valid"
       (let [zg-contact (-> (zg-factory/contact)
                            zg-factory/add-score)
-            zg (-> (zg-factory/base)
+            zg (-> (zg-factory/user)
                    (zg-factory/add-contact zg-contact))]
         (is (zg-validation/valid? zg)))))
 
@@ -32,7 +32,7 @@
     (testing "it should be valid"
       (let [zg-contact (-> (zg-factory/contact)
                            zg-factory/add-message)
-            zg (-> (zg-factory/base)
+            zg (-> (zg-factory/user)
                    (zg-factory/add-contact zg-contact))]
         (is (zg-validation/valid? zg)))))
 
@@ -40,7 +40,7 @@
     (testing "it should be Invalid"
       (let [zg-contact (-> (zg-factory/contact)
                            (zg-factory/add-message {:text nil}))
-            zg (-> (zg-factory/base)
+            zg (-> (zg-factory/user)
                    (zg-factory/add-contact zg-contact))]
         (is (not (zg-validation/valid? zg))))))
 
@@ -49,7 +49,7 @@
     (testing "it should be Invalid"
       (let [zg-contact (-> (zg-factory/contact)
                            (zg-factory/add-score {:value "JUNK"}))
-            zg (-> (zg-factory/base)
+            zg (-> (zg-factory/user)
                    (zg-factory/add-contact zg-contact))]
         (is (not (zg-validation/valid? zg)))))))
 
