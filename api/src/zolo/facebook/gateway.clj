@@ -20,6 +20,10 @@
 (defn code->token [code]
   (fb-auth/get-access-token facebook-oauth2 {:code code}))
 
+(defn run-fql [auth-token query-string]
+  (:body (fb-auth/with-facebook-auth {:access-token auth-token} 
+           (fb-client/get :fql {:fql query-string}))))
+
 (defn me [auth-token]
   (assoc 
       (:body (fb-auth/with-facebook-auth {:access-token auth-token} 
@@ -33,8 +37,3 @@
                     {:fields "id,first_name,last_name,gender,locale,link,username,installed,bio,birthday,education,email,hometown,interested_in,location,picture,relationship_status,significant_other,website"}
                     :extract :data 
                     :paging true})))
-
-(defn run-fql [auth-token query-string]
-  (:body (fb-auth/with-facebook-auth {:access-token auth-token} 
-           (fb-client/get :fql
-                          {:fql query-string}))))

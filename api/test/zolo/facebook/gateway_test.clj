@@ -4,15 +4,13 @@
         zolo.test.core-utils
         zolo.test.web-utils
         zolodeck.utils.debug
-        zolo.web.status-codes
-        zolodeck.clj-social-lab.facebook.core)
-  (:require ;;[zolodeck.clj-social-lab.facebook.user :as test-user]
+        zolo.web.status-codes)
+  (:require [zolodeck.clj-social-lab.facebook.core :as fb]
             [zolo.facebook.gateway :as gateway]
             [zolo.api.user-api :as user-api]))
 
 ;; (deftest ^:integration test-me
 ;;   (in-facebook-lab 
-;;    gateway/APP-ID gateway/APP-SECRET
 ;;    (let [jack (test-user/create "jack")]
 ;;      (login-as jack)
 
