@@ -15,6 +15,12 @@
 (defn datomic-db-name [] 
   (get-in CONFIG-MAP [ENV :datomic-db]))
 
+(defn app-id []
+  (get-in CONFIG-MAP [ENV :app-id]))
+
+(defn app-secret []
+  (get-in CONFIG-MAP [ENV :app-secret]))
+
 (defrunonce setup-config []
   (let [config-file (java-io/resource "zolo.clj")
         env (keyword (or (.get (System/getenv) "ZOLODECK_ENV") "development"))]
