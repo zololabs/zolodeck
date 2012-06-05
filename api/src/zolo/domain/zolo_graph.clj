@@ -4,7 +4,6 @@
 (defn user-zolo-id [zg]
   (first (keys zg)))
 
-;;TODO Need to define Zolo Contact Structure. Should it be with key or just value
 (defn contact-zolo-id [zg-contact]
   (first (keys zg-contact)))
 
