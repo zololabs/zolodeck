@@ -66,12 +66,31 @@
                   (zgf/add-score contact1 100 5000)
                   (zgf/add-score contact1 101 1000)
                   (zgf/add-score contact1 200 9000))]
+          (is (= true (zg/has-score? zg "contact1")))
           (is (= {:value 200 :at 9000} (zg/score zg "contact1")))
-          (is (= 200 (zg/score-value (zg/score zg "contact1"))))))))
+          (is (= 200 (zg/score-value (zg/score zg "contact1")))))))
+
+    (testing "when no score is present"
+      (testing "it should return nil and -1 for value"
+        (let [zg (zgf/building 
+                  main
+                  (zgf/add-contact contact1))]
+          (is (= false (zg/has-score? zg "contact1")))
+          (is (nil? (zg/score zg "contact1")))
+          (is (= -1 (zg/score-value (zg/score zg "contact1"))))))))
 
   (deftest test-format-for-d3
+
     (testing "With one Contact"
-      (testing "Score not yet calculated")
+      (testing "Score not yet calculated"
+        (let [zg (zgf/building
+                  main
+                  (zgf/add-contact contact1))]
+          (is (= {"nodes" [{"name" "main" 
+                            "group" 1000}]
+                  "links" []}
+                 (zg/format-for-d3 zg)))))
+
       (testing "Score is calculated"
         (let [zg (zgf/building
                   main
@@ -84,6 +103,46 @@
                   "links" [{"source" 0
                             "target" 1
                             "value" 20}]}
+                 (zg/format-for-d3 zg))))))
+
+
+    (testing "With more than one view Contact"
+      (testing "None of the Scores are calculated"
+        (let [zg (zgf/building
+                  main
+                  (zgf/add-contact contact1)
+                  (zgf/add-contact contact2))]
+          (is (= {"nodes" [{"name" "main" "group" 1000}]
+                  "links" []}
+                 (zg/format-for-d3 zg)))))
+
+      (testing "Not all Scores are calculated"
+        (let [zg (zgf/building
+                  main
+                  (zgf/add-contact contact1)
+                  (zgf/add-score contact1 20)
+                  (zgf/add-contact (zgf/new-contact "contact-with-no-score"))
+                  (zgf/add-contact contact2)
+                  (zgf/add-score contact2 40))]
+          (is (= {"nodes" [{"name" "main" "group" 1000}
+                           {"name" "contact2" "group" 1}
+                           {"name" "contact1" "group" 1}]
+                  "links" [{"source" 0 "target" 1 "value" 40}
+                           {"source" 0 "target" 2 "value" 20}]}
+                 (zg/format-for-d3 zg)))))
+
+      (testing "All Scores are calculated"
+        (let [zg (zgf/building
+                  main
+                  (zgf/add-contact contact1)
+                  (zgf/add-score contact1 20)
+                  (zgf/add-contact contact2)
+                  (zgf/add-score contact2 40))]
+          (is (= {"nodes" [{"name" "main" "group" 1000}
+                           {"name" "contact2" "group" 1}
+                           {"name" "contact1" "group" 1}]
+                  "links" [{"source" 0 "target" 1 "value" 40}
+                           {"source" 0 "target" 2 "value" 20}]}
                  (zg/format-for-d3 zg))))))))
 
 

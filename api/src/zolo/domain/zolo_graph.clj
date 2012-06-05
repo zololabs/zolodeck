@@ -40,8 +40,16 @@
 (defn score [zg c-id]
   (last (sort-by :at (scores zg c-id))))
 
-(defn score-value [s]
-  (:value s))
+(defn has-score? [zg c-id]
+  (not (nil? (score zg c-id))))
+
+(defn score-value 
+  ([s]
+     (if (nil? s)
+       -1
+       (:value s)))
+  ([zg c-id]
+     (score-value (score zg c-id))))
 
 (defn all-scores [zg]
   (reduce (fn [acc c-id]
@@ -67,15 +75,31 @@
 
 (defn d3-nodes [zg]
   (reduce (fn [acc [c-id c]]
-            (conj acc (d3-node c-id 1)))
+            (if (has-score? zg c-id)
+              (conj acc (d3-node c-id 1))
+              acc))
           [(d3-node (user-zolo-id zg) 1000)]
           (contacts zg)))
 
+(defn add-d3-link [links zg c-id target]
+  (if (has-score? zg c-id)
+    (conj links (d3-link target (score-value zg c-id)))
+    links))
+
+(defn d3-link-next-target [zg c-id current-target]
+  (if (has-score? zg c-id) 
+    (inc current-target)
+    current-target))
+
 (defn d3-links [zg]
-  (reduce (fn [acc c-id]
-            (conj acc (d3-link 1 (-> (score zg c-id) score-value))))
-          []
-          (contact-zolo-ids zg)))
+  (loop [links []
+         c-ids (contact-zolo-ids zg)
+         target 1]
+    (if (not (empty? c-ids))
+      (recur (add-d3-link links zg (first c-ids) target)
+             (rest c-ids) 
+             (d3-link-next-target zg (first c-ids) target))
+      links)))
 
 (defn format-for-d3 [zg]
   {"nodes" (d3-nodes zg)
