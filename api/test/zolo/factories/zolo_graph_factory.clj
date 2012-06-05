@@ -87,9 +87,11 @@
             (zg/add-message @ZG-ATOM c-id m))))
 
 (defn add-score 
-  ([c score-value]
+  ([c score-value score-at]
      (reset! ZG-ATOM
-             (zg/add-score @ZG-ATOM (zg/contact-zolo-id c) (default-score score-value))))
+             (zg/add-score @ZG-ATOM (zg/contact-zolo-id c) (default-score score-value score-at))))
+  ([c score-value]
+     (add-score c score-value 31231231231))
   ([c]
      (add-score c (rand-int 100))))
 

@@ -1,6 +1,6 @@
 (ns zolo.domain.zolo-graph-test
   (:use zolodeck.utils.debug
-        [zolo.domain.zolo-graph :as zolo-graph]
+        [zolo.domain.zolo-graph :as zg]
         [clojure.test :only [run-tests deftest is are testing]])
   (:require [zolo.factories.zolo-graph-factory :as zgf]))
 
@@ -55,7 +55,36 @@
       (is (= #{200 201} 
              (set (map :value (scores zg "contact2")))))
       (is (= #{100 101 200 201} 
-             (set (map :value (all-scores zg))))))))
+             (set (map :value (all-scores zg)))))))
+
+  (deftest test-score
+    (testing "When score present"
+      (testing "it should return latest score"
+        (let [zg (zgf/building 
+                  main
+                  (zgf/add-contact contact1)
+                  (zgf/add-score contact1 100 5000)
+                  (zgf/add-score contact1 101 1000)
+                  (zgf/add-score contact1 200 9000))]
+          (is (= {:value 200 :at 9000} (zg/score zg "contact1")))
+          (is (= 200 (zg/score-value (zg/score zg "contact1"))))))))
+
+  (deftest test-format-for-d3
+    (testing "With one Contact"
+      (testing "Score not yet calculated")
+      (testing "Score is calculated"
+        (let [zg (zgf/building
+                  main
+                  (zgf/add-contact contact1)
+                  (zgf/add-score contact1 20))]
+          (is (= {"nodes" [{"name" "main" 
+                            "group" 1000}
+                           {"name" "contact1"
+                            "group" 1}]
+                  "links" [{"source" 0
+                            "target" 1
+                            "value" 20}]}
+                 (zg/format-for-d3 zg))))))))
 
 
 
