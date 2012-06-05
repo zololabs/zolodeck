@@ -2,56 +2,60 @@
   (:use zolodeck.utils.debug
         [zolo.domain.zolo-graph :as zolo-graph]
         [clojure.test :only [run-tests deftest is are testing]])
-  (:require [zolo.factories.zolo-graph-factory :as zg-factory]
-            [zolo.domain.zolo-graph.validation :as zg-validation]))
+  (:require [zolo.factories.zolo-graph-factory :as zgf]))
 
-(deftest test-user-zolo-id
-  (is (= "user-100" (user-zolo-id (zg-factory/user "user-100")))))
+(let [main (zgf/new-user "main")
+      contact1 (zgf/new-contact "contact1")
+      contact2 (zgf/new-contact "contact2")]
 
-(deftest test-contact-zolo-id
-  (is (= "contact-100" (user-zolo-id (zg-factory/contact "contact-100")))))
+  (deftest test-user-zolo-id
+    (is (= "user-100" (user-zolo-id (zgf/new-user "user-100")))))
 
-(deftest test-contact-zolo-ids
-  (let [zg (-> (zg-factory/user)
-               (zg-factory/add-contact (zg-factory/contact "contact-100"))
-               (zg-factory/add-contact (zg-factory/contact "contact-101"))
-               zg-validation/assert-zolo-graph)]
-    (is (= #{"contact-100" "contact-101"} (set (contact-zolo-ids zg))))))
+  (deftest test-contact-zolo-id
+    (is (= "contact-100" (user-zolo-id (zgf/new-contact "contact-100")))))
 
-(deftest test-contacts
-  (let [zg (-> (zg-factory/user)
-               (zg-factory/add-contact (zg-factory/contact "contact-100"))
-               (zg-factory/add-contact (zg-factory/contact "contact-101"))
-               ;;TODO why we need to remember to call this everytime ... something needs to be done
-               zg-validation/assert-zolo-graph)]
-    (is (= 2 (count (contacts zg))))
-    (is (= "contact-101" (:zolo-id (contact zg "contact-101"))))))
+  (deftest test-contact-zolo-ids
+    (let [zg (zgf/building 
+              main
+              (zgf/add-contact contact1)
+              (zgf/add-contact contact2))]
+      (is (= #{"contact1" "contact2"} (set (contact-zolo-ids zg))))))
 
-(deftest test-messages
-  (let [zg (-> (zg-factory/user)
-               (zg-factory/add-contact (zg-factory/contact-with-messages 
-                                         "contact-100" 
-                                         ["msg-100" "msg-101"]))
-               (zg-factory/add-contact (zg-factory/contact-with-messages 
-                                         "contact-200" 
-                                         ["msg-200" "msg-201"])))]
-    (is (= #{"msg-200" "msg-201"} 
-           (set (map :zolo-id (messages zg "contact-200")))))
-    (is (= #{"msg-200" "msg-201" "msg-100" "msg-101"} 
-           (set (map :zolo-id (all-messages zg)))))))
+  (deftest test-contacts
+    (let [zg (zgf/building 
+              main
+              (zgf/add-contact contact1)
+              (zgf/add-contact contact2))]
+      (is (= 2 (count (contacts zg))))
+      (is (= "contact2" (:zolo-id (contact zg "contact2"))))))
 
-(deftest test-scores
-  (let [zg (-> (zg-factory/user)
-               (zg-factory/add-contact (zg-factory/contact-with-scores 
-                                         "contact-100" 
-                                         [100 101]))
-               (zg-factory/add-contact (zg-factory/contact-with-scores 
-                                         "contact-200" 
-                                         [200 201])))]
-    (is (= #{200 201} 
-           (set (map :value (scores zg "contact-200")))))
-    (is (= #{100 101 200 201} 
-           (set (map :value (all-scores zg)))))))
+  (deftest test-messages
+    (let [zg (zgf/building 
+              main
+              (zgf/add-contact contact1)
+              (zgf/send-message contact1 "send 1")
+              (zgf/receive-message contact1 "recieve 1")
+              (zgf/add-contact contact2)
+              (zgf/send-message contact2 "send 2")
+              (zgf/receive-message contact2 "recieve 2"))]
+      (is (= #{"send 2" "recieve 2"} 
+             (set (map :text (messages zg "contact2")))))
+      (is (= #{"send 1" "send 2" "recieve 1" "recieve 2"} 
+             (set (map :text (all-messages zg)))))))
+
+  (deftest test-scores
+    (let [zg (zgf/building 
+              main
+              (zgf/add-contact contact1)
+              (zgf/add-score contact1 100)
+              (zgf/add-score contact1 101)
+              (zgf/add-contact contact2)
+              (zgf/add-score contact2 200)
+              (zgf/add-score contact2 201))]
+      (is (= #{200 201} 
+             (set (map :value (scores zg "contact2")))))
+      (is (= #{100 101 200 201} 
+             (set (map :value (all-scores zg))))))))
 
 
 

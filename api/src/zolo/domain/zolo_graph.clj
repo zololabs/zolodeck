@@ -16,7 +16,7 @@
 (defn contact [zg c-id]
   (get-in zg [(user-zolo-id zg) :contacts c-id]))
 
-(defn add-contact [zg c]
+(defn upsert-contact [zg c]
   (update-in zg [(user-zolo-id zg) :contacts] #(merge % c)))
 
 (defn messages [zg c-id]
@@ -28,6 +28,11 @@
           []
           (contact-zolo-ids zg)))
 
+(defn add-message [zg c-id m]
+  (update-in zg
+             [(user-zolo-id zg) :contacts c-id :messages]
+             #(conj % m)))
+
 (defn scores [zg c-id]
   (get-in zg [(user-zolo-id zg) :contacts c-id :scores]))
 
@@ -37,6 +42,10 @@
           []
           (contact-zolo-ids zg)))
 
+(defn add-score [zg c-id s]
+  (update-in zg
+             [(user-zolo-id zg) :contacts c-id :scores]
+             #(conj % s)))
 
 (defn load-from-datomic [])
 
