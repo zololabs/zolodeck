@@ -1,9 +1,34 @@
 (ns zolo.factories.zolo-graph-factory
   (:use zolodeck.utils.clojure
         zolodeck.utils.debug)
-  (:require [zolo.domain.zolo-graph :as zg]))
+  (:require [zolo.domain.zolo-graph :as zg]
+            [zolo.domain.zolo-graph.validation :as zg-validation]))
 
-(defn user 
+(def ^:dynamic ZG-ATOM)
+
+(defn default-message 
+  ([zolo-id]
+     {:zolo-id zolo-id
+      :platform "Facebook"
+      :mode "Message"
+      :text (str "This is message : " zolo-id)
+      :date 12312312312
+      :from "user-100"
+      :to "contact-101"
+      :thread-id nil
+      :reply-to nil})
+  ([]
+     (default-message (str (random-guid)))))
+
+(defn default-score 
+  ([value at]
+     {:value value :at at})
+  ([value]
+     (default-score value 31231231231))
+  ([]
+     (default-score (rand-int 100))))
+
+(defn new-user 
   ([zolo-id]
      {zolo-id
       {:zolo-id zolo-id
@@ -18,10 +43,10 @@
                    :auth-token (str "fb-auth-token-" zolo-id)}}
        :contacts {}}})
   ([]
-     (user (str (random-guid)))))
+     (new-user (str (random-guid)))))
 
-(defn contact 
-  ([zolo-id]
+(defn new-contact 
+  ([zolo-id]     
      {zolo-id
       {:zolo-id zolo-id
        :about 
@@ -37,69 +62,40 @@
        
        :messages []}})
   ([]
-     (contact (str (random-guid)))))
+     (new-contact (str (random-guid)))))
 
-(defn message 
-  ([zolo-id]
-     {:zolo-id zolo-id
-      :platform "Facebook"
-      :mode "Message"
-      :text (str "This is message : " zolo-id)
-      :date 12312312312
-      :from "user-100"
-      :to "contact-101"
-      :thread-id nil
-      :reply-to nil})
-  ([]
-     (message (str (random-guid)))))
-
-(defn score 
-  ([value at]
-     {:value value :at at})
-  ([value]
-     (score value 31231231231))
-  ([]
-     (score (rand-int 100)))) 
-
-(defn contact-zolo-id [c]
-  (first (keys c)))
-
-(defn add-message 
-  ([c partial-msg]
-     (update-in c
-                [(contact-zolo-id c) :messages]
-                #(merge % (merge (message) partial-msg))))
-  ([c]
-     (add-message c (message))))
-
-(defn add-score 
-  ([c partial-msg]
-     (update-in c
-                [(contact-zolo-id c) :scores]
-                #(merge % (merge (score) partial-msg))))
-  ([c]
-     (add-score c (score))))
 
 (defn add-contact 
-  ([zg c]
-     (zg/add-contact zg c))
-  ([zg]
-     (add-contact zg (contact))))
+  ([c]
+     (reset! ZG-ATOM (zg/upsert-contact @ZG-ATOM c))
+     nil)
+  ([]
+     (add-contact (new-contact))))
 
-(defn contact-with-messages [c-id m-ids]
-  (reduce (fn [c m-id]
-            (add-message c (message m-id)))
-          (contact c-id)
-          m-ids))
+(defn send-message [to msg]
+  (reset! ZG-ATOM 
+          (let [u-id (zg/user-zolo-id @ZG-ATOM)
+                c-id (zg/contact-zolo-id to)
+                m (merge (default-message) {:from u-id :to c-id :text msg})]
+            (zg/add-message @ZG-ATOM c-id m))))
 
-(defn contact-with-scores [c-id score-values]
-  (reduce (fn [c score-value]
-            (add-score c (score score-value)))
-          (contact c-id)
-          score-values))
+(defn receive-message [from msg]
+  (reset! ZG-ATOM 
+          (let [u-id (zg/user-zolo-id @ZG-ATOM)
+                c-id (zg/contact-zolo-id from)
+                m (merge (default-message) {:from c-id :to u-id :text msg})]
+            (zg/add-message @ZG-ATOM c-id m))))
 
-(defn add-contact-with-message-and-score [zg]
-  (->> (contact)
-       add-message
-       add-score
-       (add-contact zg)))
+(defn add-score 
+  ([c score-value score-at]
+     (reset! ZG-ATOM
+             (zg/add-score @ZG-ATOM (zg/contact-zolo-id c) (default-score score-value score-at))))
+  ([c score-value]
+     (add-score c score-value 31231231231))
+  ([c]
+     (add-score c (rand-int 100))))
+
+(defmacro building [u & build-forms]
+  `(binding [ZG-ATOM (atom ~u)]
+     ~@build-forms
+     (zg-validation/assert-zolo-graph @ZG-ATOM)))
