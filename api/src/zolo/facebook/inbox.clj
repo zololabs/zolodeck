@@ -2,6 +2,7 @@
   (:use [slingshot.slingshot :only [throw+ try+]]
         zolo.facebook.gateway
         zolodeck.utils.debug
+        zolodeck.utils.calendar
         zolodeck.utils.clojure))
 
 (def INBOX-FQL "SELECT thread_id FROM thread WHERE folder_id = 0 ")
@@ -13,8 +14,9 @@
   (->> (message-fql thread-id start-time)
        (run-fql auth-token)))
 
-(defn fetch-inbox [auth-token start-time]
+(defn fetch-inbox [auth-token start-date-yyyy-MM-dd-string]
   (->> INBOX-FQL
        (run-fql auth-token)
-       (mapcat #(fetch-thread auth-token % start-time))))
+       (map :thread_id)
+       (mapcat #(fetch-thread auth-token % (to-seconds start-date-yyyy-MM-dd-string)))))
 
