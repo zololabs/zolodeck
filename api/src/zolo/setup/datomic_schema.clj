@@ -2,7 +2,8 @@
   (:use zolodeck.demonic.schema))
 
 (def USER-SCHEMA-TX 
-  [(string-fact-schema :user/first-name true "A user's first name") 
+  [(uuid-fact-schema :user/guid false "A GUID for the user")
+   (string-fact-schema :user/first-name true "A user's first name") 
    (string-fact-schema :user/last-name true "A user's last name") 
    (string-fact-schema :user/gender false "A user's gender") 
    ;Facebook Information
@@ -18,7 +19,8 @@
 
 
 (def CONTACT-SCHEMA-TX 
-  [(string-fact-schema :contact/first-name true "A contact's first name") 
+  [(uuid-fact-schema :contact/guid false "A GUID for a contact")
+   (string-fact-schema :contact/first-name true "A contact's first name") 
    (string-fact-schema :contact/last-name true "A contact's last name") 
    (string-fact-schema :contact/gender false "A contact's gender") 
    ;Facebook Information
@@ -28,7 +30,8 @@
    (string-fact-schema :contact/fb-picture-link false "A contact's Facebook Picture Link")])
 
 (def MESSAGE-SCHEMA-TX
-  [(string-fact-schema :message/message-id false "ID for this message")
+  [(uuid-fact-schema :message/guid false "A GUID for messages")
+   (string-fact-schema :message/message-id false "ID for this message")
    (string-fact-schema :message/platform false "The platform: Facebook, LinkedIn, etc")
    (string-fact-schema :message/mode false "Sub-type: wall-post, inbox-message, etc")
    (strings-fact-schema :message/attachments false "list of links")

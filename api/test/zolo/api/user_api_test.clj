@@ -21,7 +21,9 @@
         assert-user-not-present-in-datomic
         post-new-user
         (was-response-status? (:found STATUS-CODES))
-        assert-user-not-present-in-datomic)))
+        assert-user-not-present-in-datomic))
+
+  )
 
 
 
