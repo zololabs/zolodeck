@@ -1,6 +1,6 @@
 (ns zolo.domain.zolo-graph.validation
   (:use zolodeck.utils.debug)
-  (:require [zolo.utils.validations :as validations]
+  (:require [zolo.utils.domain.validations :as validations]
             [zolo.domain.zolo-graph :as zg]))
 
 (defn main-validation-map [u-id]

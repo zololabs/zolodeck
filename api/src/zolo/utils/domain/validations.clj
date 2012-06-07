@@ -1,4 +1,4 @@
-(ns zolo.utils.validations
+(ns zolo.utils.domain.validations
   (:use zolodeck.utils.debug))
 
 (defn optional-validator-present? [validators]

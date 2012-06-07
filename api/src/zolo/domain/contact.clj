@@ -7,6 +7,8 @@
             [zolodeck.utils.calendar :as zolo-cal]
             [clojure.set :as set]))
 
+;;TODO No test present for this namespace :(
+
 (def FB-CONTACT-KEYS
     {:first_name :contact/first-name
      :last_name :contact/last-name
