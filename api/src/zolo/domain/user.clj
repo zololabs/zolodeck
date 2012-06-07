@@ -7,7 +7,8 @@
             [zolo.facebook.inbox :as fb-inbox]
             [zolodeck.utils.string :as zolo-str]
             [zolodeck.utils.maps :as zolo-maps]
-            [zolo.domain.contact :as contact ]
+            [zolo.domain.contact :as contact]
+            [zolo.domain.message :as message]
             [clojure.set :as set]))
 
 (defn insert-fb-user [fb-user]
@@ -26,14 +27,6 @@
       fb-gateway/code->token
       fb-gateway/me))
 
-(defn merge-messages [user fresh-messages]
-  (let [existing-messages-grouped (group-by-attrib (:user/messages user) :message/message-id)
-        fresh-messages-grouped (group-by-attrib fresh-messages :message/message-id)
-        new-message-ids  (set/difference (-> fresh-messages-grouped keys set)
-                                         (-> existing-messages-grouped keys set))
-        added-messages (map fresh-messages-grouped new-message-ids)]
-    (assoc user :user/messages added-messages)))
-
 (defn update-facebook-friends [fb-id]
   (let [user (find-by-fb-id fb-id)]
     (->> user
@@ -49,7 +42,7 @@
           :user/fb-auth-token
           fb-inbox/fetch-inbox
           (map fb-message->message)
-          (merge-messages user)
+          (message/merge-messages user)
           demonic/insert)))
 
 (defn find-by-fb-signed-request [fb-sr]
