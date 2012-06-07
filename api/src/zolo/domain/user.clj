@@ -32,7 +32,7 @@
     (->> user
          :user/fb-auth-token
          fb-gateway/friends-list
-         (map fb-friend->contact)
+         (map contact/fb-friend->contact)
          (contact/merge-contacts user)
          demonic/insert)))
 

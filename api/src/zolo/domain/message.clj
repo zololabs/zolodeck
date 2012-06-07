@@ -1,8 +1,8 @@
 (ns zolo.domain.message
   (:use zolodeck.utils.debug)
   (:require [clojure.set :as set]
-            [zolodeck.utils.maps :as maps]
-            [zolodeck.utils.calendar :as calendar]
+            [zolodeck.utils.maps :as zolo-maps]
+            [zolodeck.utils.calendar :as zolo-cal]
             [zolo.utils.domain :as utils-domain]
             [zolodeck.demonic.schema :as schema]))
 
@@ -17,8 +17,8 @@
 
 (defn fb-message->message [fb-message]
   (-> fb-message
-      (assoc :created_time (calendar/millis->instant (-> fb-message :created_time (* 1000))))
-      (maps/update-all-map-keys FB-MESSAGE-KEYS)
+      (assoc :created_time (zolo-cal/millis->instant (-> fb-message :created_time (* 1000))))
+      (zolo-maps/update-all-map-keys FB-MESSAGE-KEYS)
       (utils-domain/force-schema-types)))
 
 (defn merge-messages [user fresh-messages]
