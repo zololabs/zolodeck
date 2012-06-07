@@ -41,7 +41,7 @@
     (->>  user
           :user/fb-auth-token
           fb-inbox/fetch-inbox
-          (map fb-message->message)
+          (map message/fb-message->message)
           (message/merge-messages user)
           demonic/insert)))
 

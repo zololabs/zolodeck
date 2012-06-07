@@ -23,15 +23,6 @@
      :birthday :contact/fb-birthday
      :picture :contact/fb-picture-link})
 
-(def FB-MESSAGE-KEYS
-    {:attachment :message/attachments
-     :author_id :message/from
-     :body :message/text
-     :created_time :message/date
-     :message_id :message/message-id
-     :thread_id :message/thread-id
-     :viewer_id :message/to})
-
 (defn force-schema-attrib [attrib value]
   (cond
    (and (schema/is-string? attrib) (not (string? value))) (str value)
@@ -51,9 +42,3 @@
   (-> fb-friend
       (assoc :birthday (calendar/date-string->instant "MM/dd/yyyy" (:birthday fb-friend)))
       (maps/update-all-map-keys FB-FRIEND-KEYS)))
-
-(defn fb-message->message [fb-message]
-  (-> fb-message
-      (assoc :created_time (calendar/millis->instant (-> fb-message :created_time (* 1000))))
-      (maps/update-all-map-keys FB-MESSAGE-KEYS)
-      (force-schema-types)))
