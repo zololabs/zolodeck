@@ -1,7 +1,6 @@
 (ns zolo.domain.user
   (:use zolo.setup.datomic-setup        
         [zolodeck.demonic.core :only [insert run-query load-entity] :as demonic]
-        zolo.utils.domain
         zolodeck.utils.debug)
   (:require [zolo.facebook.gateway :as fb-gateway]
             [zolo.facebook.inbox :as fb-inbox]
@@ -10,6 +9,19 @@
             [zolo.domain.contact :as contact]
             [zolo.domain.message :as message]
             [clojure.set :as set]))
+
+(def FB-USER-KEYS 
+     {:first_name :user/first-name
+      :last_name :user/last-name
+      :gender :user/gender
+      :link :user/fb-link
+      :username :user/fb-username
+      :email :user/fb-email
+      :id :user/fb-id
+      :auth-token :user/fb-auth-token})
+
+(defn fb-user->user [fb-user]
+  (zolo-maps/update-all-map-keys fb-user FB-USER-KEYS))
 
 (defn insert-fb-user [fb-user]
   (-> fb-user
