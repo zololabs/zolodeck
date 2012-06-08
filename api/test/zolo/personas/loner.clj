@@ -9,7 +9,8 @@
 
 (defn create []
   (fb/in-facebook-lab
-   (let [loner (fb/create-user "Loner" "Fong")]
-     (user/insert-fb-user loner)
-
-     (user/find-by-fb-id (:id loner)))))
+   (-> (fb/create-user "Loner" "Fong")
+       (merge {:auth-token "loner-auth-token"})
+       user/insert-fb-user
+       :user/fb-id
+       user/find-by-fb-id)))

@@ -7,8 +7,11 @@
 (defn assert-zg-is-valid [zg]
   (is (zg-validation/valid? zg) "Zolo Graph is not VALID"))
 
+(defn assert-zg-is-not-valid [zg]
+  (is (not (zg-validation/valid? zg)) "Zolo Graph should be INVALID "))
+
 (defn assert-zg-has-contacts [zg no-of-contacts]
   (is (= no-of-contacts (count (zg/contacts zg)))))
 
 (defn assert-zg-has-no-contacts [zg]
-  (assert-zg-has-no-contacts zg 0))
+  (assert-zg-has-contacts zg 0))

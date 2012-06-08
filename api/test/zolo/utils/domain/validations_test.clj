@@ -77,7 +77,6 @@
 
 ))
 
-
 (deftest test-required-optional
   (testing "One Level Map"
     (let [vs {:a [:required]
@@ -88,7 +87,7 @@
            [true []]       {:a "1"}       
            [true []]       {:a "1" :b "2"}
            [false ["It is not a Map"]]       []
-           [false ["It is not a Map"]]       nil
+           [false ["It is nil!"]]       nil
            [false ["[:a] is required"]]      {}
            [false ["[:a] is required"]]      {:b "2"}
            [false ["[:a] is required"]]      {:a  nil})))
@@ -103,7 +102,7 @@
            [false ["[:a :a1] is required"]]      {}
            
            [false ["It is not a Map"]]        []
-           [false ["It is not a Map"]]        nil
+           [false ["It is nil!"]]        nil
 
            [false ["[:a :a1] is required"]]      {:b "2"}))))
 

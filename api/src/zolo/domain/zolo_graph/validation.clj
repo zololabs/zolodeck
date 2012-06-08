@@ -67,13 +67,6 @@
           []
           v))
 
-
-(defn validate-contacts-present- [zg]
-  (if (empty? (get-in zg [(zg/user-zolo-id zg) :contacts]))
-    [false ["[:contacts] is required"]]
-    [true []]))
-
-
 (defn format-errors- [errors]
   (let [tmp (partition 2 errors)] 
     (map second tmp)))
@@ -81,7 +74,6 @@
 (defn valid? [zg]
   (let [errors (format-errors- (concat []
                                        (validations/valid? (zg-validation-map zg) zg)
-                                       (validate-contacts-present- zg)
                                        (validate-vector- SCORE-VALIDATION-MAP (zg/all-scores zg))
                                        (validate-vector- MESSAGE-VALIDATION-MAP (zg/all-messages zg))
                                        ))

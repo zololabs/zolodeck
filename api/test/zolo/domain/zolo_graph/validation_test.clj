@@ -18,9 +18,9 @@
               (zgf/send-message contact1 "hey")
               (zgf/add-score contact1 20))))))
     
-    (testing "Without no Contact"
-      (testing "It should be invalid"
-        (is (thrown? AssertionError (zgf/building main)))))
+    (testing "Without Contact"
+      (testing "It should be valid"
+        (is (zg-validation/valid? (zgf/building main)))))
     
     (testing "Without zolo-id"
       (testing "it should be invalid"

@@ -76,6 +76,7 @@
       [false errors]))) 
 
 (defn valid? [validation-map m]
-  (if (map? m)
-    (valid-map?- (flatten-keys validation-map) (flatten-keys m))
-    [false ["It is not a Map"]]))
+  (cond 
+   (nil? m) [false ["It is nil!"]]
+   (map? m) (valid-map?- (flatten-keys validation-map) (flatten-keys m))
+   :else [false ["It is not a Map"]]))

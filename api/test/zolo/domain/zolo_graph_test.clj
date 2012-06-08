@@ -86,11 +86,14 @@
 
 (deftest test-user->zolo-graph
 
-  ;; (demonic-testing "User without any contacts"
-  ;;   (let [loner (merge (loner/create))
-  ;;         zg (zg/user->zolo-graph loner)]
-  ;;     (assert-zg-is-valid zg)
-  ;;     (assert-zg-has-no-contacts)))
+  (testing "When nil is passed"
+    (assert-zg-is-not-valid (zg/user->zolo-graph nil)))
+
+  (demonic-testing "User without any contacts"
+    (let [loner (loner/create)
+          zg (zg/user->zolo-graph loner)]
+      (assert-zg-is-valid zg)
+      (assert-zg-has-no-contacts zg)))
 
   (demonic-testing "User with contacts"
     (demonic-testing "and has messages"

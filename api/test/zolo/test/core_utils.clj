@@ -23,7 +23,7 @@
   ([dir]
      (binding [*file-path-prefix* dir
                conf/ENV :test]
-       (let [test-pkgs (print-vals (clojure/find-ns-in-dir dir))]
+       (let [test-pkgs (clojure/find-ns-in-dir dir)]
          (doseq [pkg test-pkgs]
            (print-vals "Loading " pkg)
            (require pkg))
@@ -31,6 +31,7 @@
   ([]
      (run-all-zolo-tests "test")))
 
+;;TODO this function is zolo utils
 (defn is-same-seq? [seq-a seq-b]
   (is (= (sort seq-a) (sort seq-b))))
 
