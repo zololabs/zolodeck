@@ -5,7 +5,7 @@ task :default => [:'zolo:test:all']
 namespace :zolo do
   
   desc "Bootstrap"
-  task :boot => [:'api:boot', :'api:test:all',:'fe:boot', :'fe:test:all']
+  task :boot => ['utils:lein_plugins', :'api:boot', :'api:test:all',:'fe:boot', :'fe:test:all']
 
   namespace :test do
     
@@ -33,6 +33,13 @@ namespace :utils do
     info "Deleting Zolodeck Libs from local m2"
     sh " rm -rf ~/.m2/repository/zolodeck/"
     sh "cd api ; lein deps; lein build-checkouts;"
+  end
+
+  desc "Install Lein Plugins needed for this project"
+  task :lein_plugins do
+    sh "lein plugin install lein-difftest 1.3.7"
+    sh "lein plugin install lein-notes 0.0.1"
+    sh "lein plugin install lein-clojars 0.8.0"
   end
 
 end

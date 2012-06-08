@@ -5,13 +5,13 @@
 
 (defn main-validation-map [u-id]
   {u-id
-   {:zolo-id [:required :string]
+   {:zolo-id [:required :uuid]
     :about 
     {:first-name [:required :string]
      :last-name [:required :string]
      :gender [:required :string]
      :facebook {:link [:required :string]
-                :username [:required :string]
+                :username [:optional :string]
                 :email [:required :string] 
                 :id [:required :string]
                 :auth-token [:required :string]}}
@@ -20,7 +20,7 @@
 
 (defn contact-validation-map [c-id]
   {c-id
-   {:zolo-id [:required :string]
+   {:zolo-id [:required :uuid]
     :about 
     {:first-name [:required :string]
      :last-name [:required :string]
@@ -50,13 +50,13 @@
       :at [:required :integer]}) 
 
 (def MESSAGE-VALIDATION-MAP
-     {:zolo-id [:required :string]
+     {:zolo-id [:required :uuid]
       :platform [:required :string] 
       :mode [:required :string] 
       :text [:required :string]
       :date [:required :integer] 
-      :from [:required :string]
-      :to [:required :string]
+      :from [:required :uuid]
+      :to [:required :uuid]
       :thread-id [:optional :string]
       :reply-to [:optional :string]})
 

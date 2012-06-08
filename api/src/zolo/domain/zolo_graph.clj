@@ -61,7 +61,20 @@
              [(user-zolo-id zg) :contacts c-id :scores]
              #(conj % s)))
 
-(defn user->zolo-graph [user])
+(defn user->zolo-graph [user]
+  (print-vals user)
+  {(:user/guid user)
+   {:zolo-id (print-vals "Guid" (:user/guid user))
+    :about 
+    {:first-name (:user/first-name user)
+     :last-name (:user/last-name user)
+     :gender (:user/gender user)
+     :facebook {:link (:user/fb-link user)
+                :username (:user/fb-username user)
+                :email (:user/fb-email user)
+                :id (:user/fb-id user)
+                :auth-token (:user/fb-auth-token user)}}
+    :contacts {}}})
 
 
 
