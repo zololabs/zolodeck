@@ -1,0 +1,1 @@
+{G zolo.core/guid}
