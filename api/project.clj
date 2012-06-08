@@ -48,6 +48,7 @@
   :project-init (do (use 'ring.util.serve) 
                     (use 'clojure.pprint)
                     (use 'clojure.test)
+                    (use 'zolo.utils.readers)
                     (use 'zolo.test.core-utils))
 
   :warn-on-reflection false

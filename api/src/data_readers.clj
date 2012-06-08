@@ -1,1 +1,1 @@
-{G zolo.core/guid}
+{G zolo.utils.readers/guid}
