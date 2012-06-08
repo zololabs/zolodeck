@@ -61,7 +61,7 @@
              [(user-zolo-id zg) :contacts c-id :scores]
              #(conj % s)))
 
-(defn load-from-datomic [])
+(defn user->zolo-graph [user])
 
 
 

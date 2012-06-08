@@ -1,5 +1,5 @@
-(ns zolo.utils.validations-test
-  (:use [zolo.utils.validations]
+(ns zolo.utils.domain.validations-test
+  (:use [zolo.utils.domain.validations]
         zolodeck.utils.debug
         [clojure.test :only [run-tests deftest is are testing]]))
 
