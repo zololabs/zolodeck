@@ -1,14 +1,13 @@
 (ns zolo.domain.zolo-graph.validation-test
   (:use zolodeck.utils.debug
         [zolo.domain.zolo-graph.validation :as zg-validation]
-        [clojure.test :only [run-tests deftest is are testing]]
-        [zolo.factories.zolo-graph-factory :only [guid]])
+        [clojure.test :only [run-tests deftest is are testing]])
   (:require [zolo.factories.zolo-graph-factory :as zgf]))
 
 
 (deftest test-zolo-graph-validation
-  (let [main (zgf/new-user (guid "aaaa1000"))
-        contact1 (zgf/new-contact (guid "cccc1000"))]
+  (let [main (zgf/new-user #G"aaaa1000")
+        contact1 (zgf/new-contact #G"cccc1000")]
     
     (testing "With All Fields"
       (testing "It should be valid"
