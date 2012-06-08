@@ -9,9 +9,6 @@ namespace :api do
     sh "git submodule init; git submodule sync ; git submodule update"
     info "Getting Deps and Building projects in Checkout folder"
     sh "cd api ; lein deps; lein build-checkouts;"
-    sh "lein plugin install lein-difftest 1.3.7"
-    sh "lein plugin install lein-notes 0.0.1"
-    sh "lein plugin install lein-clojars 0.8.0"
     Rake::Task["api:config:generate"].execute
   end
 
@@ -36,7 +33,10 @@ namespace :api do
     end
 
     desc "Runs API all tests"
-    task :all => [:'api:test:unit', :'api:test:integration']
+    task :all do
+      info "Running API Unit and Integration Tests"
+      sh "cd api; ZOLODECK_ENV=test lein test :all"
+    end
   end
 
   desc "Start API Swank"
