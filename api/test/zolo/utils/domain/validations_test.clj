@@ -1,7 +1,8 @@
 (ns zolo.utils.domain.validations-test
   (:use [zolo.utils.domain.validations]
         zolodeck.utils.debug
-        [clojure.test :only [run-tests deftest is are testing]]))
+        [clojure.test :only [run-tests deftest is are testing]])
+  (:require [zolodeck.utils.clojure :as zolo-clojure]))
 
 (deftest test-validate-attribute
   (are [expected attribute validators m] (= expected (validate-attribute attribute validators (flatten-keys m)))
@@ -20,6 +21,12 @@
          []     [:a]  [:optional]    {:a 1}
          []     [:a]  [:optional]    {:a nil}
          []     [:a]  [:optional]    {:b 1}
+
+         ;;UUID
+         []     [:a]      [:uuid]        {:a (zolo-clojure/random-guid)}
+         ["[:a] is not UUID"]  [:a]     [:uuid]    {:a "addsasda"}
+         ["[:a] is not UUID"]  [:a]     [:uuid]    {:a 1}
+         ["[:a] is not UUID"]  [:a]     [:uuid]    {:a nil}
 
          ;;String
          []     [:a]      [:string]      {:a "apple"}

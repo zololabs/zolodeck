@@ -4,6 +4,9 @@
 (defn optional-validator-present? [validators]
   (contains? (set validators) :optional))
 
+(defn uuid? [a]
+  (= java.util.UUID (class a)))
+
 (defn validator-fn- [func msg]
   (fn [m attribute validators]
     (when-not (and 
@@ -18,12 +21,14 @@
 (def val-vector (validator-fn- vector? "is not vector"))
 (def val-empty-not-allowed (validator-fn- (complement empty?) "is empty"))
 
+(def val-uuid (validator-fn- uuid? "is not UUID"))
 (def val-string (validator-fn- string? "is not string"))
 (def val-integer (validator-fn- integer? "is not integer"))
 
 (def VALIDATOR-KEY-TO-VALIDATOR-FN
      {:required val-required
       :optional val-optional
+      :uuid val-uuid
       :string val-string
       :integer val-integer
       :vector val-vector

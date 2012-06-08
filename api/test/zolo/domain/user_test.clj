@@ -122,7 +122,5 @@
 
        (stubbing [fb-inbox/fetch-inbox (fb/fetch-messages amit)]
          (update-facebook-inbox (:id amit))
-         (is (= 6 (count (:user/messages (user/find-by-fb-id (:id amit)))))))
-       
-       ))))
+         (is (= 6 (count (:user/messages (user/find-by-fb-id (:id amit)))))))))))
 

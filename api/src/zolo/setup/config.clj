@@ -3,10 +3,11 @@
         zolodeck.utils.debug)
   (:require [clojure.java.io :as java-io]))
 
-(declare CONFIG-MAP ENV)
+(declare CONFIG-MAP)
+(declare ^:dynamic ENV)
 
 (defn load-config [config-file env]
-  (def ENV env)
+  (def ^:dynamic ENV env)
   (def CONFIG-MAP (load-string (slurp config-file))))
 
 (defn production-mode? []

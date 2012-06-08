@@ -6,6 +6,9 @@
 
 (def ^:dynamic ZG-ATOM)
 
+(defn guid [four-letters-four-digits]
+  (java.util.UUID/fromString (str four-letters-four-digits "-1000-413f-8a7a-f11c6a9c4036")))
+
 (defn default-message 
   ([zolo-id]
      {:zolo-id zolo-id
@@ -18,7 +21,7 @@
       :thread-id nil
       :reply-to nil})
   ([]
-     (default-message (str (random-guid)))))
+     (default-message (random-guid))))
 
 (defn default-score 
   ([value at]
@@ -43,7 +46,7 @@
                    :auth-token (str "fb-auth-token-" zolo-id)}}
        :contacts {}}})
   ([]
-     (new-user (str (random-guid)))))
+     (new-user (random-guid))))
 
 (defn new-contact 
   ([zolo-id]     
@@ -62,7 +65,7 @@
        
        :messages []}})
   ([]
-     (new-contact (str (random-guid)))))
+     (new-contact (random-guid))))
 
 
 (defn add-contact 
