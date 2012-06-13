@@ -53,3 +53,19 @@
         updates (find-updated-contacts existing-contacts-grouped fresh-contacts-grouped)]
     (assoc user :user/contacts (concat adds updates))))
 
+;; Zolo Graph Related Stuff
+(defn contact->zolo-contact [c]
+  {:zolo-id (c :contact/guid)
+   :about 
+   {:first-name (c :contact/first-name)
+    :last-name (c :contact/last-name)
+    :gender (c :contact/gender)
+    :facebook {:id (c :contact/fb-id)
+               :link (c :contact/fb-link)
+               :birthday (c :contact/fb-birthday)
+               :picture (c :contact/fb-picture-link)}}
+   :messages []
+   :scores []})
+
+
+

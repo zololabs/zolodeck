@@ -21,10 +21,6 @@
      (personas/update-fb-friends shy)
      (personas/update-fb-inbox shy)
 
-     (print-vals "Friends:" (:user/contacts (user/find-by-fb-id (:id shy))))
+     (:user/contacts (user/find-by-fb-id (:id shy)))
 
-     (user/find-by-fb-id (:id shy))
-     
-
-
-     )))
+     (user/find-by-fb-id (:id shy)))))

@@ -1,5 +1,6 @@
 (ns zolo.domain.zolo-graph
-  (:use zolodeck.utils.debug))
+  (:use zolodeck.utils.debug)
+  (:require [zolo.domain.contact :as contact]))
 
 (defn user-zolo-id [zg]
   (first (keys zg)))
@@ -61,6 +62,12 @@
              [(user-zolo-id zg) :contacts c-id :scores]
              #(conj % s)))
 
+(defn zolo-contacts [contacts]
+  (->> contacts
+       (map contact/contact->zolo-contact)
+       (mapcat (fn [zc] [(:zolo-id zc) zc]))
+       (apply hash-map)))
+
 (defn user->zolo-graph [user]
   (when user
     {(:user/guid user)
@@ -74,7 +81,7 @@
                   :email (:user/fb-email user)
                   :id (:user/fb-id user)
                   :auth-token (:user/fb-auth-token user)}}
-      :contacts {}}}))
+      :contacts (zolo-contacts (:user/contacts user))}}))
 
 
 
