@@ -10,7 +10,7 @@
 (defn force-schema-types [a-map]
   (zolo-maps/transform-vals-with a-map force-schema-attrib))
 
-(defn group-by-attrib [objects attrib]
+(defn group-first-by [attrib objects]
   (-> (group-by attrib objects)
       (zolo-maps/transform-vals-with (fn [_ v] (first v)))))
 

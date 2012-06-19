@@ -39,7 +39,7 @@
   (first (filter #(= contact-fb-id (:contact/fb-id %)) (:user/contacts user))))
 
 (defn group-by-fb-id [contacts]
-  (utils-domain/group-by-attrib contacts :contact/fb-id))
+  (utils-domain/group-first-by :contact/fb-id contacts))
 
 (defn update-fresh-contacts-with-db-id [existing-contacts fresh-contacts]
   (let [existing-contacts-grouped (group-by-fb-id existing-contacts)

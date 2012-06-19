@@ -33,8 +33,8 @@
 ;; TODO - refactor this (and update-fresh-contacts-with-db-id) into
 ;; domain utils
 (defn update-fresh-messages-with-db-id [existing-messages fresh-messages]
-  (let [existing-messages-grouped (utils-domain/group-by-attrib existing-messages :message/message-id)
-        fresh-messages-grouped (utils-domain/group-by-attrib fresh-messages :message/message-id)]
+  (let [existing-messages-grouped (utils-domain/group-first-by :message/message-id existing-messages)
+        fresh-messages-grouped (utils-domain/group-first-by :message/message-id fresh-messages)]
     (map
      (fn [[m-id fresh-message]]
        (assoc fresh-message :db/id (:db/id (existing-messages-grouped m-id))))
