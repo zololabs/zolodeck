@@ -45,7 +45,7 @@
          :user/fb-auth-token
          fb-gateway/friends-list
          (map contact/fb-friend->contact)
-         (contact/merge-contacts user)
+         (contact/update-contacts user)
          demonic/insert)))
 
 (defn update-facebook-inbox [fb-id]

@@ -25,48 +25,23 @@
       (assoc :birthday (zolo-cal/date-string->instant "MM/dd/yyyy" (:birthday fb-friend)))
       (zolo-maps/update-all-map-keys FB-CONTACT-KEYS)))
 
-(defn is-contact-same? [existing-contact fresh-contact]
-  (= (select-keys existing-contact (keys fresh-contact)) fresh-contact))
-
-(defn find-updated-contact-fb-ids [existing-contacts-grouped fresh-contacts-grouped]
-  (remove (fn [k] 
-            (is-contact-same? (existing-contacts-grouped k) 
-                              (fresh-contacts-grouped k))) 
-          (keys existing-contacts-grouped)))
-
-(defn find-unchanged-contact-fb-ids [existing-contacts-grouped fresh-contacts-grouped]
-  (filter (fn [k] 
-            (is-contact-same? (existing-contacts-grouped k) 
-                              (fresh-contacts-grouped k))) 
-          (keys existing-contacts-grouped)))
-
-(defn find-updated-contacts [existing-contacts-grouped fresh-contacts-grouped]
-  (map (fn [k] 
-         (merge (existing-contacts-grouped k) (fresh-contacts-grouped k))) 
-       (find-updated-contact-fb-ids existing-contacts-grouped fresh-contacts-grouped)))
-
-(defn find-unchanged-contacts [existing-contacts-grouped fresh-contacts-grouped]
-  (map (fn [k] 
-         (existing-contacts-grouped k)) 
-       (find-unchanged-contact-fb-ids existing-contacts-grouped fresh-contacts-grouped)))
-
 (defn group-by-fb-id [contacts]
   (utils-domain/group-by-attrib contacts :contact/fb-id))
 
-(defn find-added-contacts [existing-contacts-grouped fresh-contacts-grouped]
-  (map fresh-contacts-grouped (set/difference (set (keys fresh-contacts-grouped)) 
-                                              (set (keys existing-contacts-grouped)))))
+(defn update-fresh-contacts-with-db-id [existing-contacts fresh-contacts]
+  (let [existing-contacts-grouped (group-by-fb-id existing-contacts)
+        fresh-contacts-grouped (group-by-fb-id fresh-contacts)]
+    (map
+     (fn [[fb-id fresh-contact]]
+       (assoc fresh-contact :db/id (:db/id (existing-contacts-grouped fb-id))))
+     fresh-contacts-grouped)))
 
-;;TODO need to refactor this code. We need to decide on how we are
-;;going to approach this. Are we going to use unique keys in datomic
-;;... so we do not have to do all these stuffs
-(defn merge-contacts [user fresh-contacts]
-  (let [existing-contacts-grouped (group-by-fb-id (:user/contacts user))
-        fresh-contacts-grouped (group-by-fb-id fresh-contacts)
-        adds (find-added-contacts existing-contacts-grouped fresh-contacts-grouped)
-        updates (find-updated-contacts existing-contacts-grouped fresh-contacts-grouped)
-        unchanged (find-unchanged-contacts existing-contacts-grouped fresh-contacts-grouped)]
-    (assoc user :user/contacts (concat adds updates unchanged))))
+(defn update-contacts [user fresh-contacts]
+  (let [existing (:user/contacts user)
+        updated-contacts (if (empty? existing)
+                           fresh-contacts
+                           (update-fresh-contacts-with-db-id existing fresh-contacts))]
+    (assoc user :user/contacts updated-contacts)))
 
 ;; Zolo Graph Related Stuff
 (defn contact->zolo-contact [c]
