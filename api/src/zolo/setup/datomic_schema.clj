@@ -14,8 +14,6 @@
    (string-fact-schema :user/fb-username false "A user's Facebook username")
    ;Contacts Information
    (refs-fact-schema :user/contacts false "A user's contacts")
-   ;;TODO Remove this
-   (refs-fact-schema :user/messages false "A user's messages")
    ])
 
 

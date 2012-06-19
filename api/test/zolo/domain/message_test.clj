@@ -15,23 +15,23 @@
             [zolo.personas.core :as personas]
             [zolo.facebook.inbox :as fb-inbox]))
 
-;; (deftest test-group-by-contact
-;;   (let [u1 {:user/fb-id "u1"}
-;;         m1 {:message/from "c1"
-;;             :message/to "u1"
-;;             :messages/guid "1"}
-;;         m2 {:message/from "c2"
-;;             :message/to "u1"
-;;             :messages/guid "2"}
-;;         m3 {:message/from "u1"
-;;             :message/to "c2"
-;;             :messages/guid "3"}
-;;         m [m1 m2 m3]
-;;         grouped (message/group-by-contact-fb-id u1 m)]
-;;     (is-same-sequence? ["c1" "c2"] (keys grouped))
-;;     (is-same-sequence? [m1] (grouped "c1"))
-;;     (is-same-sequence? [m2 m3] (grouped "c2"))
-;;     ))
+(deftest test-group-by-contact
+  (let [u1 {:user/fb-id "u1"}
+        m1 {:message/from "c1"
+            :message/to "u1"
+            :messages/guid "1"}
+        m2 {:message/from "c2"
+            :message/to "u1"
+            :messages/guid "2"}
+        m3 {:message/from "u1"
+            :message/to "c2"
+            :messages/guid "3"}
+        m [m1 m2 m3]
+        grouped (message/group-by-contact-fb-id u1 m)]
+    (is-same-sequence? ["c1" "c2"] (keys grouped))
+    (is-same-sequence? [m1] (grouped "c1"))
+    (is-same-sequence? [m2 m3] (grouped "c2"))
+    ))
 
 (deftest test-update-inbox
   
