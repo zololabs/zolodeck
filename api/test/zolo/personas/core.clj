@@ -18,3 +18,10 @@
 (defn update-fb-inbox [fb-user]
   (stubbing [fb-inbox/fetch-inbox (fb/fetch-messages fb-user)]
     (user/update-facebook-inbox (:id fb-user))))
+
+(defn friend-of [persona friend-first-name]
+  (->> persona
+       :user/contacts
+       ;;TODO look for lowercase function
+      (filter #(= (.toLowerCase friend-first-name) (.toLowerCase (:contact/first-name %))))
+      first))

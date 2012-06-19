@@ -33,17 +33,3 @@
      (personas/update-fb-inbox vincent)
 
      (user/find-by-fb-id (:id vincent)))))
-
-
-(defn friend-jack [vincent]
-  (->> vincent
-       :user/contacts
-       (sort-by :contact/first-name)
-       print-vals
-       first))
-
-
-(demonictest test-create
-  (let [vincent (create)]
-    (is (= 2 (count (:user/contacts vincent))))
-    (is (= 6 (count (:user/messages  vincent))))))

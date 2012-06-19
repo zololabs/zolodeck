@@ -35,29 +35,8 @@
                               (fresh-contacts-grouped k))) 
           (keys existing-contacts-grouped)))
 
-(defn find-by-user-and-fb-id [user contact-fb-id]
-;; [:find ?c_name ?r_name
-;;  :where
-;;  [?c :community/name ?c_name]
-;;  [?c :community/neighborhood ?n]
-;;  [?n :neighborhood/district ?d]
-;;  [?d :district/region ?r]
-;;  [?r :db/ident ?r_name]]
-
-  (print-vals (filter #(= contact-fb-id (:contact/fb-id %)) (:user/contacts user)))
-  ;; (-> (demonic/run-query '[:find ?c
-  ;;                          :in $ ?user-guid ?fb-id
-  ;;                          :where
-  ;;                          [?u :user/guid ?user-guid]
-  ;;                          [?u :user/contacts ?c]
-  ;;                          [?c :contact/fb-id ?fb-id]] (:guid user) contact-fb-id)
-  ;;     ffirst
-  ;;     demonic/load-entity)
-
-  ;; (-> (demonic/run-query '[:find ?c :in $ ?fb :where [?c :contact/fb-id ?fb]] contact-fb-id)
-  ;;     ffirst
-  ;;     demonic/load-entity)
-  )
+(defn find-by-user-and-contact-fb-id [user contact-fb-id]
+  (first (filter #(= contact-fb-id (:contact/fb-id %)) (:user/contacts user))))
 
 (defn group-by-fb-id [contacts]
   (utils-domain/group-by-attrib contacts :contact/fb-id))

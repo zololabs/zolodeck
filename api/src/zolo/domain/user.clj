@@ -55,7 +55,8 @@
           fb-inbox/fetch-inbox
           (map message/fb-message->message)
           (message/merge-messages user)
-          demonic/insert)))
+          (map demonic/insert)
+          doall)))
 
 (defn find-by-fb-signed-request [fb-sr]
   (if-let [zolo-user (find-by-fb-id (:user_id fb-sr))]
