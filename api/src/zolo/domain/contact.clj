@@ -5,6 +5,7 @@
   (:require [zolodeck.utils.string :as zolo-str]
             [zolodeck.utils.maps :as zolo-maps]
             [zolodeck.utils.calendar :as zolo-cal]
+            [zolo.utils.domain :as utils-domain]
             [clojure.set :as set]))
 
 ;;TODO No test present for this namespace :(
@@ -33,25 +34,39 @@
                               (fresh-contacts-grouped k))) 
           (keys existing-contacts-grouped)))
 
+(defn find-unchanged-contact-fb-ids [existing-contacts-grouped fresh-contacts-grouped]
+  (filter (fn [k] 
+            (is-contact-same? (existing-contacts-grouped k) 
+                              (fresh-contacts-grouped k))) 
+          (keys existing-contacts-grouped)))
+
 (defn find-updated-contacts [existing-contacts-grouped fresh-contacts-grouped]
   (map (fn [k] 
          (merge (existing-contacts-grouped k) (fresh-contacts-grouped k))) 
        (find-updated-contact-fb-ids existing-contacts-grouped fresh-contacts-grouped)))
 
+(defn find-unchanged-contacts [existing-contacts-grouped fresh-contacts-grouped]
+  (map (fn [k] 
+         (existing-contacts-grouped k)) 
+       (find-unchanged-contact-fb-ids existing-contacts-grouped fresh-contacts-grouped)))
+
 (defn group-by-fb-id [contacts]
-  (-> (group-by :contact/fb-id contacts)
-      (zolo-maps/transform-vals-with (fn [_ v] (first v)))))
+  (utils-domain/group-by-attrib contacts :contact/fb-id))
 
 (defn find-added-contacts [existing-contacts-grouped fresh-contacts-grouped]
   (map fresh-contacts-grouped (set/difference (set (keys fresh-contacts-grouped)) 
                                               (set (keys existing-contacts-grouped)))))
 
+;;TODO need to refactor this code. We need to decide on how we are
+;;going to approach this. Are we going to use unique keys in datomic
+;;... so we do not have to do all these stuffs
 (defn merge-contacts [user fresh-contacts]
   (let [existing-contacts-grouped (group-by-fb-id (:user/contacts user))
         fresh-contacts-grouped (group-by-fb-id fresh-contacts)
         adds (find-added-contacts existing-contacts-grouped fresh-contacts-grouped)
-        updates (find-updated-contacts existing-contacts-grouped fresh-contacts-grouped)]
-    (assoc user :user/contacts (concat adds updates))))
+        updates (find-updated-contacts existing-contacts-grouped fresh-contacts-grouped)
+        unchanged (find-unchanged-contacts existing-contacts-grouped fresh-contacts-grouped)]
+    (assoc user :user/contacts (concat adds updates unchanged))))
 
 ;; Zolo Graph Related Stuff
 (defn contact->zolo-contact [c]

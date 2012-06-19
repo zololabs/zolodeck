@@ -29,5 +29,5 @@
         new-message-ids  (set/difference (-> fresh-messages-grouped keys set)
                                          (-> existing-messages-grouped keys set))
         added-messages (map fresh-messages-grouped new-message-ids)]
-    (assoc user :user/messages added-messages)))
+    (assoc user :user/messages (concat added-messages (vals existing-messages-grouped)))))
 
