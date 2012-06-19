@@ -38,23 +38,10 @@
 (defn find-by-user-and-contact-fb-id [user contact-fb-id]
   (first (filter #(= contact-fb-id (:contact/fb-id %)) (:user/contacts user))))
 
-(defn group-by-fb-id [contacts]
-  (utils-domain/group-first-by :contact/fb-id contacts))
-
-(defn update-fresh-contacts-with-db-id [existing-contacts fresh-contacts]
-  (let [existing-contacts-grouped (group-by-fb-id existing-contacts)
-        fresh-contacts-grouped (group-by-fb-id fresh-contacts)]
-    (map
-     (fn [[fb-id fresh-contact]]
-       (assoc fresh-contact :db/id (:db/id (existing-contacts-grouped fb-id))))
-     fresh-contacts-grouped)))
 
 (defn update-contacts [user fresh-contacts]
-  (let [existing (:user/contacts user)
-        updated-contacts (if (empty? existing)
-                           fresh-contacts
-                           (update-fresh-contacts-with-db-id existing fresh-contacts))]
-    (assoc user :user/contacts updated-contacts)))
+  (assoc user :user/contacts
+         (utils-domain/update-fresh-entities-with-db-id (:user/contacts user) fresh-contacts :contact/fb-id)))
 
 ;; Zolo Graph Related Stuff
 (defn contact->zolo-contact [c]

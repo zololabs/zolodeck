@@ -28,25 +28,12 @@
   (let [grouped-by-from (group-by :message/from messages)
         grouped-by-to (group-by :message/to messages)
         grouped (merge-with concat grouped-by-from grouped-by-to)]
-    (dissoc  grouped (:user/fb-id user))))
-
-;; TODO - refactor this (and update-fresh-contacts-with-db-id) into
-;; domain utils
-(defn update-fresh-messages-with-db-id [existing-messages fresh-messages]
-  (let [existing-messages-grouped (utils-domain/group-first-by :message/message-id existing-messages)
-        fresh-messages-grouped (utils-domain/group-first-by :message/message-id fresh-messages)]
-    (map
-     (fn [[m-id fresh-message]]
-       (assoc fresh-message :db/id (:db/id (existing-messages-grouped m-id))))
-     fresh-messages-grouped)))
+    (dissoc grouped (:user/fb-id user))))
 
 (defn process-contact-messages [user contact-fb-id fresh-messages]
-  (let [contact (contact/find-by-user-and-contact-fb-id user contact-fb-id)
-        existing-messages (:contact/messages contact)
-        updated-fresh-messages (if (empty? existing-messages)
-                                 fresh-messages
-                                 (update-fresh-messages-with-db-id existing-messages fresh-messages))]
-    (assoc contact :contact/messages updated-fresh-messages)))
+  (let [contact (contact/find-by-user-and-contact-fb-id user contact-fb-id)]
+    (assoc contact :contact/messages
+           (utils-domain/update-fresh-entities-with-db-id (:contact/messages contact) fresh-messages :message/message-id))))
 
 (defn merge-messages [user fresh-messages]
   (let [grouped (group-by-contact-fb-id user fresh-messages)]
