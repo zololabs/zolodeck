@@ -15,3 +15,7 @@
 
 (defn assert-zg-has-no-contacts [zg]
   (assert-zg-has-contacts zg 0))
+
+(defn assert-contacts-are-same [expected-contact actual-contact]
+  (is (= (set (keys expected-contact)) (set (keys actual-contact))))
+  (map #(is (= (% expected-contact) (% actual-contact))) (keys expected-contact)))

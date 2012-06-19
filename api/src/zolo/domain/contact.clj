@@ -6,6 +6,7 @@
             [zolodeck.utils.maps :as zolo-maps]
             [zolodeck.utils.calendar :as zolo-cal]
             [zolo.utils.domain :as utils-domain]
+            [zolodeck.demonic.core :as demonic]
             [clojure.set :as set]))
 
 ;;TODO No test present for this namespace :(
@@ -24,6 +25,39 @@
   (-> fb-friend
       (assoc :birthday (zolo-cal/date-string->instant "MM/dd/yyyy" (:birthday fb-friend)))
       (zolo-maps/update-all-map-keys FB-CONTACT-KEYS)))
+
+(defn is-contact-same? [existing-contact fresh-contact]
+  (= (select-keys existing-contact (keys fresh-contact)) fresh-contact))
+
+(defn find-updated-contact-fb-ids [existing-contacts-grouped fresh-contacts-grouped]
+  (remove (fn [k] 
+            (is-contact-same? (existing-contacts-grouped k) 
+                              (fresh-contacts-grouped k))) 
+          (keys existing-contacts-grouped)))
+
+(defn find-by-user-and-fb-id [user contact-fb-id]
+;; [:find ?c_name ?r_name
+;;  :where
+;;  [?c :community/name ?c_name]
+;;  [?c :community/neighborhood ?n]
+;;  [?n :neighborhood/district ?d]
+;;  [?d :district/region ?r]
+;;  [?r :db/ident ?r_name]]
+
+  (print-vals (filter #(= contact-fb-id (:contact/fb-id %)) (:user/contacts user)))
+  ;; (-> (demonic/run-query '[:find ?c
+  ;;                          :in $ ?user-guid ?fb-id
+  ;;                          :where
+  ;;                          [?u :user/guid ?user-guid]
+  ;;                          [?u :user/contacts ?c]
+  ;;                          [?c :contact/fb-id ?fb-id]] (:guid user) contact-fb-id)
+  ;;     ffirst
+  ;;     demonic/load-entity)
+
+  ;; (-> (demonic/run-query '[:find ?c :in $ ?fb :where [?c :contact/fb-id ?fb]] contact-fb-id)
+  ;;     ffirst
+  ;;     demonic/load-entity)
+  )
 
 (defn group-by-fb-id [contacts]
   (utils-domain/group-by-attrib contacts :contact/fb-id))

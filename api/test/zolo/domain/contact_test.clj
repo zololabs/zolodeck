@@ -44,6 +44,55 @@
             (is (= "NewName"                  
                    (:contact/first-name (first (:user/contacts (user/find-by-fb-id (:id fb-user)))))))))))))
 
+;; (deftest test-find-contact-by-user-and-fb-id
+;;   ;; (testing "When main user is not present"
+;;   ;;   (demonic-testing "it should return nil"
+;;   ;;     (let [vincent (vincent/create)
+;;   ;;         jack (print-vals "Jack" (vincent/friend-jack vincent))
+;;   ;;         jack-from-db (print-vals "Jack From DB" (contact/find-by-fb-id vincent (:contact/fb-id jack)))]
+
+;;   ;;       (is (= jack jack-from-db)))))
+
+;;   ;; (testing "When contact is not present"
+;;   ;;   (demonic-testing "it should return nil"
+;;   ;;     (let [vincent (vincent/create)]
+;;   ;;       (is (nil? (contact/find-by-user-and-fb-id vincent "JUNK-CONTACT-FB-ID"))))))
+
+;;   (testing "When same contact is present"
+
+;;     (testing "only in one user"
+;;       (demonic-testing "it should return the correct contact"
+;;         (let [vincent (vincent/create)
+;;               jack (vincent/friend-jack vincent)
+;;               jack-from-db (contact/find-by-user-and-fb-id vincent (:contact/fb-id jack))]
+
+;;           (assert-contacts-are-same jack jack-from-db))))
+
+;;     ;; (testing "in two different users"
+;;     ;;   (demonic-testing "it should return the correct contact"
+;;     ;;     (fb/in-facebook-lab
+;;     ;;      (let [user1 (personas/create-fb-user "User" "1")
+;;     ;;            user2 (personas/create-fb-user "User" "2")
+;;     ;;            friend1 (personas/create-fb-user "Friend" "Original")
+;;     ;;            friend1_modified (assoc friend1 :last_name "Modified")
+;;     ;;            friend-fb-id (:id friend1)]
+
+;;     ;;        (user/insert-fb-user user1)
+;;     ;;        (user/insert-fb-user user2)
+
+;;     ;;        (fb/make-friend user1 friend1)
+;;     ;;        (fb/make-friend user2 friend1_modified)
+
+;;     ;;        (personas/update-fb-friends user1)
+;;     ;;        (personas/update-fb-friends user2)
+
+;;     ;;        (let [friend_of_user1 (contact/find-by-user-and-fb-id user1 friend-fb-id)
+;;     ;;              friend_of_user2 (contact/find-by-user-and-fb-id user2 friend-fb-id)]
+
+;;     ;;          (is (= "Original" (:contact/last-name friend_of_user1)))
+;;     ;;          (is (= "Modified" (:contact/last-name friend_of_user2))))))))
+
+;;     ))
 
 (deftest test-contact->zolo-contact
 
