@@ -19,3 +19,14 @@
 (defn assert-contacts-are-same [expected-contact actual-contact]
   (is (= (set (keys expected-contact)) (set (keys actual-contact))))
   (map #(is (= (% expected-contact) (% actual-contact))) (keys expected-contact)))
+
+(defn has-datomic-id? [entity]
+  (not (nil? (:db/id entity))))
+
+(defn assert-datomic-id-present [entity]
+  (is (has-datomic-id? entity)))
+
+(defn assert-datomic-id-not-present [entity]
+  (is (not (has-datomic-id? entity))))
+
+

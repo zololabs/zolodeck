@@ -5,9 +5,6 @@
             [zolo.setup.config :as conf])
   (:import [java.sql Time Date Timestamp]))
 
-;;TODO Is this variable getting used anywhere?
-(def ^:dynamic INTEGRATION-TEST?)
-
 (def ^:dynamic *file-path-prefix* nil)
 
 (defmacro is-not [body]
@@ -30,20 +27,6 @@
          (apply run-tests test-pkgs))))
   ([]
      (run-all-zolo-tests "test")))
-
-;;TODO this function is zolo utils
-(defn is-same-seq? [seq-a seq-b]
-  (is (= (sort seq-a) (sort seq-b))))
-
-(defn has-datomic-id? [entity]
-  (not (nil? (:db/id entity))))
-
-;;TODO Move these to assertions namespace
-(defn assert-datomic-id-present [entity]
-  (is (has-datomic-id? entity)))
-
-(defn assert-datomic-id-not-present [entity]
-  (is (not (has-datomic-id? entity))))
 
 (defn signed-request-for [fb-user-map]
   {:user_id (:id fb-user-map)})

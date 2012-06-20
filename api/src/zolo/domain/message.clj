@@ -7,8 +7,6 @@
             [zolo.domain.contact :as contact]
             [zolodeck.demonic.schema :as schema]))
 
-;;TODO No test present for this namespace :(
-
 (def FB-MESSAGE-KEYS
     {:attachment :message/attachments
      :author_id :message/from

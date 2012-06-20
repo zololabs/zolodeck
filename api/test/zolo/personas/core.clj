@@ -5,7 +5,8 @@
             [zolo.facebook.gateway :as fb-gateway]
             [zolodeck.clj-social-lab.facebook.core :as fb]
             [zolo.facebook.inbox :as fb-inbox]
-            [zolo.domain.user :as user]))
+            [zolo.domain.user :as user]
+            [clojure.string :as str]))
 
 (defn create-fb-user [firstname lastname]
   (-> (fb/create-user firstname lastname)
@@ -27,6 +28,5 @@
 (defn friend-of [persona friend-first-name]
   (->> persona
        :user/contacts
-       ;;TODO look for lowercase function
-      (filter #(= (.toLowerCase friend-first-name) (.toLowerCase (:contact/first-name %))))
+      (filter #(= (str/lower-case friend-first-name) (str/lower-case (:contact/first-name %))))
       first))

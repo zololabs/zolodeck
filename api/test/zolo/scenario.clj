@@ -7,7 +7,8 @@
          conjure.core)
   (:require [zolo.domain.user :as user]
             [zolo.facebook.gateway :as gateway]
-            [clojure.data.json :as json]))
+            [clojure.data.json :as json]
+            [zolo.test.assertions :as assertions]))
 
 (defn new-scenario []
   {:datomic true})
@@ -32,10 +33,10 @@
   scenario)
 
 (defn assert-user-not-present-in-datomic [scenario]
-  (assert-user-in-datomic scenario assert-datomic-id-not-present))
+  (assert-user-in-datomic scenario assertions/assert-datomic-id-not-present))
 
 (defn assert-user-present-in-datomic [scenario]
-  (assert-user-in-datomic scenario assert-datomic-id-present))
+  (assert-user-in-datomic scenario assertions/assert-datomic-id-present))
 
 (defn login-as-valid-facebook-user 
   ([scenario]
