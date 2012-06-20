@@ -9,8 +9,6 @@
             [zolodeck.demonic.core :as demonic]
             [clojure.set :as set]))
 
-;;TODO No test present for this namespace :(
-
 (def FB-CONTACT-KEYS
     {:first_name :contact/first-name
      :last_name :contact/last-name
@@ -26,14 +24,12 @@
       (assoc :birthday (zolo-cal/date-string->instant "MM/dd/yyyy" (:birthday fb-friend)))
       (zolo-maps/update-all-map-keys FB-CONTACT-KEYS)))
 
-(defn is-contact-same? [existing-contact fresh-contact]
-  (= (select-keys existing-contact (keys fresh-contact)) fresh-contact))
-
-(defn find-updated-contact-fb-ids [existing-contacts-grouped fresh-contacts-grouped]
-  (remove (fn [k] 
-            (is-contact-same? (existing-contacts-grouped k) 
-                              (fresh-contacts-grouped k))) 
-          (keys existing-contacts-grouped)))
+(defn create-contact [user contact-a-map]
+  (demonic/insert
+   (assoc user :user/contacts
+          (-> user
+              :user/contacts
+              (conj contact-a-map)))))
 
 (defn find-by-user-and-contact-fb-id [user contact-fb-id]
   (first (filter #(= contact-fb-id (:contact/fb-id %)) (:user/contacts user))))

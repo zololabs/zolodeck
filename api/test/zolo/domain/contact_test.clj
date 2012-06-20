@@ -10,8 +10,27 @@
             [zolodeck.clj-social-lab.facebook.factory :as fb-factory]
             [zolodeck.clj-social-lab.facebook.core :as fb]
             [zolo.personas.vincent :as vincent]
+            [zolo.personas.loner :as loner]
             [zolo.personas.core :as personas]
             [zolo.test.assertions :as assertions]))
+
+(deftest test-create-contact
+  (demonic-testing "When user does not any contacts"
+    (let [loner (loner/create)
+          c {:contact/fb-id "1000"}]
+      (is (= 0 (count (:user/contacts loner))))
+      (contact/create-contact loner c)
+      (is (= 1 (count (:user/contacts (user/find-by-fb-id (:user/fb-id loner))))))))
+  
+  ;; (demonic-testing "When user has contacts"
+  ;;   (let [vincent (vincent/create)
+  ;;         c {:contact/fb-id "1000"}]
+  ;;     (is (= 2 (count (:user/contacts vincent))))
+  ;;     (contact/create-contact vincent c)
+  ;;     (is (= 3 (count (:user/contacts (user/find-by-fb-id (:user/fb-id vincent))))))))
+
+  ;; (demonic-testing "When user has already a contact with same fb-id")
+  )
 
 (deftest test-update-friends-list
   (let [fb-user (fb-factory/new-user)]

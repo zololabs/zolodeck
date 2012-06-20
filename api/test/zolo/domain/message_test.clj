@@ -12,6 +12,7 @@
             [zolodeck.clj-social-lab.facebook.factory :as fb-factory]
             [zolodeck.clj-social-lab.facebook.core :as fb]
             [zolo.personas.vincent :as vincent]
+            [zolo.personas.loner :as loner]
             [zolo.personas.core :as personas]
             [zolo.facebook.inbox :as fb-inbox]))
 
@@ -49,30 +50,24 @@
          (is (= 3 (count messages-with-jack)))
          (is (= 3 (count messages-with-jill)))))))
 
-
   ;; (demonic-testing "When Contact is not Present"
   ;;   (fb/in-facebook-lab
-  ;;    (let [amit (fb/create-user "Amit" "Rathore")
-  ;;          deepthi (fb/create-user "Deepthi" "Somasunder")]
-  ;;      (user/insert-fb-user amit)
+  ;;    (let [loner (personas/empty-fb-user "Loner" "Hal")
+  ;;          god (personas/empty-fb-user "Iam" "God")]
 
-  ;;      (fb/make-friend amit deepthi)
+  ;;      (fb/make-friend loner god)
 
-  ;;      (is (empty? (:user/messages (user/find-by-fb-id (:id amit)))))
-  ;;      (is (empty? (:user/contacts (user/find-by-fb-id (:id amit)))))
-       
-  ;;      (fb/send-message amit deepthi "1" "Hi, what's going on?" "2012-05-01")
-  ;;      (fb/send-message deepthi amit "1" "Nothing, just work..." "2012-05-02")
-  ;;      (fb/send-message amit deepthi "1" "OK, should I get groceries?" "2012-05-03")
+  ;;      (fb/send-message loner god "1" "Hi, what's going on?" "2012-05-01")
+  ;;      (fb/send-message god loner "1" "Nothing, just work..." "2012-05-02")
+  ;;      (fb/send-message loner god "1" "OK, should I get groceries?" "2012-05-03")
 
-  ;;      (stubbing [fb-inbox/fetch-inbox (fb/fetch-messages amit)]
-  ;;        (user/update-facebook-inbox (:id amit))
-  ;;        (is (= 3 (count (:user/messages (user/find-by-fb-id (:id amit))))))
-  ;;        (is (= 1 (count (:user/contacts (user/find-by-fb-id (:id amit)))))))
+  ;;      (stubbing [fb-inbox/fetch-inbox (fb/fetch-messages loner)]
+  ;;        (user/update-facebook-inbox (:id loner))
+  ;;        (is (= 1 (count (:user/contacts (user/find-by-fb-id (:id loner)))))))
   ;;      )))
-
-
   )
+
+
 
 ;; (deftest test-fb-message->zolo-message
 

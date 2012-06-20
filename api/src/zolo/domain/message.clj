@@ -31,7 +31,8 @@
     (dissoc grouped (:user/fb-id user))))
 
 (defn process-contact-messages [user contact-fb-id fresh-messages]
-  (let [contact (contact/find-by-user-and-contact-fb-id user contact-fb-id)]
+  (let [contact (or (contact/find-by-user-and-contact-fb-id user contact-fb-id)
+                    (contact/create-contact user {:contact/fb-id contact-fb-id}))]
     (assoc contact :contact/messages
            (utils-domain/update-fresh-entities-with-db-id (:contact/messages contact) fresh-messages :message/message-id))))
 

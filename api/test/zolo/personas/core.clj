@@ -19,6 +19,11 @@
   (stubbing [fb-inbox/fetch-inbox (fb/fetch-messages fb-user)]
     (user/update-facebook-inbox (:id fb-user))))
 
+(defn empty-fb-user [first-name last-name]
+  (let [u (create-fb-user first-name last-name)]
+    (user/insert-fb-user u)
+    u))
+
 (defn friend-of [persona friend-first-name]
   (->> persona
        :user/contacts
