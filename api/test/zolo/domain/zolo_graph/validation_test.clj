@@ -58,4 +58,6 @@
                                      main
                                      (zgf/add-contact contact1)
                                      (zgf/send-message contact1 "hey")
-                                     (zgf/add-score contact1 "JUNK"))))))))
+                                     (zgf/add-score contact1 "JUNK"))))))
+
+    ))

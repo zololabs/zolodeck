@@ -39,25 +39,6 @@
   (assoc user :user/contacts
          (utils-domain/update-fresh-entities-with-db-id (:user/contacts user) fresh-contacts :contact/fb-id)))
 
-;; Zolo Graph Related Stuff
-(defn contact->zolo-contact [c]
-  {:zolo-id (c :contact/guid)
-   :about 
-   {:first-name (c :contact/first-name)
-    :last-name (c :contact/last-name)
-    :gender (c :contact/gender)
-    :facebook {:id (c :contact/fb-id)
-               :link (c :contact/fb-link)
-               :birthday (c :contact/fb-birthday)
-               :picture (c :contact/fb-picture-link)}}
-   :messages []
-   :scores []})
-
-(defn contacts->zg-contacts [contacts]
-  (->> contacts
-       (map contact->zolo-contact)
-       (mapcat (fn [zc] [(:zolo-id zc) zc]))
-       (apply hash-map)))
 
 
 

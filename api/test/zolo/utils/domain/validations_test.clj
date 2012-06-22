@@ -81,6 +81,12 @@
          []                         [:a]      [:empty-not-allowed :vector]      {:a [:b]}
          ["[:a] is empty"]          [:a]      [:empty-not-allowed :vector]      {:a []}
 
+
+         ;;Collection
+         []                          [:a]      [:collection]      {:a [:b]}
+         []                          [:a]      [:collection]      {:a '(:b)}
+         []                          [:a]      [:collection]      {:a #{:b}}
+         ["[:a] is not collection"]  [:a]      [:collection]      {:a 1}
 ))
 
 (deftest test-required-optional

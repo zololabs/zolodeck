@@ -67,37 +67,3 @@
           (is (= (:gender SIVA) (:user/gender user)))))
       (verify-call-times-for load-from-fb 0))))
 
-;;TODO Need to finish all these test scenarios
-(deftest test-user->zolo-graph
-
-  (testing "When nil is passed"
-    (assert-zg-is-not-valid (user/user->zolo-graph nil)))
-  
-  (demonic-testing "User without any contacts"
-    (let [zg (-> (loner/create)
-                 user/user->zolo-graph)]
-      (assert-zg-is-valid zg)
-      (assert-zg-has-no-contacts zg)))
-  
-  (testing "User with contacts"
-    (testing "and has NO messages"
-      (demonic-testing "and has scores")
-      (demonic-testing "but NO scores"
-        (let [zg (-> (shy/create)
-                     user/user->zolo-graph)]
-          (assert-zg-is-valid zg)
-          (assert-zg-has-contacts zg 2)))))
-
-  ;;TODO This test needs to be fixed
-    ;; (testing "and has messages"
-    ;;   (demonic-testing "and has scores")
-    ;;   (demonic-testing "but NO scores"
-    ;;     (let [vincent (vincent/create)
-    ;;           jack (personas/friend-of vincent "jack")
-    ;;           jill (personas/friend-of vincent "jill")
-    ;;           zg (user/user->zolo-graph vincent)]
-    ;;       (assert-zg-is-valid zg)
-    ;;       (assert-zg-has-contacts zg 2)
-    ;;       (assert-zg-contact-has-messages zg jack 3)
-    ;;       (assert-zg-contact-has-messages zg jill 2))))
-    )

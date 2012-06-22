@@ -10,6 +10,9 @@
 (defn date? [a]
   (instance? java.util.Date a))
 
+(defn collection? [a]
+  (instance? java.util.Collection a))
+
 (defn validator-fn- [func msg]
   (fn [m attribute validators]
     (when-not (and 
@@ -22,6 +25,7 @@
 (def val-required (validator-fn- (complement nil?) "is required"))
 
 (def val-vector (validator-fn- vector? "is not vector"))
+(def val-collection (validator-fn- collection? "is not collection"))
 (def val-empty-not-allowed (validator-fn- (complement empty?) "is empty"))
 
 (def val-uuid (validator-fn- uuid? "is not UUID"))
@@ -37,6 +41,7 @@
       :string val-string
       :integer val-integer
       :vector val-vector
+      :collection val-collection
       :empty-not-allowed val-empty-not-allowed})
 
 (defn flatten-keys* [a ks m]

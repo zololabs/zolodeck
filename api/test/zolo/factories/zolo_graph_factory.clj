@@ -8,11 +8,12 @@
 
 (defn default-message 
   ([zolo-id]
-     {:zolo-id zolo-id
+     {:guid zolo-id
+      :message-id (str "msg-" zolo-id)
       :platform "Facebook"
       :mode "Message"
       :text (str "This is message : " zolo-id)
-      :date 12312312312
+      :date #inst "1980-08-08T00:00:00.000-00:00"
       :from "user-100"
       :to "contact-101"
       :thread-id nil
@@ -74,16 +75,18 @@
 
 (defn send-message [to msg]
   (reset! ZG-ATOM 
-          (let [u-id (zg/user-zolo-id @ZG-ATOM)
+          (let [u-fb-id (zg/user-fb-id @ZG-ATOM)
                 c-id (zg/contact-zolo-id to)
-                m (merge (default-message) {:from u-id :to c-id :text msg})]
+                c-fb-id (zg/contact-fb-id to)
+                m (merge (default-message) {:from u-fb-id :to c-fb-id :text msg})]
             (zg/add-message @ZG-ATOM c-id m))))
 
 (defn receive-message [from msg]
   (reset! ZG-ATOM 
-          (let [u-id (zg/user-zolo-id @ZG-ATOM)
+          (let [u-fb-id (zg/user-fb-id @ZG-ATOM)
                 c-id (zg/contact-zolo-id from)
-                m (merge (default-message) {:from c-id :to u-id :text msg})]
+                c-fb-id (zg/contact-fb-id from)
+                m (merge (default-message) {:from c-fb-id :to u-fb-id :text msg})]
             (zg/add-message @ZG-ATOM c-id m))))
 
 (defn add-score 
