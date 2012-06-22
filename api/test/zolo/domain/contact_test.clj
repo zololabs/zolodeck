@@ -22,15 +22,17 @@
       (contact/create-contact loner c)
       (is (= 1 (count (:user/contacts (user/find-by-fb-id (:user/fb-id loner))))))))
 
-  ;;TODO Need to fix this tests once Demonic supports multiple nested maps
-  ;; (demonic-testing "When user has contacts"
-  ;;   (let [vincent (vincent/create)
-  ;;         c {:contact/fb-id "1000"}]
-  ;;     (is (= 2 (count (:user/contacts vincent))))
-  ;;     (contact/create-contact vincent c)
-  ;;     (is (= 3 (count (:user/contacts (user/find-by-fb-id (:user/fb-id vincent))))))))
 
-  ;; (demonic-testing "When user has already a contact with same fb-id")
+  (demonic-testing "When user has contacts"
+    (let [vincent (vincent/create)
+          c {:contact/fb-id "1000"}]
+      (is (= 2 (count (:user/contacts vincent))))
+      (is (= 5 (count (mapcat :contact/messages (:user/contacts vincent)))))
+      (contact/create-contact vincent c)
+      (is (= 3 (count (:user/contacts (user/find-by-fb-id (:user/fb-id vincent))))))
+      (is (= 5 (count (mapcat :contact/messages (:user/contacts (user/find-by-fb-id (:user/fb-id vincent)))))))))
+
+;  (demonic-testing "When user has already a contact with same fb-id")
   )
 
 (deftest test-update-friends-list

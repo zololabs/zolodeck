@@ -25,11 +25,9 @@
       (zolo-maps/update-all-map-keys FB-CONTACT-KEYS)))
 
 (defn create-contact [user contact-a-map]
-  (demonic/insert
-   (assoc user :user/contacts
-          (-> user
-              :user/contacts
-              (conj contact-a-map)))))
+  (->> contact-a-map
+       (conj (map #(dissoc % :contact/messages) (:user/contacts user)))
+       (demonic/append user :user/contacts)))
 
 (defn find-by-user-and-contact-fb-id [user contact-fb-id]
   (first (filter #(= contact-fb-id (:contact/fb-id %)) (:user/contacts user))))
