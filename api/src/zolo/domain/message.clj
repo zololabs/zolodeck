@@ -52,5 +52,6 @@
 
 (defn merge-messages [user fresh-messages]
   (let [grouped (group-by-contact-fb-id user fresh-messages)]
-    (map (fn [[c-id msgs]] (process-contact-messages user c-id msgs)) grouped)))
+    (map (fn [[c-id msgs]]
+           (process-contact-messages user c-id msgs)) grouped)))
 

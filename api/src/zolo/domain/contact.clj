@@ -25,13 +25,14 @@
       (assoc :birthday (zolo-cal/date-string->instant "MM/dd/yyyy" (:birthday fb-friend)))
       (zolo-maps/update-all-map-keys FB-CONTACT-KEYS)))
 
+(defn find-by-user-and-contact-fb-id [user contact-fb-id]
+  (first (filter #(= contact-fb-id (:contact/fb-id %)) (:user/contacts user))))
+
 (defn create-contact [user contact-a-map]
   (->> contact-a-map
        (conj (map #(dissoc % :contact/messages) (:user/contacts user)))
-       (demonic/append user :user/contacts)))
-
-(defn find-by-user-and-contact-fb-id [user contact-fb-id]
-  (first (filter #(= contact-fb-id (:contact/fb-id %)) (:user/contacts user))))
+       (demonic/append user :user/contacts))
+  (find-by-user-and-contact-fb-id user (:contact/fb-id contact-a-map)))
 
 (defn update-contacts [user fresh-contacts]
   (assoc user :user/contacts
