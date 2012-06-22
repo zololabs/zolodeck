@@ -32,6 +32,7 @@
       (is (= 3 (count (:user/contacts (user/find-by-fb-id (:user/fb-id vincent))))))
       (is (= 5 (count (mapcat :contact/messages (:user/contacts (user/find-by-fb-id (:user/fb-id vincent)))))))))
 
+  ;;TODO Need to implement this function
 ;  (demonic-testing "When user has already a contact with same fb-id")
   )
 
@@ -118,3 +119,34 @@
                (is (= "Original" (:contact/last-name friend_of_user1)))
                (is (= "Modified" (:contact/last-name friend_of_user2))))))))))
 
+
+(deftest test-update-score
+  (demonic-testing "when there are no scores before"
+    (let [vincent (vincent/create)
+          jack (personas/friend-of vincent "jack")]
+      
+      (contact/update-score jack)
+      
+      (let [vincent-reloaded (user/find-by-fb-id (:user/fb-id vincent))
+            jack-reloaded (personas/friend-of vincent-reloaded "jack")
+            jack-scores (:contact/scores jack-reloaded)]
+        
+        (is (= 1 (count jack-scores)))
+        (is (= 30 (:score/value (first jack-scores))))
+        (is (not (nil? (:score/at (first jack-scores))))))))
+  
+  (demonic-testing "when there are scores already present"
+    (let [vincent (vincent/create)]
+      (-> vincent
+          (personas/friend-of "jack")
+          contact/update-score)
+
+      (-> (user/find-by-fb-id (:user/fb-id vincent))
+          (personas/friend-of "jack")
+          contact/update-score)
+      
+      (let [vincent-reloaded (user/find-by-fb-id (:user/fb-id vincent))
+            jack-reloaded (personas/friend-of vincent-reloaded "jack")
+            jack-scores (:contact/scores jack-reloaded)]
+        
+        (is (= 2 (count jack-scores)))))))

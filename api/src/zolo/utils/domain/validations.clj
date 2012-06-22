@@ -1,17 +1,9 @@
 (ns zolo.utils.domain.validations
-  (:use zolodeck.utils.debug))
+  (:use zolodeck.utils.debug)
+  (:require [zolodeck.utils.clojure :as zolo-clj]))
 
 (defn optional-validator-present? [validators]
   (contains? (set validators) :optional))
-
-(defn uuid? [a]
-  (instance? java.util.UUID a))
-
-(defn date? [a]
-  (instance? java.util.Date a))
-
-(defn collection? [a]
-  (instance? java.util.Collection a))
 
 (defn validator-fn- [func msg]
   (fn [m attribute validators]
@@ -25,11 +17,11 @@
 (def val-required (validator-fn- (complement nil?) "is required"))
 
 (def val-vector (validator-fn- vector? "is not vector"))
-(def val-collection (validator-fn- collection? "is not collection"))
+(def val-collection (validator-fn- zolo-clj/collection? "is not collection"))
 (def val-empty-not-allowed (validator-fn- (complement empty?) "is empty"))
 
-(def val-uuid (validator-fn- uuid? "is not UUID"))
-(def val-date (validator-fn- date? "is not java.util.Date"))
+(def val-uuid (validator-fn- zolo-clj/uuid? "is not UUID"))
+(def val-date (validator-fn- zolo-clj/date? "is not java.util.Date"))
 (def val-string (validator-fn- string? "is not string"))
 (def val-integer (validator-fn- integer? "is not integer"))
 

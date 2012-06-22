@@ -28,7 +28,9 @@
    (instant-fact-schema :contact/fb-birthday false "A contact's Facebook BirthDay") 
    (string-fact-schema :contact/fb-picture-link false "A contact's Facebook Picture Link")
    ;Messages Information
-   (refs-fact-schema :contact/messages false "A contact's messages")])
+   (refs-fact-schema :contact/messages false "A contact's messages")
+   ;Scores Information
+   (refs-fact-schema :contact/scores false "A contact's scores")])
 
 (def MESSAGE-SCHEMA-TX
   [(uuid-fact-schema :message/guid false "A GUID for messages")
@@ -45,7 +47,7 @@
 
 (def SCORE-SCHEMA-TX
   [(uuid-fact-schema :score/guid false "A GUID for score")
-   (long-fact-schema :score/to false "Contact Score value")
+   (long-fact-schema :score/value false "Contact Score value")
    (instant-fact-schema :score/at false "The date when score was calculated")])
 
 (def SCHEMA-TX
