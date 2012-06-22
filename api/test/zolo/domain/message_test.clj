@@ -50,6 +50,7 @@
          (is (= 3 (count messages-with-jack)))
          (is (= 3 (count messages-with-jill)))))))
 
+  ;;TODO Need to fix this tests once demonic supports multiple nested maps
   ;; (demonic-testing "When Contact is not Present"
   ;;   (fb/in-facebook-lab
   ;;    (let [loner (personas/empty-fb-user "Loner" "Hal")

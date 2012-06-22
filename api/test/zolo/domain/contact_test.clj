@@ -21,7 +21,8 @@
       (is (= 0 (count (:user/contacts loner))))
       (contact/create-contact loner c)
       (is (= 1 (count (:user/contacts (user/find-by-fb-id (:user/fb-id loner))))))))
-  
+
+  ;;TODO Need to fix this tests once Demonic supports multiple nested maps
   ;; (demonic-testing "When user has contacts"
   ;;   (let [vincent (vincent/create)
   ;;         c {:contact/fb-id "1000"}]
