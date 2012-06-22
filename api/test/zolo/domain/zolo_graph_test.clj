@@ -59,11 +59,11 @@
       (let [zg (zgf/building 
                 (zgf/new-user #G"aaaa1000")
                 (zgf/add-contact contact1)
-                (zgf/add-score contact1 100 5000)
-                (zgf/add-score contact1 101 1000)
-                (zgf/add-score contact1 200 9000))]
+                (zgf/add-score contact1 100 #inst "1980-08-08T00:00:00.000-00:00")
+                (zgf/add-score contact1 101 #inst "1990-08-08T00:00:00.000-00:00")
+                (zgf/add-score contact1 200 #inst "2000-08-08T00:00:00.000-00:00"))]
         (is (= true (zg/has-score? zg #G"cccc1000")))
-        (is (= {:value 200 :at 9000} (zg/score zg #G"cccc1000")))
+        (is (= {:value 200 :at #inst "2000-08-08T00:00:00.000-00:00"} (zg/score zg #G"cccc1000")))
         (is (= 200 (zg/score-value (zg/score zg #G"cccc1000")))))))
   
   (testing "when no score is present"

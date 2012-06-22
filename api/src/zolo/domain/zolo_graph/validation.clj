@@ -47,7 +47,7 @@
 
 (def SCORE-VALIDATION-MAP
   {:value [:required :integer] 
-   :at [:required :integer]}) 
+   :at [:required :date]}) 
 
 (def MESSAGE-VALIDATION-MAP
   {:guid [:required :uuid]

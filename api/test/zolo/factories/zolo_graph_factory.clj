@@ -94,7 +94,7 @@
      (reset! ZG-ATOM
              (zg/add-score @ZG-ATOM (zg/contact-guid c) (default-score score-value score-at))))
   ([c score-value]
-     (add-score c score-value 31231231231))
+     (add-score c score-value #inst "1980-08-08T00:00:00.000-00:00"))
   ([c]
      (add-score c (rand-int 100))))
 
