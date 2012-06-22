@@ -43,7 +43,13 @@
    (string-fact-schema :message/thread-id false "The message thread id")
    (string-fact-schema :message/reply-to false "The platform ID of the sender")])
 
+(def SCORE-SCHEMA-TX
+  [(uuid-fact-schema :score/guid false "A GUID for score")
+   (long-fact-schema :score/to false "Contact Score value")
+   (instant-fact-schema :score/at false "The date when score was calculated")])
+
 (def SCHEMA-TX
   (concat USER-SCHEMA-TX
           CONTACT-SCHEMA-TX
-          MESSAGE-SCHEMA-TX))
+          MESSAGE-SCHEMA-TX
+          SCORE-SCHEMA-TX))
