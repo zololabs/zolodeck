@@ -16,6 +16,12 @@
 (defn assert-zg-has-no-contacts [zg]
   (assert-zg-has-contacts zg 0))
 
+(defn assert-zg-contact-has-messages [zg contact no-of-messages]
+  (is (= no-of-messages (count (zg/messages zg (:contact/guid contact))))))
+
+(defn assert-zg-contact-has-no-messages [zg contact]
+  (assert-zg-contact-has-messages zg contact 0))
+
 (defn assert-contacts-are-same [expected-contact actual-contact]
   (is (= (set (keys expected-contact)) (set (keys actual-contact))))
   (map #(is (= (% expected-contact) (% actual-contact))) (keys expected-contact)))

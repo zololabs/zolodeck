@@ -53,5 +53,13 @@
    :messages []
    :scores []})
 
+(defn contacts->zg-contacts [contacts]
+  (->> contacts
+       (map contact->zolo-contact)
+       (mapcat (fn [zc] [(:zolo-id zc) zc]))
+       (apply hash-map)))
+
+
+
 
 

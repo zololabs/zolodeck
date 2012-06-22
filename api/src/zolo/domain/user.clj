@@ -64,3 +64,18 @@
     (-> fb-sr
         load-from-fb
         insert-fb-user)))
+
+(defn user->zolo-graph [user]
+  (when user
+    {(:user/guid user)
+     {:zolo-id (:user/guid user)
+      :about 
+      {:first-name (:user/first-name user)
+       :last-name (:user/last-name user)
+       :gender (:user/gender user)
+       :facebook {:link (:user/fb-link user)
+                  :username (:user/fb-username user)
+                  :email (:user/fb-email user)
+                  :id (:user/fb-id user)
+                  :auth-token (:user/fb-auth-token user)}}
+      :contacts (contact/contacts->zg-contacts (:user/contacts user))}}))

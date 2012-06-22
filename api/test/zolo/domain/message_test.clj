@@ -48,7 +48,7 @@
              messages-with-jill (:contact/messages jill)]
 
          (is (= 3 (count messages-with-jack)))
-         (is (= 3 (count messages-with-jill)))))))
+         (is (= 2 (count messages-with-jill)))))))
 
   ;;TODO Need to fix this tests once demonic supports multiple nested maps
   ;; (demonic-testing "When Contact is not Present"

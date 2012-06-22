@@ -8,6 +8,7 @@
             [zolodeck.clj-social-lab.facebook.core :as fb]
             [zolo.personas.vincent :as vincent]
             [zolo.personas.loner :as loner]
+            [zolo.personas.core :as personas]
             [zolo.personas.shy :as shy]))
 
 (def contact1 (zgf/new-contact #G"cccc1000"))
@@ -85,29 +86,6 @@
     (is (= #{100 101 200 201} 
            (set (map :value (all-scores zg)))))))
 
-;;TODO Need to finish all these test scenarios
-(deftest test-user->zolo-graph
 
-  (testing "When nil is passed"
-    (assert-zg-is-not-valid (zg/user->zolo-graph nil)))
-  
-  (demonic-testing "User without any contacts"
-    (let [zg (-> (loner/create)
-                 zg/user->zolo-graph)]
-      (assert-zg-is-valid zg)
-      (assert-zg-has-no-contacts zg)))
-  
-  (testing "User with contacts"
-    (testing "and has NO messages"
-      (demonic-testing "and has scores")
-      (demonic-testing "but NO scores"
-        (let [zg (-> (shy/create)
-                     zg/user->zolo-graph)]
-          (assert-zg-is-valid zg)
-          (assert-zg-has-contacts zg 2)))))
-
-    (testing "and has messages"
-      (demonic-testing "and has scores")
-      (demonic-testing "but NO scores")))
 
 

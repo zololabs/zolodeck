@@ -5,10 +5,16 @@
         [zolodeck.clj-social-lab.facebook.core :as fb]
         zolodeck.demonic.test
         zolo.test.core-utils
+        zolo.test.assertions
         zolodeck.utils.debug
         [clojure.test :only [run-tests deftest is are testing]]
         conjure.core)
-  (:require [zolo.test.assertions :as assertions]))
+  (:require [zolo.factories.zolo-graph-factory :as zgf]
+            [zolodeck.clj-social-lab.facebook.core :as fb]
+            [zolo.personas.vincent :as vincent]
+            [zolo.personas.loner :as loner]
+            [zolo.personas.core :as personas]
+            [zolo.personas.shy :as shy]))
 
 (def SIVA {:gender "male",
            :last_name "Jagadeesan",
@@ -41,25 +47,57 @@
   (testing "when the user is not present in datomic"
     (demonic-testing "it should load from fb"
       (mocking [load-from-fb]
-        (assertions/assert-datomic-id-not-present (find-by-fb-id (:id SIVA)))
+        (assert-datomic-id-not-present (find-by-fb-id (:id SIVA)))
         (user/find-by-fb-signed-request (signed-request-for SIVA)))
       (verify-call-times-for load-from-fb 1))
     
     (demonic-testing "it should save the user to datomic"
       (stubbing [load-from-fb SIVA]
-        (assertions/assert-datomic-id-not-present (find-by-fb-id (:id SIVA)))
+        (assert-datomic-id-not-present (find-by-fb-id (:id SIVA)))
         (let [user (user/find-by-fb-signed-request (signed-request-for SIVA))]
           (is (= (:gender SIVA) (:user/gender user))))
-        (assertions/assert-datomic-id-present (find-by-fb-id (:id SIVA))))))
+        (assert-datomic-id-present (find-by-fb-id (:id SIVA))))))
   
   (demonic-testing "when the user is present in datomic"
     (insert-fb-user SIVA)                
     (testing "it should load user from datomic and NOT facebook"
-      (assertions/assert-datomic-id-present (find-by-fb-id (:id SIVA)))
+      (assert-datomic-id-present (find-by-fb-id (:id SIVA)))
       (mocking [load-from-fb]
         (let [user (user/find-by-fb-signed-request (signed-request-for SIVA))]
           (is (= (:gender SIVA) (:user/gender user)))))
       (verify-call-times-for load-from-fb 0))))
 
+;;TODO Need to finish all these test scenarios
+(deftest test-user->zolo-graph
 
+  (testing "When nil is passed"
+    (assert-zg-is-not-valid (user/user->zolo-graph nil)))
+  
+  (demonic-testing "User without any contacts"
+    (let [zg (-> (loner/create)
+                 user/user->zolo-graph)]
+      (assert-zg-is-valid zg)
+      (assert-zg-has-no-contacts zg)))
+  
+  (testing "User with contacts"
+    (testing "and has NO messages"
+      (demonic-testing "and has scores")
+      (demonic-testing "but NO scores"
+        (let [zg (-> (shy/create)
+                     user/user->zolo-graph)]
+          (assert-zg-is-valid zg)
+          (assert-zg-has-contacts zg 2)))))
 
+  ;;TODO This test needs to be fixed
+    ;; (testing "and has messages"
+    ;;   (demonic-testing "and has scores")
+    ;;   (demonic-testing "but NO scores"
+    ;;     (let [vincent (vincent/create)
+    ;;           jack (personas/friend-of vincent "jack")
+    ;;           jill (personas/friend-of vincent "jill")
+    ;;           zg (user/user->zolo-graph vincent)]
+    ;;       (assert-zg-is-valid zg)
+    ;;       (assert-zg-has-contacts zg 2)
+    ;;       (assert-zg-contact-has-messages zg jack 3)
+    ;;       (assert-zg-contact-has-messages zg jill 2))))
+    )

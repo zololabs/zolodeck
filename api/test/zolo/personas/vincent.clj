@@ -28,7 +28,6 @@
     
      (fb/send-message vincent jill "2" "Hi, how's  it going?" "2012-06-01")
      (fb/send-message jill vincent "2" "Good, I finished writing the tests" "2012-06-02")
-     (fb/send-message vincent jill "2" "OK, did you update the card?" "2012-06-03")
     
      (personas/update-fb-inbox vincent)
 
