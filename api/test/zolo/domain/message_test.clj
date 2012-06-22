@@ -50,23 +50,21 @@
          (is (= 3 (count messages-with-jack)))
          (is (= 2 (count messages-with-jill)))))))
 
-  ;;TODO Need to fix this tests once demonic supports multiple nested maps
-  ;; (demonic-testing "When Contact is not Present"
-  ;;   (fb/in-facebook-lab
-  ;;    (let [loner (personas/empty-fb-user "Loner" "Hal")
-  ;;          god (personas/empty-fb-user "Iam" "God")]
 
-  ;;      (fb/make-friend loner god)
+  (demonic-testing "When Contact is not Present"
+    (fb/in-facebook-lab
+     (let [loner (personas/empty-fb-user "Loner" "Hal")
+           god (personas/empty-fb-user "Iam" "God")]
 
-  ;;      (fb/send-message loner god "1" "Hi, what's going on?" "2012-05-01")
-  ;;      (fb/send-message god loner "1" "Nothing, just work..." "2012-05-02")
-  ;;      (fb/send-message loner god "1" "OK, should I get groceries?" "2012-05-03")
+       (fb/make-friend loner god)
 
-  ;;      (stubbing [fb-inbox/fetch-inbox (fb/fetch-messages loner)]
-  ;;        (user/update-facebook-inbox (:id loner))
-  ;;        (is (= 1 (count (:user/contacts (user/find-by-fb-id (:id loner)))))))
-  ;;      )))
-  )
+       (fb/send-message loner god "1" "Hi, what's going on?" "2012-05-01")
+       (fb/send-message god loner "1" "Nothing, just work..." "2012-05-02")
+       (fb/send-message loner god "1" "OK, should I get groceries?" "2012-05-03")
+
+       (stubbing [fb-inbox/fetch-inbox (fb/fetch-messages loner)]
+         (user/update-facebook-inbox (:id loner))
+         (is (= 1 (count (:user/contacts (user/find-by-fb-id (:id loner)))))))))))
 
 
 
