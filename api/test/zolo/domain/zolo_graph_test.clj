@@ -85,29 +85,29 @@
     (is (= #{100 101 200 201} 
            (set (map :value (all-scores zg)))))))
 
-;;TODO This test needs to be fixed. Waiting for Demonic Changes
-;; (deftest test-user->zolo-graph
+;;TODO Need to finish all these test scenarios
+(deftest test-user->zolo-graph
 
-;;   ;; (testing "When nil is passed"
-;;   ;;   (assert-zg-is-not-valid (zg/user->zolo-graph nil)))
+  (testing "When nil is passed"
+    (assert-zg-is-not-valid (zg/user->zolo-graph nil)))
+  
+  (demonic-testing "User without any contacts"
+    (let [zg (-> (loner/create)
+                 zg/user->zolo-graph)]
+      (assert-zg-is-valid zg)
+      (assert-zg-has-no-contacts zg)))
+  
+  (testing "User with contacts"
+    (testing "and has NO messages"
+      (demonic-testing "and has scores")
+      (demonic-testing "but NO scores"
+        (let [zg (-> (shy/create)
+                     zg/user->zolo-graph)]
+          (assert-zg-is-valid zg)
+          (assert-zg-has-contacts zg 2)))))
 
-;;   ;; (demonic-testing "User without any contacts"
-;;   ;;   (let [zg (-> (loner/create)
-;;   ;;                zg/user->zolo-graph)]
-;;   ;;     (assert-zg-is-valid zg)
-;;   ;;     (assert-zg-has-no-contacts zg)))
-
-;;   (testing "User with contacts"
-;;     (testing "and has NO messages"
-;;       (demonic-testing "and has scores")
-;;       (demonic-testing "but NO scores"
-;;         (let [zg (-> (shy/create)
-;;                      zg/user->zolo-graph)]
-;;           (assert-zg-is-valid zg)
-;;           (assert-zg-has-contacts zg 2)))))
-
-;;     (testing "and has messages"
-;;       (demonic-testing "and has scores")
-;;       (demonic-testing "but NO scores")))
+    (testing "and has messages"
+      (demonic-testing "and has scores")
+      (demonic-testing "but NO scores")))
 
 
