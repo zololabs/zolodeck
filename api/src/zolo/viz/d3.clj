@@ -16,7 +16,7 @@
             (if (zg/has-score? zg c-id)
               (conj acc (d3-node c-id 1))
               acc))
-          [(d3-node (zg/user-zolo-id zg) 1000)]
+          [(d3-node (zg/user-guid zg) 1000)]
           (zg/contacts zg)))
 
 (defn add-d3-link [links zg c-id target]
@@ -31,7 +31,7 @@
 
 (defn d3-links [zg]
   (loop [links []
-         c-ids (zg/contact-zolo-ids zg)
+         c-ids (zg/contact-guids zg)
          target 1]
     (if (not (empty? c-ids))
       (recur (add-d3-link links zg (first c-ids) target)

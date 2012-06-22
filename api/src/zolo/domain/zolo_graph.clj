@@ -5,48 +5,48 @@
             [zolo.domain.message :as message]
             [zolodeck.utils.maps :as zolo-maps]))
 
-(defn user-zolo-id [zg]
+(defn user-guid [zg]
   (first (keys zg)))
 
 ;;TODO Need to add test
 (defn user-fb-id [zg]
-  (get-in zg [(user-zolo-id zg) :about  :facebook :id]))
+  (get-in zg [(user-guid zg) :about  :facebook :id]))
 
-(defn contact-zolo-id [zg-contact]
+(defn contact-guid [zg-contact]
   (first (keys zg-contact)))
 
 ;;TODO Need to add test
 (defn contact-fb-id [zg-contact]
-  (get-in zg-contact [(contact-zolo-id zg-contact) :about :facebook :id]))
+  (get-in zg-contact [(contact-guid zg-contact) :about :facebook :id]))
 
-(defn contact-zolo-ids [zg]
-  (keys (get-in zg [(user-zolo-id zg) :contacts])))
+(defn contact-guids [zg]
+  (keys (get-in zg [(user-guid zg) :contacts])))
 
 (defn contacts [zg]
-  (get-in zg [(user-zolo-id zg) :contacts]))
+  (get-in zg [(user-guid zg) :contacts]))
 
 (defn contact [zg c-id]
-  (get-in zg [(user-zolo-id zg) :contacts c-id]))
+  (get-in zg [(user-guid zg) :contacts c-id]))
 
 (defn upsert-contact [zg c]
-  (update-in zg [(user-zolo-id zg) :contacts] #(merge % c)))
+  (update-in zg [(user-guid zg) :contacts] #(merge % c)))
 
 (defn messages [zg c-id]
-  (get-in zg [(user-zolo-id zg) :contacts c-id :messages]))
+  (get-in zg [(user-guid zg) :contacts c-id :messages]))
 
 (defn all-messages [zg]
   (reduce (fn [acc c-id]
             (concat acc (messages zg c-id)))
           []
-          (contact-zolo-ids zg)))
+          (contact-guids zg)))
 
 (defn add-message [zg c-id m]
   (update-in zg
-             [(user-zolo-id zg) :contacts c-id :messages]
+             [(user-guid zg) :contacts c-id :messages]
              #(conj % m)))
 
 (defn scores [zg c-id]
-  (get-in zg [(user-zolo-id zg) :contacts c-id :scores]))
+  (get-in zg [(user-guid zg) :contacts c-id :scores]))
 
 (defn score [zg c-id]
   (last (sort-by :at (scores zg c-id))))
@@ -66,11 +66,11 @@
   (reduce (fn [acc c-id]
             (concat acc (scores zg c-id)))
           []
-          (contact-zolo-ids zg)))
+          (contact-guids zg)))
 
 (defn add-score [zg c-id s]
   (update-in zg
-             [(user-zolo-id zg) :contacts c-id :scores]
+             [(user-guid zg) :contacts c-id :scores]
              #(conj % s)))
 
 
@@ -83,7 +83,7 @@
   (map message->zg-message messages))
 
 (defn contact->zolo-contact [c]
-  {:zolo-id (c :contact/guid)
+  {:guid (c :contact/guid)
    :about 
    {:first-name (c :contact/first-name)
     :last-name (c :contact/last-name)
@@ -98,13 +98,13 @@
 (defn contacts->zg-contacts [contacts]
   (->> contacts
        (map contact->zolo-contact)
-       (mapcat (fn [zc] [(:zolo-id zc) zc]))
+       (mapcat (fn [zc] [(:guid zc) zc]))
        (apply hash-map)))
 
 (defn user->zolo-graph [user]
   (when user
     {(:user/guid user)
-     {:zolo-id (:user/guid user)
+     {:guid (:user/guid user)
       :about 
       {:first-name (:user/first-name user)
        :last-name (:user/last-name user)

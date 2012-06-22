@@ -7,12 +7,12 @@
 (def ^:dynamic ZG-ATOM)
 
 (defn default-message 
-  ([zolo-id]
-     {:guid zolo-id
-      :message-id (str "msg-" zolo-id)
+  ([guid]
+     {:guid guid
+      :message-id (str "msg-" guid)
       :platform "Facebook"
       :mode "Message"
-      :text (str "This is message : " zolo-id)
+      :text (str "This is message : " guid)
       :date #inst "1980-08-08T00:00:00.000-00:00"
       :from "user-100"
       :to "contact-101"
@@ -30,34 +30,34 @@
      (default-score (rand-int 100))))
 
 (defn new-user 
-  ([zolo-id]
-     {zolo-id
-      {:zolo-id zolo-id
+  ([guid]
+     {guid
+      {:guid guid
        :about 
-       {:first-name (str "fname-" zolo-id)
-        :last-name (str "lname-" zolo-id)
+       {:first-name (str "fname-" guid)
+        :last-name (str "lname-" guid)
         :gender "male"
-        :facebook {:link (str "fb-link-" zolo-id)
-                   :username (str "fb-username-" zolo-id)
-                   :email (str zolo-id "@email.com")
-                   :id (str "fb-" zolo-id)
-                   :auth-token (str "fb-auth-token-" zolo-id)}}
+        :facebook {:link (str "fb-link-" guid)
+                   :username (str "fb-username-" guid)
+                   :email (str guid "@email.com")
+                   :id (str "fb-" guid)
+                   :auth-token (str "fb-auth-token-" guid)}}
        :contacts {}}})
   ([]
      (new-user (random-guid))))
 
 (defn new-contact 
-  ([zolo-id]     
-     {zolo-id
-      {:zolo-id zolo-id
+  ([guid]     
+     {guid
+      {:guid guid
        :about 
-       {:first-name (str zolo-id "_fname")
-        :last-name (str zolo-id "_lname")
+       {:first-name (str guid "_fname")
+        :last-name (str guid "_lname")
         :gender "male"
-        :facebook {:id (str "fb-id" zolo-id)
-                   :link (str "fb-link" zolo-id)
+        :facebook {:id (str "fb-id" guid)
+                   :link (str "fb-link" guid)
                    :birthday #inst "1980-08-08T00:00:00.000-00:00"
-                   :picture (str "picture-link" zolo-id)}}
+                   :picture (str "picture-link" guid)}}
        
        :scores []
        
@@ -76,7 +76,7 @@
 (defn send-message [to msg]
   (reset! ZG-ATOM 
           (let [u-fb-id (zg/user-fb-id @ZG-ATOM)
-                c-id (zg/contact-zolo-id to)
+                c-id (zg/contact-guid to)
                 c-fb-id (zg/contact-fb-id to)
                 m (merge (default-message) {:from u-fb-id :to c-fb-id :text msg})]
             (zg/add-message @ZG-ATOM c-id m))))
@@ -84,7 +84,7 @@
 (defn receive-message [from msg]
   (reset! ZG-ATOM 
           (let [u-fb-id (zg/user-fb-id @ZG-ATOM)
-                c-id (zg/contact-zolo-id from)
+                c-id (zg/contact-guid from)
                 c-fb-id (zg/contact-fb-id from)
                 m (merge (default-message) {:from c-fb-id :to u-fb-id :text msg})]
             (zg/add-message @ZG-ATOM c-id m))))
@@ -92,7 +92,7 @@
 (defn add-score 
   ([c score-value score-at]
      (reset! ZG-ATOM
-             (zg/add-score @ZG-ATOM (zg/contact-zolo-id c) (default-score score-value score-at))))
+             (zg/add-score @ZG-ATOM (zg/contact-guid c) (default-score score-value score-at))))
   ([c score-value]
      (add-score c score-value 31231231231))
   ([c]

@@ -17,18 +17,18 @@
 (def contact1 (zgf/new-contact #G"cccc1000"))
 (def contact2 (zgf/new-contact #G"cccc2000"))
 
-(deftest test-user-zolo-id
-  (is (= #G"aaaa1000" (user-zolo-id (zgf/new-user #G"aaaa1000")))))
+(deftest test-user-guid
+  (is (= #G"aaaa1000" (user-guid (zgf/new-user #G"aaaa1000")))))
 
-(deftest test-contact-zolo-id
-  (is (= #G"cccc1000" (user-zolo-id (zgf/new-contact #G"cccc1000")))))
+(deftest test-contact-guid
+  (is (= #G"cccc1000" (user-guid (zgf/new-contact #G"cccc1000")))))
 
-(deftest test-contact-zolo-ids
+(deftest test-contact-guids
   (let [zg (zgf/building 
             (zgf/new-user #G"aaaa1000")
             (zgf/add-contact contact1)
             (zgf/add-contact contact2))]
-    (is (= #{#G"cccc1000" #G"cccc2000"} (set (contact-zolo-ids zg))))))
+    (is (= #{#G"cccc1000" #G"cccc2000"} (set (contact-guids zg))))))
 
 (deftest test-contacts
   (let [zg (zgf/building 
@@ -36,7 +36,7 @@
             (zgf/add-contact contact1)
             (zgf/add-contact contact2))]
     (is (= 2 (count (contacts zg))))
-    (is (= #G"cccc2000" (:zolo-id (contact zg #G"cccc2000"))))))
+    (is (= #G"cccc2000" (:guid (contact zg #G"cccc2000"))))))
 
 (deftest test-messages
   (let [zg (zgf/building 
@@ -137,7 +137,7 @@
 
       (are [expected key-seq] (= expected (get-in jack-zg key-seq))
 
-           (jack :contact/guid)            [:zolo-id]
+           (jack :contact/guid)            [:guid]
            (jack :contact/first-name)      [:about :first-name]
            (jack :contact/last-name)       [:about :last-name]
            (jack :contact/gender)          [:about :gender]

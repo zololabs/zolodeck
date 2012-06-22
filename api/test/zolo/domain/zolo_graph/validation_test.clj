@@ -22,7 +22,7 @@
       (testing "It should be valid"
         (is (zg-validation/valid? (zgf/building main)))))
     
-    (testing "Without zolo-id"
+    (testing "Without guid"
       (testing "it should be invalid"
         (is (thrown? AssertionError (zgf/building 
                                      (zgf/new-user nil)

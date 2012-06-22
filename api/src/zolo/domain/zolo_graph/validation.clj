@@ -5,7 +5,7 @@
 
 (defn main-validation-map [u-id]
   {u-id
-   {:zolo-id [:required :uuid]
+   {:guid [:required :uuid]
     :about 
     {:first-name [:required :string]
      :last-name [:required :string]
@@ -20,7 +20,7 @@
 
 (defn contact-validation-map [c-id]
   {c-id
-   {:zolo-id [:required :uuid]
+   {:guid [:required :uuid]
     :about 
     {:first-name [:required :string]
      :last-name [:required :string]
@@ -41,9 +41,9 @@
 
 (defn zg-validation-map [zg]
   (reduce (fn [acc c-id]
-            (add-contact-validation-map acc (zg/user-zolo-id zg) c-id))
-          (main-validation-map (zg/user-zolo-id zg))
-          (zg/contact-zolo-ids zg)))
+            (add-contact-validation-map acc (zg/user-guid zg) c-id))
+          (main-validation-map (zg/user-guid zg))
+          (zg/contact-guids zg)))
 
 (def SCORE-VALIDATION-MAP
   {:value [:required :integer] 
