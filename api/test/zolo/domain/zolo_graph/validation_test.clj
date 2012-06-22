@@ -22,7 +22,7 @@
       (testing "It should be valid"
         (is (zg-validation/valid? (zgf/building main)))))
     
-    (testing "Without zolo-id"
+    (testing "Without guid"
       (testing "it should be invalid"
         (is (thrown? AssertionError (zgf/building 
                                      (zgf/new-user nil)
@@ -58,4 +58,6 @@
                                      main
                                      (zgf/add-contact contact1)
                                      (zgf/send-message contact1 "hey")
-                                     (zgf/add-score contact1 "JUNK"))))))))
+                                     (zgf/add-score contact1 "JUNK"))))))
+
+    ))

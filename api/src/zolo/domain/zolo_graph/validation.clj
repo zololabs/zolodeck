@@ -5,7 +5,7 @@
 
 (defn main-validation-map [u-id]
   {u-id
-   {:zolo-id [:required :uuid]
+   {:guid [:required :uuid]
     :about 
     {:first-name [:required :string]
      :last-name [:required :string]
@@ -20,7 +20,7 @@
 
 (defn contact-validation-map [c-id]
   {c-id
-   {:zolo-id [:required :uuid]
+   {:guid [:required :uuid]
     :about 
     {:first-name [:required :string]
      :last-name [:required :string]
@@ -30,9 +30,9 @@
                 :birthday [:required :date] 
                 :picture [:required :string]}}
 
-    :scores [:required :vector]
+    :scores [:required :collection]
       
-    :messages [:required :vector]}})
+    :messages [:required :collection]}})
 
 (defn add-contact-validation-map [val-map u-id c-id]
   (update-in val-map
@@ -41,24 +41,25 @@
 
 (defn zg-validation-map [zg]
   (reduce (fn [acc c-id]
-            (add-contact-validation-map acc (zg/user-zolo-id zg) c-id))
-          (main-validation-map (zg/user-zolo-id zg))
-          (zg/contact-zolo-ids zg)))
+            (add-contact-validation-map acc (zg/user-guid zg) c-id))
+          (main-validation-map (zg/user-guid zg))
+          (zg/contact-guids zg)))
 
 (def SCORE-VALIDATION-MAP
-     {:value [:required :integer] 
-      :at [:required :integer]}) 
+  {:value [:required :integer] 
+   :at [:required :integer]}) 
 
 (def MESSAGE-VALIDATION-MAP
-     {:zolo-id [:required :uuid]
-      :platform [:required :string] 
-      :mode [:required :string] 
-      :text [:required :string]
-      :date [:required :integer] 
-      :from [:required :uuid]
-      :to [:required :uuid]
-      :thread-id [:optional :string]
-      :reply-to [:optional :string]})
+  {:guid [:required :uuid]
+   :message-id [:required :string]
+   :platform [:required :string] 
+   :mode [:required :string] 
+   :text [:required :string]
+   :date [:required :date] 
+   :from [:required :string]
+   :to [:required :string]
+   :thread-id [:optional :string]
+   :reply-to [:optional :string]})
 
 
 (defn validate-vector- [vm v]
@@ -79,8 +80,9 @@
                                        ))
         valid (every? empty? errors)]
 
-    (when-not valid 
-      (print-vals "ZOLO-GRAPH Validation Errors : " errors))
+    ;; (when-not valid
+    ;;   (print-vals "INVALID ZOLO-GRAPH :"  zg)
+    ;;   (print-vals "ZOLO-GRAPH Validation Errors : " errors))
     
     valid))
 

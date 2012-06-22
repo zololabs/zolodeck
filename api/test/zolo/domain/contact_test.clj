@@ -118,31 +118,3 @@
                (is (= "Original" (:contact/last-name friend_of_user1)))
                (is (= "Modified" (:contact/last-name friend_of_user2))))))))))
 
-(deftest test-contact->zolo-contact
-
-  (testing "when nil is passed")
-  
-  (demonic-testing "when valid contact is passed"
-    (let [jack (->> (vincent/create)
-                    :user/contacts
-                    (sort-by :contact/first-name)
-                    first)
-          jack-zg (contact/contact->zolo-contact jack)]
-
-      (are [expected key-seq] (= expected (get-in jack-zg key-seq))
-
-           (jack :contact/guid)            [:zolo-id]
-           (jack :contact/first-name)      [:about :first-name]
-           (jack :contact/last-name)       [:about :last-name]
-           (jack :contact/gender)          [:about :gender]
-           (jack :contact/fb-id)           [:about :facebook :id]           
-           (jack :contact/fb-link)         [:about :facebook :link]           
-           (jack :contact/fb-birthday)     [:about :facebook :birthday]           
-           (jack :contact/fb-picture-link) [:about :facebook :picture]           
-           
-           []                              [:messages] 
-           []                              [:scores] 
-           
-           ))))
-
-

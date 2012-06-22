@@ -70,34 +70,4 @@
 
 
 
-;; (deftest test-fb-message->zolo-message
-
-;;   (testing "when nil is passed")
-  
-;;   (demonic-testing "when valid message is passed"
-;;     (let [jack-msg (->> (vincent/create)
-;;                     :user/messages
-;;                     (sort-by :message/text)
-;;                     first
-;;                     print-vals)]
-
-;;       (are [expected key-seq] (= expected (get-in jack-msg key-seq))
-
-;;            (jack :contact/guid)            [:zolo-id]
-;;            (jack :contact/first-name)      [:about :first-name]
-;;            (jack :contact/last-name)       [:about :last-name]
-;;            (jack :contact/gender)          [:about :gender]
-;;            (jack :contact/fb-id)           [:about :facebook :id]           
-;;            (jack :contact/fb-link)         [:about :facebook :link]           
-;;            (jack :contact/fb-birthday)     [:about :facebook :birthday]           
-;;            (jack :contact/fb-picture-link) [:about :facebook :picture]           
-           
-;;            []                              [:messages] 
-;;            []                              [:scores] 
-           
-;;            )
-;;       )
-
-;;     ))
-
 

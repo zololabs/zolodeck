@@ -8,17 +8,33 @@
             [zolodeck.demonic.schema :as schema]))
 
 (def FB-MESSAGE-KEYS
-    {:attachment :message/attachments
-     :author_id :message/from
-     :body :message/text
-     :created_time :message/date
-     :message_id :message/message-id
-     :thread_id :message/thread-id
-     :viewer_id :message/to})
+  {:attachment :message/attachments
+   :platform :message/platform
+   :mode :message/mode
+   :author_id :message/from
+   :body :message/text
+   :created_time :message/date
+   :message_id :message/message-id
+   :thread_id :message/thread-id
+   :viewer_id :message/to})
+
+(def ZG-MESSAGE-KEYS
+  {:message/guid  :guid
+   :message/message-id :message-id
+   :message/platform :platform
+   :message/mode :mode
+   :message/text :text
+   :message/date :date
+   :message/from :from
+   :message/to :to
+   :message/thread-id :thread-id
+   :message/reply-to :reply-to})
 
 (defn fb-message->message [fb-message]
   (-> fb-message
       (assoc :created_time (zolo-cal/millis->instant (-> fb-message :created_time (* 1000))))
+      (assoc :platform "Facebook")
+      (assoc :mode "Inbox-Message")
       (zolo-maps/update-all-map-keys FB-MESSAGE-KEYS)
       (utils-domain/force-schema-types)))
 
