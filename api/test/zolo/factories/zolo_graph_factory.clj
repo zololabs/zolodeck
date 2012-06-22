@@ -55,7 +55,7 @@
         :gender "male"
         :facebook {:id (str "fb-id" zolo-id)
                    :link (str "fb-link" zolo-id)
-                   :birthday "10/1/1988"
+                   :birthday #inst "1980-08-08T00:00:00.000-00:00"
                    :picture (str "picture-link" zolo-id)}}
        
        :scores []

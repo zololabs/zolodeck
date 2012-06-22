@@ -5,7 +5,10 @@
   (contains? (set validators) :optional))
 
 (defn uuid? [a]
-  (= java.util.UUID (class a)))
+  (instance? java.util.UUID a))
+
+(defn date? [a]
+  (instance? java.util.Date a))
 
 (defn validator-fn- [func msg]
   (fn [m attribute validators]
@@ -22,6 +25,7 @@
 (def val-empty-not-allowed (validator-fn- (complement empty?) "is empty"))
 
 (def val-uuid (validator-fn- uuid? "is not UUID"))
+(def val-date (validator-fn- date? "is not java.util.Date"))
 (def val-string (validator-fn- string? "is not string"))
 (def val-integer (validator-fn- integer? "is not integer"))
 
@@ -29,6 +33,7 @@
      {:required val-required
       :optional val-optional
       :uuid val-uuid
+      :date val-date
       :string val-string
       :integer val-integer
       :vector val-vector

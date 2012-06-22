@@ -23,10 +23,16 @@
          []     [:a]  [:optional]    {:b 1}
 
          ;;UUID
-         []     [:a]      [:uuid]        {:a (zolo-clojure/random-guid)}
+         []                    [:a]     [:uuid]   {:a (zolo-clojure/random-guid)}
          ["[:a] is not UUID"]  [:a]     [:uuid]    {:a "addsasda"}
          ["[:a] is not UUID"]  [:a]     [:uuid]    {:a 1}
          ["[:a] is not UUID"]  [:a]     [:uuid]    {:a nil}
+
+         ;; java.util.Date
+         []                              [:a]     [:date]    {:a #inst "1980-08-08T00:00:00.000-00:00"}
+         ["[:a] is not java.util.Date"]  [:a]     [:date]    {:a "addsasda"}
+         ["[:a] is not java.util.Date"]  [:a]     [:date]    {:a 1}
+         ["[:a] is not java.util.Date"]  [:a]     [:date]    {:a nil}
 
          ;;String
          []     [:a]      [:string]      {:a "apple"}
