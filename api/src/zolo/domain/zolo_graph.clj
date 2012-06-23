@@ -89,17 +89,18 @@
   (map message->zg-message messages))
 
 (defn contact->zolo-contact [c]
-  {:guid (c :contact/guid)
-   :about 
-   {:first-name (c :contact/first-name)
-    :last-name (c :contact/last-name)
-    :gender (c :contact/gender)
-    :facebook {:id (c :contact/fb-id)
-               :link (c :contact/fb-link)
-               :birthday (c :contact/fb-birthday)
-               :picture (c :contact/fb-picture-link)}}
-   :messages (messages->zg-messages (:contact/messages c))
-   :scores (scores->zg-scores (:contact/scores c))})
+  (when c
+    {:guid (c :contact/guid)
+     :about 
+     {:first-name (c :contact/first-name)
+      :last-name (c :contact/last-name)
+      :gender (c :contact/gender)
+      :facebook {:id (c :contact/fb-id)
+                 :link (c :contact/fb-link)
+                 :birthday (c :contact/fb-birthday)
+                 :picture (c :contact/fb-picture-link)}}
+     :messages (messages->zg-messages (:contact/messages c))
+     :scores (scores->zg-scores (:contact/scores c))}))
 
 (defn contacts->zg-contacts [contacts]
   (->> contacts

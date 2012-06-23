@@ -23,6 +23,12 @@
 (defn assert-zg-contact-has-no-messages [zg contact]
   (assert-zg-contact-has-messages zg contact 0))
 
+(defn assert-zg-contact-has-scores [zg contact no-of-scores]
+  (is (= no-of-scores (count (zg/scores zg (:contact/guid contact))))))
+
+(defn assert-zg-contact-has-no-scores [zg contact]
+  (assert-zg-contact-has-scores zg contact 0))
+
 ;; Domain Related Ones
 (defn assert-contacts-are-same [expected-contact actual-contact]
   (is (= (set (keys expected-contact)) (set (keys actual-contact))))

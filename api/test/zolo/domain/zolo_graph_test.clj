@@ -63,7 +63,10 @@
                 (zgf/add-score contact1 101 #inst "1990-08-08T00:00:00.000-00:00")
                 (zgf/add-score contact1 200 #inst "2000-08-08T00:00:00.000-00:00"))]
         (is (= true (zg/has-score? zg #G"cccc1000")))
-        (is (= {:value 200 :at #inst "2000-08-08T00:00:00.000-00:00"} (zg/score zg #G"cccc1000")))
+        (is (= {:guid #uuid "cccc1000-1000-413f-8a7a-f11c6a9c4036"
+                :value 200
+                :at #inst "2000-08-08T00:00:00.000-00:00"}
+               (zg/score zg #G"cccc1000")))
         (is (= 200 (zg/score-value (zg/score zg #G"cccc1000")))))))
   
   (testing "when no score is present"
@@ -140,7 +143,7 @@
 (deftest test-contact->zolo-contact
 
   (testing "when nil is passed"
-    (is (nil? (zg/contact->zolo-contact-score nil)))
+    (is (nil? (zg/contact->zolo-contact nil))))
 
   (demonic-testing "when valid contact is passed"
     (let [vincent (vincent/create-with-score)
@@ -161,7 +164,6 @@
       (is (= 3 (count (:messages jack-zg))))
       (is (= 1 (count (:scores jack-zg)))))))
 
-;;TODO Need to finish all these test scenarios
 (deftest test-user->zolo-graph
 
   (testing "When nil is passed"
@@ -174,16 +176,25 @@
       (assert-zg-has-no-contacts zg)))
   
   (testing "User with contacts"
-    (testing "and has NO messages"
-      (demonic-testing "and has scores")
-      (demonic-testing "but NO scores"
-        (let [zg (-> (shy/create)
-                     zg/user->zolo-graph)]
-          (assert-zg-is-valid zg)
-          (assert-zg-has-contacts zg 2)))))
+    (demonic-testing "and has NO messages"
+      (let [zg (-> (shy/create)
+                   zg/user->zolo-graph)]
+        (assert-zg-is-valid zg)
+        (assert-zg-has-contacts zg 2))))
 
     (testing "and has messages"
-      (demonic-testing "and has scores")
+      (demonic-testing "and has scores"
+        (let [vincent (vincent/create-with-score)
+              jack (personas/friend-of vincent "jack")
+              jill (personas/friend-of vincent "jill")
+              zg (zg/user->zolo-graph vincent)]
+          (assert-zg-is-valid zg)
+          (assert-zg-has-contacts zg 2)
+          (assert-zg-contact-has-messages zg jack 3)
+          (assert-zg-contact-has-messages zg jill 2)
+          (assert-zg-contact-has-scores zg jack 1)
+          (assert-zg-contact-has-scores zg jill 1)))
+      
       (demonic-testing "but NO scores"
         (let [vincent (vincent/create)
               jack (personas/friend-of vincent "jack")
