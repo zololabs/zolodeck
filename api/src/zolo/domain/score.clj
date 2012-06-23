@@ -9,6 +9,11 @@
             [zolodeck.demonic.core :as demonic]
             [clojure.set :as set]))
 
+(def ZG-SCORE-KEYS
+  {:score/guid  :guid
+   :score/value :value
+   :score/at :at})
+
 (defn calculate [c]
   (* 10 (count (:contact/messages c))))
 

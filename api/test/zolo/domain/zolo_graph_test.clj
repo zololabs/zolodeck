@@ -92,9 +92,28 @@
 
 ;; Tests for Constructions
 
+(deftest test-score->zolo-score
+
+  (testing "when nil is passed"
+    (is (nil? (zg/score->zg-score nil))))
+  
+  (demonic-testing "when valid score is passed"
+    (let [jack-score (-> (vincent/create-with-score)
+                         (personas/friend-of "jack")
+                         :contact/scores
+                         first)
+          jack-zg-score (zg/score->zg-score jack-score)]
+
+      (are [expected key-seq] (= expected (get-in jack-zg-score key-seq))
+
+           (jack-score :score/guid)         [:guid]
+           (jack-score :score/value)        [:value]
+           (jack-score :score/at)           [:at]))))
+
 (deftest test-message->zolo-message
 
-  (testing "when nil is passed")
+  (testing "when nil is passed"
+    (is (nil? (zg/message->zg-message nil))))
   
   (demonic-testing "when valid message is passed"
     (let [jack-msg (-> (vincent/create)
@@ -115,24 +134,17 @@
            (jack-msg :message/to)              [:to]
            (jack-msg :message/thread-id)       [:thread-id]
            (jack-msg :message/reply-to)        [:reply-to]
-           )
-      )
-
-    ))
-
+           ))))
 
 
 (deftest test-contact->zolo-contact
 
-  ;;TODO This test needs to be implemented
-  (testing "when nil is passed")
+  (testing "when nil is passed"
+    (is (nil? (zg/contact->zolo-contact-score nil)))
 
-  ;;TODO This test needs to be added once scores  chr are implemented
   (demonic-testing "when valid contact is passed"
-    (let [jack (->> (vincent/create)
-                    :user/contacts
-                    (sort-by :contact/first-name)
-                    first)
+    (let [vincent (vincent/create-with-score)
+          jack (personas/friend-of vincent "jack")
           jack-zg (zg/contact->zolo-contact jack)]
 
       (are [expected key-seq] (= expected (get-in jack-zg key-seq))
@@ -144,12 +156,10 @@
            (jack :contact/fb-id)           [:about :facebook :id]           
            (jack :contact/fb-link)         [:about :facebook :link]           
            (jack :contact/fb-birthday)     [:about :facebook :birthday]           
-           (jack :contact/fb-picture-link) [:about :facebook :picture]           
-           
-           []                              [:scores] 
-           )
+           (jack :contact/fb-picture-link) [:about :facebook :picture])
 
-      (is (= 3 (count (:messages jack-zg)))))))
+      (is (= 3 (count (:messages jack-zg))))
+      (is (= 1 (count (:scores jack-zg)))))))
 
 ;;TODO Need to finish all these test scenarios
 (deftest test-user->zolo-graph
@@ -182,5 +192,4 @@
           (assert-zg-is-valid zg)
           (assert-zg-has-contacts zg 2)
           (assert-zg-contact-has-messages zg jack 3)
-          (assert-zg-contact-has-messages zg jill 2))))
-    )
+          (assert-zg-contact-has-messages zg jill 2)))))

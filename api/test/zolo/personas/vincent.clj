@@ -32,3 +32,7 @@
      (personas/update-fb-inbox vincent)
 
      (user/find-by-fb-id (:id vincent)))))
+
+
+(defn create-with-score []
+  (user/update-scores (create)))

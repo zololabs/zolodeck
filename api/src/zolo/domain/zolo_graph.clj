@@ -3,6 +3,7 @@
   (:require [zolo.domain.user :as user]
             [zolo.domain.contact :as contact]
             [zolo.domain.message :as message]
+            [zolo.domain.score :as score]
             [zolodeck.utils.maps :as zolo-maps]))
 
 (defn user-guid [zg]
@@ -75,6 +76,11 @@
 
 
 ;; Construction
+(defn score->zg-score [s]
+  (zolo-maps/update-all-map-keys s score/ZG-SCORE-KEYS))
+
+(defn scores->zg-scores [scores]
+  (map score->zg-score scores))
 
 (defn message->zg-message [msg]
   (zolo-maps/update-all-map-keys msg message/ZG-MESSAGE-KEYS))
@@ -93,7 +99,7 @@
                :birthday (c :contact/fb-birthday)
                :picture (c :contact/fb-picture-link)}}
    :messages (messages->zg-messages (:contact/messages c))
-   :scores []})
+   :scores (scores->zg-scores (:contact/scores c))})
 
 (defn contacts->zg-contacts [contacts]
   (->> contacts
