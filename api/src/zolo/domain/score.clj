@@ -12,9 +12,9 @@
 (defn calculate [c]
   (* 10 (count (:contact/messages c))))
 
-;;TODO Write Test for this fn
 (defn create [c]
-  {:score/value (calculate c)
-   :score/at (zolo-cal/now-instant)})
+  (when c
+    {:score/value (calculate c)
+     :score/at (zolo-cal/now-instant)}))
 
 
