@@ -9,14 +9,12 @@
 (defn user-guid [zg]
   (first (keys zg)))
 
-;;TODO Need to add test
 (defn user-fb-id [zg]
   (get-in zg [(user-guid zg) :about  :facebook :id]))
 
 (defn contact-guid [zg-contact]
   (first (keys zg-contact)))
 
-;;TODO Need to add test
 (defn contact-fb-id [zg-contact]
   (get-in zg-contact [(contact-guid zg-contact) :about :facebook :id]))
 

@@ -20,8 +20,14 @@
 (deftest test-user-guid
   (is (= #G"aaaa1000" (user-guid (zgf/new-user #G"aaaa1000")))))
 
+(deftest test-user-fb-id
+  (is (= (str "fb-" #G"aaaa1000") (user-fb-id (zgf/new-user #G"aaaa1000")))))
+
 (deftest test-contact-guid
   (is (= #G"cccc1000" (user-guid (zgf/new-contact #G"cccc1000")))))
+
+(deftest test-contact-fb-id
+  (is (= (str "fb-id" #G"cccc1000") (contact-fb-id (zgf/new-contact #G"cccc1000")))))
 
 (deftest test-contact-guids
   (let [zg (zgf/building 
