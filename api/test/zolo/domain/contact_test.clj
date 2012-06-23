@@ -20,7 +20,7 @@
           c {:contact/fb-id "1000"}]
       (is (= 0 (count (:user/contacts loner))))
       (contact/create-contact loner c)
-      (is (= 1 (count (:user/contacts (user/find-by-fb-id (:user/fb-id loner))))))))
+      (is (= 1 (count (:user/contacts (user/reload loner)))))))
 
 
   (demonic-testing "When user has contacts"
@@ -29,8 +29,8 @@
       (is (= 2 (count (:user/contacts vincent))))
       (is (= 5 (count (mapcat :contact/messages (:user/contacts vincent)))))
       (contact/create-contact vincent c)
-      (is (= 3 (count (:user/contacts (user/find-by-fb-id (:user/fb-id vincent))))))
-      (is (= 5 (count (mapcat :contact/messages (:user/contacts (user/find-by-fb-id (:user/fb-id vincent)))))))))
+      (is (= 3 (count (:user/contacts (user/reload vincent)))))
+      (is (= 5 (count (mapcat :contact/messages (:user/contacts (user/reload vincent))))))))
 
   ;;TODO Need to implement this function
 ;  (demonic-testing "When user has already a contact with same fb-id")
@@ -127,7 +127,7 @@
       
       (contact/update-score jack)
       
-      (let [vincent-reloaded (user/find-by-fb-id (:user/fb-id vincent))
+      (let [vincent-reloaded (user/reload vincent)
             jack-reloaded (personas/friend-of vincent-reloaded "jack")
             jack-scores (:contact/scores jack-reloaded)]
         
@@ -141,11 +141,11 @@
           (personas/friend-of "jack")
           contact/update-score)
 
-      (-> (user/find-by-fb-id (:user/fb-id vincent))
+      (-> (user/reload vincent)
           (personas/friend-of "jack")
           contact/update-score)
       
-      (let [vincent-reloaded (user/find-by-fb-id (:user/fb-id vincent))
+      (let [vincent-reloaded (user/reload vincent)
             jack-reloaded (personas/friend-of vincent-reloaded "jack")
             jack-scores (:contact/scores jack-reloaded)]
         
