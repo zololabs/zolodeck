@@ -32,9 +32,16 @@
       (is (= 3 (count (:user/contacts (user/reload vincent)))))
       (is (= 5 (count (mapcat :contact/messages (:user/contacts (user/reload vincent))))))))
 
-  ;;TODO Need to implement this function
-;  (demonic-testing "When user has already a contact with same fb-id")
-  )
+  (demonic-testing "Even when a user is already present with same fb-id a new contact will be created"
+    (let [vincent (vincent/create)
+          jack (personas/friend-of vincent "jack")
+          c {:contact/fb-id (:contact/fb-id jack)
+             :contact/first-name "Jack2"}]
+      (is (= 2 (count (:user/contacts vincent))))
+      (contact/create-contact vincent c)
+      (is (= 3 (count (:user/contacts (user/reload vincent)))))
+
+      (is (not (nil? (personas/friend-of (user/reload vincent) "jack2")))))))
 
 (deftest test-update-friends-list
   (let [fb-user (fb-factory/new-user)]

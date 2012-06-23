@@ -81,9 +81,9 @@
                                        ))
         valid (every? empty? errors)]
 
-    (when-not valid
-      (print-vals "INVALID ZOLO-GRAPH :"  zg)
-      (print-vals "ZOLO-GRAPH Validation Errors : " errors))
+    ;; (when-not valid
+    ;;   (print-vals "INVALID ZOLO-GRAPH :"  zg)
+    ;;   (print-vals "ZOLO-GRAPH Validation Errors : " errors))
     
     valid))
 
