@@ -67,3 +67,29 @@
           (is (= (:gender SIVA) (:user/gender user)))))
       (verify-call-times-for load-from-fb 0))))
 
+(deftest test-update-scores
+  (demonic-testing "when there are no scores before"
+    (let [vincent (vincent/create)]
+      
+      (user/update-scores vincent)
+      
+      (let [vincent-reloaded (user/reload vincent)
+            jack-reloaded (personas/friend-of vincent-reloaded "jack")
+            jack-scores (:contact/scores jack-reloaded)]
+        
+        (is (= 1 (count jack-scores)))
+        (is (= 30 (:score/value (first jack-scores))))
+        (is (not (nil? (:score/at (first jack-scores))))))))
+  
+  (demonic-testing "when there are scores already present"
+    (let [vincent (vincent/create)]
+      (user/update-scores vincent)
+
+      (-> (user/reload vincent)
+          user/update-scores)
+      
+      (let [vincent-reloaded (user/reload vincent)
+            jack-reloaded (personas/friend-of vincent-reloaded "jack")
+            jack-scores (:contact/scores jack-reloaded)]
+        
+        (is (= 2 (count jack-scores)))))))

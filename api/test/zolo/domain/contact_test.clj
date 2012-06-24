@@ -20,7 +20,7 @@
           c {:contact/fb-id "1000"}]
       (is (= 0 (count (:user/contacts loner))))
       (contact/create-contact loner c)
-      (is (= 1 (count (:user/contacts (user/find-by-fb-id (:user/fb-id loner))))))))
+      (is (= 1 (count (:user/contacts (user/reload loner)))))))
 
 
   (demonic-testing "When user has contacts"
@@ -29,11 +29,19 @@
       (is (= 2 (count (:user/contacts vincent))))
       (is (= 5 (count (mapcat :contact/messages (:user/contacts vincent)))))
       (contact/create-contact vincent c)
-      (is (= 3 (count (:user/contacts (user/find-by-fb-id (:user/fb-id vincent))))))
-      (is (= 5 (count (mapcat :contact/messages (:user/contacts (user/find-by-fb-id (:user/fb-id vincent)))))))))
+      (is (= 3 (count (:user/contacts (user/reload vincent)))))
+      (is (= 5 (count (mapcat :contact/messages (:user/contacts (user/reload vincent))))))))
 
-;  (demonic-testing "When user has already a contact with same fb-id")
-  )
+  (demonic-testing "Even when a user is already present with same fb-id a new contact will be created"
+    (let [vincent (vincent/create)
+          jack (personas/friend-of vincent "jack")
+          c {:contact/fb-id (:contact/fb-id jack)
+             :contact/first-name "Jack2"}]
+      (is (= 2 (count (:user/contacts vincent))))
+      (contact/create-contact vincent c)
+      (is (= 3 (count (:user/contacts (user/reload vincent)))))
+
+      (is (not (nil? (personas/friend-of (user/reload vincent) "jack2")))))))
 
 (deftest test-update-friends-list
   (let [fb-user (fb-factory/new-user)]
@@ -118,3 +126,34 @@
                (is (= "Original" (:contact/last-name friend_of_user1)))
                (is (= "Modified" (:contact/last-name friend_of_user2))))))))))
 
+
+(deftest test-update-score
+  (demonic-testing "when there are no scores before"
+    (let [vincent (vincent/create)
+          jack (personas/friend-of vincent "jack")]
+      
+      (contact/update-score jack)
+      
+      (let [vincent-reloaded (user/reload vincent)
+            jack-reloaded (personas/friend-of vincent-reloaded "jack")
+            jack-scores (:contact/scores jack-reloaded)]
+        
+        (is (= 1 (count jack-scores)))
+        (is (= 30 (:score/value (first jack-scores))))
+        (is (not (nil? (:score/at (first jack-scores))))))))
+  
+  (demonic-testing "when there are scores already present"
+    (let [vincent (vincent/create)]
+      (-> vincent
+          (personas/friend-of "jack")
+          contact/update-score)
+
+      (-> (user/reload vincent)
+          (personas/friend-of "jack")
+          contact/update-score)
+      
+      (let [vincent-reloaded (user/reload vincent)
+            jack-reloaded (personas/friend-of vincent-reloaded "jack")
+            jack-scores (:contact/scores jack-reloaded)]
+        
+        (is (= 2 (count jack-scores)))))))

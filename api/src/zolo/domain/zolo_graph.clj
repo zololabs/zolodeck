@@ -3,19 +3,18 @@
   (:require [zolo.domain.user :as user]
             [zolo.domain.contact :as contact]
             [zolo.domain.message :as message]
+            [zolo.domain.score :as score]
             [zolodeck.utils.maps :as zolo-maps]))
 
 (defn user-guid [zg]
   (first (keys zg)))
 
-;;TODO Need to add test
 (defn user-fb-id [zg]
   (get-in zg [(user-guid zg) :about  :facebook :id]))
 
 (defn contact-guid [zg-contact]
   (first (keys zg-contact)))
 
-;;TODO Need to add test
 (defn contact-fb-id [zg-contact]
   (get-in zg-contact [(contact-guid zg-contact) :about :facebook :id]))
 
@@ -75,6 +74,11 @@
 
 
 ;; Construction
+(defn score->zg-score [s]
+  (zolo-maps/update-all-map-keys s score/ZG-SCORE-KEYS))
+
+(defn scores->zg-scores [scores]
+  (map score->zg-score scores))
 
 (defn message->zg-message [msg]
   (zolo-maps/update-all-map-keys msg message/ZG-MESSAGE-KEYS))
@@ -83,17 +87,18 @@
   (map message->zg-message messages))
 
 (defn contact->zolo-contact [c]
-  {:guid (c :contact/guid)
-   :about 
-   {:first-name (c :contact/first-name)
-    :last-name (c :contact/last-name)
-    :gender (c :contact/gender)
-    :facebook {:id (c :contact/fb-id)
-               :link (c :contact/fb-link)
-               :birthday (c :contact/fb-birthday)
-               :picture (c :contact/fb-picture-link)}}
-   :messages (messages->zg-messages (:contact/messages c))
-   :scores []})
+  (when c
+    {:guid (c :contact/guid)
+     :about 
+     {:first-name (c :contact/first-name)
+      :last-name (c :contact/last-name)
+      :gender (c :contact/gender)
+      :facebook {:id (c :contact/fb-id)
+                 :link (c :contact/fb-link)
+                 :birthday (c :contact/fb-birthday)
+                 :picture (c :contact/fb-picture-link)}}
+     :messages (messages->zg-messages (:contact/messages c))
+     :scores (scores->zg-scores (:contact/scores c))}))
 
 (defn contacts->zg-contacts [contacts]
   (->> contacts

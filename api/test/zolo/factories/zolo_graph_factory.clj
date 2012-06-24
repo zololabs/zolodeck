@@ -23,7 +23,7 @@
 
 (defn default-score 
   ([value at]
-     {:value value :at at})
+     {:guid #uuid "cccc1000-1000-413f-8a7a-f11c6a9c4036" :value value :at at})
   ([value]
      (default-score value 31231231231))
   ([]

@@ -46,7 +46,8 @@
           (zg/contact-guids zg)))
 
 (def SCORE-VALIDATION-MAP
-  {:value [:required :integer] 
+  {:guid [:required :uuid]
+   :value [:required :integer] 
    :at [:required :date]}) 
 
 (def MESSAGE-VALIDATION-MAP

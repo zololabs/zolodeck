@@ -7,6 +7,7 @@
             [zolodeck.utils.calendar :as zolo-cal]
             [zolo.utils.domain :as utils-domain]
             [zolodeck.demonic.core :as demonic]
+            [zolo.domain.score :as score]
             [clojure.set :as set]))
 
 (def FB-CONTACT-KEYS
@@ -35,6 +36,8 @@
   (assoc user :user/contacts
          (utils-domain/update-fresh-entities-with-db-id (:user/contacts user) fresh-contacts :contact/fb-id)))
 
+(defn update-score [c]
+  (demonic/append c :contact/scores [(score/create c)]))
 
 
 

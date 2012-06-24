@@ -34,6 +34,9 @@
         ffirst
         demonic/load-entity)))
 
+(defn reload [u]
+  (find-by-fb-id (:user/fb-id u)))
+
 (defn load-from-fb [{:keys [code]}]
   (-> code
       fb-gateway/code->token
@@ -64,3 +67,7 @@
     (-> fb-sr
         load-from-fb
         insert-fb-user)))
+
+(defn update-scores [u]
+  (doall (map contact/update-score (:user/contacts u)))
+  (reload u))

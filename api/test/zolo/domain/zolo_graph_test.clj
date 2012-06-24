@@ -20,8 +20,14 @@
 (deftest test-user-guid
   (is (= #G"aaaa1000" (user-guid (zgf/new-user #G"aaaa1000")))))
 
+(deftest test-user-fb-id
+  (is (= (str "fb-" #G"aaaa1000") (user-fb-id (zgf/new-user #G"aaaa1000")))))
+
 (deftest test-contact-guid
   (is (= #G"cccc1000" (user-guid (zgf/new-contact #G"cccc1000")))))
+
+(deftest test-contact-fb-id
+  (is (= (str "fb-id" #G"cccc1000") (contact-fb-id (zgf/new-contact #G"cccc1000")))))
 
 (deftest test-contact-guids
   (let [zg (zgf/building 
@@ -63,7 +69,10 @@
                 (zgf/add-score contact1 101 #inst "1990-08-08T00:00:00.000-00:00")
                 (zgf/add-score contact1 200 #inst "2000-08-08T00:00:00.000-00:00"))]
         (is (= true (zg/has-score? zg #G"cccc1000")))
-        (is (= {:value 200 :at #inst "2000-08-08T00:00:00.000-00:00"} (zg/score zg #G"cccc1000")))
+        (is (= {:guid #uuid "cccc1000-1000-413f-8a7a-f11c6a9c4036"
+                :value 200
+                :at #inst "2000-08-08T00:00:00.000-00:00"}
+               (zg/score zg #G"cccc1000")))
         (is (= 200 (zg/score-value (zg/score zg #G"cccc1000")))))))
   
   (testing "when no score is present"
@@ -92,9 +101,28 @@
 
 ;; Tests for Constructions
 
+(deftest test-score->zolo-score
+
+  (testing "when nil is passed"
+    (is (nil? (zg/score->zg-score nil))))
+  
+  (demonic-testing "when valid score is passed"
+    (let [jack-score (-> (vincent/create-with-score)
+                         (personas/friend-of "jack")
+                         :contact/scores
+                         first)
+          jack-zg-score (zg/score->zg-score jack-score)]
+
+      (are [expected key-seq] (= expected (get-in jack-zg-score key-seq))
+
+           (jack-score :score/guid)         [:guid]
+           (jack-score :score/value)        [:value]
+           (jack-score :score/at)           [:at]))))
+
 (deftest test-message->zolo-message
 
-  (testing "when nil is passed")
+  (testing "when nil is passed"
+    (is (nil? (zg/message->zg-message nil))))
   
   (demonic-testing "when valid message is passed"
     (let [jack-msg (-> (vincent/create)
@@ -115,24 +143,17 @@
            (jack-msg :message/to)              [:to]
            (jack-msg :message/thread-id)       [:thread-id]
            (jack-msg :message/reply-to)        [:reply-to]
-           )
-      )
-
-    ))
-
+           ))))
 
 
 (deftest test-contact->zolo-contact
 
-  ;;TODO This test needs to be implemented
-  (testing "when nil is passed")
+  (testing "when nil is passed"
+    (is (nil? (zg/contact->zolo-contact nil))))
 
-  ;;TODO This test needs to be added once scores  chr are implemented
   (demonic-testing "when valid contact is passed"
-    (let [jack (->> (vincent/create)
-                    :user/contacts
-                    (sort-by :contact/first-name)
-                    first)
+    (let [vincent (vincent/create-with-score)
+          jack (personas/friend-of vincent "jack")
           jack-zg (zg/contact->zolo-contact jack)]
 
       (are [expected key-seq] (= expected (get-in jack-zg key-seq))
@@ -144,14 +165,11 @@
            (jack :contact/fb-id)           [:about :facebook :id]           
            (jack :contact/fb-link)         [:about :facebook :link]           
            (jack :contact/fb-birthday)     [:about :facebook :birthday]           
-           (jack :contact/fb-picture-link) [:about :facebook :picture]           
-           
-           []                              [:scores] 
-           )
+           (jack :contact/fb-picture-link) [:about :facebook :picture])
 
-      (is (= 3 (count (:messages jack-zg)))))))
+      (is (= 3 (count (:messages jack-zg))))
+      (is (= 1 (count (:scores jack-zg)))))))
 
-;;TODO Need to finish all these test scenarios
 (deftest test-user->zolo-graph
 
   (testing "When nil is passed"
@@ -164,16 +182,25 @@
       (assert-zg-has-no-contacts zg)))
   
   (testing "User with contacts"
-    (testing "and has NO messages"
-      (demonic-testing "and has scores")
-      (demonic-testing "but NO scores"
-        (let [zg (-> (shy/create)
-                     zg/user->zolo-graph)]
-          (assert-zg-is-valid zg)
-          (assert-zg-has-contacts zg 2)))))
+    (demonic-testing "and has NO messages"
+      (let [zg (-> (shy/create)
+                   zg/user->zolo-graph)]
+        (assert-zg-is-valid zg)
+        (assert-zg-has-contacts zg 2))))
 
     (testing "and has messages"
-      (demonic-testing "and has scores")
+      (demonic-testing "and has scores"
+        (let [vincent (vincent/create-with-score)
+              jack (personas/friend-of vincent "jack")
+              jill (personas/friend-of vincent "jill")
+              zg (zg/user->zolo-graph vincent)]
+          (assert-zg-is-valid zg)
+          (assert-zg-has-contacts zg 2)
+          (assert-zg-contact-has-messages zg jack 3)
+          (assert-zg-contact-has-messages zg jill 2)
+          (assert-zg-contact-has-scores zg jack 1)
+          (assert-zg-contact-has-scores zg jill 1)))
+      
       (demonic-testing "but NO scores"
         (let [vincent (vincent/create)
               jack (personas/friend-of vincent "jack")
@@ -182,5 +209,4 @@
           (assert-zg-is-valid zg)
           (assert-zg-has-contacts zg 2)
           (assert-zg-contact-has-messages zg jack 3)
-          (assert-zg-contact-has-messages zg jill 2))))
-    )
+          (assert-zg-contact-has-messages zg jill 2)))))
