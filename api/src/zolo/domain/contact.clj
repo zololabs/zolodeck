@@ -37,7 +37,7 @@
          (utils-domain/update-fresh-entities-with-db-id (:user/contacts user) fresh-contacts :contact/fb-id)))
 
 (defn update-score [c]
-  (demonic/append c :contact/scores [(score/create c)]))
+  (demonic/append-single c :contact/scores (score/create c)))
 
 
 
