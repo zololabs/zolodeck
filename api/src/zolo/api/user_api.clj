@@ -41,7 +41,7 @@
   ;;TODO This is an hack for now. We need to come up with design and
   ;;flow of the app
   (let [u (fully-loaded-current-user)
-        zg (zg/user->zolo-graph (print-vals "User :" u))]
+        zg (zg/user->zolo-graph u)]
     (d3/format-for-d3 zg))
 
   ;; (let [no-of-nodes 200]

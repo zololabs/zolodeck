@@ -40,6 +40,5 @@
       links)))
 
 (defn format-for-d3 [zg]
-  (print-vals zg)
   {"nodes" (d3-nodes zg)
    "links" (d3-links zg)})
