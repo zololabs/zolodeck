@@ -14,9 +14,13 @@
   (->> (message-fql thread-id start-time)
        (run-fql auth-token)))
 
-(defn fetch-inbox [auth-token start-date-yyyy-MM-dd-string]
-  (->> INBOX-FQL
-       (run-fql auth-token)
-       (map :thread_id)
-       (mapcat #(fetch-thread auth-token % (to-seconds start-date-yyyy-MM-dd-string)))))
+;;TODO Random date is passed ... need to fix this
+(defn fetch-inbox
+  ([auth-token start-date-yyyy-MM-dd-string]
+     (->> INBOX-FQL
+          (run-fql auth-token)
+          (map :thread_id)
+          (mapcat #(fetch-thread auth-token % (to-seconds start-date-yyyy-MM-dd-string)))))
+  ([auth-token]
+     (fetch-inbox auth-token "1990-01-01")))
 

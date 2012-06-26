@@ -55,8 +55,7 @@
   (let [user (find-by-fb-id fb-id)]
     (->>  user
           :user/fb-auth-token
-          ;;TODO Random date is passed ... need to fix this
-          (fb-inbox/fetch-inbox "01/01/1990")
+          (fb-inbox/fetch-inbox)
           (map message/fb-message->message)
           (message/merge-messages user)
           (map demonic/insert)
