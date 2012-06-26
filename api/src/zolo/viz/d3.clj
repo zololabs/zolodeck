@@ -3,7 +3,7 @@
   (:require [zolo.domain.zolo-graph :as zg]))
 
 (defn d3-node [name group]
-  {"name" name
+  {"name" (.toString name)
    "group" group})
 
 (defn d3-link [target value]
@@ -40,5 +40,6 @@
       links)))
 
 (defn format-for-d3 [zg]
+  (print-vals zg)
   {"nodes" (d3-nodes zg)
    "links" (d3-links zg)})

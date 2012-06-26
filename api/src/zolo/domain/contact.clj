@@ -20,9 +20,21 @@
      :birthday :contact/fb-birthday
      :picture :contact/fb-picture-link})
 
+(defn format-birthday [fb-friend]
+  ;;TODO Junk implementation need to design
+  (print-vals "fb-friend befor formatting :" fb-friend)
+  (print-vals "after" (if-not (:birthday fb-friend)
+                        fb-friend
+                        (assoc fb-friend :birthday
+                               (cond
+                                (= 5 (count (:birthday fb-friend))) (zolo-cal/date-string->instant "MM/dd/yyyy"
+                                                                                                   (str (:birthday fb-friend) "/1900"))
+                                :else (zolo-cal/date-string->instant "MM/dd/yyyy" (:birthday fb-friend)))))))
+
 (defn fb-friend->contact [fb-friend]
   (-> fb-friend
-      (assoc :birthday (zolo-cal/date-string->instant "MM/dd/yyyy" (:birthday fb-friend)))
+      format-birthday
+      print-vals
       (zolo-maps/update-all-map-keys FB-CONTACT-KEYS)))
 
 (defn find-by-user-and-contact-fb-id [user contact-fb-id]

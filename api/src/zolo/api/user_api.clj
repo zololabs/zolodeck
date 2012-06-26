@@ -2,14 +2,28 @@
   (:use zolo.domain.user
         zolodeck.utils.debug)
   (:require [zolo.facebook.gateway :as gateway]
-            [sandbar.auth :as sandbar]))
+            [sandbar.auth :as sandbar]
+            [zolo.domain.user :as user]
+            [zolo.domain.zolo-graph :as zg]
+            [zolo.viz.d3 :as d3]))
 
-(defn upsert-user [request-params]  
+(defn upsert-user [request-params]
   {:user "OK done!"})
 
 (defn friends-list [request-params]
   (gateway/friends-list (:user/fb-auth-token (sandbar/current-user))))
 
+;;TODO Junk function. Need to design the app
+(defn fully-loaded-current-user []
+  (let [u (sandbar/current-user)
+        u-fb-id (:user/fb-id u)]
+    (if (= 0 (count (:user/contacts u)))
+      (do
+        (user/update-facebook-friends u-fb-id)
+        (user/update-facebook-inbox u-fb-id)
+        (user/update-scores (user/reload u))
+        (user/reload u))
+      u)))
 
 (defmulti contact-strengths :client)
 
@@ -24,7 +38,15 @@
    "value" (rand-int 200)})
 
 (defmethod contact-strengths "d3" [request-params]
-  (let [no-of-nodes 200]
-    {"nodes" (reduce (fn [v no] (conj v (node no))) [{"name" "ME" "group" 1000 "center" true}] (range 1 (+ no-of-nodes 1)))
-     "links" (reduce (fn [v no] (conj v (link no))) [] (range 1 (+ no-of-nodes 1)))}))
+  ;;TODO This is an hack for now. We need to come up with design and
+  ;;flow of the app
+  (let [u (fully-loaded-current-user)
+        zg (zg/user->zolo-graph (print-vals "User :" u))]
+    (d3/format-for-d3 zg))
+
+  ;; (let [no-of-nodes 200]
+  ;;   {"nodes" (reduce (fn [v no] (conj v (node no))) [{"name" "ME" "group" 1000 "center" true}] (range 1 (+ no-of-nodes 1)))
+  ;;    "links" (reduce (fn [v no] (conj v (link no))) [] (range 1 (+ no-of-nodes 1)))})
+
+  )
 

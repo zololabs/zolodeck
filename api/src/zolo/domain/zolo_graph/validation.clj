@@ -27,7 +27,7 @@
      :gender [:required :string]
      :facebook {:id [:required :string]
                 :link [:required :string]
-                :birthday [:required :date] 
+                :birthday [:optional :date] 
                 :picture [:required :string]}}
 
     :scores [:required :collection]
