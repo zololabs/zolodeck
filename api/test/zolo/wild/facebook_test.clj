@@ -55,3 +55,7 @@
          (is (not (nil? c-from-db)))
          (is (= #inst "1900-05-22T00:00:00.000-00:00" (:contact/fb-birthday c-from-db))))))))
 
+
+;; (demonictest test-message-attachments-are-map-not-string
+;;   (is false "Need to implement this test"))
+

@@ -17,15 +17,13 @@
 (defn fully-loaded-current-user []
   (let [u (sandbar/current-user)
         u-fb-id (:user/fb-id u)]
-    ;;TODO Commenting this check for testing ... but again this check
-    ;;is stupid anyway
-;; (if (= 0 (count (:user/contacts u)))
+    (if (= 0 (count (:user/contacts u)))
       (do
         (user/update-facebook-friends u-fb-id)
         (user/update-facebook-inbox u-fb-id)
         (user/update-scores (user/reload u))
         (user/reload u))
-  ;;    u)
+      u)
     ))
 
 (defmulti contact-strengths :client)

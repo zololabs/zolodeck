@@ -9,13 +9,19 @@
 (defn d3-link [target value]
   {"source" 0
    "target" target
-   "value" value})
+   "value" (* -1 value)})
 
 (defn d3-nodes [zg]
   (reduce (fn [acc [c-id c]]
             (if (zg/has-score? zg c-id)
-              (conj acc (d3-node c-id 1))
-              acc))
+               (conj acc (d3-node c-id 1))
+               ;;TODO Sometimes contact information is nil ???
+               ;;Something is wrong
+               ;; (conj acc (d3-node (str (or
+               ;;                          (get-in c [:about :first-name])
+               ;;                          "NO NAME")
+               ;;                         (zg/score-value zg c-id)) 1))
+               acc))
           [(d3-node (zg/user-guid zg) 1000)]
           (zg/contacts zg)))
 

@@ -16,7 +16,9 @@
     (is (= 6 (count inbox)))
     (doseq [m inbox]
       (is-same-sequence?
-       [:message_id :thread_id :author_id :body :created_time :attachment :viewer_id]
+       ;;TODO When Attachment is added back uncomment this line
+;;       [:message_id :thread_id :author_id :body :created_time :attachment :viewer_id]
+       [:message_id :thread_id :author_id :body :created_time  :viewer_id]
        (keys m)))))
 
 
