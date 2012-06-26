@@ -27,7 +27,7 @@
                 (zgf/add-score contact1 20))]
         (is (= {"nodes" [{"name" "aaaa1000-1000-413f-8a7a-f11c6a9c4036" 
                           "group" 1000}
-                         {"name" "cccc1000-1000-413f-8a7a-f11c6a9c4036"
+                         {"name" "cccc1000-1000-413f-8a7a-f11c6a9c4036_fname - 20"
                           "group" 1}]
                 "links" [{"source" 0
                           "target" 1
@@ -54,8 +54,8 @@
                 (zgf/add-contact contact2)
                 (zgf/add-score contact2 40))]
         (is (= {"nodes" [{"name" "aaaa1000-1000-413f-8a7a-f11c6a9c4036" "group" 1000}
-                         {"name" "cccc2000-1000-413f-8a7a-f11c6a9c4036" "group" 1}
-                         {"name" "cccc1000-1000-413f-8a7a-f11c6a9c4036" "group" 1}]
+                         {"name" "cccc2000-1000-413f-8a7a-f11c6a9c4036_fname - 40" "group" 1}
+                         {"name" "cccc1000-1000-413f-8a7a-f11c6a9c4036_fname - 20" "group" 1}]
                 "links" [{"source" 0 "target" 1 "value" -40}
                          {"source" 0 "target" 2 "value" -20}]}
                (d3/format-for-d3 zg)))))
@@ -68,8 +68,8 @@
                 (zgf/add-contact contact2)
                 (zgf/add-score contact2 40))]
         (is (= {"nodes" [{"name" "aaaa1000-1000-413f-8a7a-f11c6a9c4036" "group" 1000}
-                         {"name" "cccc2000-1000-413f-8a7a-f11c6a9c4036" "group" 1}
-                         {"name" "cccc1000-1000-413f-8a7a-f11c6a9c4036" "group" 1}]
+                         {"name" "cccc2000-1000-413f-8a7a-f11c6a9c4036_fname - 40" "group" 1}
+                         {"name" "cccc1000-1000-413f-8a7a-f11c6a9c4036_fname - 20" "group" 1}]
                 "links" [{"source" 0 "target" 1 "value" -40}
                          {"source" 0 "target" 2 "value" -20}]}
                (d3/format-for-d3 zg)))))))

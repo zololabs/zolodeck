@@ -3,7 +3,7 @@
   (:require [zolo.domain.zolo-graph :as zg]))
 
 (defn d3-node [name group]
-  {"name" (.toString name)
+  {"name" (str name)
    "group" group})
 
 (defn d3-link [target value]
@@ -14,13 +14,13 @@
 (defn d3-nodes [zg]
   (reduce (fn [acc [c-id c]]
             (if (zg/has-score? zg c-id)
-               (conj acc (d3-node c-id 1))
                ;;TODO Sometimes contact information is nil ???
                ;;Something is wrong
-               ;; (conj acc (d3-node (str (or
-               ;;                          (get-in c [:about :first-name])
-               ;;                          "NO NAME")
-               ;;                         (zg/score-value zg c-id)) 1))
+              (conj acc (d3-node (str (or
+                                       (get-in c [:about :first-name])
+                                       "NO NAME")
+                                      " - "
+                                      (zg/score-value zg c-id)) 1))
                acc))
           [(d3-node (zg/user-guid zg) 1000)]
           (zg/contacts zg)))
