@@ -41,9 +41,7 @@
   (first (filter #(= contact-fb-id (:contact/fb-id %)) (:user/contacts user))))
 
 (defn create-contact [user contact-a-map]
-  (->> contact-a-map
-       (conj (map #(dissoc % :contact/messages) (:user/contacts user)))
-       (demonic/append user :user/contacts))
+  (demonic/append-single user :user/contacts contact-a-map)
   (find-by-user-and-contact-fb-id user (:contact/fb-id contact-a-map)))
 
 (defn update-contacts [user fresh-contacts]
@@ -51,7 +49,7 @@
          (utils-domain/update-fresh-entities-with-db-id (:user/contacts user) fresh-contacts :contact/fb-id)))
 
 (defn update-score [c]
-  (demonic/append c :contact/scores [(score/create c)]))
+  (demonic/append-single c :contact/scores (score/create c)))
 
 
 
