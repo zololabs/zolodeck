@@ -37,7 +37,8 @@
   :dev-dependencies [[clj-stacktrace "0.2.4"]
                      [swank-clojure "1.3.3"]
                      [ring-serve "0.1.2"]
-                     [zolodeck/clj-social-lab "1.0.0-SNAPSHOT"]]
+                     [zolodeck/clj-social-lab "1.0.0-SNAPSHOT"]
+                     [difform "1.1.2"]]
   
   :min-lein-version "1.7.0"
 
@@ -48,6 +49,7 @@
   :project-init (do (use 'ring.util.serve) 
                     (use 'clojure.pprint)
                     (use 'clojure.test)
+                    (use 'com.georgejahad.difform)
                     (use 'zolo.utils.readers)
                     (use 'zolo.test.core-utils))
 
