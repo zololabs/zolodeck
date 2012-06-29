@@ -17,13 +17,14 @@
 (defn fully-loaded-user
   ([user]
      (let [u-fb-id (:user/fb-id user)]
-       (if (= 0 (count (:user/contacts user)))
+       ;; (if (= 0 (count (:user/contacts user)))
          (do
            (user/update-facebook-friends u-fb-id)
            (user/update-facebook-inbox u-fb-id)
            (user/update-scores (user/reload user))
            (user/reload user))
-         user)))
+         ;;  user)
+         ))
   ([]
      (fully-loaded-user (sandbar/current-user))))
 
