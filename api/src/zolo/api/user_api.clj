@@ -14,17 +14,18 @@
   (gateway/friends-list (:user/fb-auth-token (sandbar/current-user))))
 
 ;;TODO Junk function. Need to design the app
-(defn fully-loaded-current-user []
-  (let [u (sandbar/current-user)
-        u-fb-id (:user/fb-id u)]
-    (if (= 0 (count (:user/contacts u)))
-      (do
-        (user/update-facebook-friends u-fb-id)
-        (user/update-facebook-inbox u-fb-id)
-        (user/update-scores (user/reload u))
-        (user/reload u))
-      u)
-    ))
+(defn fully-loaded-user
+  ([user]
+     (let [u-fb-id (:user/fb-id user)]
+       (if (= 0 (count (:user/contacts user)))
+         (do
+           (user/update-facebook-friends u-fb-id)
+           (user/update-facebook-inbox u-fb-id)
+           (user/update-scores (user/reload user))
+           (user/reload user))
+         user)))
+  ([]
+     (fully-loaded-user (sandbar/current-user))))
 
 (defmulti contact-strengths :client)
 
@@ -41,7 +42,7 @@
 (defmethod contact-strengths "d3" [request-params]
   ;;TODO This is an hack for now. We need to come up with design and
   ;;flow of the app
-  (let [u (fully-loaded-current-user)
+  (let [u (fully-loaded-user)
         zg (zg/user->zolo-graph u)]
     (d3/format-for-d3 zg))
 
