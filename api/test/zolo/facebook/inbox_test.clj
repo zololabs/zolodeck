@@ -18,7 +18,7 @@
       (is-same-sequence?
        ;;TODO When Attachment is added back uncomment this line
 ;;       [:message_id :thread_id :author_id :body :created_time :attachment :viewer_id]
-       [:message_id :thread_id :author_id :body :created_time  :viewer_id]
+       [:message_id :thread_id :author_id :body :created_time :subject :to]
        (keys m)))))
 
 

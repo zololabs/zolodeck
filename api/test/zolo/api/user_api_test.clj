@@ -46,7 +46,8 @@
     
     (is (= (count (:user/contacts hobbes)) (count (:user/contacts hobbes-reloaded))))
     
-    (is (= (count (mapcat :contact/messages (:user/contacts hobbes)))
+    (is (= 6
+           (count (mapcat :contact/messages (:user/contacts hobbes)))
            (count (mapcat :contact/messages (:user/contacts hobbes-reloaded)))))
 
     (is (= (zg/user->zolo-graph hobbes)

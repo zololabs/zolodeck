@@ -16,7 +16,9 @@
    :created_time :message/date
    :message_id :message/message-id
    :thread_id :message/thread-id
-   :viewer_id :message/to})
+   :to :message/to
+   ;;TODO Add :message/subject
+   })
 
 (def ZG-MESSAGE-KEYS
   {:message/guid  :guid
@@ -41,7 +43,7 @@
 (defn group-by-contact-fb-id [user messages]
   (let [grouped-by-from (group-by :message/from messages)
         grouped-by-to (group-by :message/to messages)
-        grouped (merge-with concat grouped-by-from grouped-by-to)]
+        grouped  (merge-with concat grouped-by-from grouped-by-to)]
     (dissoc grouped (:user/fb-id user))))
 
 (defn process-contact-messages [user contact-fb-id fresh-messages]
@@ -51,7 +53,7 @@
            (utils-domain/update-fresh-entities-with-db-id (:contact/messages contact) fresh-messages :message/message-id))))
 
 (defn merge-messages [user fresh-messages]
-  (let [grouped (group-by-contact-fb-id user fresh-messages)]
+  (let [grouped (group-by-contact-fb-id user  fresh-messages)]
     (map (fn [[c-id msgs]]
            (process-contact-messages user c-id msgs)) grouped)))
 
