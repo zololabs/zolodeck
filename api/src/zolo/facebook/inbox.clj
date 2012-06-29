@@ -18,11 +18,11 @@
         (assoc :subject subject)
         (assoc :to recipient))))
 
+(defn duplicate-msg-for-each-recipient [subject recipients msg]
+  (keep #(update-message subject % msg) recipients))
+
 (defn expand-messages [subject recipients msgs]
-  (mapcat
-   (fn [msg]
-     (keep #(update-message subject % msg) recipients))
-   msgs))
+  (mapcat #(duplicate-msg-for-each-recipient subject recipients %) msgs))
 
 (defn fetch-thread [auth-token thread-info start-time]
   (let [{thread-id :thread_id recipients :recipients subject :subject} thread-info]
