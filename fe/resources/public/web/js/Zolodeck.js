@@ -1,10 +1,6 @@
 (function($) {
     window.currentUser = new User();
 
-    window.facebook = new FacebookService({
-        'user' : window.currentUser
-    });
-
     window.Zolodeck = Backbone.Router.extend({
 
         routes:{
@@ -30,7 +26,7 @@
     });
     
     $(document).ready(function () {	
-        tpl.loadTemplates(['landing', 'header', 'home', 'friends-list-item'],
+        tpl.loadTemplates(['landing', 'header', 'home'],
     	                  function () {
         	              app = new Zolodeck();
         	              Backbone.history.start();

@@ -1,11 +1,11 @@
 (function($) {
     window.HeaderView = Backbone.View.extend({
         events: {
-            'click #logout' : 'logoutUsingFacebook'
+            'click #logout' : 'logoutUsingGigya'
         },
         
         initialize:function () {
-            _.bindAll(this, 'render', 'logoutUsingFacebook');
+            _.bindAll(this, 'render', 'logoutUsingGigya');
 
             this.user = this.model;
             this.model.bind('change:state', this.render)
@@ -22,11 +22,9 @@
             return this;
         },
 
-        logoutUsingFacebook: function(){
+        logoutUsingGigya: function(){
             console.log("Logout Pressed");
-            FB.logout(function(response) {           
-                console.log("Logged Out successfully");
-            });
+            Gigya.logout();
         }
         
     });

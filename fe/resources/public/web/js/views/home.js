@@ -9,11 +9,9 @@
         
         render: function (eventName) {
             console.log('Rendering Home');
-            //this.friendsListView = new FriendsListView({model:this.user.friends()});
             this.visualizerD3View = new VisualizerD3View({model: this.user.contactStrengthsD3()});
             
             $(this.el).html(this.template());
-            //$(this.el).find("#friends-list").append(this.friendsListView.render().el);
            
             return this;
         }  

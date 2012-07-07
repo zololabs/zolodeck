@@ -2,39 +2,32 @@
     
     window.User = Backbone.Model.extend({
         defaults: {
-            'service': null,  //Facebook , LinkedIn, Gmail etc
             'state': 'LOGGED_OUT',
-            'friends': new Friends(),
             'contactStrengthsD3':  new VisualizerD3()
-        },
-
-        friends: function(){
-            return this.get('friends');
         },
 
         contactStrengthsD3: function(){
             return this.get('contactStrengthsD3');
         },
+        
+        signup: function(){
+            console.log("Sign Up as he a new User");
+        },
 
-        login: function(service){
-            console.log("Logged In : " , service);
-            this.set({'service':service, 'state':'LOGGED_IN'});
-            //this.friends().fetch();
-            this.set({'friends':this.friends()});
-            this.contactStrengthsD3().fetch();
-            this.set({'contactStrengthsD3':this.contactStrengthsD3()});
+        login: function(gigyaUser){
+            this.set(gigyaUser);
+            this.set({'state':'LOGGED_IN'});
+            if(this.isNewUser()){
+                this.signup()
+            }
+            // this.contactStrengthsD3().fetch();
+            // this.set({'contactStrengthsD3':this.contactStrengthsD3()});
         },
 
         logout: function(){
             console.log("Logged Out");
-            this.set({'service':null, 
-                      'state':'LOGGED_OUT', 
-                      'friends' : new Friends(),
+            this.set({'state':'LOGGED_OUT', 
                       'contactStrengthsD3':  new VisualizerD3()});
-        },
-
-        service: function(){
-            return this.get('service');
         },
 
         isLoggedIn: function(){
@@ -43,6 +36,11 @@
 
         isLoggedOut: function(){
             return !this.isLoggedIn();
+        },
+
+        isNewUser: function(){
+            var siteUID = this.get('isSiteUID');
+            return ((siteUID == null) || (siteUID == false));
         }
 
     });
