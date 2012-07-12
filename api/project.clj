@@ -6,6 +6,8 @@
                  [compojure "1.0.2" :exclude [org.clojure/clojure]]
                  [ring "1.0.2" :exclude [org.clojure/clojure]]
 
+                 [fuziontech/ring-json-params "0.2.0" :exclude [org.clojure/clojure]]
+
                  [sandbar/sandbar "0.4.0-SNAPSHOT" :exclude [org.clojure/clojure]]
 
                  [org.clojure/data.json "0.1.2"  :exclude [org.clojure/clojure]]
@@ -23,6 +25,8 @@
 
                  [org.clojure/core.match "0.2.0-alpha9"]
 
+                 [zolodeck/gigya "0.1.0"]
+                 
                  [zolodeck/demonic "0.1.0-SNAPSHOT"]
                  [zolodeck/zolo-utils "0.1.0-SNAPSHOT"]]
 

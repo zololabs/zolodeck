@@ -1,6 +1,11 @@
 (function($) {
     
     window.User = Backbone.Model.extend({
+
+        url: "http://localhost:4000/users",
+
+        sync: CustomBackbone.zoloSync,
+        
         defaults: {
             'state': 'LOGGED_OUT',
             'contactStrengthsD3':  new VisualizerD3()
@@ -12,6 +17,8 @@
         
         signup: function(){
             console.log("Sign Up as he a new User");
+            console.log(this);
+            this.save();
         },
 
         login: function(gigyaUser){

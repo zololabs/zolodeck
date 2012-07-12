@@ -6,6 +6,7 @@
         ring.middleware.params
         ring.middleware.keyword-params
         ring.middleware.nested-params
+        ring.middleware.json-params
         [sandbar.auth]
         [sandbar.validation]
         [sandbar.stateful-session :only [wrap-stateful-session]]
@@ -17,14 +18,15 @@
             [zolo.api.user-api :as user-api]))
 
 (def security-policy
-     [#"/permission-denied*" :any
-      #".*" :user])
+  [#"/permission-denied*" :any
+   #"/users*" :any
+   #".*" :user])
 
 (defroutes application-routes
   (route/resources "/")
 
   ;;---- USER
-  (POST "/users" [& params] (json-response (user-api/upsert-user params)))
+  (POST "/users" [& params] (json-response (user-api/signup-user params)))
  
   ;;---- FRIENDS
   (GET "/friends" [& params] (json-response (user-api/friends-list params)))
@@ -57,6 +59,7 @@
 (def app
      (wrap-options
       (-> (handler/api application-routes)
+          wrap-json-params
           (with-security security-policy auth/authenticator)
           wrap-stateful-session
           wrap-accept-header-validation
