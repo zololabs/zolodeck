@@ -99,6 +99,32 @@
            (set (map :value (all-scores zg)))))))
 
 
+(deftest test-contacts-stats
+  (let [contact3 (zgf/new-contact #G"cccc3000")
+        contact4 (zgf/new-contact #G"cccc4000")
+        contact5 (zgf/new-contact #G"cccc5000")
+        contact6 (zgf/new-contact #G"cccc6000")
+
+        zg (zgf/building 
+            (zgf/new-user #G"aaaa1000")
+            (zgf/add-contact contact1)
+            (zgf/add-contact contact2)
+            (zgf/add-contact contact3)
+            (zgf/add-contact contact4)
+            (zgf/add-contact contact5)
+            (zgf/add-contact contact6)
+            
+            (zgf/add-score contact1 20)
+
+            (zgf/add-score contact2 80)            
+            (zgf/add-score contact3 70)
+
+            (zgf/add-score contact4 260)
+            (zgf/add-score contact5 270)            
+            (zgf/add-score contact6 280))]
+
+    (is (= {:total 6 :strong 3 :medium 2 :weak 1} (contacts-stats zg)))))
+
 ;; Tests for Constructions
 
 (deftest test-score->zolo-score
@@ -210,3 +236,4 @@
           (assert-zg-has-contacts zg 2)
           (assert-zg-contact-has-messages zg jack 3)
           (assert-zg-contact-has-messages zg jill 2)))))
+

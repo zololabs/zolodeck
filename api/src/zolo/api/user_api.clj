@@ -29,10 +29,9 @@
      (fully-loaded-user (sandbar/current-user))))
 
 (defn stats [request-params]
-  {:contacts {:total 303
-              :strong 99
-              :medium 100
-              :weak 104}})
+  (let [u (fully-loaded-user)
+        zg (zg/user->zolo-graph u)]
+    {:contacts (zg/contacts-stats zg)}))
 
 
 (defmulti contact-strengths :client)

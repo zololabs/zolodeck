@@ -72,6 +72,17 @@
              [(user-guid zg) :contacts c-id :scores]
              #(conj % s)))
 
+(defn contacts-with-score-between [zg lower upper]
+  (filter #(and (>= (score-value zg (:guid %)) lower)
+                (< (score-value zg (:guid %)) upper))
+          (vals (contacts zg))))
+
+(defn contacts-stats [zg]
+  {:total (count (contacts zg))
+   :strong (count (contacts-with-score-between zg 250 10000000))
+   :medium (count (contacts-with-score-between zg 50 250))
+   :weak (count (contacts-with-score-between zg 0 50))})
+
 
 ;; Construction
 (defn score->zg-score [s]
