@@ -28,6 +28,13 @@
   ([]
      (fully-loaded-user (sandbar/current-user))))
 
+(defn stats [request-params]
+  {:contacts {:total 303
+              :strong 99
+              :medium 100
+              :weak 104}})
+
+
 (defmulti contact-strengths :client)
 
 ;;TODO Dummy functions which returns JSON that D3 lib needs

@@ -31,6 +31,9 @@
 
   ;;---- Contact Strength
   (GET "/contact-strengths" [& params] (json-response (user-api/contact-strengths params)))
+
+  ;;---- User Stats
+  (GET "/user-stats" [& params] (json-response (user-api/stats params)))
   
   ;;---- GENERAL
   (GET "/permission-denied*" []  (json-response {:error "Permission Denied"} 403))
