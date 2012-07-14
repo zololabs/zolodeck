@@ -18,7 +18,8 @@
             padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
         }
     </style>
-    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-responsive.min.css" rel="stylesheet">
     <link href="css/d3/force.css" rel="stylesheet">
     <link href="css/styles.css" rel="stylesheet">
 
@@ -36,9 +37,7 @@
 <div class="header"></div>
 
 <div class="container">
-  <div class="row">
-    <div id="content" class="span12"></div>
-  </div>
+    <div id="content"></div>
 </div> <!-- /container -->
 
 <!-- Lib  -->
@@ -46,7 +45,7 @@
 <script src="lib/underscore.js"></script>
 <script src="lib/backbone.js"></script>
 
-<script src="lib/bootstrap-dropdown.js"></script>
+<script src="lib/bootstrap.min.js"></script>
 
 <script src="lib/d3.v2.min.js"></script>
 <script src="lib/fisheye.js"></script>
@@ -75,6 +74,7 @@
 <script src="js/views/visualizer/d3.js"></script>
 <script src="js/views/friendsList.js"></script>
 <script src="js/views/contacts_stats.js"></script>
+<script src="js/views/network_stats.js"></script>
 <script src="js/views/landing.js"></script>
 <script src="js/views/home.js"></script>
 

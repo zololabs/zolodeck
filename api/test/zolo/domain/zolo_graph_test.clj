@@ -99,7 +99,7 @@
            (set (map :value (all-scores zg)))))))
 
 
-(deftest test-contacts-stats
+(deftest test-user-stats
   (let [contact3 (zgf/new-contact #G"cccc3000")
         contact4 (zgf/new-contact #G"cccc4000")
         contact5 (zgf/new-contact #G"cccc5000")
@@ -121,9 +121,16 @@
 
             (zgf/add-score contact4 260)
             (zgf/add-score contact5 270)            
-            (zgf/add-score contact6 280))]
+            (zgf/add-score contact6 280))
 
-    (is (= {:total 6 :strong 3 :medium 2 :weak 1} (contacts-stats zg)))))
+        c-stats (contacts-stats zg)
+        n-stats (network-stats zg)]
+
+    (is (= 6 (:total c-stats)))
+    (is (= 3 (:strong c-stats)))
+    (is (= 2 (:medium c-stats)))
+    (is (= 1 (:weak c-stats)))
+    (is (= 163 (:average n-stats)))))
 
 ;; Tests for Constructions
 

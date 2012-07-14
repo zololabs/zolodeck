@@ -13,6 +13,10 @@
             return this.get('contacts');
         },
 
+        network: function() {
+            return this.get('network');
+        }
+
     });
 
 })(jQuery);

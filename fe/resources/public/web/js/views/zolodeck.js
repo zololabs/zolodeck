@@ -24,7 +24,8 @@
             this.homeView = new HomeView({
                 model: this.user
             });
-            $('#content').html(this.homeView.render().el);
+            //$('#content').html(this.homeView.render().el);
+            this.homeView.render();
         },
 
         renderLanding: function(){

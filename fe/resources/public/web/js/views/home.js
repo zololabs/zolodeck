@@ -13,8 +13,9 @@
             // this.visualizerD3View = new VisualizerD3View({model: this.user.contactStrengthsD3()});
  
 
-            $(this.el).html(this.template());
-            this.contactsStatsView = new ContactStatsView({model: this.user.stats()});
+            $("#content").html(this.template());
+            this.contactsStatsView = new ContactsStatsView({model: this.user.stats()});
+            this.networkStatsView = new NetworkStatsView({model: this.user.stats()});
 
             //$(this.el).find("#friends-list").append(this.friendsListView.render().el);
             return this;

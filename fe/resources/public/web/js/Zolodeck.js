@@ -30,7 +30,7 @@
     });
     
     $(document).ready(function () {	
-        tpl.loadTemplates(['landing', 'header', 'home', 'friends-list-item', 'contacts_stats'],
+        tpl.loadTemplates(['landing', 'header', 'home', 'friends-list-item', 'contacts_stats', 'network_stats'],
     	                  function () {
         	              app = new Zolodeck();
         	              Backbone.history.start();

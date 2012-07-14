@@ -1,20 +1,20 @@
 (function($) {
-    window.ContactsStatsView = Backbone.View.extend({
+    window.NetworkStatsView = Backbone.View.extend({
         
         initialize: function () {
             _.bindAll(this, 'render');
 
             this.stats = this.model;
 
-            this.template = _.template(tpl.get('contacts_stats'));
+            this.template = _.template(tpl.get('network_stats'));
 
             this.stats.bind("change", this.render, this);
         },
         
         render: function (eventName) {
-            console.log('Rendering Contact Stats');
+            console.log('Rendering Network Stats');
             
-            $("#contacts-stats").html(this.template(this.stats.contacts()));
+            $("#network-stats").html(this.template(this.stats.network()));
             
             return this;
         }

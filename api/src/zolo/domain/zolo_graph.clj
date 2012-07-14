@@ -2,9 +2,11 @@
   (:use zolodeck.utils.debug)
   (:require [zolo.domain.user :as user]
             [zolo.domain.contact :as contact]
+            [zolo.utils.fe :as fe]            
             [zolo.domain.message :as message]
             [zolo.domain.score :as score]
-            [zolodeck.utils.maps :as zolo-maps]))
+            [zolodeck.utils.maps :as zolo-maps]
+            [zolodeck.utils.math :as zolo-math]))
 
 (defn user-guid [zg]
   (first (keys zg)))
@@ -83,6 +85,10 @@
    :medium (count (contacts-with-score-between zg 50 250))
    :weak (count (contacts-with-score-between zg 0 50))})
 
+(defn network-stats [zg]
+  {:average (zolo-math/average (map #(score-value zg %) (contact-guids zg)))
+   ;;TODO This needs to be tested
+   :weak-contacts (doall (map fe/format-contact (take 5 (sort-by #(score-value zg (:guid %)) (vals (contacts zg))))))})
 
 ;; Construction
 (defn score->zg-score [s]
