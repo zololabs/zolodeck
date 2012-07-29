@@ -1,35 +1,42 @@
-(function($) {
-    window.HeaderView = Backbone.View.extend({
-        events: {
+define(['jquery',
+        'underscore',
+        'backbone',
+        'text!templates/header.html'],
+
+      function($, _, Backbone, headerTemplate){
+        
+        var HeaderView = Backbone.View.extend({
+          
+          el: $(".header"),
+
+          events: {
             'click #logout' : 'logoutUsingFacebook'
-        },
-        
-        initialize:function () {
+          },
+
+          initialize:function () {
             _.bindAll(this, 'render', 'logoutUsingFacebook');
-
+            
             this.user = this.model;
-            this.model.bind('change:state', this.render)
+            this.user.bind('change:state', this.render)
+          },
 
-            this.template = _.template(tpl.get('header'));
-        },
-        
-        render:function (eventName) {
-            console.log('Rendering Header');
+          render: function(){
+            var data = {};
+            var compiledTemplate = _.template( headerTemplate, data );
 
-            $(this.el).html(this.template());
-            $(this.el).find(".after-login").toggle(this.user.isLoggedIn());
+            this.$el.html(compiledTemplate);
+            this.$el.find(".after-login").toggle(this.user.isLoggedIn());
 
             return this;
-        },
+          },
 
-        logoutUsingFacebook: function(){
+          logoutUsingFacebook: function(){
             console.log("Logout Pressed");
             FB.logout(function(response) {           
-                console.log("Logged Out successfully");
+              console.log("Logged Out successfully");
             });
-        }
-        
-    });
-})(jQuery);
+          }
+        });
 
-
+        return HeaderView;
+      });

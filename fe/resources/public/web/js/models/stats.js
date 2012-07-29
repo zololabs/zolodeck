@@ -1,22 +1,29 @@
-(function($) {
+define(['jquery',
+        'underscore',
+        'backbone',
+        'utils/custom_backbone'],
 
-    window.Stats = Backbone.Model.extend({
-        url: "http://localhost:4000/user-stats",
+      function($, _, Backbone, CustomBackbone){
         
-        sync: CustomBackbone.zoloSync,
-
-        parse: function(response) {
+        var StatsModel = Backbone.Model.extend({
+          
+          url: "http://localhost:4000/user-stats",
+          
+          sync: CustomBackbone.zoloSync,
+          
+          parse: function(response) {
             return response;
-        },
-
-        contacts: function() {
+          },
+          
+          contacts: function() {
             return this.get('contacts');
-        },
-
-        network: function() {
+          },
+          
+          network: function() {
             return this.get('network');
-        }
+          }
 
-    });
-
-})(jQuery);
+        });
+        
+        return StatsModel;
+      });

@@ -1,56 +1,47 @@
-(function($) {
-    
-    window.User = Backbone.Model.extend({
-        defaults: {
+define(['jquery',
+        'underscore',
+        'backbone',
+        'models/stats'],
+
+      function($, _, Backbone, Stats){
+        
+        var UserModel = Backbone.Model.extend({
+          
+          defaults: {
             'service': null,  //Facebook , LinkedIn, Gmail etc
             'state': 'LOGGED_OUT',
-            // 'friends': new Friends(),
-            // 'contactStrengthsD3':  new VisualizerD3()
             'stats': new Stats()
-        },
+          },
 
-        friends: function(){
-            return this.get('friends');
-        },
-
-        contactStrengthsD3: function(){
-            return this.get('contactStrengthsD3');
-        },
-
-        stats: function() {
+          stats: function() {
             return this.get('stats');
-        },
+          },
 
-        login: function(service){
+          login: function(service){
             console.log("Logged In : " , service);
             this.set({'service':service, 'state':'LOGGED_IN'});
-            //this.friends().fetch();
-            this.set({'friends':this.friends()});
-            //this.contactStrengthsD3().fetch();
-            //this.set({'contactStrengthsD3':this.contactStrengthsD3()});
             this.stats().fetch();
-        },
-
-        logout: function(){
+          },
+          
+          logout: function(){
             console.log("Logged Out");
             this.set({'service':null, 
-                      'state':'LOGGED_OUT', 
-                      'friends' : new Friends(),
-                      'contactStrengthsD3':  new VisualizerD3()});
-        },
-
-        service: function(){
+                      'state':'LOGGED_OUT'});
+          },
+          
+          service: function(){
             return this.get('service');
-        },
-
-        isLoggedIn: function(){
+          },
+          
+          isLoggedIn: function(){
             return (this.get('state') == 'LOGGED_IN');
-        },
-
-        isLoggedOut: function(){
+          },
+          
+          isLoggedOut: function(){
             return !this.isLoggedIn();
-        }
+          }
 
-    });
-
-})(jQuery);
+        });
+        
+        return UserModel;
+      });
