@@ -29,13 +29,24 @@
     <link rel="apple-touch-icon" sizes="114x114"
           href="images/apple-touch-icon-114x114.png">
 
+    <!-- Gigya Stuff -->
+    <script type="text/javascript" lang="javascript" 
+	    src="http://cdn.gigya.com/JS/socialize.js?apikey=3_HwUDCcXYOSVytOiPiaQqLlbFDPtPleWscC59ThEs8F3OcTHROLlDdy5jdnoP0KQT">
+      {
+      enabledProviders: "facebook",
+      signIDs: true,
+      autoLogin: true,
+      facebookExtraPermissions: "email,friends_about_me,friends_birthday,friends_relationship_details,friends_location,friends_likes,friends_website,read_mailbox,offline_access"
+      }
+    </script>
+
     <!-- Load the script "js/main.js" as our entry point -->
     <script data-main="js/main" src="js/libs/require/require.js"></script>
 </head>
 
 <body>
 
-<div id="fb-root" />
+<!-- <div id="fb-root" /> -->
 
 <div class="header"></div>
 

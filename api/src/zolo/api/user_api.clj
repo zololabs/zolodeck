@@ -7,6 +7,11 @@
             [zolo.domain.zolo-graph :as zg]
             [zolo.viz.d3 :as d3]))
 
+;;TODO Need to implement this function
+(defn signup-user [request-params]
+  (print-vals "Request Params: " request-params)
+  {:user "OK done!"})
+
 (defn upsert-user [request-params]
   {:user "OK done!"})
 

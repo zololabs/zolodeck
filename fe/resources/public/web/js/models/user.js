@@ -1,14 +1,18 @@
 define(['jquery',
         'underscore',
         'backbone',
-        'models/stats'],
+        'models/stats',
+        'utils/custom_backbone'],
 
-      function($, _, Backbone, Stats){
+      function($, _, Backbone, Stats, CustomBackbone){
         
         var UserModel = Backbone.Model.extend({
           
+          url: "http://localhost:4000/users",
+
+          sync: CustomBackbone.zoloSync,
+
           defaults: {
-            'service': null,  //Facebook , LinkedIn, Gmail etc
             'state': 'LOGGED_OUT',
             'stats': new Stats()
           },
@@ -17,10 +21,24 @@ define(['jquery',
             return this.get('stats');
           },
 
-          login: function(service){
-            console.log("Logged In : " , service);
-            this.set({'service':service, 'state':'LOGGED_IN'});
-            this.stats().fetch();
+          signup: function(){
+            console.log("Sign Up as he a new User");
+            console.log(this);
+            this.save();
+          },
+
+          login: function(gigyaUser){
+            this.set(gigyaUser);
+            this.set({'state':'LOGGED_IN'});
+            if(this.isNewUser()){
+                this.signup()
+            }
+          },
+
+          logout: function(){
+            console.log("Logged Out");
+            this.set({'state':'LOGGED_OUT', 
+                      'contactStrengthsD3':  new VisualizerD3()});
           },
           
           logout: function(){
@@ -29,18 +47,19 @@ define(['jquery',
                       'state':'LOGGED_OUT'});
           },
           
-          service: function(){
-            return this.get('service');
-          },
-          
           isLoggedIn: function(){
             return (this.get('state') == 'LOGGED_IN');
           },
           
           isLoggedOut: function(){
             return !this.isLoggedIn();
-          }
+          },
 
+          isNewUser: function(){
+            var siteUID = this.get('isSiteUID');
+            return ((siteUID == null) || (siteUID == false));
+          }
+          
         });
         
         return UserModel;

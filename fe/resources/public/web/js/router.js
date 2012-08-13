@@ -2,11 +2,10 @@ define(['jquery',
         'underscore', 
         'backbone', 
         'models/user',
-        'models/facebook_service',
         'views/header',
         'views/zolodeck'], 
        
-       function($, _, Backbone, User, FacebookService, HeaderView, ZolodeckView){
+       function($, _, Backbone, User, HeaderView, ZolodeckView){
 
          var AppRouter = Backbone.Router.extend({
     
@@ -16,7 +15,6 @@ define(['jquery',
            
            zolodeck:function () {
              var user = new User;
-             var facebookService = new FacebookService({'user' : user});
 
              var headerView = new HeaderView({model: user});
              headerView.render();

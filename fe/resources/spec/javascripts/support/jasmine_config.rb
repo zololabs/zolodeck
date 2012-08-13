@@ -6,18 +6,18 @@ module Jasmine
   end
 end
 
-
-# Note - this is necessary for rspec2, which has removed the backtrace
 module Jasmine
-  class SpecBuilder
-    def declare_spec(parent, spec)
-      me = self
-      example_name = spec["name"]
-      @spec_ids << spec["id"]
-      backtrace = @example_locations[parent.description + " " + example_name]
-      parent.it example_name, {} do
-        me.report_spec(spec["id"])
-      end
+  class RunAdapter
+    def run(focused_suite = nil)
+      jasmine_files = @jasmine_files
+      css_files = @jasmine_stylesheets + (@config.css_files || [])
+      js_files = @config.js_files(focused_suite)
+      body = ERB.new(File.read(File.join(File.dirname(__FILE__), "run.html.erb"))).result(binding)
+      [
+        200,
+        { 'Content-Type' => 'text/html', 'Pragma' => 'no-cache' },
+        [body]
+      ]
     end
   end
 end

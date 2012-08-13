@@ -12,7 +12,6 @@ define(['jquery',
             options.beforeSend = function(jqXHR) {
             
               jqXHR.setRequestHeader("Accept", "application/vnd.zololabs.zolodeck.v1+json");
-              jqXHR.setRequestHeader("Authorization", "FB " + Facebook.signed_request());
               jqXHR.setRequestHeader("Access-Control-Allow-Origin", "*");
               
             }

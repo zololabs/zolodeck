@@ -11,23 +11,6 @@
 #   - dist/**/*.js
 #
 src_files:
-    - public/web/lib/jquery-1.7.1.min.js
-    - public/web/lib/underscore-min.js
-    - public/web/lib/backbone-min.js
-    - public/web/lib/bootstrap-dropdown.js
-    - public/web/lib/d3.v2.min.js
-    - public/web/js/utils/*.js
-    - public/web/js/models/visualizer/*.js
-    - public/web/js/models/friend.js
-    - public/web/js/collections/friends.js
-    - public/web/js/models/user.js
-    - public/web/js/models/facebook.js
-    - public/web/js/models/**.js
-    - public/web/js/collections/**.js
-    - public/web/js/views/visualizer/*.js
-    - public/web/js/views/*.js
-    - public/web/js/*.js
-    - public/web/templates/*.html
 
 # stylesheets
 #
@@ -53,7 +36,8 @@ stylesheets:
 #   - helpers/**/*.js
 #
 helpers:
-
+  - helpers/**/*.js
+  
 # spec_files
 #
 #  Return an array of filepaths relative to spec_dir to include.
@@ -65,7 +49,7 @@ helpers:
 #   - **/*[sS]pec.js
 #
 spec_files:
-   - **/*[sS]pec.js
+   - spec/**/*[sS]pec.js
 
 # src_dir
 #
@@ -88,3 +72,4 @@ src_dir:
 # spec_dir: spec/javascripts
 #
 spec_dir:
+   spec/javascripts
