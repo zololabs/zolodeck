@@ -5,15 +5,44 @@
   [(uuid-fact-schema :user/guid false "A GUID for the user")
    (string-fact-schema :user/first-name true "A user's first name") 
    (string-fact-schema :user/last-name true "A user's last name") 
-   (string-fact-schema :user/gender false "A user's gender") 
-   ;Facebook Information
-   (string-fact-schema :user/fb-id false "A user's Facebook ID") 
-   (string-fact-schema :user/fb-auth-token false "A user's Facebook auth token") 
-   (string-fact-schema :user/fb-email false "A user's Facebook email") 
-   (string-fact-schema :user/fb-link false "A user's Facebook link") 
-   (string-fact-schema :user/fb-username false "A user's Facebook username")
+   (string-fact-schema :user/gender false "A user's gender")
+
+   (refs-fact-schema :user/social-details false "A user's social detail records")   
+
    ;Contacts Information
    (refs-fact-schema :user/contacts false "A user's contacts")
+   ])
+
+(def SOCIAL-DETAILS-TX
+  [(uuid-fact-schema :social/guid false "A GUID for the social details record")
+   (long-fact-schema :social/age false "A user's age")
+   (string-fact-schema :social/country false "A user's age")
+   (ref-fact-schema :social/gender      false  "A user's gender")
+   (string-fact-schema :social/lastName    false  "A user's last name")
+   (string-fact-schema :social/state       false  "A user's state")
+   (string-fact-schema :social/photoURL    false  "A user's photo url")
+   (long-fact-schema :social/birthDay    false  "A user's birthday")
+   (string-fact-schema :social/thumbnailURL false "A user's thumbnail url")
+   (string-fact-schema :social/firstName   false  "A user's first name")
+   (string-fact-schema :social/city        false  "A user's city")
+   (long-fact-schema :social/birthMonth  false  "A user's birth month")
+   (string-fact-schema :social/nickname    false  "A user's nick name")
+   (long-fact-schema :social/birthYear   false  "A user's birth year")
+   (string-fact-schema :social/email       false  "A user's email")
+   (string-fact-schema :social/profileURL  false  "A user's profile url")
+   (string-fact-schema :social/providerUID false  "A user's provider UID")
+   (string-fact-schema :social/zip         false  "A user's zip")
+
+   (ref-fact-schema :social/provider    false  "A user's provider")
+   (string-fact-schema :social/auth-token false "The provider specific auth token")
+   ])
+
+(def ENUMS-TX
+  [(enum-value-schema :gender/male)
+   (enum-value-schema :gender/female)
+
+   (enum-value-schema :provider/facebook)
+   (enum-value-schema :provider/linkedin)   
    ])
 
 
