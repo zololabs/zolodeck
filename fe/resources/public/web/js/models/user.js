@@ -43,7 +43,7 @@ define(['jquery',
           
           logout: function(){
             console.log("Logged Out");
-            this.set({'service':null, 
+            this.set({'stats':null, 
                       'state':'LOGGED_OUT'});
           },
           

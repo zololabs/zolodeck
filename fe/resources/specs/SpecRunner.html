@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <meta http-equiv="pragma" content="no-cache">
+
+  <title>Jasmine Spec Runner</title>
+
+  <link rel="stylesheet" type="text/css" href="css/jasmine.css">
+
+  <script src="../public/web/js/libs/jquery/jquery-1.7.1.min.js"></script>
+
+  <script src="js/libs/jasmine/sinon.js"></script>
+  <script src="js/libs/jasmine/jasmine.js"></script>
+  <script src="js/libs/jasmine/jasmine-html.js"></script>
+  <script src="js/libs/jasmine/jasmine-jquery.js"></script>
+  <script src="js/libs/jasmine/jasmine-sinon.js"></script>
+
+  <script src="../public/web/js/libs/require/require.js"></script>
+  
+  <body>
+
+  <script>
+  $(document).ready( function() {
+
+      window.App = {}
+
+      require.config({
+
+        baseUrl: '../public/web/js',
+
+        paths: {
+             jquery: 'libs/jquery/jquery-1.7.1.min',
+             underscore: 'libs/underscore/underscore-min',
+             backbone: 'libs/backbone/backbone-min',
+             specs: '../../../specs/js'
+        },
+
+        shim: {
+
+           underscore: {
+           exports: '_'
+        },
+
+        backbone: {
+           'deps': ['jquery', 'underscore'],
+           'exports': 'Backbone'
+        }
+
+      }	
+      });
+
+      require([
+        'specs/utils/SpecRunner',
+        ],           
+        function(SpecRunner) {
+          SpecRunner();
+        }
+      );
+
+  });
+</script>
+
+  </head>
+<body>
+  <div id="list"></div>
+</body>
+</html>
