@@ -5,6 +5,7 @@
 (defn force-schema-attrib [attrib value]
   (cond
    (and (schema/is-string? attrib) (not (string? value))) (str value)
+   (and (schema/is-long? attrib) (not (number? value))) (Long/parseLong value)
    :else value))
 
 (defn force-schema-types [a-map]
