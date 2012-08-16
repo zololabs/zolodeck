@@ -67,10 +67,7 @@
 (defn signup-new-user [gigya-user]
   (-> gigya-user
       gigya-user->user
-      (print-vals-> "Transformed Gigya user:")
-      ( #(print-vals "---->>> " (pr-str %)) )
-      ;;demonic/insert      
-      ))
+      demonic/insert))
 
 (defn insert-fb-user [fb-user]
   (-> fb-user

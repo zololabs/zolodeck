@@ -5,7 +5,7 @@
         zolodeck.utils.clojure))
 
 (defrunonce init-datomic []
-  (->> datomic-setup/SCHEMA-TX
+  (->> @datomic-setup/SCHEMA-TX
        (demonic/init-db (conf/datomic-db-name))))
 
 (init-datomic)

@@ -56,4 +56,4 @@
     (is (= (d3/format-for-d3 (zg/user->zolo-graph hobbes))
            (d3/format-for-d3 (zg/user->zolo-graph hobbes-reloaded))))
 
-    (re-initialize-db (conf/datomic-db-name) schema/SCHEMA-TX)))
+    (re-initialize-db (conf/datomic-db-name) @schema/SCHEMA-TX)))
