@@ -7,6 +7,7 @@
             [zolo.facebook.inbox :as fb-inbox]
             [zolo.utils.domain :as domain]
             [zolo.utils.gigya :as gigya]
+            [zolo.domain.social-detail :as social-detail]
             [zolodeck.utils.string :as zolo-str]
             [zolodeck.utils.maps :as zolo-maps]
             [zolo.domain.contact :as contact]
@@ -23,46 +24,17 @@
    :id :user/fb-id
    :auth-token :user/fb-auth-token})
 
-(def GIGYA-IDENTITY-KEYS
-  {:age :social/age
-   :country :social/country
-   :gender :social/gender
-   :lastName :social/last-name
-   :state :social/state
-   :photoURL :social/photo-url
-   :birthDay :social/birth-day
-   :thumbnailURL :social/thumbnail-url
-   :firstName :social/first-name
-   :city :social/city
-   :birthMonth :social/birth-month
-   :nickname :social/nickname 
-   :birthYear :social/birth-year
-   :email :social/email 
-   :profileURL :social/profile-url
-   :providerUID :social/provider-uid
-   :zip :social/zip
-})
-
 (defn fb-user->user [fb-user]
   (zolo-maps/update-all-map-keys fb-user FB-USER-KEYS))
 
 (defn gigya-user->basic-user [gig])
 
-(defn gigya-fb-user->user [gigya-user]
-  (let [social (-> gigya-user
-                   gigya/facebook-identity
-                   (zolo-maps/update-all-map-keys GIGYA-IDENTITY-KEYS)
-                   (dissoc :social/gender :social/provider)                   
-                   domain/force-schema-types)
-        user {:user/first-name (:social/first-name social)
-              :user/last-name (:social/last-name social)}]
-    (assoc user :user/social-details [social])))
-
 (defn gigya-user->user [gigya-user]
-  (cond
-   (gigya/is-facebook-login? gigya-user) (gigya-fb-user->user gigya-user)
-   :else (throw+ {:type :bad-request
-                  :message "Invalid login provider specified with signup request"})))
+  (let [social-details (-> (gigya/identities gigya-user)
+                           social-detail/gigya-user-identities->social-details)
+        user {:user/first-name (social-detail/first-name social-details)
+              :user/last-name (social-detail/last-name social-details)}]
+    (assoc user :user/social-details social-details)))
 
 (defn signup-new-user [gigya-user]
   (-> gigya-user

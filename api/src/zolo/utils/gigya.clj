@@ -8,3 +8,6 @@
 (defn facebook-identity [gigya-user]
   (get-in gigya-user [:identities :facebook]))
 
+(defn identities [gigya-user]
+  (vals (:identities gigya-user)))
+
