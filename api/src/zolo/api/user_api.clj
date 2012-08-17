@@ -2,16 +2,18 @@
   (:use zolo.domain.user
         zolodeck.utils.debug)
   (:require [zolo.facebook.gateway :as gateway]
+            [zolo.utils.gigya :as gigya]
             [sandbar.auth :as sandbar]
             [zolo.domain.user :as user]
             [zolo.domain.zolo-graph :as zg]
             [zolo.viz.d3 :as d3]))
 
-;;TODO Need to implement this function
 (defn signup-user [request-params]
   (print-vals "Request Params: " request-params)
-  (user/signup-new-user request-params)
-  {:user "OK done!"})
+  (-> request-params
+      user/signup-new-user
+      (gigya/add-gigya-uid-info request-params)
+      (dissoc :user/social-details)))
 
 (defn upsert-user [request-params]
   {:user "OK done!"})
