@@ -1,13 +1,14 @@
 define(['jquery',
         'underscore',
-        'backbone',
-        'utils/facebook'],
+        'backbone'],
 
-      function($, _, Backbone, Facebook){
+      function($, _, Backbone){
         
         return {
           
           zoloSync : function(method, model, options) {
+
+            console.log("Doing : " + method);
         
             options.beforeSend = function(jqXHR) {
             

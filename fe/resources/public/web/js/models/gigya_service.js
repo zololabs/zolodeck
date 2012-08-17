@@ -1,9 +1,8 @@
 define(['jquery',
         'underscore',
-        'backbone',
-        'models/user'],
+        'backbone'],
 
-      function($, _, Backbone, User){
+      function($, _, Backbone){
         
         var GigyaServiceModel = Backbone.Model.extend({
           defaults: {

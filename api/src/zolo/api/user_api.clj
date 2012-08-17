@@ -8,12 +8,17 @@
             [zolo.domain.zolo-graph :as zg]
             [zolo.viz.d3 :as d3]))
 
+;;TODO (siva) this is an experiment ..need to change this though
+(defn format-user [user request-params]
+  (-> {:guid (str (:user/guid user))}
+      (gigya/add-gigya-uid-info request-params)))
+
 (defn signup-user [request-params]
   (print-vals "Request Params: " request-params)
   (-> request-params
       user/signup-new-user
-      (select-keys [:user/guid])
-      (gigya/add-gigya-uid-info request-params)))
+      ;;TODO (siva) this is an experiment ..need to change this though
+      (format-user request-params)))
 
 (defn upsert-user [request-params]
   {:user "OK done!"})
