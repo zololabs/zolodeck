@@ -12,8 +12,8 @@
   (print-vals "Request Params: " request-params)
   (-> request-params
       user/signup-new-user
-      (gigya/add-gigya-uid-info request-params)
-      (dissoc :user/social-details)))
+      (select-keys [:user/guid])
+      (gigya/add-gigya-uid-info request-params)))
 
 (defn upsert-user [request-params]
   {:user "OK done!"})
