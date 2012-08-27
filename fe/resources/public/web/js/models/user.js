@@ -31,6 +31,7 @@ define(['jquery',
                       },
                        success: function(user, response) {
                          GigyaUtils.notifyRegistration(user);
+                         GigyaUtils.setUserCookies(response);
                        }
                       }); 
           },
