@@ -16,6 +16,11 @@ namespace :api do
   task :todos do
     sh "cd api ; lein notes;"
   end
+
+  desc "Getting deps for API project"
+  task :deps do
+    sh "cd api ; lein deps; lein build-checkouts;"
+  end
   
   namespace :test do
 
