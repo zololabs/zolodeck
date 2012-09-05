@@ -9,7 +9,7 @@
 ;;   (.print out (date- x)))
 
 (defn- write-json-uuid [x out escape-unicode?]
-  (.print out (str x)))
+  (.print out (str "'" x "'")))
 
 (extend java.util.UUID json/Write-JSON
         {:write-json write-json-uuid})

@@ -27,31 +27,36 @@
 (defn fb-user->user [fb-user]
   (zolo-maps/update-all-map-keys fb-user FB-USER-KEYS))
 
-(defn find-by-login-provider-uid [provider-uid]
-  (if provider-uid
-    (-> (demonic/run-query '[:find ?u :in $ ?uid :where [?u :user/login-provider-uid ?uid]] provider-uid)
+(defn find-by-guid [guid]
+  (when guid
+    (-> (demonic/run-query '[:find ?u :in $ ?guid :where [?u :user/guid ?guid]] guid)
+        ffirst
+        demonic/load-entity)))
+
+(defn find-by-login-provider-uid [login-provider-uid]
+  (when login-provider-uid
+    (-> (demonic/run-query '[:find ?u :in $ ?login-provider-uid :where [?u :user/login-provider-uid ?login-provider-uid]] login-provider-uid)
         ffirst
         demonic/load-entity)))
 
 (defn reload-using-login-provider-uid [u]
   (find-by-login-provider-uid (:user/login-provider-uid u)))
 
-(defn gigya-user->basic-user [gig])
+(defn gigya-user->basic-user [gigya-user social-details]
+  {:user/first-name (social-detail/first-name social-details)
+   :user/last-name (social-detail/last-name social-details)
+   :user/login-provider-uid (:loginProviderUID gigya-user)})
 
 (defn gigya-user->user [gigya-user]
   (let [social-details (-> (gigya/identities gigya-user)
                            social-detail/gigya-user-identities->social-details)
-        ;;TODO this is ugly
-        user {:user/first-name (social-detail/first-name social-details)
-              :user/last-name (social-detail/last-name social-details)
-              :user/login-provider-uid (:loginProviderUID gigya-user)}]
+        user (gigya-user->basic-user gigya-user social-details)]
     (assoc user :user/social-details social-details)))
 
 (defn signup-new-user [gigya-user]
   (-> gigya-user
       gigya-user->user
       demonic/insert
-      ;;TODO (siva) Amit we need to talk abt this flow
       reload-using-login-provider-uid))
 
 (defn insert-fb-user [fb-user]

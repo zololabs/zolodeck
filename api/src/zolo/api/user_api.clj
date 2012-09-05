@@ -14,10 +14,8 @@
       (gigya/add-gigya-uid-info request-params)))
 
 (defn signup-user [request-params]
-  (print-vals "Request Params: " request-params)
   (-> request-params
       user/signup-new-user
-      ;;TODO (siva) this is an experiment ..need to change this though
       (format-user request-params)))
 
 (defn upsert-user [request-params]
