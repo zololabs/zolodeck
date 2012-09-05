@@ -49,14 +49,9 @@ define(['jquery',
 
           logout: function(){
             console.log("Logged Out");
-            this.set({'state':'LOGGED_OUT', 
-                      'contactStrengthsD3':  new VisualizerD3()});
-          },
-          
-          logout: function(){
-            console.log("Logged Out");
             this.set({'stats':null, 
                       'state':'LOGGED_OUT'});
+            GigyaUtils.cleanupUserCookies();
           },
           
           isLoggedIn: function(){

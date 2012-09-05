@@ -16,11 +16,8 @@ define(['jquery',
             user.login(eventObj.user);
           },
           
-          logout: function(){
-            gigya.services.socialize.logout();
-          },
-          
           onLogoutHandler: function(eventObj){
+            console.log("On Logout Handler")
             var user  = this.context;
             user.logout();
           },
