@@ -13,7 +13,7 @@ define(['jquery',
 
           sync: CustomBackbone.zoloSync,
 
-          idAttribute: "guid",
+          //idAttribute: "guid",
 
           defaults: {
             'state': 'LOGGED_OUT',
@@ -25,13 +25,15 @@ define(['jquery',
           },
 
           signup: function(){
-            this.save(this,
-                      {error: function(user, response){
-                        console.log(response);
-                      },
+            this.save({},
+                      {wait: true, 
                        success: function(user, response) {
                          GigyaUtils.notifyRegistration(user);
                          GigyaUtils.setUserCookies(response);
+                       },
+                       error: function(user, response){
+                         console.log("Error Happened");
+                         console.log(response);
                        }
                       }); 
           },
@@ -40,7 +42,8 @@ define(['jquery',
             this.set(gigyaUser);
             this.set({'state':'LOGGED_IN'});
             if(this.isNewUser()){
-                this.signup()
+              console.log("New User");
+              this.signup()
             }
           },
 

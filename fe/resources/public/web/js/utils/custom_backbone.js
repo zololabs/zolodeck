@@ -14,6 +14,11 @@ define(['jquery',
             
               jqXHR.setRequestHeader("Accept", "application/vnd.zololabs.zolodeck.v1+json");
               jqXHR.setRequestHeader("Access-Control-Allow-Origin", "*");
+
+              var zolo_guid = $.cookie("zolo_guid");
+              if(zolo_guid){
+                jqXHR.setRequestHeader("Authorization", "Bearer " + zolo_guid);
+              }
               
             }
         
