@@ -47,7 +47,7 @@
    :user/last-name (social-detail/last-name social-details)
    :user/login-provider-uid (:loginProviderUID gigya-user)})
 
-(defn gigya-user->user [gigya-user]
+(defn gigya-user->user [gigya-user] 
   (let [social-details (-> (gigya/identities gigya-user)
                            social-detail/gigya-user-identities->social-details)
         user (gigya-user->basic-user gigya-user social-details)]
@@ -96,13 +96,6 @@
           (message/merge-messages user)
           (map demonic/insert)
           doall)))
-
-(defn find-by-fb-signed-request [fb-sr]
-  (if-let [zolo-user (find-by-fb-id (:user_id fb-sr))]
-    zolo-user
-    (-> fb-sr
-        load-from-fb
-        insert-fb-user)))
 
 (defn update-scores [u]
   (doall (map contact/update-score (:user/contacts u)))

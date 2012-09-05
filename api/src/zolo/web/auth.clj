@@ -7,9 +7,8 @@
 (defmulti authenticate (fn [auth-type auth-cred params] 
                          (clojure.string/lower-case (clojure.string/trim auth-type))))
 
-(defmethod authenticate "fb" [_ auth-cred params]
-  (if-let [signed-request (facebook/decode-signed-request auth-cred)]
-    (user/find-by-fb-signed-request signed-request)))
+(defmethod authenticate "bearer" [_ auth-cred params]
+  (user/find-by-guid auth-cred))
 
 (defmethod authenticate :default [_ _ _]
   nil)
@@ -18,6 +17,6 @@
   (if-let [auth-token ((:headers req) "authorization")]
     (let [[auth-type auth-cred] (zolo-str/split " " auth-token)]
       (if-let [user (authenticate auth-type auth-cred (:params req))]
-        (merge {:username (:email user)
+        (merge {:username (:user/login-provider-uid user)
                 :roles #{:user}}
                user)))))
