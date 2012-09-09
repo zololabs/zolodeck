@@ -22,6 +22,12 @@
 (defn app-secret []
   (get-in CONFIG-MAP [ENV :app-secret]))
 
+(defn gigya-key []
+  (get-in CONFIG-MAP [ENV :gigya-key]))
+
+(defn gigya-secret []
+  (get-in CONFIG-MAP [ENV :gigya-secret]))
+
 (defrunonce setup-config []
   (let [config-file (java-io/resource "zolo.clj")
         env (keyword (or (.get (System/getenv) "ZOLODECK_ENV") "development"))]

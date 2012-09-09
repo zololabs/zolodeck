@@ -11,8 +11,7 @@
                  [sandbar/sandbar "0.4.0-SNAPSHOT" :exclude [org.clojure/clojure]]
 
                  [org.clojure/data.json "0.1.2"  :exclude [org.clojure/clojure]]
-                 [clj-http "0.3.6"]
-                 [clj-oauth2 "0.2.0"]
+                 [clj-http "0.5.3"]
 
                  [joda-time "1.6"]
                  [clj-time "0.3.7"]
