@@ -2,6 +2,7 @@
   (:use zolo.domain.user
         zolodeck.utils.debug)
   (:require [zolo.facebook.gateway :as gateway]
+            [zolo.gigya.core :as gigya-core]
             [zolo.utils.gigya :as gigya]
             [sandbar.auth :as sandbar]
             [zolo.domain.user :as user]
@@ -16,6 +17,7 @@
 (defn signup-user [request-params]
   (-> request-params
       user/signup-new-user
+      (gigya-core/notify-registration request-params)
       (format-user request-params)))
 
 (defn upsert-user [request-params]
