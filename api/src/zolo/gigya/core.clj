@@ -1,4 +1,4 @@
-(ns zolo.gigya.auth
+(ns zolo.gigya.core
   (:use zolodeck.utils.debug)
   (:require [clj-http.client :as http-client]
             [zolo.setup.config :as config])
@@ -21,3 +21,5 @@
                          :as :json})
       :body
       :access_token))
+
+
