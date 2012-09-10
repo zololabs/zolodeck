@@ -28,9 +28,18 @@
 
 
 (defn notify-registration [user gigya-user]
-  (-> (http-client/post "https://socialize.gigya.com/socialize.notifyRegistration" 
+  (http-client/post "https://socialize.gigya.com/socialize.notifyRegistration" 
+                    {:headers (gigya-oauth-headers (access-token)) 
+                     :debug true
+                     :form-params {"siteUID" (str (:user/guid user))
+                                   "UID" (:UID gigya-user)
+                                   "format" "json"}})
+  user)
+
+(defn delete-account [site-uid]
+    (-> (http-client/post "https://socialize.gigya.com/socialize.deleteAccount" 
                         {:headers (gigya-oauth-headers (access-token)) 
                          :debug true
-                         :form-params {"siteUID" (str (:user/guid user))
-                                       "UID" (:UID gigya-user)}})
-      (print-vals-> "Response from Notify Registration:")))
+                         :form-params {"UID" site-uid
+                                       "format" "json"}})
+      (print-vals-> "Response from Delete Account:")))

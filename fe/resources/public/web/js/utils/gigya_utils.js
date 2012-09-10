@@ -18,14 +18,9 @@ define(['jquery',
             $.cookie(k, v, {path: "/", expires: ten_years});
           },
           
-          notifyRegistration: function(user){
-            console.log("Ok notifying ");
-            console.log(user);
-          },
-          
           setUserCookies: function(user_details) {
-            console.log('In setUserCookies');
-            console.log('user_details: ' + user_details);
+            console.log('In setUserCookies , User Details :');
+            console.log(user_details);
             this.setPermanentCookieIfNeeded(ZOLO_GUID, user_details.guid);
             this.setPermanentCookieIfNeeded(ZOLO_UID, user_details.UID);
           },

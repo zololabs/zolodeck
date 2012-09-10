@@ -10,7 +10,7 @@
  (uuid-fact-schema :user/guid false "A GUID for the user")
  (string-fact-schema :user/first-name true "A user's first name") 
  (string-fact-schema :user/last-name true "A user's last name")
-  (string-fact-schema :user/login-provider-uid true "A user's login provider uid")
+ (string-fact-schema :user/login-provider-uid true "A user's login provider uid")
 
  ;Social details
  (refs-fact-schema :user/social-details false "A user's social detail records")   

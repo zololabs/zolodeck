@@ -19,6 +19,7 @@ define(['jquery',
            
            render: function(eventName){
              console.log("Rendering Zolodeck");
+             console.log("User Logged in : " + this.user.isLoggedIn());
              if(this.user.isLoggedIn()){
                this.renderHome();
              }else{

@@ -28,7 +28,6 @@ define(['jquery',
             this.save({},
                       {wait: true, 
                        success: function(user, response) {
-                         GigyaUtils.notifyRegistration(user);
                          GigyaUtils.setUserCookies(response);
                        },
                        error: function(user, response){
@@ -44,6 +43,10 @@ define(['jquery',
             if(this.isNewUser()){
               console.log("New User");
               this.signup()
+            }else{
+              console.log("Returning User");
+              console.log(gigyaUser);
+              GigyaUtils.setUserCookies(gigyaUser);
             }
           },
 
