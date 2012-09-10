@@ -1,8 +1,9 @@
 define(['jquery',
         'underscore',
-        'backbone'],
+        'backbone',
+        'utils/gigya_utils'],
 
-      function($, _, Backbone){
+      function($, _, Backbone, GigyaUtils){
         
         return {
           
@@ -15,7 +16,8 @@ define(['jquery',
               jqXHR.setRequestHeader("Accept", "application/vnd.zololabs.zolodeck.v1+json");
               jqXHR.setRequestHeader("Access-Control-Allow-Origin", "*");
 
-              var zolo_guid = $.cookie("zolo_guid");
+              var zolo_guid = $.cookie(GigyaUtils.ZOLO_GUID);
+
               if(zolo_guid){
                 jqXHR.setRequestHeader("Authorization", "Bearer " + zolo_guid);
               }

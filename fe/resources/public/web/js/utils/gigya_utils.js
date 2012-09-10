@@ -3,11 +3,10 @@ define(['jquery',
         'backbone'],
 
       function($, _, Backbone){
-        
-        var ZOLO_GUID = "zolo_guid";
-        var ZOLO_UID = "zolo_uid";
 
         return {
+          
+          ZOLO_GUID : "zolo_guid",
 
           setPermanentCookieIfNeeded: function(k, v) {
             if ($.cookie(k)) {
@@ -18,17 +17,14 @@ define(['jquery',
             $.cookie(k, v, {path: "/", expires: ten_years});
           },
           
-          setUserCookies: function(user_details) {
-            console.log('In setUserCookies , User Details :');
-            console.log(user_details);
-            this.setPermanentCookieIfNeeded(ZOLO_GUID, user_details.guid);
-            this.setPermanentCookieIfNeeded(ZOLO_UID, user_details.UID);
+          setAuthCookie: function(guid) {
+            console.log('In setUserCookies , Guid :' + guid); 
+            this.setPermanentCookieIfNeeded(this.ZOLO_GUID, guid);
           },
           
           cleanupUserCookies: function(){
             console.log("Cleaning up cookies");
-            $.removeCookie(ZOLO_UID);
-            $.removeCookie(ZOLO_GUID);
+            $.removeCookie(this.ZOLO_GUID);
           }
         };
 

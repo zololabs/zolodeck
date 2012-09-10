@@ -28,7 +28,7 @@ define(['jquery',
             this.save({},
                       {wait: true, 
                        success: function(user, response) {
-                         GigyaUtils.setUserCookies(response);
+                         GigyaUtils.setAuthCookie(response.guid);
                        },
                        error: function(user, response){
                          console.log("Error Happened");
@@ -46,7 +46,7 @@ define(['jquery',
             }else{
               console.log("Returning User");
               console.log(gigyaUser);
-              GigyaUtils.setUserCookies(gigyaUser);
+              GigyaUtils.setAuthCookie(gigyaUser.UID);
             }
           },
 
