@@ -29,8 +29,8 @@ define(['jquery',
                       {wait: true, 
                        success: function(user, response) {
                          GigyaUtils.setAuthCookie(response.guid);
-                         this.set({'state':'LOGGED_IN'});
-                         this.stats().fetch();
+                         user.set({'state':'LOGGED_IN'});
+                         user.stats().fetch();
                        },
                        error: function(user, response){
                          console.log("Error Happened");
