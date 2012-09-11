@@ -29,6 +29,8 @@ define(['jquery',
                       {wait: true, 
                        success: function(user, response) {
                          GigyaUtils.setAuthCookie(response.guid);
+                         this.set({'state':'LOGGED_IN'});
+                         this.stats().fetch();
                        },
                        error: function(user, response){
                          console.log("Error Happened");
@@ -47,13 +49,14 @@ define(['jquery',
               console.log(gigyaUser);
               this.set({'guid' : gigyaUser.UID});
               GigyaUtils.setAuthCookie(gigyaUser.UID);
+              this.set({'state':'LOGGED_IN'});
+              this.stats().fetch();
             }
-            this.set({'state':'LOGGED_IN'});
           },
 
           logout: function(){
             console.log("Logged Out");
-            this.set({'stats':null, 
+            this.set({'stats': new Stats(), 
                       'state':'LOGGED_OUT'});
             GigyaUtils.cleanupUserCookies();
           },
