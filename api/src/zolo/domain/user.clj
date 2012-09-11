@@ -6,13 +6,15 @@
   (:require [zolo.facebook.gateway :as fb-gateway]
             [zolo.facebook.inbox :as fb-inbox]
             [zolo.utils.domain :as domain]
-            [zolo.utils.gigya :as gigya]
+            [zolo.utils.gigya :as gigya-utils]
             [zolo.utils.readers :as readers]
+            [zolo.gigya.core :as gigya]
             [zolo.domain.social-detail :as social-detail]
             [zolodeck.utils.string :as zolo-str]
             [zolodeck.utils.maps :as zolo-maps]
             [zolo.domain.contact :as contact]
             [zolo.domain.message :as message]
+            [sandbar.auth :as sandbar]
             [clojure.set :as set]))
 
 (def FB-USER-KEYS 
@@ -24,6 +26,9 @@
    :email :user/fb-email
    :id :user/fb-id
    :auth-token :user/fb-auth-token})
+
+(defn current-user []
+  (dissoc (sandbar/current-user) :username :roles))
 
 (defn fb-user->user [fb-user]
   (zolo-maps/update-all-map-keys fb-user FB-USER-KEYS))
@@ -52,7 +57,7 @@
    :user/login-provider-uid (:loginProviderUID gigya-user)})
 
 (defn gigya-user->user [gigya-user] 
-  (let [social-details (-> (gigya/identities gigya-user)
+  (let [social-details (-> (gigya-utils/identities gigya-user)
                            social-detail/gigya-user-identities->social-details)
         user (gigya-user->basic-user gigya-user social-details)]
     (assoc user :user/social-details social-details)))
@@ -62,6 +67,14 @@
       gigya-user->user
       demonic/insert
       reload-using-login-provider-uid))
+
+(defn update-contacts [u]
+  (->> u
+      gigya/get-friends-info
+      (map contact/gigya-contact->contact)
+      (contact/update-contacts u)
+      demonic/insert
+      ))
 
 (defn insert-fb-user [fb-user]
   (-> fb-user

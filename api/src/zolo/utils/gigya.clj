@@ -11,6 +11,9 @@
 (defn identities [gigya-user]
   (vals (:identities gigya-user)))
 
+(defn contact-identities [gigya-contact]
+  (:identities gigya-contact))
+
 (defn add-gigya-uid-info [user gigya-user]
   (merge (select-keys gigya-user [:UIDSignature :signatureTimestamp :UID])
          user))

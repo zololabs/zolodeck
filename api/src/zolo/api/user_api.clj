@@ -22,23 +22,27 @@
 
 ;;TODO Junk function. Need to design the app
 (defn fully-loaded-user
-  ([user]
-     (let [u-fb-id (:user/fb-id user)]
-        (if (= 0 (count (:user/contacts user)))
-         (do
-           (user/update-facebook-friends u-fb-id)
-           (user/update-facebook-inbox u-fb-id)
-           (user/update-scores (user/reload user))
-           (user/reload user))
-         user)
-         ))
+  ([u]
+     ;; (let [u-fb-id (:user/fb-id user)]
+     ;;    (if (= 0 (count (:user/contacts user)))
+     ;;     (do
+     ;;       (user/update-facebook-friends u-fb-id)
+     ;;       (user/update-facebook-inbox u-fb-id)
+     ;;       (user/update-scores (user/reload user))
+     ;;       (user/reload user))
+     ;;     user))
+     (user/update-contacts u)
+     )
   ([]
-     (fully-loaded-user (sandbar/current-user))))
+     (fully-loaded-user (user/current-user))))
 
 (defn stats [request-params]
   (let [u (fully-loaded-user)
-        zg (zg/user->zolo-graph u)]
-    {:contacts (zg/contacts-stats zg)
-     :network (zg/network-stats zg)}))
+        ;;zg (zg/user->zolo-graph u)
+        ]
+    {:contacts nil;;(zg/contacts-stats zg)
+     :network nil ;;(zg/network-stats zg)
+     }
+    ))
 
 

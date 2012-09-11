@@ -26,6 +26,7 @@
 (defn gigya-user-identity->social-detail [gigya-user-identity]
   (-> gigya-user-identity
       (zolo-maps/update-all-map-keys GIGYA-USER-IDENTITY-KEYS)
+      ;;TODO Need to set these enum values
       (dissoc :social/gender :social/provider)
       domain/force-schema-types))
 

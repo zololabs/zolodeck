@@ -5,7 +5,10 @@
   (:require [zolodeck.utils.string :as zolo-str]
             [zolodeck.utils.maps :as zolo-maps]
             [zolodeck.utils.calendar :as zolo-cal]
+            [zolo.utils.gigya :as gigya-utils]
             [zolo.utils.domain :as utils-domain]
+            [zolo.gigya.core :as gigya]
+            [zolo.domain.social-detail :as social-detail]
             [zolodeck.demonic.core :as demonic]
             [zolo.domain.score :as score]
             [clojure.set :as set]))
@@ -41,9 +44,20 @@
   (demonic/append-single user :user/contacts contact-a-map)
   (find-by-user-and-contact-fb-id user (:contact/fb-id contact-a-map)))
 
+(defn gigya-contact->basic-contact [gigya-contact social-details]
+  {:contact/first-name (social-detail/first-name social-details)
+   :contact/last-name (social-detail/last-name social-details)
+   :contact/gigya-uid (:UID gigya-contact)})
+
+(defn gigya-contact->contact [gigya-contact] 
+  (let [social-details (-> (gigya-utils/contact-identities gigya-contact)
+                           social-detail/gigya-user-identities->social-details)
+        contact (gigya-contact->basic-contact gigya-contact social-details)]
+    (assoc contact :contact/social-details social-details)))
+
 (defn update-contacts [user fresh-contacts]
   (assoc user :user/contacts
-         (utils-domain/update-fresh-entities-with-db-id (:user/contacts user) fresh-contacts :contact/fb-id)))
+         (utils-domain/update-fresh-entities-with-db-id (:user/contacts user) fresh-contacts :contact/gigya-uid)))
 
 (defn update-score [c]
   (demonic/append-single c :contact/scores (score/create c)))

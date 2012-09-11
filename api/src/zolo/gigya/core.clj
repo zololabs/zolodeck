@@ -4,6 +4,14 @@
   (:require [clj-http.client :as http-client]
             [zolo.setup.config :as config]))
 
+;; User Info
+(defn get-friends-info [user]
+  (-> (gigya-oauth-post "socialize.getFriendsInfo" {"UID" (:user/guid user)
+                                                    "detailLevel" "extended"
+                                                    "debug" true})
+      :friends))
+
+;; Account Management
 (defn notify-registration [user gigya-user]
   (gigya-oauth-post "socialize.notifyRegistration" {"siteUID" (str (:user/guid user))
                                                     "UID" (:UID gigya-user)})
