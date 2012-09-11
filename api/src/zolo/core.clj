@@ -30,12 +30,6 @@
   (POST "/users" [& params] (json-response (user-api/signup-user params)))
   (GET "/users/:id" [id] (json-response (current-user)))
  
-  ;;---- FRIENDS
-  (GET "/friends" [& params] (json-response (user-api/friends-list params)))
-
-  ;;---- Contact Strength
-  (GET "/contact-strengths" [& params] (json-response (user-api/contact-strengths params)))
-
   ;;---- User Stats
   (GET "/user-stats" [& params] (json-response (user-api/stats params)))
   

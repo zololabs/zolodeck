@@ -20,12 +20,6 @@
       (gigya-core/notify-registration request-params)
       (format-user request-params)))
 
-(defn upsert-user [request-params]
-  {:user "OK done!"})
-
-(defn friends-list [request-params]
-  (gateway/friends-list (:user/fb-auth-token (sandbar/current-user))))
-
 ;;TODO Junk function. Need to design the app
 (defn fully-loaded-user
   ([user]
@@ -47,28 +41,4 @@
     {:contacts (zg/contacts-stats zg)
      :network (zg/network-stats zg)}))
 
-(defmulti contact-strengths :client)
-
-;;TODO Dummy functions which returns JSON that D3 lib needs
-(defn- node [no]
-  {"name" (str "Friend-" no)
-   "group" (rand-int 10)})
-
-(defn- link [no]
-  {"source" 0
-   "target" no
-   "value" (rand-int 200)})
-
-(defmethod contact-strengths "d3" [request-params]
-  ;;TODO This is an hack for now. We need to come up with design and
-  ;;flow of the app
-  (let [u (fully-loaded-user)
-        zg (zg/user->zolo-graph u)]
-    (d3/format-for-d3 zg))
-
-  ;; (let [no-of-nodes 200]
-  ;;   {"nodes" (reduce (fn [v no] (conj v (node no))) [{"name" "ME" "group" 1000 "center" true}] (range 1 (+ no-of-nodes 1)))
-  ;;    "links" (reduce (fn [v no] (conj v (link no))) [] (range 1 (+ no-of-nodes 1)))})
-
-  )
 
