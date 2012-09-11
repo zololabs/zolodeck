@@ -3,6 +3,8 @@
             [zolo.setup.config :as config])
   (:import [org.apache.commons.codec.binary Base64]))
 
+(declare GIGYA-ACCESS-TOKEN)
+
 (defn base64encode [value]
   (Base64/encodeBase64String (.getBytes value)))
 
@@ -15,13 +17,21 @@
 (defn gigya-oauth-headers [access-token]
   {"Authorization"(str "OAuth " access-token)})
 
+(defn gigya-post
+  ([path]
+     (gigya-post path (gigya-oauth-headers GIGYA-ACCESS-TOKEN) {}))
+  ([path headers]
+     (gigya-post path headers {}))  
+  ([path headers form-params]
+     (-> (http-client/post (str "https://socialize.gigya.com/" path) 
+                           {:headers headers
+                            :content-type "application/x-www-form-urlencoded"
+                            :form-params (merge {"format" "json"} form-params)
+                            :as :json})
+         :body)))
+
 (defn get-gigya-access-token []
-  (-> (http-client/post "https://socialize.gigya.com/socialize.getToken" 
-                        {:headers (gigya-basic-headers) 
-                         :content-type "application/x-www-form-urlencoded"
-                         :form-params {"grant_type" "none"}
-                         :as :json})
-      :body
+  (-> (gigya-post "socialize.getToken" (gigya-basic-headers) {"grant_type" "none"})
       :access_token))
 
 (def GIGYA-ACCESS-TOKEN (get-gigya-access-token))
@@ -30,9 +40,4 @@
   ([path]
      (gigya-oauth-post path {}))
   ([path form-params]
-     (-> (http-client/post (str "https://socialize.gigya.com/" path) 
-                           {:headers (gigya-oauth-headers GIGYA-ACCESS-TOKEN)
-                            :content-type "application/x-www-form-urlencoded"
-                            :form-params (merge {"format" "json"} form-params)
-                            :as :json})
-         :body)))
+     (gigya-post path (gigya-oauth-headers GIGYA-ACCESS-TOKEN) form-params)))

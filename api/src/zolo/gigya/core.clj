@@ -10,8 +10,10 @@
   user)
 
 (defn delete-account [site-uid]
-  (-> (gigya-oauth-post "socialize.deleteAccount" {"UID" site-uid
-                                                   "format" "json"})))
+  (gigya-oauth-post "socialize.deleteAccount" {"UID" site-uid}))
+
+(defn get-gigya-users []
+  (gigya-oauth-post "socialize.exportUsers"))
 
 (defn delete-all-accounts []
   (->> (get-gigya-users)
@@ -19,6 +21,3 @@
        (map :UID)
        (map delete-account)
        doall))
-
-(defn get-gigya-users []
-  (gigya-oauth-post "socialize.exportUsers"))
