@@ -21,6 +21,7 @@ define(['jquery',
           },
 
           render: function(){
+            console.log("Ok Starting to render Home");
             var data = {};
             var compiledTemplate = _.template( homeTemplate, data );
 

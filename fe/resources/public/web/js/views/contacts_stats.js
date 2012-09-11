@@ -15,6 +15,7 @@ define(['jquery',
           },
         
           render: function (eventName) {
+            console.log("Rendering Contacts Stats");
             var data = this.stats.contacts();
             var compiledTemplate = _.template( contactsStatsTemplate, data );
 

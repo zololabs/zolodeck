@@ -9,11 +9,11 @@ define(['jquery',
         
         var UserModel = Backbone.Model.extend({
           
-          url: "http://localhost:4000/users",
+          urlRoot: "http://localhost:4000/users",
 
           sync: CustomBackbone.zoloSync,
 
-          //idAttribute: "guid",
+          idAttribute: "guid",
 
           defaults: {
             'state': 'LOGGED_OUT',
@@ -39,15 +39,16 @@ define(['jquery',
           
           login: function(gigyaUser){
             this.set(gigyaUser);
-            this.set({'state':'LOGGED_IN'});
             if(this.isNewUser()){
               console.log("New User");
-              this.signup()
+              this.signup();
             }else{
               console.log("Returning User");
               console.log(gigyaUser);
+              this.set({'guid' : gigyaUser.UID});
               GigyaUtils.setAuthCookie(gigyaUser.UID);
             }
+            this.set({'state':'LOGGED_IN'});
           },
 
           logout: function(){
