@@ -19,7 +19,8 @@
 
 (def security-policy
   [#"/permission-denied*" :any
-   #"/users*" :any
+   #"/users" :any
+   #"/users.*" :user
    #".*" :user])
 
 (defroutes application-routes
@@ -27,6 +28,7 @@
 
   ;;---- USER
   (POST "/users" [& params] (json-response (user-api/signup-user params)))
+  (GET "/users/:id" [id] (json-response (current-user)))
  
   ;;---- FRIENDS
   (GET "/friends" [& params] (json-response (user-api/friends-list params)))

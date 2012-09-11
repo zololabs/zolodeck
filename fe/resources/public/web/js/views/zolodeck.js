@@ -11,10 +11,13 @@ define(['jquery',
            el: $('#container'),
     
            initialize: function () {
-             _.bindAll(this, 'render');
+             _.bindAll(this, 'render', 'renderHome', 'renderLanding');
              
              this.user = this.model;
-             this.user.bind('change:state', this.render);                 
+             this.user.bind('change:state', this.render);     
+
+             this.homeView = new HomeView({model: this.user});            
+             this.landingView = new LandingView({model: this.user});
            },
            
            render: function(eventName){
@@ -29,13 +32,13 @@ define(['jquery',
            },
            
            renderHome: function(){
-             var homeView = new HomeView({model: this.user});
-             homeView.render();
+             console.log("Rendering Home");
+             this.homeView.render();
            },
            
            renderLanding: function(){
-             var landingView = new LandingView({model: this.user});
-             landingView.render();
+             console.log("Rendering Landing");
+             this.landingView.render();
            }
            
          });

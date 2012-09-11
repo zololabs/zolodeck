@@ -47,7 +47,6 @@
     {:contacts (zg/contacts-stats zg)
      :network (zg/network-stats zg)}))
 
-
 (defmulti contact-strengths :client)
 
 ;;TODO Dummy functions which returns JSON that D3 lib needs

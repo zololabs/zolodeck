@@ -7,6 +7,7 @@
             [zolo.facebook.inbox :as fb-inbox]
             [zolo.utils.domain :as domain]
             [zolo.utils.gigya :as gigya]
+            [zolo.utils.readers :as readers]
             [zolo.domain.social-detail :as social-detail]
             [zolodeck.utils.string :as zolo-str]
             [zolodeck.utils.maps :as zolo-maps]
@@ -32,6 +33,9 @@
     (-> (demonic/run-query '[:find ?u :in $ ?guid :where [?u :user/guid ?guid]] guid)
         ffirst
         demonic/load-entity)))
+
+(defn find-by-guid-string [guid]
+  (find-by-guid (java.util.UUID/fromString guid)))
 
 (defn find-by-login-provider-uid [login-provider-uid]
   (when login-provider-uid
