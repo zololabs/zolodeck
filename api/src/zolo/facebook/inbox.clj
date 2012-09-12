@@ -1,4 +1,5 @@
 (ns zolo.facebook.inbox
+  (:require [zolo.utils.http :as gigya-gateway])
   (:use [slingshot.slingshot :only [throw+ try+]]
         zolo.facebook.gateway
         zolodeck.utils.debug
@@ -39,3 +40,19 @@
   ([auth-token]
      (fetch-inbox auth-token "1990-01-01")))
 
+(defn gigya-fetch-thread [u thread-info start-time]
+  (let [{thread-id :thread_id recipients :recipients subject :subject} thread-info]
+    (print-vals "Thread-id:" thread-id)
+    (->> (gigya-gateway/gigya-raw-data-post {"provider" "facebook"
+                                             "UID" (:user/guid u)
+                                             "fields" (message-fql thread-id start-time)})
+         (expand-messages subject recipients))))
+
+(defn gigya-fetch-threads [u]
+  (gigya-gateway/gigya-raw-data-post {"provider" "facebook"
+                                      "UID" (:user/guid u)
+                                      "fields" INBOX-FQL}))
+
+(defn get-facebook-messages [u]
+  (->> (gigya-fetch-threads u)
+       (mapcat #(gigya-fetch-thread u % (to-seconds "1990-01-01")))))

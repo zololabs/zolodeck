@@ -1,6 +1,7 @@
 (ns zolo.utils.http
   (:require [clj-http.client :as http-client]
-            [zolo.setup.config :as config])
+            [zolo.setup.config :as config]
+            [clojure.data.json :as json])
   (:import [org.apache.commons.codec.binary Base64]))
 
 (declare GIGYA-ACCESS-TOKEN)
@@ -41,3 +42,8 @@
      (gigya-oauth-post path {}))
   ([path form-params]
      (gigya-post path (gigya-oauth-headers GIGYA-ACCESS-TOKEN) form-params)))
+
+(defn gigya-raw-data-post [form-params]
+  (-> (gigya-oauth-post "socialize.getRawData" form-params)
+      :data
+      json/read-json))

@@ -1,5 +1,5 @@
 (ns zolo.domain.user
-  (:use zolo.setup.datomic-setup        
+  (:use zolo.setup.datomic-setup
         [slingshot.slingshot :only [throw+ try+]]
         [zolodeck.demonic.core :only [insert run-query load-entity] :as demonic]
         zolodeck.utils.debug)
@@ -73,8 +73,14 @@
       gigya/get-friends-info
       (map contact/gigya-contact->contact)
       (contact/update-contacts u)
-      demonic/insert
-      ))
+      demonic/insert))
+
+(defn update-messages [u]
+  (->> (fb-inbox/get-facebook-messages u)
+       (map message/fb-message->message)
+       (message/merge-messages u)
+       (map demonic/insert)
+       doall))
 
 (defn insert-fb-user [fb-user]
   (-> fb-user
@@ -88,7 +94,7 @@
         demonic/load-entity)))
 
 (defn reload [u]
-  (find-by-fb-id (:user/fb-id u)))
+  (find-by-guid (:user/guid u)))
 
 (defn load-from-fb [{:keys [code]}]
   (-> code
@@ -103,16 +109,6 @@
          (map contact/fb-friend->contact)
          (contact/update-contacts user)
          demonic/insert)))
-
-(defn update-facebook-inbox [fb-id]
-  (let [user (find-by-fb-id fb-id)]
-    (->>  user
-          :user/fb-auth-token
-          (fb-inbox/fetch-inbox)
-          (map message/fb-message->message)
-          (message/merge-messages user)
-          (map demonic/insert)
-          doall)))
 
 (defn update-scores [u]
   (doall (map contact/update-score (:user/contacts u)))

@@ -23,16 +23,13 @@
 ;;TODO Junk function. Need to design the app
 (defn fully-loaded-user
   ([u]
-     ;; (let [u-fb-id (:user/fb-id user)]
-     ;;    (if (= 0 (count (:user/contacts user)))
-     ;;     (do
-     ;;       (user/update-facebook-friends u-fb-id)
-     ;;       (user/update-facebook-inbox u-fb-id)
-     ;;       (user/update-scores (user/reload user))
-     ;;       (user/reload user))
-     ;;     user))
      (user/update-contacts u)
-     )
+     (print-vals "contacts done")
+     (user/update-messages u)
+     (print-vals "messages done")
+     (user/update-scores (user/reload u))
+     (print-vals "scores done")     
+     (user/reload u))
   ([]
      (fully-loaded-user (user/current-user))))
 
