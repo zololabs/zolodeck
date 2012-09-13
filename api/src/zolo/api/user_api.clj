@@ -20,21 +20,8 @@
       (gigya-core/notify-registration request-params)
       (format-user request-params)))
 
-;;TODO Junk function. Need to design the app
-(defn fully-loaded-user
-  ([u]
-     (user/update-contacts u)
-     (print-vals "contacts done")
-     (user/update-messages u)
-     (print-vals "messages done")
-     (user/update-scores (user/reload u))
-     (print-vals "scores done")     
-     (user/reload u))
-  ([]
-     (fully-loaded-user (user/current-user))))
-
 (defn stats [request-params]
-  (let [u (fully-loaded-user)
+  (let [u (user/fully-loaded-user)
         ;;zg (zg/user->zolo-graph u)
         ]
     {:contacts nil;;(zg/contacts-stats zg)

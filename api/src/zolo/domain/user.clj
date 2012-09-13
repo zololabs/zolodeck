@@ -68,13 +68,6 @@
       demonic/insert
       reload-using-login-provider-uid))
 
-(defn update-contacts [u]
-  (->> u
-      gigya/get-friends-info
-      (map contact/gigya-contact->contact)
-      (contact/update-contacts u)
-      demonic/insert))
-
 (defn update-messages [u]
   (->> (fb-inbox/get-facebook-messages u)
        (map message/fb-message->message)
@@ -113,3 +106,18 @@
 (defn update-scores [u]
   (doall (map contact/update-score (:user/contacts u)))
   (reload u))
+
+;;TODO Junk function. Need to design the app
+(defn fully-loaded-user
+  ([u]
+     (contact/update-contacts u)
+     (print-vals "contacts done")
+     (update-messages u)
+     (print-vals "messages done")
+     (update-scores (reload u))
+     (print-vals "scores done")     
+     (reload u))
+  ([]
+     (fully-loaded-user (current-user))))
+
+

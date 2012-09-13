@@ -54,16 +54,15 @@
  ;;TODO Need to decide whether we need these or not           
  (string-fact-schema :contact/first-name true "A contact's first name") 
  (string-fact-schema :contact/last-name true "A contact's last name")
- (string-fact-schema :contact/gigya-uid  false  "A contact's gigya UID")
- ;; (string-fact-schema :contact/gender false "A contact's gender") 
 
  ;Social details
  (refs-fact-schema :contact/social-details false "A contact's social detail records")
  
  ;Messages Information
  (refs-fact-schema :contact/messages false "A contact's messages")
- ;Scores Information
- (refs-fact-schema :contact/scores false "A contact's scores"))
+ 
+ ;Score Information
+ (ref-fact-schema :contact/score false "A contact's score"))
 
 (schema-set "MESSAGE ENTITY FACTS"
  (uuid-fact-schema :message/guid false "A GUID for messages")
