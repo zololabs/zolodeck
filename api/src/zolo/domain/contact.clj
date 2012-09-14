@@ -99,8 +99,19 @@
     (-> (assoc user :user/contacts updated-contacts)
         demonic/insert)))
 
+;;TODO Duplication find-by-guid
+(defn find-by-guid [guid]
+  (when guid
+    (-> (demonic/run-query '[:find ?c :in $ ?guid :where [?c :contact/guid ?guid]] guid)
+        ffirst
+        demonic/load-entity)))
+
+(defn reload [c]
+  (find-by-guid (:contact/guid c)))
+
 (defn update-score [c]
-  (demonic/append-single c :contact/score (score/create c)))
+  (let [reloaded-c (reload c)]
+    (demonic/append-single reloaded-c :contact/score (score/create reloaded-c))))
 
 (defn score [c]
   (or (:score/value (:contact/score c))

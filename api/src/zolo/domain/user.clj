@@ -32,6 +32,7 @@
 (defn fb-user->user [fb-user]
   (zolo-maps/update-all-map-keys fb-user FB-USER-KEYS))
 
+;;TODO Duplication find-by-guid
 (defn find-by-guid [guid]
   (when guid
     (-> (demonic/run-query '[:find ?u :in $ ?guid :where [?u :user/guid ?guid]] guid)
@@ -109,10 +110,11 @@
      ;;is present
      (message/update-messages u)
      (print-vals "messages done")
+     (print-vals "User with Messages :" (reload u))
      ;;TODO Scores get updated only second time we load 
      (update-scores (reload u))
      (print-vals "scores done")     
-     (reload u))
+     (print-vals "Fully Loaded User :" (reload u)))
   ([]
      (fully-loaded-user (current-user))))
 

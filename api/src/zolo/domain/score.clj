@@ -15,6 +15,7 @@
    :score/at :at})
 
 (defn calculate [c]
+  (print-vals "Contact to Calulate : " c)
   (* 10 (count (:contact/messages c))))
 
 (defn create [c]
