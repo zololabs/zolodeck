@@ -19,8 +19,8 @@
 (defn update-fresh-entities-with-db-id [existing-entities fresh-entities group-by-fn guid-key]
   (if (empty? existing-entities)
     fresh-entities
-    (let [existing-entities-grouped (print-vals "Existing Entities :" (group-first-by group-by-fn existing-entities))
-          fresh-entities-grouped (print-vals "Fresh Entities :" (group-first-by group-by-fn fresh-entities))]
+    (let [existing-entities-grouped (group-first-by group-by-fn existing-entities)
+          fresh-entities-grouped (group-first-by group-by-fn fresh-entities)]
       (map
        (fn [[obj-id fresh-obj]]
          (-> fresh-obj

@@ -50,6 +50,5 @@
   ;;figure how to store enum
   (when provider-uid
     (-> (demonic/run-query '[:find ?s :in $ ?provider-uid :where [?s :social/provider-uid ?fb]] provider-uid)
-        (print-vals-> "Social Details :")
         ffirst
         demonic/load-entity)))

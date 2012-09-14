@@ -40,9 +40,6 @@
 (defn find-by-user-and-contact-fb-id [user contact-fb-id]
   (first (filter #(= contact-fb-id (:contact/fb-id %)) (:user/contacts user))))
 
-(defn find-by-social-details [social-details]
-  nil)
-
 ;; (defn create-contact [user contact-a-map]
 ;;   (demonic/append-single user :user/contacts contact-a-map)
 ;;   (find-by-user-and-contact-fb-id user (:contact/fb-id contact-a-map)))
@@ -57,11 +54,6 @@
         contact (gigya-contact->basic-contact gigya-contact social-details)]
     (assoc contact :contact/social-details social-details)))
 
-(defn find-contact-from-lookup [contacts-lookup social-details]
-  (->> social-details
-       (map social-detail/social-detail-info)
-       (some #(contacts-lookup %))))
-
 (defn contact-lookup-table [c]
   (->> (:contact/social-details c)
       (map (fn [s] {(social-detail/social-detail-info s) c}))
@@ -72,15 +64,26 @@
            (apply merge))
       {}))
 
-(defn create-contact [user contact]
-  (demonic/append-single user :user/contacts contact))
+(defn find-contact-from-lookup [user social-details]
+  (let [contacts-lookup (contacts-lookup-table (:user/contacts user))]
+    (->> social-details
+         (map social-detail/social-detail-info)
+         (some #(contacts-lookup %)))))
+
+(defn find-contact-by-provider-info [user provider-info]
+  ((contacts-lookup-table (:user/contacts user)) provider-info))
+
+(defn create-contact [user provider-info]
+  ;;(demonic/append-single user :user/contacts contact)
+  ;;TODO Need to create a social detail for new contact 
+  )
 
 (defn fresh-contacts [u]
   (map gigya-contact->contact (gigya/get-friends-info u)))
 
-(defn update-contact [user contacts-lookup fresh-contact]
+(defn update-contact [user fresh-contact]
   (let [contact (->> (:contact/social-details fresh-contact)
-                     (find-contact-from-lookup contacts-lookup))]
+                     (find-contact-from-lookup user))]
     (if contact
       (assoc contact :contact/social-details
              (utils-domain/update-fresh-entities-with-db-id
@@ -92,8 +95,7 @@
 
 (defn update-contacts [user]
   (let [fresh-cs (fresh-contacts user)
-        contacts-lookup (contacts-lookup-table (:user/contacts user))
-        updated-contacts (map #(update-contact user contacts-lookup %) fresh-cs)]
+        updated-contacts (map #(update-contact user  %) fresh-cs)]
     (-> (assoc user :user/contacts updated-contacts)
         demonic/insert)))
 

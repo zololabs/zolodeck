@@ -67,7 +67,9 @@
 (schema-set "MESSAGE ENTITY FACTS"
  (uuid-fact-schema :message/guid false "A GUID for messages")
  (string-fact-schema :message/message-id false "ID for this message")
- (string-fact-schema :message/platform false "The platform: Facebook, LinkedIn, etc")
+ ;;TODO Need to store this
+ (ref-fact-schema :message/provider false "The platform: Facebook, LinkedIn, etc")
+ ;;TODO Need to change this to enum
  (string-fact-schema :message/mode false "Sub-type: wall-post, inbox-message, etc")
  (strings-fact-schema :message/attachments false "list of links")
  (string-fact-schema :message/text true "The body of the message")

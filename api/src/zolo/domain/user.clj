@@ -4,7 +4,6 @@
         [zolodeck.demonic.core :only [insert run-query load-entity] :as demonic]
         zolodeck.utils.debug)
   (:require [zolo.facebook.gateway :as fb-gateway]
-            [zolo.facebook.inbox :as fb-inbox]
             [zolo.utils.domain :as domain]
             [zolo.utils.gigya :as gigya-utils]
             [zolo.utils.readers :as readers]
@@ -68,13 +67,6 @@
       demonic/insert
       reload-using-login-provider-uid))
 
-(defn update-messages [u]
-  (->> (fb-inbox/get-facebook-messages u)
-       (map message/fb-message->message)
-       (message/merge-messages u)
-       (map demonic/insert)
-       doall))
-
 (defn insert-fb-user [fb-user]
   (-> fb-user
       fb-user->user
@@ -112,8 +104,9 @@
   ([u]
      (contact/update-contacts u)
      (print-vals "contacts done")
-     ;; (update-messages u)
-     ;; (print-vals "messages done")
+     (reload u)
+     (message/update-messages u)
+     (print-vals "messages done")
      ;; (update-scores (reload u))
      ;; (print-vals "scores done")     
      (reload u))

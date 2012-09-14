@@ -5,11 +5,14 @@
             [zolodeck.utils.calendar :as zolo-cal]
             [zolo.utils.domain :as utils-domain]
             [zolo.domain.contact :as contact]
-            [zolodeck.demonic.schema :as schema]))
+            [zolo.domain.social-detail :as social-detail]
+            [zolo.facebook.inbox :as fb-inbox]
+            [zolodeck.demonic.schema :as schema]
+            [zolodeck.demonic.core :as demonic]))
 
 (def FB-MESSAGE-KEYS
   {:attachment :message/attachments
-   :platform :message/platform
+   :provider :message/provider
    :mode :message/mode
    :author_id :message/from
    :body :message/text
@@ -23,7 +26,7 @@
 (def ZG-MESSAGE-KEYS
   {:message/guid  :guid
    :message/message-id :message-id
-   :message/platform :platform
+   :message/provider :provider
    :message/mode :mode
    :message/text :text
    :message/date :date
@@ -35,7 +38,7 @@
 (defn fb-message->message [fb-message]
   (-> fb-message
       (assoc :created_time (zolo-cal/millis->instant (-> fb-message :created_time (* 1000))))
-      (assoc :platform "Facebook")
+      ;;TODO Make this an enum too
       (assoc :mode "Inbox-Message")
       (zolo-maps/update-all-map-keys FB-MESSAGE-KEYS)
       (utils-domain/force-schema-types)))
@@ -46,14 +49,46 @@
         grouped  (merge-with concat grouped-by-from grouped-by-to)]
     (dissoc grouped (:user/fb-id user))))
 
-(defn process-contact-messages [user contact-fb-id fresh-messages]
-  (let [contact (or (contact/find-by-user-and-contact-fb-id user contact-fb-id)
-                    (contact/create-contact user {:contact/fb-id contact-fb-id}))]
+;;TODO Need to find a better place for this function
+(defn user-provider-infos [user]
+  (->> user
+      :user/social-details
+      (map social-detail/social-detail-info)))
+
+(defn dissoc-user-messages [user grouped-messages]
+  (reduce (fn [msgs user-provider-info]
+            (dissoc msgs user-provider-info))
+          grouped-messages
+          (user-provider-infos user)))
+
+;;TODO Duplication
+(defn message-from-provider-info [m]
+  [(:message/provider m) (:message/from m)])
+
+(defn message-to-provider-info [m]
+  [(:message/provider m) (:message/to m)])
+
+(defn group-by-provider-info [user messages]
+  (let [grouped-by-from (group-by message-from-provider-info messages)
+        grouped-by-to (group-by message-to-provider-info messages)
+        grouped  (merge-with concat grouped-by-from grouped-by-to)]
+    (dissoc-user-messages user grouped)))
+
+(defn process-contact-messages [user provider-info fresh-messages]
+  (let [contact (or (contact/find-contact-by-provider-info user provider-info)
+                    (contact/create-contact user provider-info))]
     (assoc contact :contact/messages
            (utils-domain/update-fresh-entities-with-db-id (:contact/messages contact) fresh-messages :message/message-id :message/guid))))
 
 (defn merge-messages [user fresh-messages]
-  (let [grouped (group-by-contact-fb-id user  fresh-messages)]
-    (map (fn [[c-id msgs]]
-           (process-contact-messages user c-id msgs)) grouped)))
+  (let [grouped (group-by-provider-info user fresh-messages)]
+    (map (fn [[provider-info msgs]]
+           (process-contact-messages user provider-info msgs)) grouped)))
+
+(defn update-messages [user]
+  (->> (fb-inbox/get-facebook-messages user)
+       (map fb-message->message)
+       (merge-messages user)
+       (map demonic/insert)
+       doall))
 
