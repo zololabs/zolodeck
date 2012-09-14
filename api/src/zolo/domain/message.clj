@@ -50,7 +50,7 @@
   (let [contact (or (contact/find-by-user-and-contact-fb-id user contact-fb-id)
                     (contact/create-contact user {:contact/fb-id contact-fb-id}))]
     (assoc contact :contact/messages
-           (utils-domain/update-fresh-entities-with-db-id (:contact/messages contact) fresh-messages :message/message-id))))
+           (utils-domain/update-fresh-entities-with-db-id (:contact/messages contact) fresh-messages :message/message-id :message/guid))))
 
 (defn merge-messages [user fresh-messages]
   (let [grouped (group-by-contact-fb-id user  fresh-messages)]

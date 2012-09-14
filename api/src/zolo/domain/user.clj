@@ -112,10 +112,10 @@
   ([u]
      (contact/update-contacts u)
      (print-vals "contacts done")
-     (update-messages u)
-     (print-vals "messages done")
-     (update-scores (reload u))
-     (print-vals "scores done")     
+     ;; (update-messages u)
+     ;; (print-vals "messages done")
+     ;; (update-scores (reload u))
+     ;; (print-vals "scores done")     
      (reload u))
   ([]
      (fully-loaded-user (current-user))))

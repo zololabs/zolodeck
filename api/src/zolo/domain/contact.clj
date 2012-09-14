@@ -86,7 +86,8 @@
              (utils-domain/update-fresh-entities-with-db-id
                (:contact/social-details contact)
                (:contact/social-details fresh-contact)
-               social-detail/social-detail-info))
+               social-detail/social-detail-info
+               :social/guid))
       fresh-contact)))
 
 (defn update-contacts [user]
