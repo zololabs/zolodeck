@@ -79,9 +79,5 @@
   (find-by-guid (:contact/guid c)))
 
 (defn update-score [c]
-  (let [reloaded-c (reload c)]
-    (demonic/append-single reloaded-c :contact/score (score/create reloaded-c))))
-
-(defn score [c]
-  (or (:score/value (:contact/score c))
-      -1))
+  (->  (assoc c :contact/score (score/calculate c))
+       demonic/insert))

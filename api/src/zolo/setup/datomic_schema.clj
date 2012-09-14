@@ -61,10 +61,7 @@
  ;Messages Information
  (refs-fact-schema :contact/messages false "A contact's messages")
  
-                                        ;Score Information
- ;;TODO Does this need to be a ref ... if we are not storing history
- ;;... than we can just have a value
- (ref-fact-schema :contact/score false "A contact's score"))
+ (long-fact-schema :contact/score false "A contact's score"))
 
 (schema-set "MESSAGE ENTITY FACTS"
  (uuid-fact-schema :message/guid false "A GUID for messages")
@@ -80,8 +77,3 @@
  (string-fact-schema :message/to false "The platform ID of the receiver")
  (string-fact-schema :message/thread-id false "The message thread id")
  (string-fact-schema :message/reply-to false "The platform ID of the sender"))
-
-(schema-set "SCORE ENTITY FACTS"
- (uuid-fact-schema :score/guid false "A GUID for score")
- (long-fact-schema :score/value false "Contact Score value")
- (instant-fact-schema :score/at false "The date when score was calculated"))

@@ -9,8 +9,8 @@
             [zolodeck.utils.math :as zolo-math]))
 
 (defn contacts-with-score-between [u lower upper]
-  (filter #(and (>= (contact/score %) lower)
-                (< (contact/score %) upper))
+  (filter #(and (>= (:contact/score %) lower)
+                (< (:contact/score %) upper))
           (:user/contacts u)))
 
 (defn contacts-stats [u]
@@ -21,6 +21,6 @@
 
 
 (defn network-stats [u]
-  {:average (zolo-math/average (map contact/score (:user/contacts u)))
+  {:average (zolo-math/average (map :contact/score (:user/contacts u)))
    ;;TODO This needs to be tested
-   :weak-contacts (doall (map fe/format-contact (take 5 (sort-by contact/score (:user/contacts u)))))})
+   :weak-contacts (doall (map fe/format-contact (take 5 (sort-by :contact/score (:user/contacts u)))))})
