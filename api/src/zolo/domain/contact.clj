@@ -92,8 +92,7 @@
   (let [fresh-cs (fresh-contacts user)
         contacts-lookup (contacts-lookup-table fresh-cs)
         updated-contacts (map #(update-contact user contacts-lookup %) fresh-cs)]
-    (-> (assoc user :user/contacts
-               (utils-domain/update-fresh-entities-with-db-id (:user/contacts user) updated-contacts :contact/guid))
+    (-> (assoc user :user/contacts updated-contacts)
         demonic/insert)))
 
 (defn update-score [c]
