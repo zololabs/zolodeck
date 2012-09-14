@@ -5,7 +5,7 @@
             [zolodeck.utils.calendar :as zolo-cal]
             [zolo.utils.domain :as utils-domain]
             [zolo.domain.contact :as contact]
-            [zolo.domain.social-detail :as social-detail]
+            [zolo.domain.social-identity :as social-identity]
             [zolo.facebook.inbox :as fb-inbox]
             [zolodeck.demonic.schema :as schema]
             [zolodeck.demonic.core :as demonic]))
@@ -40,8 +40,8 @@
 ;;TODO Need to find a better place for this function
 (defn user-provider-infos [user]
   (->> user
-      :user/social-details
-      (map social-detail/social-detail-info)))
+      :user/social-identities
+      (map social-identity/social-identity-info)))
 
 (defn dissoc-user-messages [user grouped-messages]
   (reduce (fn [msgs user-provider-info]

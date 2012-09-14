@@ -1,4 +1,4 @@
-(ns zolo.domain.social-detail
+(ns zolo.domain.social-identity
   (:use zolodeck.utils.debug)
   (:require [zolodeck.utils.maps :as zolo-maps]
             [zolo.utils.domain :as domain]
@@ -24,25 +24,25 @@
    :zip :social/zip
 })
 
-(defn gigya-user-identity->social-detail [gigya-user-identity]
+(defn gigya-user-identity->social-identity [gigya-user-identity]
   (-> gigya-user-identity
       (zolo-maps/update-all-map-keys GIGYA-USER-IDENTITY-KEYS)
       ;;TODO Need to set these enum values
       (dissoc :social/gender :social/provider)
       domain/force-schema-types))
 
-(defn gigya-user-identities->social-details [gigya-user-identities]
-  (map gigya-user-identity->social-detail gigya-user-identities))
+(defn gigya-user-identities->social-identities [gigya-user-identities]
+  (map gigya-user-identity->social-identity gigya-user-identities))
 
 ;;TODO (Need to get first from social detail which has populated)
-(defn first-name [social-details]
-  (:social/first-name (first social-details)))
+(defn first-name [social-identities]
+  (:social/first-name (first social-identities)))
 
 ;;TODO (Need to get last from social detail which has populated)
-(defn last-name [social-details]
-  (:social/last-name (first social-details)))
+(defn last-name [social-identities]
+  (:social/last-name (first social-identities)))
 
-(defn social-detail-info [sd]
+(defn social-identity-info [sd]
   [(:social/provider sd) (:social/provider-uid sd)])
 
 (defn find-by-provider-and-provider-uid [provider provider-uid]

@@ -7,7 +7,7 @@
             [zolo.utils.gigya :as gigya-utils]
             [zolo.utils.readers :as readers]
             [zolo.gigya.core :as gigya]
-            [zolo.domain.social-detail :as social-detail]
+            [zolo.domain.social-identity :as social-identity]
             [zolodeck.utils.string :as zolo-str]
             [zolodeck.utils.maps :as zolo-maps]
             [zolo.domain.contact :as contact]
@@ -37,16 +37,16 @@
 (defn reload-using-login-provider-uid [u]
   (find-by-login-provider-uid (:user/login-provider-uid u)))
 
-(defn gigya-user->basic-user [gigya-user social-details]
-  {:user/first-name (social-detail/first-name social-details)
-   :user/last-name (social-detail/last-name social-details)
+(defn gigya-user->basic-user [gigya-user social-identities]
+  {:user/first-name (social-identity/first-name social-identities)
+   :user/last-name (social-identity/last-name social-identities)
    :user/login-provider-uid (:loginProviderUID gigya-user)})
 
 (defn gigya-user->user [gigya-user] 
-  (let [social-details (-> (gigya-utils/identities gigya-user)
-                           social-detail/gigya-user-identities->social-details)
-        user (gigya-user->basic-user gigya-user social-details)]
-    (assoc user :user/social-details social-details)))
+  (let [social-identities (-> (gigya-utils/identities gigya-user)
+                           social-identity/gigya-user-identities->social-identities)
+        user (gigya-user->basic-user gigya-user social-identities)]
+    (assoc user :user/social-identities social-identities)))
 
 (defn signup-new-user [gigya-user]
   (-> gigya-user

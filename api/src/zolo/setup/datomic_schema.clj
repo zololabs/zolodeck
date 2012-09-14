@@ -13,7 +13,7 @@
  (string-fact-schema :user/login-provider-uid true "A user's login provider uid")
 
  ;Social details
- (refs-fact-schema :user/social-details false "A user's social detail records")   
+ (refs-fact-schema :user/social-identities false "A user's social detail records")   
 
  ;Contacts Information
  (refs-fact-schema :user/contacts false "A user's contacts"))
@@ -56,7 +56,7 @@
  (string-fact-schema :contact/last-name true "A contact's last name")
 
  ;Social details
- (refs-fact-schema :contact/social-details false "A contact's social detail records")
+ (refs-fact-schema :contact/social-identities false "A contact's social detail records")
  
  ;Messages Information
  (refs-fact-schema :contact/messages false "A contact's messages")
