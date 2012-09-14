@@ -23,18 +23,6 @@
    ;;TODO Add :message/subject
    })
 
-(def ZG-MESSAGE-KEYS
-  {:message/guid  :guid
-   :message/message-id :message-id
-   :message/provider :provider
-   :message/mode :mode
-   :message/text :text
-   :message/date :date
-   :message/from :from
-   :message/to :to
-   :message/thread-id :thread-id
-   :message/reply-to :reply-to})
-
 (defn fb-message->message [fb-message]
   (-> fb-message
       (assoc :created_time (zolo-cal/millis->instant (-> fb-message :created_time (* 1000))))

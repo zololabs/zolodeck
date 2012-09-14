@@ -1,7 +1,6 @@
 (ns zolo.facebook.inbox
   (:require [zolo.utils.http :as gigya-gateway])
   (:use [slingshot.slingshot :only [throw+ try+]]
-        zolo.facebook.gateway
         zolodeck.utils.debug
         zolodeck.utils.calendar
         zolodeck.utils.clojure))
@@ -24,21 +23,6 @@
 
 (defn expand-messages [subject recipients msgs]
   (mapcat #(duplicate-msg-for-each-recipient subject recipients %) msgs))
-
-(defn fetch-thread [auth-token thread-info start-time]
-  (let [{thread-id :thread_id recipients :recipients subject :subject} thread-info]
-    (->> (message-fql thread-id start-time)
-         (run-fql auth-token)
-         (expand-messages subject recipients))))
-
-;;TODO Random date is passed ... need to fix this
-(defn fetch-inbox
-  ([auth-token start-date-yyyy-MM-dd-string]
-     (->> INBOX-FQL
-          (run-fql auth-token)
-          (mapcat #(fetch-thread auth-token % (to-seconds start-date-yyyy-MM-dd-string)))))
-  ([auth-token]
-     (fetch-inbox auth-token "1990-01-01")))
 
 (defn gigya-fetch-thread [u thread-info start-time]
   (let [{thread-id :thread_id recipients :recipients subject :subject} thread-info]

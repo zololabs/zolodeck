@@ -1,14 +1,11 @@
 (ns zolo.api.user-api
   (:use zolo.domain.user
         zolodeck.utils.debug)
-  (:require [zolo.facebook.gateway :as gateway]
-            [zolo.gigya.core :as gigya-core]
+  (:require [zolo.gigya.core :as gigya-core]
             [zolo.utils.gigya :as gigya]
             [sandbar.auth :as sandbar]
             [zolo.domain.user :as user]
-            [zolo.domain.stats :as stats]
-            [zolo.domain.zolo-graph :as zg]
-            [zolo.viz.d3 :as d3]))
+            [zolo.domain.stats :as stats]))
 
 ;;TODO (siva) this is an experiment ..need to change this though
 (defn format-user [user request-params]

@@ -3,8 +3,7 @@
         [slingshot.slingshot :only [throw+ try+]]
         [zolodeck.demonic.core :only [insert run-query load-entity] :as demonic]
         zolodeck.utils.debug)
-  (:require [zolo.facebook.gateway :as fb-gateway]
-            [zolo.utils.domain :as domain]
+  (:require [zolo.utils.domain :as domain]
             [zolo.utils.gigya :as gigya-utils]
             [zolo.utils.readers :as readers]
             [zolo.gigya.core :as gigya]
@@ -16,21 +15,8 @@
             [sandbar.auth :as sandbar]
             [clojure.set :as set]))
 
-(def FB-USER-KEYS 
-  {:first_name :user/first-name
-   :last_name :user/last-name
-   :gender :user/gender
-   :link :user/fb-link
-   :username :user/fb-username
-   :email :user/fb-email
-   :id :user/fb-id
-   :auth-token :user/fb-auth-token})
-
 (defn current-user []
   (dissoc (sandbar/current-user) :username :roles))
-
-(defn fb-user->user [fb-user]
-  (zolo-maps/update-all-map-keys fb-user FB-USER-KEYS))
 
 ;;TODO Duplication find-by-guid
 (defn find-by-guid [guid]
@@ -68,33 +54,8 @@
       demonic/insert
       reload-using-login-provider-uid))
 
-(defn insert-fb-user [fb-user]
-  (-> fb-user
-      fb-user->user
-      demonic/insert))
-
-(defn find-by-fb-id [fb-id]
-  (if fb-id
-    (-> (demonic/run-query '[:find ?u :in $ ?fb :where [?u :user/fb-id ?fb]] fb-id)
-        ffirst
-        demonic/load-entity)))
-
 (defn reload [u]
   (find-by-guid (:user/guid u)))
-
-(defn load-from-fb [{:keys [code]}]
-  (-> code
-      fb-gateway/code->token
-      fb-gateway/me))
-
-(defn update-facebook-friends [fb-id]
-  (let [user (find-by-fb-id fb-id)]
-    (->> user
-         :user/fb-auth-token
-         fb-gateway/friends-list
-         (map contact/fb-friend->contact)
-         (contact/update-contacts user)
-         demonic/insert)))
 
 (defn update-scores [u]
   (doall (map contact/update-score (:user/contacts u)))
