@@ -100,6 +100,8 @@
         demonic/insert)))
 
 (defn update-score [c]
-  (demonic/append-single c :contact/scores (score/create c)))
+  (demonic/append-single c :contact/score (score/create c)))
 
-
+(defn score [c]
+  (or (:score/value (:contact/score c))
+      -1))

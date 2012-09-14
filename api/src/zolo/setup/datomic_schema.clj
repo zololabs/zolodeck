@@ -61,7 +61,9 @@
  ;Messages Information
  (refs-fact-schema :contact/messages false "A contact's messages")
  
- ;Score Information
+                                        ;Score Information
+ ;;TODO Does this need to be a ref ... if we are not storing history
+ ;;... than we can just have a value
  (ref-fact-schema :contact/score false "A contact's score"))
 
 (schema-set "MESSAGE ENTITY FACTS"

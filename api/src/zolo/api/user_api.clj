@@ -6,6 +6,7 @@
             [zolo.utils.gigya :as gigya]
             [sandbar.auth :as sandbar]
             [zolo.domain.user :as user]
+            [zolo.domain.stats :as stats]
             [zolo.domain.zolo-graph :as zg]
             [zolo.viz.d3 :as d3]))
 
@@ -21,12 +22,8 @@
       (format-user request-params)))
 
 (defn stats [request-params]
-  (let [u (user/fully-loaded-user)
-        ;;zg (zg/user->zolo-graph u)
-        ]
-    {:contacts nil;;(zg/contacts-stats zg)
-     :network nil ;;(zg/network-stats zg)
-     }
-    ))
+  (let [u (user/fully-loaded-user)]
+    {:contacts (stats/contacts-stats u)
+     :network (stats/network-stats u)}))
 
 

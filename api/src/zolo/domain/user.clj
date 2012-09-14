@@ -105,10 +105,13 @@
      (contact/update-contacts u)
      (print-vals "contacts done")
      (reload u)
+     ;;TODO Still looks like we are updating lot more messages than it
+     ;;is present
      (message/update-messages u)
      (print-vals "messages done")
-     ;; (update-scores (reload u))
-     ;; (print-vals "scores done")     
+     ;;TODO Scores get updated only second time we load 
+     (update-scores (reload u))
+     (print-vals "scores done")     
      (reload u))
   ([]
      (fully-loaded-user (current-user))))
