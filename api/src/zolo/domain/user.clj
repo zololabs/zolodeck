@@ -70,12 +70,9 @@
      ;;TODO Still looks like we are updating lot more messages than it
      ;;is present
      (message/update-messages u)
-     (print-vals "messages done")
-     (print-vals "User with Messages :" (reload u))
-     ;;TODO Scores get updated only second time we load 
+     (print-vals "Messages done")
      (update-scores (reload u))
-     (print-vals "scores done")     
-     (print-vals "Fully Loaded User :" (reload u)))
+     (reload u))
   ([]
      (fully-loaded-user (current-user))))
 
