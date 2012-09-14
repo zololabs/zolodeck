@@ -68,8 +68,9 @@
       (apply merge)))
 
 (defn contacts-lookup-table [contacts]
-  (->> (map contact-lookup-table contacts)
-       (apply merge)))
+  (or (->> (map contact-lookup-table contacts)
+           (apply merge))
+      {}))
 
 (defn create-contact [user contact]
   (demonic/append-single user :user/contacts contact))
@@ -90,7 +91,7 @@
 
 (defn update-contacts [user]
   (let [fresh-cs (fresh-contacts user)
-        contacts-lookup (contacts-lookup-table fresh-cs)
+        contacts-lookup (contacts-lookup-table (:user/contacts user))
         updated-contacts (map #(update-contact user contacts-lookup %) fresh-cs)]
     (-> (assoc user :user/contacts updated-contacts)
         demonic/insert)))
