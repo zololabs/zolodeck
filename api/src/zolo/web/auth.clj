@@ -7,7 +7,7 @@
                          (clojure.string/lower-case (clojure.string/trim auth-type))))
 
 (defmethod authenticate "bearer" [_ auth-cred params]
-  (print-vals "Loaded User:" (user/find-by-guid-string auth-cred)))
+  (user/find-by-guid-string auth-cred))
 
 (defmethod authenticate :default [_ _ _]
   nil)
