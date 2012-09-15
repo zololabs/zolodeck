@@ -15,9 +15,6 @@ define(['jquery',
             _.bindAll(this, 'render');
             
             this.user = this.model;
-
-            var contactsStatsView = new ContactsStatsView({model: this.user.stats()});
-            var networkStatsView = new NetworkStatsView({model: this.user.stats()});
           },
 
           render: function(){
@@ -26,6 +23,9 @@ define(['jquery',
             var compiledTemplate = _.template( homeTemplate, data );
 
             this.$el.html(compiledTemplate);
+
+            var contactsStatsView = new ContactsStatsView({model: this.user.stats()});
+            var networkStatsView = new NetworkStatsView({model: this.user.stats()});
             
             return this;
           }
