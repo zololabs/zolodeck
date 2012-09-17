@@ -66,13 +66,11 @@
   ([u]
      (contact/update-contacts u)
      (print-vals "contacts done")
-     (reload u)
      ;;TODO Still looks like we are updating lot more messages than it
      ;;is present
-     (message/update-messages u)
+     (message/update-messages (reload u))
      (print-vals "Messages done")
-     (update-scores (reload u))
-     (reload u))
+     (update-scores (reload u)))
   ([]
      (fully-loaded-user (current-user))))
 

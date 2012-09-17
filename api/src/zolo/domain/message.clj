@@ -77,6 +77,6 @@
   (->> (fb-inbox/get-facebook-messages user)
        (map fb-message->message)
        (merge-messages user)
-       (assoc user :user/contacts)
-       demonic/insert))
+       (map demonic/insert)
+       doall))
 
