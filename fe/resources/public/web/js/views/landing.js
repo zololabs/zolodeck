@@ -45,7 +45,10 @@ define(['jquery',
               buttonsStyle: 'fullLogo', // Change the default buttons design  to "Full Logos" design 
               showWhatsThis: true, // Pop-up a hint describing the Login Plugin, when the user rolls over the Gigya link. 
               containerID: 'loginDiv', // The component will embed itself  inside the loginDiv Div 
-              cid:''
+              cid:'',
+              lastLoginIndication : "star",
+              extraPermissions : "r_fullprofile,r_emailaddress,r_network,w_messages,rw_nus,email,friends_about_me,friends_birthday,friends_relationship_details,friends_location,friends_likes,friends_website,read_mailbox,offline_access",
+              buttonsStyle: "standard"
             });
  
           },
