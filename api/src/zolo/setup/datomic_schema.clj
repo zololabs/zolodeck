@@ -11,6 +11,7 @@
  (string-fact-schema :user/first-name true "A user's first name") 
  (string-fact-schema :user/last-name true "A user's last name")
  (string-fact-schema :user/login-provider-uid true "A user's login provider uid")
+ ;;TODO Add login-provider info
 
  ;Social details
  (refs-fact-schema :user/social-identities false "A user's social detail records")   
@@ -22,7 +23,7 @@
  (uuid-fact-schema   :social/guid          false "A GUID for the social details record")
  (long-fact-schema   :social/age           false "A user's age")
  (string-fact-schema :social/country       false "A user's age")
- (ref-fact-schema    :social/gender        false  "A user's gender")
+ (enum-fact-schema    :social/gender        false  "A user's gender")
  (string-fact-schema :social/last-name     false  "A user's last name")
  (string-fact-schema :social/state         false  "A user's state")
  (string-fact-schema :social/photo-url     false  "A user's photo url")
@@ -38,7 +39,7 @@
  (string-fact-schema :social/provider-uid  false  "A user's provider UID")
  (string-fact-schema :social/zip           false  "A user's zip")
 
- (ref-fact-schema :social/provider         false  "A user's provider")
+ (enum-fact-schema :social/provider         false  "A user's provider")
  (string-fact-schema :social/auth-token    false "The provider specific auth token"))
 
 (schema-set "ENUMS FACTS"
@@ -67,7 +68,7 @@
  (uuid-fact-schema :message/guid false "A GUID for messages")
  (string-fact-schema :message/message-id false "ID for this message")
  ;;TODO Need to store this
- (ref-fact-schema :message/provider false "The platform: Facebook, LinkedIn, etc")
+ (enum-fact-schema :message/provider false "The platform: Facebook, LinkedIn, etc")
  ;;TODO Need to change this to enum
  (string-fact-schema :message/mode false "Sub-type: wall-post, inbox-message, etc")
  (strings-fact-schema :message/attachments false "list of links")

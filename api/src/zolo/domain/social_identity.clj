@@ -21,14 +21,19 @@
    :email :social/email 
    :profileURL :social/profile-url
    :providerUID :social/provider-uid
+   :provider :social/provider
    :zip :social/zip
-})
+   })
+
+(defn setup-enum-vals [si]
+  (-> si
+      (domain/update-gender :social/gender)
+      (domain/update-provider :social/provider)))
 
 (defn gigya-user-identity->social-identity [gigya-user-identity]
   (-> gigya-user-identity
       (zolo-maps/update-all-map-keys GIGYA-USER-IDENTITY-KEYS)
-      ;;TODO Need to set these enum values
-      (dissoc :social/gender :social/provider)
+      setup-enum-vals
       domain/force-schema-types))
 
 (defn gigya-user-identities->social-identities [gigya-user-identities]

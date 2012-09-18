@@ -27,3 +27,17 @@
            (assoc :db/id (:db/id (existing-entities-grouped obj-id)))
            (assoc guid-key (guid-key (existing-entities-grouped obj-id)))))
        fresh-entities-grouped))))
+
+(defn update-gender [entity key]
+  (cond
+   (= "f" (entity key)) (assoc entity key :gender/female)
+   (= "m" (entity key)) (assoc entity key :gender/male)
+   :default (print-vals "Gender is not either f or m :" (entity key) entity)))
+
+(defn update-provider [entity key]
+  (cond
+   (= "facebook" (entity key)) (assoc entity key :provider/facebook)
+   (= "linkedin" (entity key)) (assoc entity key :provider/linkedin)
+   :default (print-vals "New Platform ?!!!" (entity key) entity)))
+
+;;TODO Change from uuid to datomic one
