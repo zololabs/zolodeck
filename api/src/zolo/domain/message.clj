@@ -29,7 +29,7 @@
       ;;TODO Make this an enum too
       (assoc :mode "Inbox-Message")
       (zolo-maps/update-all-map-keys FB-MESSAGE-KEYS)
-      (utils-domain/update-provider :social/provider)
+      (assoc :message/provider :provider/facebook)
       (utils-domain/force-schema-types)))
 
 (defn group-by-contact-fb-id [user messages]
