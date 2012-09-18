@@ -32,12 +32,15 @@
   (cond
    (= "f" (entity key)) (assoc entity key :gender/female)
    (= "m" (entity key)) (assoc entity key :gender/male)
+   ;;TODO Need to do this for Twitter as it return empty string for gender
+   (empty? (entity key)) (dissoc entity key) 
    :default (print-vals "Gender is not either f or m :" (entity key) entity)))
 
 (defn update-provider [entity key]
   (cond
    (= "facebook" (entity key)) (assoc entity key :provider/facebook)
    (= "linkedin" (entity key)) (assoc entity key :provider/linkedin)
+   (= "twitter" (entity key)) (assoc entity key :provider/twitter)
    :default (print-vals "New Platform ?!!!" (entity key) entity)))
 
 ;;TODO Change from uuid to datomic one

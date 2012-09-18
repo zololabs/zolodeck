@@ -47,7 +47,8 @@
   (enum-value-schema :gender/female)
   
   (enum-value-schema :provider/facebook)
-  (enum-value-schema :provider/linkedin))
+  (enum-value-schema :provider/linkedin)
+  (enum-value-schema :provider/twitter))
 
 
 (schema-set "CONTACT ENTITY FACTS"

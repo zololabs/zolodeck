@@ -7,6 +7,7 @@
             [zolo.domain.contact :as contact]
             [zolo.domain.social-identity :as social-identity]
             [zolo.facebook.inbox :as fb-inbox]
+            [zolo.twitter.inbox :as twitter-inbox]
             [zolodeck.demonic.schema :as schema]
             [zolodeck.demonic.core :as demonic]))
 
@@ -74,10 +75,22 @@
     (map (fn [[provider-info msgs]]
            (process-contact-messages user provider-info msgs)) grouped)))
 
-(defn update-messages [user]
+(defmulti update-messages-for-an-identity (fn [user si]
+                                            (:social/provider si)))
+
+(defmethod update-messages-for-an-identity :provider/facebook [user si]
   (->> (fb-inbox/get-facebook-messages user)
        (map fb-message->message)
        (merge-messages user)
        (map demonic/insert)
        doall))
+
+(defmethod update-messages-for-an-identity :provider/twitter [user si]
+  (print-vals "Getting Messages from twitter:" )
+  (prn (twitter-inbox/get-twitter-messages user))
+  user)
+
+(defn update-messages [user]
+  (doall
+   (map #(update-messages-for-an-identity user %) (:user/social-identities user))))
 
