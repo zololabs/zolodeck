@@ -90,6 +90,11 @@
   (prn (twitter-inbox/get-twitter-messages user))
   user)
 
+(defmethod update-messages-for-an-identity :provider/linkedin [user si]
+  (print-vals "Getting Messages from LinkedIn:" )
+  ;;TODO Need to get messages from LinkedIN
+  user)
+
 (defn update-messages [user]
   (doall
    (map #(update-messages-for-an-identity user %) (:user/social-identities user))))
