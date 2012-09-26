@@ -10,7 +10,7 @@ define(['jquery',
           el: $(".header"),
 
           events: {
-            'click #logout' : 'logoutUsingGigya'
+            'click #logout' : 'logoutUsingGigya',
           },
 
           initialize:function () {

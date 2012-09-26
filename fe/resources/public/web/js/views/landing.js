@@ -42,7 +42,6 @@ define(['jquery',
               width: 360 ,
               showTermsLink:false, // remove 'Terms' link 
               hideGigyaLink:true, // remove 'Gigya' link 
-              buttonsStyle: 'fullLogo', // Change the default buttons design  to "Full Logos" design 
               showWhatsThis: true, // Pop-up a hint describing the Login Plugin, when the user rolls over the Gigya link. 
               containerID: 'loginDiv', // The component will embed itself  inside the loginDiv Div 
               cid:'',

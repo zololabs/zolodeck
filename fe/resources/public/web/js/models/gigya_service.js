@@ -21,6 +21,13 @@ define(['jquery',
             var user  = this.context;
             user.logout();
           },
+
+          onAddConnectionsHandler: function(eventObj){
+            console.log("ON Add Connections Handler");
+            console.log(eventObj);
+            var user = this.context;
+            user.save(eventObj);
+          }
           
         });
         
