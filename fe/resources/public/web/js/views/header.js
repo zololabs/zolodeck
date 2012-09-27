@@ -10,11 +10,11 @@ define(['jquery',
           el: $(".header"),
 
           events: {
-            'click #logout' : 'logoutUsingGigya',
+            'click #logout' : 'logoutUsingFacebook',
           },
 
           initialize:function () {
-            _.bindAll(this, 'render', 'logoutUsingGigya');
+            _.bindAll(this, 'render', 'logoutUsingFacebook');
             
             this.user = this.model;
             this.user.bind('change:state', this.render)
@@ -30,9 +30,11 @@ define(['jquery',
             return this;
           },
 
-          logoutUsingGigya: function(){
+          logoutUsingFacebook: function(){
             console.log("Logout Pressed");
-            gigya.socialize.logout();
+            FB.logout(function(response) {           
+              console.log("Logged Out successfully");
+            });
           }
         });
 

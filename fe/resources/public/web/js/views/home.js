@@ -1,28 +1,20 @@
 define(['jquery',
         'underscore',
         'backbone',
-        'models/gigya_service',
         'views/contacts_stats',
         'views/network_stats',
         'text!templates/home.html'],
 
-      function($, _, Backbone, GigyaService, ContactsStatsView, NetworkStatsView, homeTemplate){
+      function($, _, Backbone, ContactsStatsView, NetworkStatsView, homeTemplate){
         
         var HomeView = Backbone.View.extend({
           
           el: $("#content"),
 
           initialize:function () {
-            _.bindAll(this, 'render', 'renderGigyaAddConnections');
+            _.bindAll(this, 'render', 'renderAddConnections');
             
             this.user = this.model;
-
-            this.gigyaService = new GigyaService({'user' : this.user});
-
-            gigya.socialize.addEventHandlers({
-              context: this.user,
-              onConnectionAdded: this.gigyaService.onAddConnectionsHandler
-            });
           },
 
           render: function(){
@@ -35,20 +27,13 @@ define(['jquery',
             var contactsStatsView = new ContactsStatsView({model: this.user.stats()});
             var networkStatsView = new NetworkStatsView({model: this.user.stats()});
 
-            this.renderGigyaAddConnections();
+            this.renderAddConnections();
             
             return this;
           },
 
-          renderGigyaAddConnections: function(){
-            gigya.socialize.showAddConnectionsUI({
-              showTermsLink: 'false' ,
-              showEditLink: 'true' ,
-              hideGigyaLink:true, // remove 'Gigya' link 
-              height: 70 ,
-              width: 175 ,
-              containerID: 'add-connections-div'
-            });
+          renderAddConnections: function(){
+            console.log("Rendering Add Connections Bar")
           }
 
         });
