@@ -30,7 +30,8 @@ define(['jquery',
                
               FB.Event.subscribe('auth.statusChange', function(response) {
                 if (response && ("connected" == response.status)){
-                  user.login("FACEBOOK");
+                    user.set({providerLoginInfo: response});
+                    user.login("FACEBOOK");
                 } else {
                   user.logout();
                 }

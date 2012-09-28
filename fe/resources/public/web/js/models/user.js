@@ -28,7 +28,8 @@ define(['jquery',
           login: function(service){
             console.log("Logged In : " , service);
             this.set({'service':service, 'state':'LOGGED_IN'});
-            this.stats().fetch();
+            //this.stats().fetch();
+            this.save();
           },
 
           logout: function(){
