@@ -11,13 +11,14 @@
     :user/login-provider-uid (:uid extended-user-info)}))
 
 (defn split-birthdate [mmddyyyy]
-  (->> (.split mmddyyyy "/")
-       (into [])))
+  (if mmddyyyy
+    (->> (.split mmddyyyy "/")
+         (into []))))
 
 (defn social-identity [access-token extended-user-info]
   (let [[month day year] (split-birthdate (:birthday_date extended-user-info))]
     (domain/force-schema-types
-     {:social/provider-uid (:uid extended-user-info)
+     {:social/provider-uid (print-vals (:uid extended-user-info))
       :social/gender (social/gender-enum (:sex extended-user-info))
       :social/country (get-in extended-user-info [:current_location :country])
       :social/first-name (:first_name extended-user-info)
@@ -36,6 +37,11 @@
       :social/zip (get-in extended-user-info [:current_location :zip])
       :social/nickname (:username extended-user-info)})))
 
+(defn contact-object [access-token friend]
+  {:contact/first-name (:first_name friend)
+   :contact/last-name (:last_name friend)
+   :contact/social-identities [(social-identity access-token friend)]})
+
 ;; TODO add schema validation check for this API (facebook login)
 (defmethod social/login-user social/FACEBOOK [request-params]
   (let [{access-token :accessToken user-id :userID signed-request :signedRequest} (get-in request-params [:providerLoginInfo :authResponse])
@@ -45,3 +51,8 @@
     (print-vals "user-info:" user-info)
     (print-vals "social-info:" identity)
     (assoc user-info :user/social-identities [identity])))
+
+(defmethod social/fetch-contacts :provider/facebook [provider access-token user-id]
+  (print-vals "UpdateContacts: FACEBOOK" )
+  (let [friends (print-vals "Friends:" (gateway/friends-list access-token user-id))]
+    (map #(contact-object access-token %) friends)))

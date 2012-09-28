@@ -39,3 +39,8 @@
 (defn extended-user-info [access-token user-id]
   (-> (run-fql access-token (extended-user-info-fql-for user-id))
       first))
+
+(defn friends-list [access-token user-id]
+  (get-json "https://graph.facebook.com/me/friends" access-token
+            {:fields "id,first_name,last_name,gender,locale,link,username,installed,bio,birthday,education,email,hometown,interested_in,location,picture,relationship_status,significant_other,website"
+             :limit 5000}))
