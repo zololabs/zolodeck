@@ -11,24 +11,6 @@
    :throw-exceptions false
    :body (uri/form-url-encode body-map)})
 
-;; (defn app-access-token-url []  
-;;   "https://graph.facebook.com/oauth/access_token")
-
-;; (defn access-token-request [app-id app-secret]
-;;   (encoded-request-params {:grant_type "client_credentials"
-;;                            :client_id app-id
-;;                            :client_secret app-secret}))
-
-;; (defn app-access-token [app-id app-secret]
-;;   (print-vals "Getting App Access Token")
-;;   (->> (access-token-request app-id app-secret) 
-;;        (http/post (app-access-token-url))
-;;        :body
-;;        uri/form-url-decode
-;;        :access_token))
-
-;(def APP-ACCESS-TOKEN (app-access-token (conf/app-id) (conf/app-secret)))
-
 (defn me-url []
   "https://graph.facebook.com/me")
 
@@ -42,7 +24,8 @@
       json/read-json))
 
 (defn run-fql [access-token fql-string]
-  (get-json "https://graph.facebook.com/fql" access-token {:q fql-string}))
+  (-> (get-json "https://graph.facebook.com/fql" access-token {:q fql-string})
+      :data))
 
 (defn user-info [access-token user-id]
   (get-json (user-info-url user-id) access-token {}))
@@ -51,7 +34,8 @@
   (get-json (me-url) access-token {}))
 
 (defn extended-user-info-fql-for [user-id]
-  (str "select first_name, last_name, username, sex, birthday_date, locale, hometown_location, email, pic_small, pic_big, profile_url from user where uid = '" user-id "'"))
+  (str "select uid, first_name, last_name, username, sex, birthday_date, locale, current_location, email, pic_small, pic_big, profile_url from user where uid = '" user-id "'"))
 
 (defn extended-user-info [access-token user-id]
-  (run-fql access-token (extended-user-info-fql-for user-id)))
+  (-> (run-fql access-token (extended-user-info-fql-for user-id))
+      first))

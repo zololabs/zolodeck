@@ -29,8 +29,7 @@
   (route/resources "/")
 
   ;;---- USER
-  (POST "/login_user" [& params] (json-response (social/login-user params)))
-  ;; (POST "/users" [& params] (json-response (user-api/signup-user params)))
+  (POST "/users" [& params] (json-response (user-api/signup-user params)))
   (POST "/users" [& params] (json-response (social/login-user params)))  
   (GET "/users/:id" [id] (json-response (current-user)))
  
