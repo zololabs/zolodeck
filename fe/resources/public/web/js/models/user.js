@@ -25,17 +25,22 @@ define(['jquery',
             return this.get('stats');
           },
 
-          login: function(service){
-            console.log("Logged In : " , service);
-            this.set({'service':service, 'state':'LOGGED_IN'});
-            this.stats().fetch();
+          login: function(provider, loginResponse){
+            console.log("Logged In : " , provider);
+            this.set({'provider':provider, 
+                      'state':'LOGGED_IN',
+                      'loginResponse': loginResponse});
+            this.save({success: function(user,response){console.log(response);},
+                       error: function(user,response){console.log("ERROR!!!"); 
+                                               console.log(response);}});
+            //this.stats().fetch();
           },
 
           logout: function(){
             console.log("Logged Out");
             this.set({'service':null, 
                       'state':'LOGGED_OUT',
-                       'stats' : new Stats()});
+                      'stats' : new Stats()});
           },
           
 
