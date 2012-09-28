@@ -25,7 +25,6 @@ define(['jquery',
             return this.get('stats');
           },
 
-<<<<<<< HEAD
           login: function(provider, loginResponse){
             console.log("Logged In : " , provider);
             this.set({'provider':provider, 
@@ -35,13 +34,6 @@ define(['jquery',
                        error: function(user,response){console.log("ERROR!!!"); 
                                                console.log(response);}});
             //this.stats().fetch();
-=======
-          login: function(service){
-            console.log("Logged In : " , service);
-            this.set({'service':service, 'state':'LOGGED_IN'});
-            //this.stats().fetch();
-            this.save();
->>>>>>> b85e48ba5da8f2e45cd82d111adf2a6062db08ff
           },
 
           logout: function(){
