@@ -15,6 +15,8 @@
             [compojure.handler :as handler]
             [zolodeck.demonic.core :as demonic]
             [zolo.web.auth :as auth]
+            [zolo.social.bootstrap]            
+            [zolo.social.core :as social]
             [zolo.api.user-api :as user-api]))
 
 (def security-policy
@@ -28,6 +30,7 @@
 
   ;;---- USER
   (POST "/users" [& params] (json-response (user-api/signup-user params)))
+  (POST "/users" [& params] (json-response (social/login-user params)))  
   (GET "/users/:id" [id] (json-response (current-user)))
  
   ;;---- User Stats
@@ -47,6 +50,7 @@
 
 (defn wrap-options [handler]
   (fn [request]
+    (print-vals "WRAP-OPTIONS:" request)
     (if (= :options (request :request-method))
       { :headers    {"Access-Control-Allow-Origin"  "*"
                      "Access-Control-Allow-Methods"  "POST,PUT,OPTIONS"
@@ -70,6 +74,4 @@
 (defn -main []
   (run-jetty (var app) {:port 4000
                         :join? false}))
-
-
 

@@ -4,9 +4,9 @@
         [zolodeck.demonic.core :only [insert run-query load-entity] :as demonic]
         zolodeck.utils.debug)
   (:require [zolo.utils.domain :as domain]
-            [zolo.utils.gigya :as gigya-utils]
+            ;; [zolo.utils.gigya :as gigya-utils]
+            ;; [zolo.gigya.core :as gigya]            
             [zolo.utils.readers :as readers]
-            [zolo.gigya.core :as gigya]
             [zolo.domain.social-identity :as social-identity]
             [zolodeck.utils.string :as zolo-str]
             [zolodeck.utils.maps :as zolo-maps]
@@ -37,20 +37,8 @@
 (defn reload-using-login-provider-uid [u]
   (find-by-login-provider-uid (:user/login-provider-uid u)))
 
-(defn gigya-user->basic-user [gigya-user social-identities]
-  {:user/first-name (social-identity/first-name social-identities)
-   :user/last-name (social-identity/last-name social-identities)
-   :user/login-provider-uid (:loginProviderUID gigya-user)})
-
-(defn gigya-user->user [gigya-user] 
-  (let [social-identities (-> (gigya-utils/identities gigya-user)
-                           social-identity/gigya-user-identities->social-identities)
-        user (gigya-user->basic-user gigya-user social-identities)]
-    (assoc user :user/social-identities social-identities)))
-
-(defn signup-new-user [gigya-user]
-  (-> gigya-user
-      gigya-user->user
+(defn signup-new-user [social-user]
+  (-> social-user
       demonic/insert
       reload-using-login-provider-uid))
 

@@ -16,6 +16,7 @@
 (defn datomic-db-name [] 
   (get-in CONFIG-MAP [ENV :datomic-db]))
 
+;; TODO rename app-id, app-secret to make it FB specific
 (defn app-id []
   (get-in CONFIG-MAP [ENV :app-id]))
 
