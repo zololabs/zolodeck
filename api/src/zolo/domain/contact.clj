@@ -8,20 +8,21 @@
             [zolo.utils.gigya :as gigya-utils]
             [zolo.utils.domain :as utils-domain]
             [zolo.gigya.core :as gigya]
+            [zolo.social.core :as social]
             [zolo.domain.social-identity :as social-identity]
             [zolodeck.demonic.core :as demonic]
             [zolo.domain.score :as score]
             [clojure.set :as set]))
 
-(defn gigya-contact->basic-contact [gigya-contact social-identities]
-  {:contact/first-name (social-identity/first-name social-identities)
-   :contact/last-name (social-identity/last-name social-identities)})
+;; (defn gigya-contact->basic-contact [gigya-contact social-identities]
+;;   {:contact/first-name (social-identity/first-name social-identities)
+;;    :contact/last-name (social-identity/last-name social-identities)})
 
-(defn gigya-contact->contact [gigya-contact] 
-  (let [social-identities (-> (gigya-utils/contact-identities gigya-contact)
-                           social-identity/gigya-user-identities->social-identities)
-        contact (gigya-contact->basic-contact gigya-contact social-identities)]
-    (assoc contact :contact/social-identities social-identities)))
+;; (defn gigya-contact->contact [gigya-contact] 
+;;   (let [social-identities (-> (gigya-utils/contact-identities gigya-contact)
+;;                            social-identity/gigya-user-identities->social-identities)
+;;         contact (gigya-contact->basic-contact gigya-contact social-identities)]
+;;     (assoc contact :contact/social-identities social-identities)))
 
 (defn contact-lookup-table [c]
   (->> (:contact/social-identities c)
@@ -47,8 +48,14 @@
   ;;TODO Need to create a social detail for new contact 
   )
 
+(defn fresh-contacts-for-social-identity [social-identity]
+  (let [{provider :social/provider
+         access-token :social/auth-token
+         provider-uid :social/provider-uid} social-identity]
+    (social/fetch-contacts provider access-token provider-uid)))
+
 (defn fresh-contacts [u]
-  (map gigya-contact->contact (gigya/get-friends-info u)))
+  (mapcat fresh-contacts-for-social-identity (:user/social-identities u)))
 
 (defn update-contact [user fresh-contact]
   (let [contact (->> (:contact/social-identities fresh-contact)

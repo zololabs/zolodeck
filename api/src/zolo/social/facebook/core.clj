@@ -75,11 +75,9 @@
         info (gateway/extended-user-info access-token user-id)
         user-info (user-object info)
         identity (user-social-identity social/FACEBOOK access-token info)]
-    (print-vals "user-info:" user-info)
-    (print-vals "social-info:" identity)
     (assoc user-info :user/social-identities [identity])))
 
 (defmethod social/fetch-contacts :provider/facebook [provider access-token user-id]
   (print-vals "UpdateContacts: FACEBOOK" )
-  (let [friends (print-vals "Friends:" (gateway/friends-list access-token user-id))]
+  (let [friends (gateway/friends-list access-token user-id)]
     (doall (map #(contact-object provider %) friends))))

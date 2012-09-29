@@ -59,7 +59,7 @@
      ;; (message/update-messages (reload u))
      ;; (print-vals "Messages done")
      ;; (update-scores (reload u))
-     )
+     (reload u))
   ([]
      (fully-loaded-user (current-user))))
 
