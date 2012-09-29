@@ -28,3 +28,7 @@
   provider)
 
 (defmulti fetch-contacts contacts-dispatcher)
+
+(def messages-dispatcher contacts-dispatcher)
+
+(defmulti fetch-messages messages-dispatcher)
