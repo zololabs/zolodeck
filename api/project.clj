@@ -25,7 +25,8 @@
                  [org.clojure/core.match "0.2.0-alpha9"]
 
                  [zolodeck/demonic "0.1.0-SNAPSHOT"]
-                 [zolodeck/zolo-utils "0.1.0-SNAPSHOT"]]
+                 [zolodeck/zolo-utils "0.1.0-SNAPSHOT"]
+                 [world-country-list "1.0.0-SNAPSHOT"]]
 
   :plugins [[lein-swank "1.4.4"]
             [lein-pprint "1.1.1"]

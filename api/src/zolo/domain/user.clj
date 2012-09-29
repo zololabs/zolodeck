@@ -56,9 +56,10 @@
      (print-vals "contacts done")
      ;;TODO Still looks like we are updating lot more messages than it
      ;;is present
-     (message/update-messages (reload u))
-     (print-vals "Messages done")
-     (update-scores (reload u)))
+     ;; (message/update-messages (reload u))
+     ;; (print-vals "Messages done")
+     ;; (update-scores (reload u))
+     )
   ([]
      (fully-loaded-user (current-user))))
 
