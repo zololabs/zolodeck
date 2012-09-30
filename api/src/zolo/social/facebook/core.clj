@@ -1,32 +1,16 @@
 (ns zolo.social.facebook.core
   (:use zolodeck.utils.debug)
-  (:require [zolodeck.utils.maps :as maps]
-            [zolodeck.utils.calendar :as zolo-cal]
-            [zolo.utils.domain :as domain]
+  (:require [zolo.utils.domain :as domain]
             [zolo.utils.countries :as countries]
             [zolo.social.core :as social]
             [zolo.social.facebook.gateway :as gateway]
             [zolo.social.facebook.messages :as messages]))
-
-(def FB-MESSAGE-KEYS
-  {:attachment :message/attachments
-   :provider :message/provider
-   :mode :message/mode
-   :author_id :message/from
-   :body :message/text
-   :created_time :message/date
-   :message_id :message/message-id
-   :thread_id :message/thread-id
-   :to :message/to
-   ;;TODO Add :message/subject
-   })
 
 (defn user-object [extended-user-info]
   (domain/force-schema-types
    {:user/first-name (:first_name extended-user-info)
     :user/last-name (:last_name extended-user-info)
     :user/login-provider-uid (:uid extended-user-info)}))
-
 
 ;; TODO create and move a 'split-at' function into utils.clojure
 (defn split-birthdate [mmddyyyy]
@@ -85,15 +69,6 @@
    :contact/last-name (:last_name friend)
    :contact/social-identities [(contact-social-identity provider friend)]})
 
-(defn fb-message->message [fb-message]
-  (-> fb-message
-      (assoc :created_time (zolo-cal/millis->instant (-> fb-message :created_time (* 1000))))
-      ;;TODO Make this an enum too
-      (assoc :mode "Inbox-Message")
-      (maps/update-all-map-keys FB-MESSAGE-KEYS)
-      (assoc :message/provider :provider/facebook)
-      (domain/force-schema-types)))
-
 ;; TODO add schema validation check for this API (facebook login)
 (defmethod social/login-user social/FACEBOOK [request-params]
   (let [{access-token :accessToken user-id :userID signed-request :signedRequest} (get-in request-params [:providerLoginInfo :authResponse])
@@ -109,5 +84,4 @@
 
 (defmethod social/fetch-messages :provider/facebook [provider access-token user-id]
   (print-vals "FetchMessages:" provider)
-  (->> (messages/fetch-inbox access-token)
-       (map fb-message->message)))
+  (messages/fetch-inbox access-token))

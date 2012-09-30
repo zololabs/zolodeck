@@ -3,8 +3,33 @@
         zolo.social.facebook.gateway
         zolodeck.utils.debug
         zolodeck.utils.calendar
-        zolodeck.utils.clojure))
- 
+        zolodeck.utils.clojure)
+  (:require [zolo.utils.domain :as domain]
+            [zolodeck.utils.maps :as maps]
+            [zolodeck.utils.calendar :as zolo-cal]))
+
+(def FB-MESSAGE-KEYS
+  {:attachment :message/attachments
+   :provider :message/provider
+   :mode :message/mode
+   :author_id :message/from
+   :body :message/text
+   :created_time :message/date
+   :message_id :message/message-id
+   :thread_id :message/thread-id
+   :to :message/to
+   ;;TODO Add :message/subject
+   })
+
+(defn fb-message->message [fb-message]
+  (-> fb-message
+      (assoc :created_time (zolo-cal/millis->instant (-> fb-message :created_time (* 1000))))
+      ;;TODO Make this an enum too
+      (assoc :mode "Inbox-Message")
+      (maps/update-all-map-keys FB-MESSAGE-KEYS)
+      (assoc :message/provider :provider/facebook)
+      (domain/force-schema-types)))
+
 (def INBOX-FQL "SELECT thread_id, recipients , subject  FROM thread WHERE folder_id = 0 ")
  
 (defn message-fql [thread-id start-time]
@@ -35,6 +60,7 @@
   ([auth-token start-date-yyyy-MM-dd-string]
      (->> INBOX-FQL
           (run-fql auth-token)
-          (mapcat #(fetch-thread auth-token % (to-seconds start-date-yyyy-MM-dd-string)))))
+          (mapcat #(fetch-thread auth-token % (to-seconds start-date-yyyy-MM-dd-string)))
+          (map fb-message->message)))
   ([auth-token]
      (fetch-inbox auth-token "1990-01-01")))
