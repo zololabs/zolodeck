@@ -2,8 +2,6 @@
   (:use zolo.domain.user
         zolodeck.utils.debug)
   (:require
-   ;; [zolo.gigya.core :as gigya-core]
-   ;; [zolo.utils.gigya :as gigya]
    [zolo.social.core :as social]
    [sandbar.auth :as sandbar]
    [zolo.domain.user :as user]

@@ -7,16 +7,8 @@
             [zolo.domain.contact :as contact]
             [zolo.domain.social-identity :as social-identity]
             [zolo.social.core :as social]            
-            [zolo.facebook.inbox :as fb-inbox]
-            [zolo.twitter.inbox :as twitter-inbox]
             [zolodeck.demonic.schema :as schema]
             [zolodeck.demonic.core :as demonic]))
-
-;; (defn group-by-contact-fb-id [user messages]
-;;   (let [grouped-by-from (group-by :message/from messages)
-;;         grouped-by-to (group-by :message/to messages)
-;;         grouped  (merge-with concat grouped-by-from grouped-by-to)]
-;;     (dissoc grouped (:user/fb-id user))))
 
 ;;TODO Need to find a better place for this function
 (defn user-provider-infos [user]
@@ -56,26 +48,6 @@
     (print-vals "Grouped count:" (count grouped))
     (map (fn [[provider-info msgs]]
            (process-contact-messages user provider-info msgs)) grouped)))
-
-;; (defmulti update-messages-for-an-identity (fn [user si]
-;;                                             (:social/provider si)))
-
-;; (defmethod update-messages-for-an-identity :provider/facebook [user si]
-;;   (->> (fb-inbox/get-facebook-messages user)
-;;        (map fb-message->message)
-;;        (merge-messages user)
-;;        (map demonic/insert)
-;;        doall))
-
-;; (defmethod update-messages-for-an-identity :provider/twitter [user si]
-;;   (print-vals "Getting Messages from twitter:" )
-;;   (prn (twitter-inbox/get-twitter-messages user))
-;;   user)
-
-;; (defmethod update-messages-for-an-identity :provider/linkedin [user si]
-;;   (print-vals "Getting Messages from LinkedIn:" )
-;;   ;;TODO Need to get messages from LinkedIN
-;;   user)
 
 (defn update-messages-for-social-identity [user social-identity]
   (let [{provider :social/provider
