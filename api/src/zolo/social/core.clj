@@ -23,3 +23,12 @@
 (defmethod login-user :default [params]
   (print-vals "LoginUser default:" params)
   (print-vals "LoginUser service:" (get-in params [:service])))
+
+(defn contacts-dispatcher [provider access-token user-id]
+  provider)
+
+(defmulti fetch-contacts contacts-dispatcher)
+
+(def messages-dispatcher contacts-dispatcher)
+
+(defmulti fetch-messages messages-dispatcher)
