@@ -16,12 +16,11 @@
 (defn datomic-db-name [] 
   (get-in CONFIG-MAP [ENV :datomic-db]))
 
-;; TODO rename app-id, app-secret to make it FB specific
-(defn app-id []
-  (get-in CONFIG-MAP [ENV :app-id]))
+(defn fb-app-id []
+  (get-in CONFIG-MAP [ENV :fb-app-id]))
 
-(defn app-secret []
-  (get-in CONFIG-MAP [ENV :app-secret]))
+(defn fb-app-secret []
+  (get-in CONFIG-MAP [ENV :fb-app-secret]))
 
 (defrunonce setup-config []
   (let [config-file (java-io/resource "zolo.clj")
