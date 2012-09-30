@@ -1,7 +1,6 @@
 (ns zolo.social.facebook.core
   (:use zolodeck.utils.debug)
   (:require [zolo.social.core :as social]
-            [zolo.social.utils :as utils]
             [zolo.social.facebook.gateway :as gateway]
             [zolo.social.facebook.users :as users]            
             [zolo.social.facebook.contacts :as contacts]
