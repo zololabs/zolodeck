@@ -53,7 +53,6 @@
                     (use 'clojure.test)
                     (use 'com.georgejahad.difform)
                     (use 'zolo.utils.readers)
-                    (use 'zolo.gigya.core)
                     (use 'zolodeck.demonic.core)
                     (use 'zolo.test.core-utils))
 

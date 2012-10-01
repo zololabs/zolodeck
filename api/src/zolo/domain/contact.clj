@@ -5,24 +5,12 @@
   (:require [zolodeck.utils.string :as zolo-str]
             [zolodeck.utils.maps :as zolo-maps]
             [zolodeck.utils.calendar :as zolo-cal]
-            [zolo.utils.gigya :as gigya-utils]
             [zolo.utils.domain :as utils-domain]
-            [zolo.gigya.core :as gigya]
             [zolo.social.core :as social]
             [zolo.domain.social-identity :as social-identity]
             [zolodeck.demonic.core :as demonic]
             [zolo.domain.score :as score]
             [clojure.set :as set]))
-
-;; (defn gigya-contact->basic-contact [gigya-contact social-identities]
-;;   {:contact/first-name (social-identity/first-name social-identities)
-;;    :contact/last-name (social-identity/last-name social-identities)})
-
-;; (defn gigya-contact->contact [gigya-contact] 
-;;   (let [social-identities (-> (gigya-utils/contact-identities gigya-contact)
-;;                            social-identity/gigya-user-identities->social-identities)
-;;         contact (gigya-contact->basic-contact gigya-contact social-identities)]
-;;     (assoc contact :contact/social-identities social-identities)))
 
 (defn contact-lookup-table [c]
   (->> (:contact/social-identities c)

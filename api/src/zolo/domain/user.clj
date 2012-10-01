@@ -4,8 +4,6 @@
         [zolodeck.demonic.core :only [insert run-query load-entity] :as demonic]
         zolodeck.utils.debug)
   (:require [zolo.utils.domain :as domain]
-            ;; [zolo.utils.gigya :as gigya-utils]
-            ;; [zolo.gigya.core :as gigya]            
             [zolo.utils.readers :as readers]
             [zolo.domain.social-identity :as social-identity]
             [zolodeck.utils.string :as zolo-str]

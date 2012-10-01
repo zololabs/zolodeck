@@ -3,7 +3,7 @@
   (:require [zolo.social.core :as social]
             [zolo.utils.domain :as domain]
             [zolo.social.facebook.gateway :as gateway]            
-            [zolo.social.utils :as utils]))
+            [zolodeck.utils.string :as string]))
 
 (defn basic-info [extended-user-info]
   (domain/force-schema-types
@@ -12,7 +12,7 @@
     :user/login-provider-uid (:uid extended-user-info)}))
 
 (defn social-identity [provider access-token extended-user-info]
-  (let [[month day year] (utils/split-birthdate (:birthday_date extended-user-info))]
+  (let [[month day year] (string/split "/" (:birthday_date extended-user-info))]
     (print-vals "bday:" [month day year])
     (domain/force-schema-types
      {:social/provider-uid (print-vals (:uid extended-user-info))

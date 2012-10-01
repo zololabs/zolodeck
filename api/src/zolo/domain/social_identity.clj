@@ -4,41 +4,6 @@
             [zolo.utils.domain :as domain]
             [zolodeck.demonic.core :as demonic]))
 
-(def GIGYA-USER-IDENTITY-KEYS
-  {:age :social/age
-   :country :social/country
-   :gender :social/gender
-   :lastName :social/last-name
-   :state :social/state
-   :photoURL :social/photo-url
-   :birthDay :social/birth-day
-   :thumbnailURL :social/thumbnail-url
-   :firstName :social/first-name
-   :city :social/city
-   :birthMonth :social/birth-month
-   :nickname :social/nickname 
-   :birthYear :social/birth-year
-   :email :social/email 
-   :profileURL :social/profile-url
-   :providerUID :social/provider-uid
-   :provider :social/provider
-   :zip :social/zip
-   })
-
-(defn setup-enum-vals [si]
-  (-> si
-      (domain/update-gender :social/gender)
-      (domain/update-provider :social/provider)))
-
-(defn gigya-user-identity->social-identity [gigya-user-identity]
-  (-> gigya-user-identity
-      (zolo-maps/update-all-map-keys GIGYA-USER-IDENTITY-KEYS)
-      setup-enum-vals
-      domain/force-schema-types))
-
-(defn gigya-user-identities->social-identities [gigya-user-identities]
-  (map gigya-user-identity->social-identity gigya-user-identities))
-
 ;;TODO (Need to get first from social detail which has populated)
 (defn first-name [social-identities]
   (:social/first-name (first social-identities)))
