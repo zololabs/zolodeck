@@ -39,6 +39,7 @@ define(['jquery',
                          CookieUtils.setAuthCookie(response.guid);
                          user.set({'state':'LOGGED_IN',
                                    'guid' : response.UID});
+                         _kmq.push(['identify', response.guid]);
                          user.stats().fetch();
                        },
                        error: function(user, response){

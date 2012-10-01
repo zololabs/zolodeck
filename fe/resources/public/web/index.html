@@ -29,10 +29,20 @@
     <link rel="apple-touch-icon" sizes="114x114"
           href="images/apple-touch-icon-114x114.png">
 
-    <!-- <script type="text/javascript" src="http://platform.linkedin.com/in.js">/* -->
-    <!--   api_key: p8rw9l9pzvl8 -->
-    <!--   authorize: true -->
-    <!-- */</script> -->
+    <script type="text/javascript">
+      var _kmq = _kmq || [];
+      var _kmk = _kmk || '0574cc154095cc7ddcaa04480daa22903da7f1b7';
+      function _kms(u){
+        setTimeout(function(){
+           var d = document, f = d.getElementsByTagName('script')[0],
+           s = d.createElement('script');
+           s.type = 'text/javascript'; s.async = true; s.src = u;
+           f.parentNode.insertBefore(s, f);
+         }, 1);
+      } 
+      _kms('//i.kissmetrics.com/i.js');
+      _kms('//doug1izaerwt3.cloudfront.net/' + _kmk + '.1.js');
+    </script>
 
     <!-- Load the script "js/main.js" as our entry point -->
     <script data-main="js/main" src="js/libs/require/require.js"></script>
