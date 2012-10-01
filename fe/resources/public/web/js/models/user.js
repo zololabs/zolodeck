@@ -3,9 +3,9 @@ define(['jquery',
         'backbone',
         'models/stats',
         'utils/custom_backbone',
-        'utils/gigya_utils'],
+        'utils/cookie_utils'],
 
-      function($, _, Backbone, Stats, CustomBackbone, GigyaUtils){
+      function($, _, Backbone, Stats, CustomBackbone, CookieUtils){
         
         var UserModel = Backbone.Model.extend({
           
@@ -25,36 +25,33 @@ define(['jquery',
             return this.get('stats');
           },
 
-          login: function(service){
-            console.log("Logged In : " , service);
-            this.set({'service':service, 'state':'LOGGED_IN'});
-            //this.stats().fetch();
-            this.save();
+          login: function(provider, providerLoginInfo){
+            console.log("Logged In : " , provider);
+            this.set({'provider':provider, 
+                      'state':'LOGGED_IN',
+                      'providerLoginInfo': providerLoginInfo});
+            this.save({},
+                      {wait: true, 
+                       success: function(user, response) {
+                         CookieUtils.setAuthCookie(response.guid);
+                         user.set({'state':'LOGGED_IN'});
+                         user.stats().fetch();
+                       },
+                       error: function(user, response){
+                         console.log("Error Happened");
+                         console.log(response);
+                       }
+                      }); 
           },
 
           logout: function(){
             console.log("Logged Out");
             this.set({'service':null, 
                       'state':'LOGGED_OUT',
-                       'stats' : new Stats()});
+                      'stats' : new Stats()});
           },
           
 
-          // signup: function(){
-          //   this.save({},
-          //             {wait: true, 
-          //              success: function(user, response) {
-          //                GigyaUtils.setAuthCookie(response.guid);
-          //                user.set({'state':'LOGGED_IN'});
-          //                user.stats().fetch();
-          //              },
-          //              error: function(user, response){
-          //                console.log("Error Happened");
-          //                console.log(response);
-          //              }
-          //             }); 
-          // },
-          
           // login: function(gigyaUser){
           //   this.set(gigyaUser);
           //   if(this.isNewUser()){

@@ -15,8 +15,6 @@ define(['jquery',
 
           render: function(){
             
-            console.log("Rendering Facebook Login");
-            
             var user = this.user;
             
             window.fbAsyncInit = function() {
@@ -30,8 +28,7 @@ define(['jquery',
                
               FB.Event.subscribe('auth.statusChange', function(response) {
                 if (response && ("connected" == response.status)){
-                    user.set({providerLoginInfo: response});
-                    user.login("FACEBOOK");
+                  user.login("FACEBOOK", response);
                 } else {
                   user.logout();
                 }
