@@ -10,11 +10,11 @@ define(['jquery',
           el: $(".header"),
 
           events: {
-            'click #logout' : 'logoutUsingFacebook',
+            'click #logout' : 'logoutUsingProvider',
           },
 
           initialize:function () {
-            _.bindAll(this, 'render', 'logoutUsingFacebook');
+            _.bindAll(this, 'render', 'logoutUsingProvider');
             
             this.user = this.model;
             this.user.bind('change:state', this.render)
@@ -30,12 +30,26 @@ define(['jquery',
             return this;
           },
 
-          logoutUsingFacebook: function(){
+          logoutUsingProvider: function(){
+            var user = this.user;
             console.log("Logout Pressed");
-            FB.logout(function(response) {           
-              console.log("Logged Out successfully");
-            });
+            if("FACEBOOK" == this.user.provider()){
+              FB.logout(function(response) {           
+                console.log("Logged Out successfully");
+              });
+            }
+            else if ("LINKEDIN" == this.user.provider()){
+              IN.User.logout(function(reponse){
+                console.log("Logged out of linked in");
+                user.logout();
+              });
+            }
+            else {
+              console.log("No Provider Present to logout");
+              user.logout();
+            }
           }
+
         });
 
         return HeaderView;

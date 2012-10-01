@@ -25,16 +25,20 @@ define(['jquery',
             return this.get('stats');
           },
 
+          provider: function(){
+            return this.get("provider");
+          },
+
           login: function(provider, providerLoginInfo){
             console.log("Logged In : " , provider);
             this.set({'provider':provider, 
-                      'state':'LOGGED_IN',
                       'providerLoginInfo': providerLoginInfo});
             this.save({},
                       {wait: true, 
                        success: function(user, response) {
                          CookieUtils.setAuthCookie(response.guid);
-                         user.set({'state':'LOGGED_IN'});
+                         user.set({'state':'LOGGED_IN',
+                                   'guid' : response.UID});
                          user.stats().fetch();
                        },
                        error: function(user, response){
@@ -80,13 +84,8 @@ define(['jquery',
           
           isLoggedOut: function(){
             return !this.isLoggedIn();
-          },
-
-          isNewUser: function(){
-            var siteUID = this.get('isSiteUID');
-            return ((siteUID == null) || (siteUID == false));
           }
-          
+
         });
         
         return UserModel;
