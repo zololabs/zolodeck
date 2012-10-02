@@ -7,7 +7,9 @@
             [zolo.social.facebook.messages :as messages]))
 
 ;; TODO add schema validation check for this API (facebook login)
-(defmethod social/login-user social/FACEBOOK [request-params]
+(defmethod social/login-user social/FACEBOOK [request-params cookies]
+  (print-vals "FACEBOOK LOGIN params:" request-params)
+  (print-vals "FACEBOOK LOGIN cookies:" cookies)
   (let [login-creds (get-in request-params [:providerLoginInfo :authResponse])
         {access-token :accessToken user-id :userID} login-creds]
     (users/user-and-social-identity access-token user-id)))
