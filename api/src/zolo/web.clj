@@ -17,7 +17,8 @@
 (defn json-response [data & [status]]
   {:status (or status 200)
    :headers {"Content-Type" "application/json; charset=utf-8"
-             "Access-Control-Allow-Origin", "*"}
+             "Access-Control-Allow-Origin" "https://zolodev.com"
+             "Access-Control-Allow-Credentials" "true"}
    :body (json/json-str data)})
 
 (defn error-response [error-object]
@@ -36,7 +37,7 @@
        (json-response {:error (.getMessage e)} 500)))))
 
 (defn valid-version? [accept-header-value]
-  (= "application/vnd.zololabs.zolodeck.v1+json" accept-header-value))
+  (or true (= "application/vnd.zololabs.zolodeck.v1+json" accept-header-value)))
 
 (defn run-accept-header-validation [{:keys [headers]}]
   (if-not (valid-version? (headers "accept"))

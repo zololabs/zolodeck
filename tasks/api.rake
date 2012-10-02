@@ -79,8 +79,8 @@ namespace :api do
       info "Generating API config for development and test environment"
       
       bag = {:datomic => {
-          :development => {:db => 'zolodeck-dev'},
-          :test => {:db => 'zolodeck-test'}}}
+                          :development => {:db => 'zolodeck-dev'},
+                          :test => {:db => 'zolodeck-test'}}}
 
       bag[:datomic][:development][:db] ||= Shell.prompt("Datomic Development DB", "zolodeck-dev")
       bag[:datomic][:test][:db] ||= Shell.prompt("Datomic Test DB", "zolodeck-test")

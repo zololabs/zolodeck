@@ -10,11 +10,13 @@ define(['jquery',
           zoloSync : function(method, model, options) {
 
             console.log("Doing : " + method);
-        
+
+            options.xhrFields = {withCredentials: true};
+
             options.beforeSend = function(jqXHR) {
             
               jqXHR.setRequestHeader("Accept", "application/vnd.zololabs.zolodeck.v1+json");
-              jqXHR.setRequestHeader("Access-Control-Allow-Origin", "*");
+              jqXHR.setRequestHeader("Access-Control-Allow-Origin", "https://zolodev.com");
 
               var zolo_guid = $.cookie(CookieUtils.ZOLO_GUID);
 

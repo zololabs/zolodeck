@@ -8,6 +8,7 @@
         ring.middleware.keyword-params
         ring.middleware.json-params
         ring.middleware.nested-params
+        ring.middleware.cookies
         [sandbar.auth]
         [sandbar.validation]
         [sandbar.stateful-session :only [wrap-stateful-session]]
@@ -50,18 +51,19 @@
 
 (defn wrap-options [handler]
   (fn [request]
-    (print-vals "WRAP-OPTIONS:" request)
+    (print-vals "Wrap Options : " request)
     (if (= :options (request :request-method))
-      { :headers    {"Access-Control-Allow-Origin"  "*"
-                     "Access-Control-Allow-Methods"  "POST,PUT,OPTIONS"
-                     "Access-Control-Allow-Headers"  "access-control-allow-origin,authorization,Content-Type"
-                     "Access-Control-Allow-Credentials" "false"
+      { :headers    {"Access-Control-Allow-Origin"  (print-vals "Origin :" (get-in request [:headers "origin"]))
+                     "Access-Control-Allow-Methods"  "GET,POST,PUT,OPTIONS,DELETE"
+                     "Access-Control-Allow-Headers"  "access-control-allow-origin,authorization,Content-Type,origin,X-requested-with,accept"
+                     "Access-Control-Allow-Credentials" "true"
                      "Access-Control-Max-Age" "60"}}
       (handler request))))
 
 (def app
      (wrap-options
       (-> (handler/api application-routes)
+          wrap-cookies
           wrap-json-params
           (with-security security-policy auth/authenticator)
           wrap-stateful-session

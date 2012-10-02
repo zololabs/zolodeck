@@ -9,7 +9,7 @@ define(['jquery',
         
         var UserModel = Backbone.Model.extend({
           
-          urlRoot: "https://api.zolodev.com/users",
+          urlRoot: "https://zolodev.com:4430/users",
 
           sync: CustomBackbone.zoloSync,
 
