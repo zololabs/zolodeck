@@ -12,7 +12,7 @@ namespace :nginx do
   end
 
   desc "Start nginx"
-  task :start do
+  task :start  => :config do
 
     command = "sudo nginx -c " + Dir.pwd + "/devops/nginx/nginx.conf"
     info "Nginx is getting started . Make sure your api server is running in port 4000"
