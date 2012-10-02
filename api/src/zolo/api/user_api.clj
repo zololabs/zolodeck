@@ -11,9 +11,9 @@
 (defn format-user [user]
   {:guid (str (:user/guid user))})
 
-(defn signup-user [request-params]
+(defn signup-user [request-params cookies]
   (-> request-params
-      social/login-user
+      (social/login-user cookies)
       user/signup-new-user
       format-user
       ))

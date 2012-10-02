@@ -14,13 +14,13 @@
   "female" :gender/female
   "male" :gender/male})
 
-(defn dispatch-by-provider [params]
+(defn login-dispatcher [params cookies]
   (print-vals "Dispatcher:" params)
   (print-vals "Dispatch value:" (get-in params [:provider])))
 
-(defmulti login-user dispatch-by-provider)
+(defmulti login-user login-dispatcher)
 
-(defmethod login-user :default [params]
+(defmethod login-user :default [params cookies]
   (print-vals "LoginUser default:" params)
   (print-vals "LoginUser service:" (get-in params [:provider])))
 

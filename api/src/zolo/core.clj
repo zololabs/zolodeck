@@ -4,6 +4,7 @@
         compojure.core
         ring.adapter.jetty
         ring.middleware.params
+        ring.middleware.cookies
         ring.middleware.keyword-params
         ring.middleware.json-params
         ring.middleware.nested-params
@@ -29,12 +30,11 @@
   (route/resources "/")
 
   ;;---- USER
-  (POST "/users" [& params] (json-response (user-api/signup-user params)))
-  (POST "/users" [& params] (json-response (social/login-user params)))  
+  (POST "/users" {params :params cookies :cookies} (json-response (user-api/signup-user params cookies)))  
   (GET "/users/:id" [id] (json-response (current-user)))
  
   ;;---- User Stats
-  (GET "/user-stats" [& params] (json-response (user-api/stats params)))
+  (GET "/user-stats" {params :params} (json-response (user-api/stats params)))
   
   ;;---- GENERAL
   (GET "/permission-denied*" []  (json-response {:error "Permission Denied"} 403))
@@ -66,6 +66,7 @@
           (with-security security-policy auth/authenticator)
           wrap-stateful-session
           wrap-accept-header-validation
+          wrap-cookies          
           wrap-error-handling
           demonic/wrap-demarcation
           wrap-request-logging
