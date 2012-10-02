@@ -2,7 +2,7 @@
 worker_processes  1;
 daemon off;
 
-  error_log  /Users/amit/workspace/zolo/zolodeck/devops/nginx/logs/error.log;
+  error_log  <%= bag[:zolodeck][:home]%>/devops/nginx/logs/error.log;
 # pid        /var/run/nginx.pid;
 
 events {
@@ -13,7 +13,7 @@ http {
   include       mime.types;
   default_type  application/octet-stream;
 
-  access_log    /Users/amit/workspace/zolo/zolodeck/devops/nginx/logs/access.log;
+  access_log    <%= bag[:zolodeck][:home]%>/devops/nginx/logs/access.log;
 
   sendfile on;
   tcp_nopush on;
@@ -30,5 +30,5 @@ http {
   server_names_hash_bucket_size 128;
 
   #include /etc/nginx/conf.d/*.conf;
-  include ./sites-enabled/*;
+  include ./sites-enabled/*.conf;
 }

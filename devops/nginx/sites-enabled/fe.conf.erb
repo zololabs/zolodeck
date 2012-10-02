@@ -3,7 +3,7 @@ server {
   # As in the case of the AWS ELB                                                                                                         
   listen 80 default;
   server_name  zolodev.com;
-  root /Users/amit/workspace/zolo/zolodeck/fe/resources/public/web;
+  root <%= bag[:zolodeck][:home]%>/fe/resources/public/web;
 
   include ./sites-available/zolo-includes/misc.conf;
   
@@ -22,7 +22,7 @@ server {
 server {
   listen 443;
   server_name  zolodev.com;
-  root /Users/amit/workspace/zolo/zolodeck/fe/resources/public/web;
+  root <%= bag[:zolodeck][:home]%>/fe/resources/public/web;
 	
   ssl on;
   ssl_certificate     ./certificates/server.crt;
