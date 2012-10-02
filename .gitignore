@@ -31,3 +31,5 @@ fe/lib/*
 /fe/pom.xml
 /devops/nginx/logs/access.log
 /devops/nginx/logs/error.log
+/devops/nginx/nginx.conf
+/devops/nginx/sites-enabled/fe.conf
