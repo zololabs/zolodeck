@@ -14,7 +14,7 @@ define(['jquery',
               return undefined;
             };
             var ten_years = 10 * 365;
-            $.cookie(k, v, {path: "/", expires: ten_years});
+            $.cookie(k, v, {domain: ".zolodev.com", path: "/", expires: ten_years});
           },
           
           setAuthCookie: function(guid) {
