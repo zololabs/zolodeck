@@ -29,3 +29,5 @@ api/lib/*
 fe/lib/*
 /fe/.lein-failures
 /fe/pom.xml
+/devops/nginx/logs/access.log
+/devops/nginx/logs/error.log
