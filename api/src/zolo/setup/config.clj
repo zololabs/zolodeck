@@ -22,6 +22,12 @@
 (defn fb-app-secret []
   (get-in CONFIG-MAP [ENV :fb-app-secret]))
 
+(defn li-api-key []
+  (get-in CONFIG-MAP [ENV :li-api-key]))
+
+(defn li-secret-key []
+  (get-in CONFIG-MAP [ENV :li-secret-key]))
+
 (defrunonce setup-config []
   (let [config-file (java-io/resource "zolo.clj")
         env (keyword (or (.get (System/getenv) "ZOLODECK_ENV") "development"))]
