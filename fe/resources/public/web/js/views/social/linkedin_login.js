@@ -22,7 +22,7 @@ define(['jquery',
                   IN.init({
                     api_key: 'p8rw9l9pzvl8',
                     authorize: true,
-                    scope: "r_fullprofile,r_network,r_emailaddress",
+                    scope: "r_fullprofile,r_network,r_emailaddress,rw_nus,w_messages,r_basicprofile",
                     credentials_cookie: true
                   });
               });
