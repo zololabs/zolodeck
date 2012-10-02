@@ -24,6 +24,9 @@
 
                  [org.clojure/core.match "0.2.0-alpha9"]
 
+                 ;; [de.tarn-vedra/clj-oauth2 "0.4.0-SNAPSHOT"]
+                 ;; [org.clojars.samrat/clj-oauth "1.4.0-SNAPSHOT"]
+                 [org.scribe/scribe "1.3.2"]
                  [zolodeck/demonic "0.1.0-SNAPSHOT"]
                  [zolodeck/zolo-utils "0.1.0-SNAPSHOT"]
                  [world-country-list "1.0.0-SNAPSHOT"]]
