@@ -12,4 +12,5 @@
 (init)
 
 (defn country-name-for [country-code]
-  (get-in EN [(.toUpperCase country-code) :full-name]))
+  (if country-code
+    (get-in EN [(.toUpperCase country-code) :full-name])))

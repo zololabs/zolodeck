@@ -4,7 +4,7 @@
             [zolo.social.core :as social]
             [zolo.utils.countries :as countries]))
 
-(defn contact-social-identity [provider-enum friend]
+(defn contact-social-identity [friend]
   (let [[language country-code] (string/split "_" (:locale friend))
         [month day year] (string/split "/" (:birthday friend))]
     (domain/force-schema-types
@@ -18,11 +18,11 @@
       :social/birth-month day
       :social/birth-year year
       :social/provider-uid (:id friend)
-      :social/provider provider-enum
+      :social/provider :provider/facebook
       :social/photo-url (:picture friend)
       })))
 
-(defn contact-object [provider friend]
+(defn contact-object [friend]
   {:contact/first-name (:first_name friend)
    :contact/last-name (:last_name friend)
-   :contact/social-identities [(contact-social-identity provider friend)]})
+   :contact/social-identities [(contact-social-identity friend)]})

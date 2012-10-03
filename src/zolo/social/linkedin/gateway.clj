@@ -44,5 +44,7 @@
 (defn profile-info [oauth-token oauth-token-secret]
   (get-json PROFILE-URL oauth-token oauth-token-secret))
 
-(defn friends-list [oauth-token oauth-token-secret]
-  (get-json CONTACTS-URL oauth-token oauth-token-secret))
+;; TODO - use modified-since parameter to get only new/updated contacts
+(defn contacts-list [oauth-token oauth-token-secret]
+  (-> (get-json CONTACTS-URL oauth-token oauth-token-secret)
+      :values))
