@@ -4,8 +4,6 @@
             [zolo.social.linkedin.gateway :as gateway]            
             [zolo.utils.countries :as countries]))
 
-(def PROFILE-URL "http://api.linkedin.com/v1/people/~:(id,first-name,last-name,industry,location:(country:(code)),date-of-birth,email-address,picture-url,public-profile-url)")
-
 (defn basic-info [profile-info]
   (domain/force-schema-types
    {:user/first-name (:firstName profile-info)
@@ -29,7 +27,7 @@
       :social/auth-token auth-token})))
 
 (defn user-and-social-identity [auth-token-map]
-  (let [profile (gateway/get-json PROFILE-URL (:oauth_token auth-token-map) (:oauth_token_secret auth-token-map))
+  (let [profile (gateway/profile-info (:oauth_token auth-token-map) (:oauth_token_secret auth-token-map))
         basic (basic-info profile)
         si (social-identity (prn-str auth-token-map) profile)]
     (assoc basic :user/social-identities [si])))

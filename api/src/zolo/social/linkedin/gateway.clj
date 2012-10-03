@@ -14,6 +14,10 @@
                  (.apiSecret (conf/li-secret-key))
                  .build))
 
+(def PROFILE-URL "http://api.linkedin.com/v1/people/~:(id,first-name,last-name,industry,location:(country:(code)),date-of-birth,email-address,picture-url,public-profile-url)")
+
+(def CONTACTS-URL "http://api.linkedin.com/v1/people/~/connections:(id,first-name,last-name,industry,location:(country:(code)),date-of-birth,email-address,picture-url,public-profile-url)")
+
 (defn token-for [token token-secret]
   (Token. token token-secret))
 
@@ -36,3 +40,9 @@
   (-> (get url oauth-token oauth-token-secret)
       json/read-json
       walk/keywordize-keys))
+
+(defn profile-info [oauth-token oauth-token-secret]
+  (get-json PROFILE-URL oauth-token oauth-token-secret))
+
+(defn friends-list [oauth-token oauth-token-secret]
+  (get-json CONTACTS-URL oauth-token oauth-token-secret))
