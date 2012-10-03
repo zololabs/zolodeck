@@ -8,7 +8,7 @@ namespace :api do
     info "Updating submodules"
     sh "git submodule init; git submodule sync ; git submodule update"
     info "Getting Deps and Building projects in Checkout folder"
-    sh "cd api ; lein deps; lein build-checkouts;"
+    sh "lein deps; lein build-checkouts;"
     Rake::Task["api:config:generate"].execute
   end
 
