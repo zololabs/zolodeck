@@ -16,4 +16,4 @@
         xoauth-oauth2-access-token (:access_token c)
         url (str EXCHANGE_URL "?xoauth_oauth2_access_token=" xoauth-oauth2-access-token)
         response (gateway/post url)]
-    (print-vals "Parsed->" (string/parse-query-string response "UTF-8"))))
+    (string/parse-query-string response "UTF-8")))

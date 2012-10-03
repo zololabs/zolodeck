@@ -1,6 +1,8 @@
 (ns zolo.social.linkedin.gateway
   (:use zolodeck.utils.debug)
-  (:require [zolo.setup.config :as conf])
+  (:require [zolo.setup.config :as conf]
+            [clojure.walk :as walk]
+            [clojure.data.json :as json])
   (:import [org.scribe.builder ServiceBuilder]
            [org.scribe.builder.api LinkedInApi]
            [org.scribe.model OAuthRequest Response Token Verb]
@@ -21,12 +23,6 @@
     (.signRequest SERVICE (token-for oauth-token oauth-token-secret) req)
     (-> req .send .getBody)))
 
-;; (defn post [url]
-;;   (let [req (OAuthRequest. Verb/POST url)]
-;;     (.addHeader req "x-li-format" "json")    
-;;     (.signRequest SERVICE (Token. "" "") req)
-;;     (-> req .send .getBody print-vals)))
-
 (defn post
   ([url]
      (post url "" ""))
@@ -35,3 +31,8 @@
 
 (defn get [url oauth-token oauth-token-secret]
   (http-action url Verb/GET oauth-token oauth-token-secret))
+
+(defn get-json [url oauth-token oauth-token-secret]
+  (-> (get url oauth-token oauth-token-secret)
+      json/read-json
+      walk/keywordize-keys))

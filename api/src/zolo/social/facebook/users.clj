@@ -11,11 +11,10 @@
     :user/last-name (:last_name extended-user-info)
     :user/login-provider-uid (:uid extended-user-info)}))
 
-(defn social-identity [provider access-token extended-user-info]
+(defn social-identity [access-token extended-user-info]
   (let [[month day year] (string/split "/" (:birthday_date extended-user-info))]
-    (print-vals "bday:" [month day year])
     (domain/force-schema-types
-     {:social/provider-uid (print-vals (:uid extended-user-info))
+     {:social/provider-uid (:uid extended-user-info)
       :social/gender (social/gender-enum (:sex extended-user-info))
       :social/country (get-in extended-user-info [:current_location :country])
       :social/first-name (:first_name extended-user-info)
@@ -27,7 +26,7 @@
       :social/photo-url (:pic_big extended-user-info)
       :social/thumbnail-url (:pic_small extended-user-info)
       :social/profile-url (:profile_url extended-user-info)
-      :social/provider (social/provider-enum provider)
+      :social/provider :provider/facebook
       :social/auth-token access-token
       :social/state (get-in extended-user-info [:current_location :state])
       :social/city (get-in extended-user-info [:current_location :city])
@@ -37,5 +36,5 @@
 (defn user-and-social-identity [access-token user-id]
   (let [extended-info (gateway/extended-user-info access-token user-id)
         basic-user (basic-info extended-info)
-        identity (social-identity social/FACEBOOK access-token extended-info)]
+        identity (social-identity access-token extended-info)]
     (assoc basic-user :user/social-identities [identity])))
