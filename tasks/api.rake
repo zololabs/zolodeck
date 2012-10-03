@@ -85,7 +85,7 @@ namespace :api do
       bag[:datomic][:development][:db] ||= Shell.prompt("Datomic Development DB", "zolodeck-dev")
       bag[:datomic][:test][:db] ||= Shell.prompt("Datomic Test DB", "zolodeck-test")
 
-      Config.generate binding, "api/config/zolo.clj.erb", "api/config/zolo.clj"
+      Config.generate binding, "config/zolo.clj.erb", "config/zolo.clj"
 
       puts "Successfully Generated!!"
     end

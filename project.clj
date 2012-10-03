@@ -63,7 +63,7 @@
   :warn-on-reflection false
   
   :repositories {"jboss" "http://repository.jboss.org/nexus/content/groups/public/"
-                 "local" ~(str (.toURI (java.io.File. "../mvn_repo")))}
+                 "local" ~(str (.toURI (java.io.File. "mvn_repo")))}
   
   :resources-path "config"
 
