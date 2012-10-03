@@ -15,5 +15,5 @@
   (let [c (parse-oauth-cookie oauth-cookie-string)
         xoauth-oauth2-access-token (:access_token c)
         url (str EXCHANGE_URL "?xoauth_oauth2_access_token=" xoauth-oauth2-access-token)
-        response (gateway/post url)]
+        response (gateway/http-post url)]
     (string/parse-query-string response "UTF-8")))
