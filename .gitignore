@@ -20,3 +20,5 @@ config/zolo.clj
 /devops/nginx/logs/error.log
 /devops/nginx/nginx.conf
 /devops/nginx/sites-enabled/fe.conf
+/zolodeck-api-0.1.0-SNAPSHOT-standalone.jar
+/zolodeck-api-0.1.0-SNAPSHOT.jar
