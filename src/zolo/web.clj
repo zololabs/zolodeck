@@ -5,6 +5,11 @@
   (:require [clojure.data.json :as json]
             [zolo.web.status-codes :as http-status]))
 
+(def ^:dynamic *ZOLO-REQUEST*)
+
+(defn request-origin []
+  (get-in *ZOLO-REQUEST* [:headers "origin"]))
+
 ;; (defn- write-json-date [x out escape-unicode?]
 ;;   (.print out (date- x)))
 
@@ -17,7 +22,7 @@
 (defn json-response [data & [status]]
   {:status (or status 200)
    :headers {"Content-Type" "application/json; charset=utf-8"
-             "Access-Control-Allow-Origin" "https://zolodev.com"
+             "Access-Control-Allow-Origin" (request-origin)
              "Access-Control-Allow-Credentials" "true"}
    :body (json/json-str data)})
 
@@ -49,4 +54,8 @@
     (run-accept-header-validation request)
     (handler request)))
 
-
+(defn wrap-request-binding [handler]
+  (fn [request]
+    (binding [*ZOLO-REQUEST* request]
+      (print-vals "*ZOLO-REQUEST* is:" *ZOLO-REQUEST*)
+      (handler request))))

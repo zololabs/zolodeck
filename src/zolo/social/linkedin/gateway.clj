@@ -27,22 +27,24 @@
     (.signRequest SERVICE (token-for oauth-token oauth-token-secret) req)
     (-> req .send .getBody)))
 
-(defn post
+(defn http-post
   ([url]
-     (post url "" ""))
+     (http-post url "" ""))
   ([url oauth-token oauth-token-secret]
      (http-action url Verb/POST oauth-token oauth-token-secret)))
 
-(defn get [url oauth-token oauth-token-secret]
+(defn http-get [url oauth-token oauth-token-secret]
   (http-action url Verb/GET oauth-token oauth-token-secret))
 
 (defn get-json [url oauth-token oauth-token-secret]
-  (-> (get url oauth-token oauth-token-secret)
+  (-> (http-get url oauth-token oauth-token-secret)
       json/read-json
       walk/keywordize-keys))
 
 (defn profile-info [oauth-token oauth-token-secret]
   (get-json PROFILE-URL oauth-token oauth-token-secret))
 
-(defn friends-list [oauth-token oauth-token-secret]
-  (get-json CONTACTS-URL oauth-token oauth-token-secret))
+;; TODO - use modified-since parameter to get only new/updated contacts
+(defn contacts-list [oauth-token oauth-token-secret]
+  (-> (get-json CONTACTS-URL oauth-token oauth-token-secret)
+      :values))

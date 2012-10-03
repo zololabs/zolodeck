@@ -17,7 +17,7 @@
 (defmethod social/fetch-contacts :provider/facebook [provider access-token user-id]
   (print-vals "FetchContacts:" provider)
   (let [friends (gateway/friends-list access-token user-id)]
-    (doall (map #(contacts/contact-object provider %) friends))))
+    (doall (map contacts/contact-object friends))))
 
 (defmethod social/fetch-messages :provider/facebook [provider access-token user-id]
   (print-vals "FetchMessages:" provider)

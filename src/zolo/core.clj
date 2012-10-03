@@ -51,28 +51,29 @@
 
 (defn wrap-options [handler]
   (fn [request]
-    (print-vals "Wrap Options : " request)
     (if (= :options (request :request-method))
-      { :headers    {"Access-Control-Allow-Origin"  (print-vals "Origin :" (get-in request [:headers "origin"]))
-                     "Access-Control-Allow-Methods"  "GET,POST,PUT,OPTIONS,DELETE"
-                     "Access-Control-Allow-Headers"  "access-control-allow-origin,authorization,Content-Type,origin,X-requested-with,accept"
-                     "Access-Control-Allow-Credentials" "true"
-                     "Access-Control-Max-Age" "60"}}
+      { :headers {"Access-Control-Allow-Origin"  (request-origin)
+                  "Access-Control-Allow-Methods"  "GET,POST,PUT,OPTIONS,DELETE"
+                  "Access-Control-Allow-Headers"  "access-control-allow-origin,authorization,Content-Type,origin,X-requested-with,accept"
+                  "Access-Control-Allow-Credentials" "true"
+                  "Access-Control-Max-Age" "60"}}
       (handler request))))
 
 (def app
-     (wrap-options
-      (-> (handler/api application-routes)
-          wrap-cookies
-          wrap-json-params
-          (with-security security-policy auth/authenticator)
-          wrap-stateful-session
-          wrap-accept-header-validation
-          wrap-cookies          
-          wrap-error-handling
-          demonic/wrap-demarcation
-          wrap-request-logging
-          )))
+  (wrap-request-binding  
+   (wrap-options
+    (-> application-routes
+        handler/api          
+        wrap-cookies
+        wrap-json-params
+        (with-security security-policy auth/authenticator)
+        wrap-stateful-session
+        wrap-accept-header-validation
+        wrap-cookies          
+        wrap-error-handling
+        demonic/wrap-demarcation
+        wrap-request-logging
+        ))))
 
 (defn -main []
   (run-jetty (var app) {:port 4000
