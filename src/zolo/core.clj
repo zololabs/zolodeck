@@ -31,7 +31,7 @@
   (route/resources "/")
 
   ;;---- USER
-  (POST "/users" {params :params cookies :cookies} (json-response (user-api/signup-user params cookies)))  
+  (POST "/users" {params :params cookies :cookies} (json-response (user-api/signin-user params cookies)))  
   (GET "/users/:id" [id] (json-response (current-user)))
  
   ;;---- User Stats
@@ -52,9 +52,9 @@
 (defn wrap-options [handler]
   (fn [request]
     (if (= :options (request :request-method))
-      { :headers {"Access-Control-Allow-Origin"  (request-origin)
-                  "Access-Control-Allow-Methods"  "GET,POST,PUT,OPTIONS,DELETE"
-                  "Access-Control-Allow-Headers"  "access-control-allow-origin,authorization,Content-Type,origin,X-requested-with,accept"
+      { :headers {"Access-Control-Allow-Origin" (request-origin)
+                  "Access-Control-Allow-Methods" "GET,POST,PUT,OPTIONS,DELETE"
+                  "Access-Control-Allow-Headers" "access-control-allow-origin,authorization,Content-Type,origin,X-requested-with,accept"
                   "Access-Control-Allow-Credentials" "true"
                   "Access-Control-Max-Age" "60"}}
       (handler request))))

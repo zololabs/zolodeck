@@ -10,10 +10,16 @@
 
 (def AUTH-COOKIE-NAME (str "linkedin_oauth_" (conf/li-api-key)))
 
+(defmethod social/provider-uid social/LINKEDIN [request-params cookies]
+  (-> (get-in cookies [AUTH-COOKIE-NAME :value])
+      token/parse-oauth-cookie
+      :member_id))
+
 ;; TODO check for key :oauth_problem in li-at
-(defmethod social/login-user social/LINKEDIN [request-params cookies]
+(defmethod social/signup-user social/LINKEDIN [request-params cookies]
   (let [auth-cookie-string (print-vals "auth-cookie:" (get-in cookies [AUTH-COOKIE-NAME :value]))
-        li-at (token/access-token auth-cookie-string)]
+        parsed-cookie (token/parse-oauth-cookie auth-cookie-string)
+        li-at (token/access-token (:access_token parsed-cookie))]
     (print-vals "LI-AT:" li-at)
     (users/user-and-social-identity li-at)))
 

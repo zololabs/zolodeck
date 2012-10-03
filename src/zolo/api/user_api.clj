@@ -11,12 +11,12 @@
 (defn format-user [user]
   {:guid (str (:user/guid user))})
 
-(defn signup-user [request-params cookies]
-  (-> request-params
-      (social/login-user cookies)
-      user/signup-new-user
-      format-user
-      ))
+(defn signin-user [request-params cookies]
+  (let [user (or (print-vals "EXIST:" (user/find-by-login-provider-uid (social/provider-uid request-params cookies)))
+                 (print-vals "NEW:" (-> request-params
+                                        (social/signup-user cookies)
+                                        user/signup-new-user)))]
+    (format-user user)))
 
 (defn stats [request-params]
   (let [u (user/fully-loaded-user)]

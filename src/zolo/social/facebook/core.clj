@@ -6,12 +6,20 @@
             [zolo.social.facebook.contacts :as contacts]
             [zolo.social.facebook.messages :as messages]))
 
+(defn login-creds [request-params]
+  (let [creds (get-in request-params [:providerLoginInfo :authResponse])]
+    (select-keys creds [:accessToken :userID])))
+
+(defmethod social/provider-uid social/FACEBOOK [request-params cookies]
+  (-> request-params
+      login-creds
+      :userID))
+
 ;; TODO add schema validation check for this API (facebook login)
-(defmethod social/login-user social/FACEBOOK [request-params cookies]
+(defmethod social/signup-user social/FACEBOOK [request-params cookies]
   (print-vals "FACEBOOK LOGIN params:" request-params)
   (print-vals "FACEBOOK LOGIN cookies:" cookies)
-  (let [login-creds (get-in request-params [:providerLoginInfo :authResponse])
-        {access-token :accessToken user-id :userID} login-creds]
+  (let [{access-token :accessToken user-id :userID} (login-creds request-params)]
     (users/user-and-social-identity access-token user-id)))
 
 (defmethod social/fetch-contacts :provider/facebook [provider access-token user-id]
