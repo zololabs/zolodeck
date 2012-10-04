@@ -36,8 +36,7 @@
             [lein-ring "0.6.2"]
             [lein-difftest "1.3.8"]
             [lein-notes "0.0.1"]
-            [lein-deploy-app "0.1.0"]
-            [s3-wagon-private "1.1.2"]]
+            [lein-deploy-app "0.1.0"]]
 
   :hooks [leiningen.hooks.difftest]
 
@@ -64,8 +63,7 @@
   :warn-on-reflection false
   
   :repositories {"jboss" "http://repository.jboss.org/nexus/content/groups/public/"
-                 "local" ~(str (.toURI (java.io.File. "mvn_repo")))
-                 "releases" {:url "s3p://zolodeck/releases/"}}
+                 "local" ~(str (.toURI (java.io.File. "mvn_repo")))}
   
   :resources-path "config"
 
