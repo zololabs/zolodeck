@@ -2,6 +2,8 @@
   (:use zolo.setup.datomic-setup
         [slingshot.slingshot :only [throw+ try+]]
         [zolodeck.demonic.core :only [insert run-query load-entity] :as demonic]
+        [zolodeck.demonic.helper :only [load-from-db] :as demonic-helper]
+        [zolodeck.demonic.loadable :only [entity->loadable] :as loadable]
         zolodeck.utils.debug)
   (:require [zolo.utils.domain :as domain]
             [zolo.utils.readers :as readers]
@@ -32,6 +34,18 @@
         ffirst
         demonic/load-entity)))
 
+(defn find-by-provider-and-provider-uid [provider provider-uid]
+  ;;TODO Not using provider for now ... we need to start once we
+  ;;figure how to store enum
+  (when provider-uid
+    (-> (demonic/run-query
+         '[:find ?s :in $ ?provider-uid :where [?s :social/provider-uid ?provider-uid]] provider-uid)
+        ffirst
+        demonic-helper/load-from-db
+        :user/_social-identities
+        first
+        loadable/entity->loadable)))
+
 (defn reload-using-login-provider-uid [u]
   (find-by-login-provider-uid (:user/login-provider-uid u)))
 
@@ -50,6 +64,7 @@
 ;;TODO Junk function. Need to design the app
 (defn fully-loaded-user
   ([u]
+     (print-vals "FullyLoadedUser... starting now!")
      (contact/update-contacts u)
      (print-vals "contacts done")
      ;;TODO Still looks like we are updating lot more messages than it

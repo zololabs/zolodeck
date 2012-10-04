@@ -36,10 +36,8 @@
     (dissoc-user-messages user grouped)))
 
 (defn process-contact-messages [user provider-info fresh-messages]
-  (print-vals "process-contact-messages:" provider-info)
   (let [contact (or (contact/find-contact-by-provider-info user provider-info)
                     (contact/create-contact user provider-info))]
-    (print-vals "contact:" contact)
     (assoc contact :contact/messages
            (utils-domain/update-fresh-entities-with-db-id (:contact/messages contact) fresh-messages :message/message-id :message/guid))))
 

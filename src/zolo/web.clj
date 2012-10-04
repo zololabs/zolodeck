@@ -10,9 +10,6 @@
 (defn request-origin []
   (get-in *ZOLO-REQUEST* [:headers "origin"]))
 
-;; (defn- write-json-date [x out escape-unicode?]
-;;   (.print out (date- x)))
-
 (defn- write-json-uuid [x out escape-unicode?]
   (.print out (str "'" x "'")))
 
@@ -57,5 +54,5 @@
 (defn wrap-request-binding [handler]
   (fn [request]
     (binding [*ZOLO-REQUEST* request]
-      (print-vals "*ZOLO-REQUEST* is:" *ZOLO-REQUEST*)
+      ;(print-vals "*ZOLO-REQUEST* is:" *ZOLO-REQUEST*)
       (handler request))))

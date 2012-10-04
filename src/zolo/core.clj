@@ -64,12 +64,11 @@
    (wrap-options
     (-> application-routes
         handler/api          
-        wrap-cookies
         wrap-json-params
         (with-security security-policy auth/authenticator)
+        wrap-cookies        
         wrap-stateful-session
         wrap-accept-header-validation
-        wrap-cookies          
         wrap-error-handling
         demonic/wrap-demarcation
         wrap-request-logging

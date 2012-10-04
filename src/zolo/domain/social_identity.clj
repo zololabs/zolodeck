@@ -19,6 +19,7 @@
   ;;TODO Not using provider for now ... we need to start once we
   ;;figure how to store enum
   (when provider-uid
-    (-> (demonic/run-query '[:find ?s :in $ ?provider-uid :where [?s :social/provider-uid ?fb]] provider-uid)
+    (-> (demonic/run-query
+         '[:find ?s :in $ ?provider-uid :where [?s :social/provider-uid ?provider-uid]] provider-uid)
         ffirst
         demonic/load-entity)))

@@ -34,3 +34,7 @@
     (load-config config-file env)))
 
 (setup-config)
+
+(def FB-AUTH-COOKIE-NAME (str "fbsr_" (fb-app-id)))
+
+(def LI-AUTH-COOKIE-NAME (str "linkedin_oauth_" (li-api-key)))

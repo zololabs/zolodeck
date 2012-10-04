@@ -1,21 +1,16 @@
 (ns zolo.web.auth
   (:use zolodeck.utils.debug)
-  (:require [zolo.domain.user :as user]
+  (:require [zolo.setup.config :as conf]
+            [zolo.web.fb-auth :as fb-auth]
+            [zolo.domain.user :as user]
             [zolodeck.utils.string :as zolo-str]))
 
-(defmulti authenticate (fn [auth-type auth-cred params] 
-                         (clojure.string/lower-case (clojure.string/trim auth-type))))
-
-(defmethod authenticate "bearer" [_ auth-cred params]
-  (user/find-by-guid-string auth-cred))
-
-(defmethod authenticate :default [_ _ _]
-  nil)
+(defn fb-user [fb-cookie]
+  (let [{user-id :user_id} (fb-auth/decode-signed-request fb-cookie (conf/fb-app-secret))]
+    (user/find-by-provider-and-provider-uid :provider/facebook user-id)))
 
 (defn authenticator [req]
-  (if-let [auth-token ((:headers req) "authorization")]
-    (let [[auth-type auth-cred] (zolo-str/split " " auth-token)]
-      (if-let [user (authenticate auth-type auth-cred (:params req))]
-        (merge {:username (:user/login-provider-uid user)
-                :roles #{:user}}
-               user)))))
+  (let [{{fb :value} conf/FB-AUTH-COOKIE-NAME {li :value} conf/LI-AUTH-COOKIE-NAME} (:cookies req)
+        user (fb-user fb)]
+    (merge {:username (:user/login-provider-uid user)
+            :roles #{:user}} (fb-user fb))))
