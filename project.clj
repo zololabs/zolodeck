@@ -20,13 +20,12 @@
                  [org.clojars.nakkaya.javax.mail/imap "1.4.3"]
                  [org.clojars.nakkaya.javax.mail/mail "1.4.3"]
 
-;;                 [com.novemberain/validateur "1.1.0"  :exclude [org.clojure/clojure]]
-
+                 [org.clojars.amit/zolo_fb_chat "0.0.1"]
+                 
                  [org.clojure/core.match "0.2.0-alpha9"]
 
-                 ;; [de.tarn-vedra/clj-oauth2 "0.4.0-SNAPSHOT"]
-                 ;; [org.clojars.samrat/clj-oauth "1.4.0-SNAPSHOT"]
-                 [org.scribe/scribe "1.3.2"]
+                 [org.scribe/scribe "1.3.2"] ;;oauth for LinkedIn
+                 
                  [zolodeck/demonic "0.1.0-SNAPSHOT"]
                  [zolodeck/zolo-utils "0.1.0-SNAPSHOT"]
                  [world-country-list "1.0.0-SNAPSHOT"]]

@@ -46,6 +46,18 @@
         first
         loadable/entity->loadable)))
 
+(defn fb-social-identity [u]
+  (->> u
+       :user/social-identities
+       (filter social-identity/is-fb?)
+       first))
+
+(defn fb-id [u]
+  (-> u fb-social-identity :social/provider-uid))
+
+(defn fb-access-token [u]
+  (-> u fb-social-identity :social/auth-token))
+
 (defn reload-using-login-provider-uid [u]
   (find-by-login-provider-uid (:user/login-provider-uid u)))
 
