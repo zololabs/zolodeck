@@ -53,7 +53,6 @@
          provider-uid :social/provider-uid} social-identity]
     (print-vals "provider, at, uid:" provider access-token provider)
     (->> (social/fetch-messages provider access-token provider-uid)
-         print-vals
          (merge-messages user)
          (map demonic/insert)
          doall)))
