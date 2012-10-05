@@ -8,8 +8,6 @@
   (->> @datomic-setup/SCHEMA-TX
        (demonic/init-db (conf/datomic-db-name))))
 
-(init-datomic)
-
 (defn reset []
   (demonic/reset-db (conf/datomic-db-name) @datomic-setup/SCHEMA-TX)
   "OK")

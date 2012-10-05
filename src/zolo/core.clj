@@ -75,6 +75,7 @@
         ))))
 
 (defn -main []
+  (zolo.setup.datomic-setup/init-datomic)
   (run-jetty (var app) {:port 4000
                         :join? false}))
 
