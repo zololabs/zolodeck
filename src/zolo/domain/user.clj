@@ -64,15 +64,16 @@
 ;;TODO Junk function. Need to design the app
 (defn fully-loaded-user
   ([u]
-     (print-vals "FullyLoadedUser... starting now!")
-     (contact/update-contacts u)
-     (print-vals "contacts done")
-     ;;TODO Still looks like we are updating lot more messages than it
-     ;;is present
-     (message/update-messages (reload u))
-     (print-vals "Messages done")
-     (update-scores (reload u))
-     (reload u))
+     (if (empty? (:user/contacts u))
+       (do
+         (print-vals "FullyLoadedUser... starting now!")
+         (contact/update-contacts u)
+         (print-vals "contacts done")
+         (message/update-messages (reload u))
+         (print-vals "Messages done")
+         (update-scores (reload u))
+         (reload u))
+       u))
   ([]
      (fully-loaded-user (current-user))))
 
