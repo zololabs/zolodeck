@@ -58,7 +58,9 @@
                     (use 'com.georgejahad.difform)
                     (use 'zolo.utils.readers)
                     (use 'zolodeck.demonic.core)
-                    (use 'zolo.test.core-utils))
+                    (use 'zolo.test.core-utils)
+                    (require '[zolo.setup.datomic-setup :as datomic-setup])
+                    (datomic-setup/init-datomic))
 
   :warn-on-reflection false
   
