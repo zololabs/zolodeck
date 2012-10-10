@@ -11,8 +11,7 @@
         ring.middleware.cookies
         [sandbar.auth]
         [sandbar.validation]
-        [sandbar.stateful-session :only [wrap-stateful-session]]
-        zolo.web)
+        [sandbar.stateful-session :only [wrap-stateful-session]])
   (:require [compojure.route :as route]
             [compojure.handler :as handler]
             [zolodeck.demonic.core :as demonic]
@@ -20,7 +19,8 @@
             [zolo.social.bootstrap]            
             [zolo.social.core :as social]
             [zolo.api.user-api :as user-api]
-            [zolo.utils.logger :as logger]))
+            [zolo.utils.logger :as logger]
+            [zolo.web :as web]))
 
 (def security-policy
   [#"/permission-denied*" :any
@@ -32,48 +32,31 @@
   (route/resources "/")
 
   ;;---- USER
-  (POST "/users" {params :params cookies :cookies} (json-response (user-api/signin-user params cookies)))  
-  (GET "/users/:id" [id] (json-response (current-user)))
+  (POST "/users" {params :params cookies :cookies} (web/json-response (user-api/signin-user params cookies)))  
+  (GET "/users/:id" [id] (web/json-response (current-user)))
  
   ;;---- User Stats
-  (GET "/user-stats" {params :params} (json-response (user-api/stats params)))
+  (GET "/user-stats" {params :params} (web/json-response (user-api/stats params)))
   
   ;;---- GENERAL
-  (GET "/permission-denied*" []  (json-response {:error "Permission Denied"} 403))
+  (GET "/permission-denied*" []  (web/json-response {:error "Permission Denied"} 403))
 
   (route/not-found "Page not found"))
 
-(defn wrap-request-logging [handler]
-  (fn [request]
-    (logger/with-logging-context (logger/context request)
-      (logger/debug "REQUEST : " request)
-      (let [response (handler request)]
-        (logger/debug "RESPONSE : " response)
-        response))))
-
-(defn wrap-options [handler]
-  (fn [request]
-    (if (= :options (request :request-method))
-      { :headers {"Access-Control-Allow-Origin" (request-origin)
-                  "Access-Control-Allow-Methods" "GET,POST,PUT,OPTIONS,DELETE"
-                  "Access-Control-Allow-Headers" "access-control-allow-origin,authorization,Content-Type,origin,X-requested-with,accept"
-                  "Access-Control-Allow-Credentials" "true"
-                  "Access-Control-Max-Age" "60"}}
-      (handler request))))
-
 (def app
-  (wrap-request-binding  
-   (wrap-options
+  (web/wrap-request-binding  
+   (web/wrap-options
     (-> application-routes
+        web/wrap-user-info-logging
         handler/api          
         wrap-json-params
         (with-security security-policy auth/authenticator)
-        wrap-cookies        
+        web/wrap-accept-header-validation
         wrap-stateful-session
-        wrap-accept-header-validation
-        wrap-error-handling
+        web/wrap-error-handling
         demonic/wrap-demarcation
-        wrap-request-logging
+        web/wrap-request-logging
+        wrap-cookies        
         ))))
 
 (defn -main []

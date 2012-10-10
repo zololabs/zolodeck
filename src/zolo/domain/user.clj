@@ -79,14 +79,16 @@
   ([u]
      (if (empty? (:user/contacts u))
        (do
-         (logger/trace "FullyLoadedUser... starting now!")
+         (logger/debug "FullyLoadedUser... starting now!")
          (contact/update-contacts u)
-         (logger/trace "contacts done")
+         (logger/debug "Loaded contacts " (count (:user/contacts (reload u))))
          (message/update-messages (reload u))
-         (logger/trace "Messages done")
+         (logger/debug "Messages done")
          (update-scores (reload u))
          (reload u))
-       u))
+       (do
+         (logger/debug "User if already fully loaded")
+         u)))
   ([]
      (fully-loaded-user (current-user))))
 

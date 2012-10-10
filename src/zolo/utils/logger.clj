@@ -1,6 +1,7 @@
 (ns zolo.utils.logger
   (:require [clojure.tools.logging :as logger]
-            [zolo.setup.config :as config])
+            [zolodeck.utils.string :as string-utils])
+  (:use zolodeck.utils.debug)
   (:import [org.slf4j MDC]))
 
 (defmacro trace
@@ -45,7 +46,7 @@
          ctx# (into {} (. ~MDC getCopyOfContextMap))]
      (try
        (if (map? x#)
-         (doall (map (fn [[k# v#]] (. ~MDC put (name k#) (name (or v# "")))) x#)))
+         (doall (map (fn [[k# v#]] (. ~MDC put (name k#) (string-utils/to-string v#))) x#)))
        ~@body
        (finally
         (if (map? x#)
@@ -55,10 +56,3 @@
                           (. ~MDC put (name k#) old#))) x#)))))))
 
 
-(defn context [request]
-  (merge
-   (select-keys request [:request-method :query-string :uri :server-name])
-   ;;TODO Create trace-id 
-   {:trace-id (str (rand 1000000))
-    :environment (config/environment)
-    :ip-address (:remote-addr request)}))
