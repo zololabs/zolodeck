@@ -3,7 +3,8 @@
   (:require [clj-http.client :as http]
             [clojure.data.json :as json]
             [uri.core :as uri]
-            [zolo.setup.config :as conf]))
+            [zolo.setup.config :as conf]
+            [zolo.utils.logger :as logger]))
 
 (defn- encoded-request-params [body-map]
   {:content-type "application/x-www-form-urlencoded"
@@ -18,8 +19,8 @@
   (str "https://graph.facebook.com/"  user-id))
 
 (defn get-json [url access-token query-params]
-  (-> (http/get (print-vals "url:" url)
-                {:query-params (print-vals "qparams:" (merge {:access_token access-token} query-params))})
+  (-> (http/get url
+                {:query-params (merge {:access_token access-token} query-params)})
       :body
       json/read-json))
 

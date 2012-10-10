@@ -13,7 +13,8 @@
             [zolo.domain.contact :as contact]
             [zolo.domain.message :as message]
             [sandbar.auth :as sandbar]
-            [clojure.set :as set]))
+            [clojure.set :as set]
+            [zolo.utils.logger :as logger]))
 
 (defn current-user []
   (dissoc (sandbar/current-user) :username :roles))
@@ -79,6 +80,7 @@
 ;;TODO Junk function. Need to design the app
 (defn fully-loaded-user
   ([u]
+<<<<<<< HEAD
      (print-vals "FullyLoadedUser... starting now!")
      (contact/update-contacts u)
      (print-vals "contacts done")
@@ -86,6 +88,18 @@
      (print-vals "Messages done")
      (update-scores (reload u))
      (reload u))
+=======
+     (if (empty? (:user/contacts u))
+       (do
+         (logger/trace "FullyLoadedUser... starting now!")
+         (contact/update-contacts u)
+         (logger/trace "contacts done")
+         (message/update-messages (reload u))
+         (logger/trace "Messages done")
+         (update-scores (reload u))
+         (reload u))
+       u))
+>>>>>>> afd9aa223a4626fee30a11477f0f67e12f5ac662
   ([]
      (fully-loaded-user (current-user))))
 

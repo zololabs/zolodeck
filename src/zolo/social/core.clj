@@ -15,7 +15,7 @@
   "male"   :gender/male})
 
 (defn login-dispatcher [params cookies]
-  (print-vals "LoginDispatch value:" (get-in params [:provider])))
+  (get-in params [:provider]))
 
 (defn contacts-dispatcher [provider access-token user-id]
   provider)
