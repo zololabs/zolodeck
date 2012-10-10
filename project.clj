@@ -57,7 +57,8 @@
 
   :hooks [leiningen.hooks.difftest]
 
-  :dev-dependencies [[clj-stacktrace "0.2.4"]
+  :dev-dependencies [[storm "0.8.1" :exclusions [org.slf4j/log4j-over-sl4fj]]
+                     [clj-stacktrace "0.2.4"]
                      [swank-clojure "1.3.3"]
                      [ring-serve "0.1.2"]
                      [zolodeck/clj-social-lab "1.0.0-SNAPSHOT"]
