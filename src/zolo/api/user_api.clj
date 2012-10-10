@@ -11,8 +11,11 @@
 (defn format-user [user]
   {:guid (str (:user/guid user))})
 
+(defn provider [request-params]
+  (get-in request-params [:provider]))
+
 (defn signin-user [request-params cookies]
-  (let [user (or (user/find-by-login-provider-uid (social/provider-uid request-params cookies))
+  (let [user (or (user/find-by-provider-and-provider-uid (provider request-params) (social/provider-uid request-params cookies))
                  (-> request-params
                      (social/signup-user cookies)
                      user/signup-new-user))]

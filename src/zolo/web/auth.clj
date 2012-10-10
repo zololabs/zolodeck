@@ -8,11 +8,13 @@
 
 (defn fb-user [fb-cookie]
   (let [{fb-id :user_id} (fb-auth/decode-signed-request fb-cookie (conf/fb-app-secret))]
-    (logger/debug "Facebook id : " fb-id)
+    (logger/debug "Facebook id from facebook signed request: " fb-id)
     (user/find-by-provider-and-provider-uid :provider/facebook fb-id)))
 
 (defn authenticator [req]
   (let [{{fb :value} conf/FB-AUTH-COOKIE-NAME {li :value} conf/LI-AUTH-COOKIE-NAME} (:cookies req)
         user (fb-user fb)]
-    (merge {:username (:user/login-provider-uid user)
-            :roles #{:user}} (fb-user fb))))
+    (when user
+      (logger/debug "Found current user")
+      (merge {:username (:user/guid user)
+              :roles #{:user}} (fb-user fb)))))

@@ -33,12 +33,6 @@
   (when guid-string
     (find-by-guid (java.util.UUID/fromString guid-string))))
 
-(defn find-by-login-provider-uid [login-provider-uid]
-  (when login-provider-uid
-    (-> (demonic/run-query '[:find ?u :in $ ?login-provider-uid :where [?u :user/login-provider-uid ?login-provider-uid]] login-provider-uid)
-        ffirst
-        demonic/load-entity)))
-
 (defn find-by-provider-and-provider-uid [provider provider-uid]
   (logger/debug (str "Finding user for provider : " provider " and provider-uid : " provider-uid))
   (when provider-uid
@@ -62,16 +56,13 @@
 (defn fb-access-token [u]
   (-> u fb-social-identity :social/auth-token))
 
-(defn reload-using-login-provider-uid [u]
-  (find-by-login-provider-uid (:user/login-provider-uid u)))
+(defn reload [u]
+  (find-by-guid (:user/guid u)))
 
 (defn signup-new-user [social-user]
   (-> social-user
       demonic/insert
-      reload-using-login-provider-uid))
-
-(defn reload [u]
-  (find-by-guid (:user/guid u)))
+      reload))
 
 (defn update-scores [u]
   (doall (map contact/update-score (:user/contacts u)))
