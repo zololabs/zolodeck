@@ -38,6 +38,7 @@
   </appender>
 
   <logger name="org.apache" level="INFO" />
+  <logger name="org.apache" level="ERROR" />
 
   <root level="trace">
     <appender-ref ref="GELF" />
