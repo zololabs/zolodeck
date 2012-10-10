@@ -7,8 +7,6 @@ classes/*
 .lein-deps-sum
 .lein-plugins
 config/config.clj
-logs/*
-log/*
 .DS_Store
 
 lib/*
@@ -22,3 +20,4 @@ config/zolo.clj
 /devops/nginx/sites-enabled/fe.conf
 /zolodeck-api-0.1.0-SNAPSHOT-standalone.jar
 /zolodeck-api-0.1.0-SNAPSHOT.jar
+/logs/developer.log
