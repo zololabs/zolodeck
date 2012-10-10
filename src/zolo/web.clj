@@ -3,7 +3,10 @@
         zolodeck.utils.debug
         clojure.stacktrace)
   (:require [clojure.data.json :as json]
-            [zolo.web.status-codes :as http-status]))
+            [zolo.web.status-codes :as http-status]
+            [zolo.domain.user :as user]
+            [zolo.utils.logger :as logger]
+            [zolo.setup.config :as config]))
 
 (def ^:dynamic *ZOLO-REQUEST*)
 
@@ -31,11 +34,13 @@
     (try+
      (handler request)
      (catch [:type :bad-request] e
+       (logger/error "Bad Request :" e)
        (error-response e))
      (catch [:type :not-found] e
+       (logger/error "Not found :" e)
        (error-response e))
      (catch Exception e
-       (print-stack-trace e)
+       (logger/error "Exception Occured :" e)
        (json-response {:error (.getMessage e)} 500)))))
 
 (defn valid-version? [accept-header-value]
@@ -55,3 +60,39 @@
   (fn [request]
     (binding [*ZOLO-REQUEST* request]
       (handler request))))
+
+(defn wrap-options [handler]
+  (fn [request]
+    (if (= :options (request :request-method))
+      { :headers {"Access-Control-Allow-Origin" (request-origin)
+                  "Access-Control-Allow-Methods" "GET,POST,PUT,OPTIONS,DELETE"
+                  "Access-Control-Allow-Headers" "access-control-allow-origin,authorization,Content-Type,origin,X-requested-with,accept"
+                  "Access-Control-Allow-Credentials" "true"
+                  "Access-Control-Max-Age" "60"}}
+      (handler request))))
+
+(defn wrap-user-info-logging [handler]
+  (fn [request]
+    (logger/debug "Current User : " (user/current-user))
+    (logger/with-logging-context {:guid (:user/guid (user/current-user))}
+      (handler request))))
+
+(defn guid-from-cookie [request]
+  (get-in request [:cookies "zolo_guid" :value]))
+
+(defn logging-context [request]
+  (merge
+   (select-keys request [:request-method :query-string :uri :server-name])
+   ;;TODO Create trace-id 
+   {:trace-id (str (rand 1000000))
+    :environment (config/environment)
+    :ip-address (:remote-addr request)
+    :guid (guid-from-cookie request)}))
+
+(defn wrap-request-logging [handler]
+  (fn [request]
+    (logger/with-logging-context (logging-context request)
+      (logger/debug "REQUEST : " request)
+      (let [response (handler request)]
+        (logger/debug "RESPONSE : " response)
+        response))))

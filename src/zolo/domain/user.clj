@@ -33,15 +33,8 @@
   (when guid-string
     (find-by-guid (java.util.UUID/fromString guid-string))))
 
-(defn find-by-login-provider-uid [login-provider-uid]
-  (when login-provider-uid
-    (-> (demonic/run-query '[:find ?u :in $ ?login-provider-uid :where [?u :user/login-provider-uid ?login-provider-uid]] login-provider-uid)
-        ffirst
-        demonic/load-entity)))
-
 (defn find-by-provider-and-provider-uid [provider provider-uid]
-  ;;TODO Not using provider for now ... we need to start once we
-  ;;figure how to store enum
+  (logger/debug (str "Finding user for provider : " provider " and provider-uid : " provider-uid))
   (when provider-uid
     (-> (demonic/run-query
          '[:find ?s :in $ ?provider-uid :where [?s :social/provider-uid ?provider-uid]] provider-uid)
@@ -63,16 +56,13 @@
 (defn fb-access-token [u]
   (-> u fb-social-identity :social/auth-token))
 
-(defn reload-using-login-provider-uid [u]
-  (find-by-login-provider-uid (:user/login-provider-uid u)))
+(defn reload [u]
+  (find-by-guid (:user/guid u)))
 
 (defn signup-new-user [social-user]
   (-> social-user
       demonic/insert
-      reload-using-login-provider-uid))
-
-(defn reload [u]
-  (find-by-guid (:user/guid u)))
+      reload))
 
 (defn update-scores [u]
   (doall (map contact/update-score (:user/contacts u)))
@@ -81,9 +71,9 @@
 (defn refresh-user-data [u]
     (logger/trace "RefreshUserData... starting now!")
     (contact/update-contacts u)
-    (logger/trace "contacts done")
+    (logger/debug "Loaded contacts " (count (:user/contacts (reload u))))
     (message/update-messages (reload u))
-    (logger/trace "Messages done")
+    (logger/debug "Messages done")
     (update-scores (reload u))
     (reload u))
 
@@ -92,7 +82,9 @@
   ([u]
      (if (empty? (:user/contacts u))
        (refresh-user-data u)
-       u))
+       (do
+         (logger/debug "User is already fully loaded")
+         u)))
   ([]
      (fully-loaded-user (current-user))))
 
