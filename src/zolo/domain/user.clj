@@ -40,8 +40,7 @@
         demonic/load-entity)))
 
 (defn find-by-provider-and-provider-uid [provider provider-uid]
-  ;;TODO Not using provider for now ... we need to start once we
-  ;;figure how to store enum
+  (logger/debug (str "Finding user for provider : " provider " and provider-uid : " provider-uid))
   (when provider-uid
     (-> (demonic/run-query
          '[:find ?s :in $ ?provider-uid :where [?s :social/provider-uid ?provider-uid]] provider-uid)
@@ -93,7 +92,7 @@
      (if (empty? (:user/contacts u))
        (refresh-user-data u)
        (do
-         (logger/debug "User if already fully loaded")
+         (logger/debug "User is already fully loaded")
          u)))
   ([]
      (fully-loaded-user (current-user))))

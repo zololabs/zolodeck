@@ -73,6 +73,7 @@
 
 (defn wrap-user-info-logging [handler]
   (fn [request]
+    (logger/debug "Current User : " (user/current-user))
     (logger/with-logging-context {:guid (:user/guid (user/current-user))}
       (handler request))))
 
