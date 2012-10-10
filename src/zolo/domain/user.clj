@@ -79,7 +79,7 @@
   (reload u))
 
 (defn refresh-user-data [u]
-    (logger/trace "FullyLoadedUser... starting now!")
+    (logger/trace "RefreshUserData... starting now!")
     (contact/update-contacts u)
     (logger/trace "contacts done")
     (message/update-messages (reload u))

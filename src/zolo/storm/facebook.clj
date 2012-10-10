@@ -38,7 +38,7 @@
 (defbolt process-user [] [tuple collector]
   (demonic/in-demarcation
    (let [guid (.getStringByField tuple "user-guid")
-         u (print-vals "Getting user with guid:" (user/find-by-guid-string guid))]
+         u (user/find-by-guid-string guid)]
      (print-vals "Processing user:" (:user/first-name u))
      (demonic/in-demarcation
       (user/refresh-user-data u))
