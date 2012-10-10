@@ -39,7 +39,7 @@
 
   :hooks [leiningen.hooks.difftest]
 
-  :dev-dependencies [[storm "0.8.1"]
+  :dev-dependencies [[storm "0.8.1" :exclude []]
                      [clj-stacktrace "0.2.4"]
                      [swank-clojure "1.3.3"]
                      [ring-serve "0.1.2"]

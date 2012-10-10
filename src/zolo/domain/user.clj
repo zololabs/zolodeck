@@ -18,6 +18,9 @@
 (defn current-user []
   (dissoc (sandbar/current-user) :username :roles))
 
+(defn find-all-user-guids []
+  (map first (demonic/run-query '[:find ?g :where [?u :user/guid ?g]])))
+
 ;;TODO Duplication find-by-guid
 (defn find-by-guid [guid]
   (when guid
@@ -76,16 +79,13 @@
 ;;TODO Junk function. Need to design the app
 (defn fully-loaded-user
   ([u]
-     (if (empty? (:user/contacts u))
-       (do
-         (print-vals "FullyLoadedUser... starting now!")
-         (contact/update-contacts u)
-         (print-vals "contacts done")
-         (message/update-messages (reload u))
-         (print-vals "Messages done")
-         (update-scores (reload u))
-         (reload u))
-       u))
+     (print-vals "FullyLoadedUser... starting now!")
+     (contact/update-contacts u)
+     (print-vals "contacts done")
+     (message/update-messages (reload u))
+     (print-vals "Messages done")
+     (update-scores (reload u))
+     (reload u))
   ([]
      (fully-loaded-user (current-user))))
 
