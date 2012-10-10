@@ -3,14 +3,14 @@
 
   :dependencies [[org.clojure/clojure "1.4.0"]
 
-                 [compojure "1.0.2" :exclude [org.clojure/clojure]]
-                 [ring "1.0.2" :exclude [org.clojure/clojure]]
+                 [compojure "1.0.2" :exclusions [org.clojure/clojure]]
+                 [ring "1.0.2" :exclusions [org.clojure/clojure]]
 
-                 [fuziontech/ring-json-params "0.2.0" :exclude [org.clojure/clojure]]
+                 [fuziontech/ring-json-params "0.2.0" :exclusions [org.clojure/clojure]]
                  
-                 [sandbar/sandbar "0.4.0-SNAPSHOT" :exclude [org.clojure/clojure]]
+                 [sandbar/sandbar "0.4.0-SNAPSHOT" :exclusions [org.clojure/clojure]]
 
-                 [org.clojure/data.json "0.1.2"  :exclude [org.clojure/clojure]]
+                 [org.clojure/data.json "0.1.2"  :exclusions [org.clojure/clojure]]
                  [clj-http "0.5.3"]
 
                  [joda-time "1.6"]
@@ -27,14 +27,19 @@
                  [org.scribe/scribe "1.3.2"] ;;oauth for LinkedIn
 
                  ;;Logging Related Stuff
-                 [org.clojure/tools.logging "0.2.4"]
+                 [org.clojure/tools.logging "0.2.4" :exclusions [org.slf4j/slf4j-log4j12
+                                                                 org.slf4j/slf4j-api
+                                                                 log4j/log4j
+                                                                 commons-logging/commons-logging]]
                  [ch.qos.logback/logback-classic "1.0.7"]
                  [ch.qos.logback/logback-core "1.0.6"]
-                 [org.slf4j/slf4j-api "1.7.0"]
-                 [clj-logging-config "1.9.10"]
-                 [me.moocar/logback-gelf "0.9.6p2"]
+                 [org.slf4j/slf4j-api "1.7.0" :exclusions [org.slf4j/slf4j-nop]]
+                 [clj-logging-config "1.9.10" :exclusions [org.clojure/tools.logging
+                                                           log4j/log4j]]
+                 [me.moocar/logback-gelf "0.9.6p2" :exclusions [org.slf4j/slf4j-api]]
                  
-                 [zolodeck/demonic "0.1.0-SNAPSHOT"]
+                 [zolodeck/demonic "0.1.0-SNAPSHOT" :exclusions [org.slf4j/slf4j-api
+                                                                 org.slf4j/slf4j-nop]]
                  [zolodeck/zolo-utils "0.1.0-SNAPSHOT"]
                  [world-country-list "1.0.0-SNAPSHOT"]]
 
