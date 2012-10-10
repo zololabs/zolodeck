@@ -29,8 +29,9 @@
         ffirst
         demonic/load-entity)))
 
-(defn find-by-guid-string [guid]
-  (find-by-guid (java.util.UUID/fromString guid)))
+(defn find-by-guid-string [guid-string]
+  (when guid-string
+    (find-by-guid (java.util.UUID/fromString guid-string))))
 
 (defn find-by-login-provider-uid [login-provider-uid]
   (when login-provider-uid
@@ -77,29 +78,21 @@
   (doall (map contact/update-score (:user/contacts u)))
   (reload u))
 
+(defn refresh-user-data [u]
+    (logger/trace "FullyLoadedUser... starting now!")
+    (contact/update-contacts u)
+    (logger/trace "contacts done")
+    (message/update-messages (reload u))
+    (logger/trace "Messages done")
+    (update-scores (reload u))
+    (reload u))
+
 ;;TODO Junk function. Need to design the app
 (defn fully-loaded-user
   ([u]
-<<<<<<< HEAD
-     (print-vals "FullyLoadedUser... starting now!")
-     (contact/update-contacts u)
-     (print-vals "contacts done")
-     (message/update-messages (reload u))
-     (print-vals "Messages done")
-     (update-scores (reload u))
-     (reload u))
-=======
      (if (empty? (:user/contacts u))
-       (do
-         (logger/trace "FullyLoadedUser... starting now!")
-         (contact/update-contacts u)
-         (logger/trace "contacts done")
-         (message/update-messages (reload u))
-         (logger/trace "Messages done")
-         (update-scores (reload u))
-         (reload u))
+       (refresh-user-data u)
        u))
->>>>>>> afd9aa223a4626fee30a11477f0f67e12f5ac662
   ([]
      (fully-loaded-user (current-user))))
 
