@@ -1,7 +1,8 @@
 (ns zolo.social.facebook.chat
   (:use zolodeck.utils.debug)
   (:require [zolo.setup.config :as conf]
-            [zolo.domain.user :as user])
+            [zolo.domain.user :as user]
+            [zolo.utils.logger :as logger])
   (:import [zolo.facebook.chat FacebookChat]))
 
 
@@ -12,8 +13,8 @@
 
 (defn connect-user! [u]
   (let [{uid :social/provider-uid access-token :social/auth-token} (user/fb-social-identity u)]
-    (print-vals "UID:" uid)
-    (print-vals "AT:" access-token)    
+    (logger/trace "UID:" uid)
+    (logger/trace "AT:" access-token)    
     (add-to-connections! uid (FacebookChat. (conf/fb-app-id) access-token))))
 
 (defn jid-for [uid]

@@ -13,7 +13,8 @@
             [zolo.domain.contact :as contact]
             [zolo.domain.message :as message]
             [sandbar.auth :as sandbar]
-            [clojure.set :as set]))
+            [clojure.set :as set]
+            [zolo.utils.logger :as logger]))
 
 (defn current-user []
   (dissoc (sandbar/current-user) :username :roles))
@@ -78,11 +79,11 @@
   ([u]
      (if (empty? (:user/contacts u))
        (do
-         (print-vals "FullyLoadedUser... starting now!")
+         (logger/trace "FullyLoadedUser... starting now!")
          (contact/update-contacts u)
-         (print-vals "contacts done")
+         (logger/trace "contacts done")
          (message/update-messages (reload u))
-         (print-vals "Messages done")
+         (logger/trace "Messages done")
          (update-scores (reload u))
          (reload u))
        u))

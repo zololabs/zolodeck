@@ -19,7 +19,8 @@
             [zolo.web.auth :as auth]
             [zolo.social.bootstrap]            
             [zolo.social.core :as social]
-            [zolo.api.user-api :as user-api]))
+            [zolo.api.user-api :as user-api]
+            [zolo.utils.logger :as logger]))
 
 (def security-policy
   [#"/permission-denied*" :any
@@ -44,10 +45,11 @@
 
 (defn wrap-request-logging [handler]
   (fn [request]
-    (print-vals "REQUEST : " request)
-    (let [response (handler request)]
-      (print-vals "RESPONSE : " response)
-      response)))
+    (logger/with-logging-context (logger/context request)
+      (logger/debug "REQUEST : " request)
+      (let [response (handler request)]
+        (logger/debug "RESPONSE : " response)
+        response))))
 
 (defn wrap-options [handler]
   (fn [request]

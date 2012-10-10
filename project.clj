@@ -25,6 +25,14 @@
                  [org.clojure/core.match "0.2.0-alpha9"]
 
                  [org.scribe/scribe "1.3.2"] ;;oauth for LinkedIn
+
+                 ;;Logging Related Stuff
+                 [org.clojure/tools.logging "0.2.4"]
+                 [ch.qos.logback/logback-classic "1.0.7"]
+                 [ch.qos.logback/logback-core "1.0.6"]
+                 [org.slf4j/slf4j-api "1.7.0"]
+                 [clj-logging-config "1.9.10"]
+                 [me.moocar/logback-gelf "0.9.6p2"]
                  
                  [zolodeck/demonic "0.1.0-SNAPSHOT"]
                  [zolodeck/zolo-utils "0.1.0-SNAPSHOT"]

@@ -8,7 +8,8 @@
             [zolo.domain.social-identity :as social-identity]
             [zolo.social.core :as social]            
             [zolodeck.demonic.schema :as schema]
-            [zolodeck.demonic.core :as demonic]))
+            [zolodeck.demonic.core :as demonic]
+            [zolo.utils.logger :as logger]))
 
 ;;TODO Need to find a better place for this function
 (defn user-provider-infos [user]
@@ -43,7 +44,6 @@
 
 (defn merge-messages [user fresh-messages]
   (let [grouped (group-by-provider-info user fresh-messages)]
-    (print-vals "Grouped count:" (count grouped))
     (map (fn [[provider-info msgs]]
            (process-contact-messages user provider-info msgs)) grouped)))
 
@@ -51,7 +51,6 @@
   (let [{provider :social/provider
          access-token :social/auth-token
          provider-uid :social/provider-uid} social-identity]
-    (print-vals "provider, at, uid:" provider access-token provider)
     (->> (social/fetch-messages provider access-token provider-uid)
          (merge-messages user)
          (map demonic/insert)

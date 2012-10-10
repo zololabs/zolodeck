@@ -54,5 +54,4 @@
 (defn wrap-request-binding [handler]
   (fn [request]
     (binding [*ZOLO-REQUEST* request]
-      ;(print-vals "*ZOLO-REQUEST* is:" *ZOLO-REQUEST*)
       (handler request))))
