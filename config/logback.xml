@@ -21,7 +21,7 @@
 
   <appender name="GELF" class="me.moocar.logbackgelf.GelfAppender">
     <facility>Zolodeck API</facility>
-    <graylog2ServerHost>66.175.223.105</graylog2ServerHost>
+    <graylog2ServerHost>monitor.zolodeck.com</graylog2ServerHost>
     <graylog2ServerPort>12201</graylog2ServerPort>
     <useLoggerName>true</useLoggerName>
     <useThreadName>true</useThreadName>
