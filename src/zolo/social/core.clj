@@ -14,6 +14,9 @@
   "female" :gender/female
   "male"   :gender/male})
 
+(defn provider [request-params]
+  (provider-enum (get-in request-params [:provider])))
+
 (defn login-dispatcher [params cookies]
   (get-in params [:provider]))
 
