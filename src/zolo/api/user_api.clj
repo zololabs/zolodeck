@@ -21,7 +21,7 @@
 (defn signin-user [request-params cookies]
   (if-let [user (find-user request-params cookies)]
     (do
-      (logger/debug "User already in system : " user)
+      (logger/debug "User already in system")
       (format-user user))
     (-> request-params
         (social/signup-user cookies)
