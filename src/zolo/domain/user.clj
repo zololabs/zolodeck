@@ -9,6 +9,7 @@
             [zolo.utils.readers :as readers]
             [zolo.domain.social-identity :as social-identity]
             [zolodeck.utils.string :as zolo-str]
+            [zolodeck.utils.calendar :as zolo-cal]
             [zolodeck.utils.maps :as zolo-maps]
             [zolo.domain.contact :as contact]
             [zolo.domain.message :as message]
@@ -68,6 +69,11 @@
   (doall (map contact/update-score (:user/contacts u)))
   (reload u))
 
+(defn stamp-updated-time [u]
+  (-> u
+      (assoc :user/last-updated (zolo-cal/now-instant))
+      demonic/insert))
+
 (defn refresh-user-data [u]
     (logger/trace "RefreshUserData... starting now!")
     (contact/update-contacts u)
@@ -75,6 +81,7 @@
     (message/update-messages (reload u))
     (logger/debug "Messages done")
     (update-scores (reload u))
+    (stamp-updated-time (reload u))
     (reload u))
 
 ;;TODO Junk function. Need to design the app
