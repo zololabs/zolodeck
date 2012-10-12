@@ -7,12 +7,19 @@
             [zolo.domain.user :as user])
   (:import [backtype.storm StormSubmitter LocalCluster]))
 
-(defn init-guids [guids-atom]
+(defn recently-updated [guid]
+  false)
+
+(defn user-guids-to-process []
+  (print-vals "Finding User GUIDS to process...")
   (demonic/in-demarcation
-   (print-vals "InitGuids...")
-   (let [guids (map str (try-catch (user/find-all-user-guids)))]
-     (reset! guids-atom guids))
-   (print-vals "GUIDS:" @guids-atom)))
+   (->> (user/find-all-user-guids)
+        (remove recently-updated)
+        (map str))))
+
+(defn init-guids [guids-atom]
+  (print-vals "InitGuids...")  
+  (reset! guids-atom (user-guids-to-process)))
 
 (defn next-guid [guids-atom]
   (when (empty? @guids-atom)
