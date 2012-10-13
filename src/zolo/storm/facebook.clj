@@ -1,20 +1,29 @@
 (ns zolo.storm.facebook
-  (:use zolodeck.utils.debug
+  (:use zolodeck.utils.debug        
         backtype.storm.clojure
         backtype.storm.config)
   (:require [zolo.setup.datomic-setup :as datomic]
             [zolodeck.demonic.core :as demonic]
-            [zolo.domain.user :as user])
+            [zolo.domain.user :as user]
+            [zolo.utils.logger :as logger]
+            [zolodeck.utils.calendar :as zolo-cal])
   (:import [backtype.storm StormSubmitter LocalCluster]))
 
-(defn recently-updated [guid]
-  false)
+(def UPDATE-FREQUENCE-MILLIS (* 1000 60 60)) ;; 1 HOUR
+
+(defn recently-updated [[guid last-updated]]
+  (let [now (zolo-cal/now)
+        elapsed (- now (.getTime last-updated))
+        recent? (< elapsed UPDATE-FREQUENCE-MILLIS)]
+    (logger/trace "User:" guid ", recently updated:" recent?)
+    recent?))
 
 (defn user-guids-to-process []
   (print-vals "Finding User GUIDS to process...")
   (demonic/in-demarcation
-   (->> (user/find-all-user-guids)
+   (->> (user/find-all-user-guids-and-last-updated)
         (remove recently-updated)
+        (map first)
         (map str))))
 
 (defn init-guids [guids-atom]
@@ -24,7 +33,10 @@
 (defn next-guid [guids-atom]
   (when (empty? @guids-atom)
     (print-vals "guids is empty... calling init-guids")
-    (init-guids guids-atom))
+    (init-guids guids-atom)
+    (when (empty? @guids-atom)
+      (logger/trace "Waiting 10s for stale users...")
+      (Thread/sleep 10000)))
   (let [f (first @guids-atom)]
     (swap! guids-atom rest)
     f))
@@ -62,8 +74,13 @@
   (let [cluster (LocalCluster.)]
     (print-vals "Submitting topology...")
     (.submitTopology cluster "facebook" {TOPOLOGY-DEBUG true} (fb-topology))
-    (Thread/sleep 10000)
+    (Thread/sleep 60000)
     (print-vals "Shutting down cluster!")
     (.shutdown cluster)))
+
+(defn run-local-forever! []
+  (let [cluster (LocalCluster.)]
+    (print-vals "Submitting topology...")
+    (.submitTopology cluster "facebook" {TOPOLOGY-DEBUG true} (fb-topology))))
 
 ;; (require '[zolo.storm.facebook :as fb]) (fb/run-local!)

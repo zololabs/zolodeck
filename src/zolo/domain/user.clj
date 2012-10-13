@@ -20,8 +20,8 @@
 (defn current-user []
   (dissoc (sandbar/current-user) :username :roles))
 
-(defn find-all-user-guids []
-  (map first (demonic/run-query '[:find ?g :where [?u :user/guid ?g]])))
+(defn find-all-user-guids-and-last-updated []
+  (demonic/run-query '[:find ?g ?l :where [?u :user/guid ?g] [?u :user/last-updated ?l]]))
 
 ;;TODO Duplication find-by-guid
 (defn find-by-guid [guid]
