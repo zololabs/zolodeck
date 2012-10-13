@@ -11,6 +11,7 @@
  (string-fact-schema :user/first-name true "A user's first name") 
  (string-fact-schema :user/last-name true "A user's last name")
  (string-fact-schema :user/login-provider-uid true "A user's login provider uid")
+ (instant-fact-schema :user/last-updated false "The most recent time for when the user was updated")
  ;;TODO Add login-provider info
 
  ;Social details
