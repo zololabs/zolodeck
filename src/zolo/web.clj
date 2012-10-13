@@ -86,7 +86,7 @@
    ;;TODO Create trace-id 
    {:trace-id (str (rand 1000000))
     :environment (config/environment)
-    :ip-address (:remote-addr request)
+    :ip-address (get-in request [:headers "x-real-ip "])
     :guid (guid-from-cookie request)}))
 
 (defn wrap-request-logging [handler]
