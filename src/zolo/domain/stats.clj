@@ -19,8 +19,15 @@
    :medium (count (contacts-with-score-between u 50 250))
    :weak (count (contacts-with-score-between u 0 50))})
 
+(defn message-count [u]
+  (print-vals "MessageCount for" (:user/first-name u))
+  (->> u
+       :user/contacts
+       (mapcat :contact/messages)
+       count))
 
 (defn network-stats [u]
   {:average (zolo-math/average (map :contact/score (:user/contacts u)))
+   :messagecount (message-count u)
    ;;TODO This needs to be tested
    :weak-contacts (doall (map fe/format-contact (take 5 (sort-by :contact/score (:user/contacts u)))))})
