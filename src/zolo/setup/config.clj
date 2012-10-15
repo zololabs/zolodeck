@@ -31,9 +31,12 @@
 (defn li-secret-key []
   (get-in CONFIG-MAP [ENV :li-secret-key]))
 
+(defn get-env-var [v]
+  (.get (System/getenv) v))
+
 (defrunonce setup-config []
   (let [config-file (java-io/resource "zolo.clj")
-        env (keyword (or (.get (System/getenv) "ZOLODECK_ENV") "development"))]
+        env (keyword (or (get-env-var "ZOLODECK_ENV") "development"))]
     (load-config config-file env)))
 
 (setup-config)
@@ -41,3 +44,5 @@
 (def FB-AUTH-COOKIE-NAME (str "fbsr_" (fb-app-id)))
 
 (def LI-AUTH-COOKIE-NAME (str "linkedin_oauth_" (li-api-key)))
+
+(def GIT-HEAD-SHA (or (get-env-var "GIT_HEAD_SHA") "GIT-SHA-NOT-SET"))
