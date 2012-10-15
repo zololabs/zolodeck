@@ -39,13 +39,13 @@
     (try+
      (handler request)
      (catch [:type :bad-request] e
-       (logger/error "Bad Request :" e)
+       (logger/error e "Bad Request :")
        (error-response e))
      (catch [:type :not-found] e
-       (logger/error "Not found :" e)
+       (logger/error e "Not found :")
        (error-response e))
      (catch Exception e
-       (logger/error "Exception Occured :" e)
+       (logger/error e "Exception Occured :")
        (json-response {:error (.getMessage e)} 500)))))
 
 (defn valid-version? [accept-header-value]

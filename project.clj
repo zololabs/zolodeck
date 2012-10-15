@@ -38,7 +38,9 @@
                  
                  [zolodeck/demonic "0.1.0-SNAPSHOT"]
                  [zolodeck/zolo-utils "0.1.0-SNAPSHOT"]
-                 [world-country-list "1.0.0-SNAPSHOT"]]
+                 [world-country-list "1.0.0-SNAPSHOT"]
+
+                 [org.clojure/tools.cli "0.2.2"]]
 
     ;; Global exclusions are applied across the board, as an alternative
   ;; to duplication for multiple depedencies with the same excluded libraries.
