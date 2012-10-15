@@ -6,9 +6,14 @@
             [zolo.web.status-codes :as http-status]
             [zolo.domain.user :as user]
             [zolo.utils.logger :as logger]
-            [zolo.setup.config :as config]))
+            [zolo.setup.config :as config]
+            [zolodeck.utils.calendar :as zolo-cal]))
 
 (def ^:dynamic *ZOLO-REQUEST*)
+
+(def RANDOM-PROCESS-ID (java.util.UUID/randomUUID))
+
+(def PROCESS-COUNTER (atom 0))
 
 (defn request-origin []
   (get-in *ZOLO-REQUEST* [:headers "origin"]))
@@ -80,12 +85,19 @@
 (defn guid-from-cookie [request]
   (get-in request [:cookies "zolo_guid" :value]))
 
+(defn trace-id [request]
+  (str ".env-" (config/environment)
+       ".h-" (:host request)
+       ".rh-" RANDOM-PROCESS-ID
+       ".c-" @PROCESS-COUNTER
+       ".ts-" (zolo-cal/now)  
+       ".v-" config/GIT-HEAD-SHA))
+
 (defn logging-context [request]
+  (swap! PROCESS-COUNTER inc)
   (merge
    (select-keys request [:request-method :query-string :uri :server-name])
-   ;;TODO Create trace-id 
-   {:trace-id (str (rand 1000000))
-    :environment (config/environment)
+   {:trace-id (trace-id request)
     :ip-address (get-in request [:headers "x-real-ip"])
     :guid (guid-from-cookie request)}))
 

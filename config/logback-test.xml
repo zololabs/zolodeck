@@ -30,7 +30,6 @@
     <messagePattern>%m%rEx</messagePattern>
     <additionalField>trace-id:_trace_id</additionalField>
     <additionalField>guid:_guid</additionalField>
-    <additionalField>environment:_environment</additionalField>
     <additionalField>request-method:_request_method</additionalField>
     <additionalField>uri:_uri</additionalField>
     <additionalField>server-name:_server_name</additionalField>
