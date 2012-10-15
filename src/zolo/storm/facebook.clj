@@ -55,14 +55,17 @@
      (ack [id]))))
 
 (defbolt process-user [] [tuple collector]
-  (demonic/in-demarcation
-   (let [guid (.getStringByField tuple "user-guid")
-         u (user/find-by-guid-string guid)]
-     (print-vals "Processing user:" (:user/first-name u))
-     (demonic/in-demarcation
-      (user/refresh-user-data u))
-     ;(emit-bolt! collector [u] :anchor tuple)
-     )))
+  (try
+    (demonic/in-demarcation
+     (let [guid (.getStringByField tuple "user-guid")
+           u (user/find-by-guid-string guid)]
+       (print-vals "Processing user:" (:user/first-name u))
+       (demonic/in-demarcation
+        (user/refresh-user-data u))
+                                        ;(emit-bolt! collector [u] :anchor tuple)
+       ))
+    (catch Exception e
+      (logger/error e "Exception in bolt!"))))
 
 (defn fb-topology []
   (topology
