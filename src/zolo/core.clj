@@ -14,13 +14,15 @@
         [sandbar.stateful-session :only [wrap-stateful-session]])
   (:require [compojure.route :as route]
             [compojure.handler :as handler]
+            [clojure.tools.cli :as cli]
             [zolodeck.demonic.core :as demonic]
             [zolo.web.auth :as auth]
-            [zolo.social.bootstrap]            
+            [zolo.social.bootstrap]
             [zolo.social.core :as social]
             [zolo.api.user-api :as user-api]
             [zolo.utils.logger :as logger]
-            [zolo.web :as web]))
+            [zolo.web :as web]
+            [zolo.storm.facebook :as fb]))
 
 (def security-policy
   [#"/permission-denied*" :any
@@ -59,8 +61,29 @@
         wrap-cookies        
         ))))
 
-(defn -main []
+
+(defn start-api []
   (zolo.setup.datomic-setup/init-datomic)
   (run-jetty (var app) {:port 4000
                         :join? false}))
+
+(defn start-storm []
+  (zolo.setup.datomic-setup/init-datomic)
+  (fb/run-local-forever!))
+
+(defn process-args [args]
+  (cli/cli args
+           ["-s"  "--service" "storm/api" :default "api" :parse-fn #(keyword (.toLowerCase %))]
+           ["-h" "--help" "Show help" :default false :flag true]))
+
+(defn -main [& cl-args]
+  (print-vals "CL Args :" cl-args)
+  (let [[options args banner] (process-args cl-args)]
+    (when (:help options)
+      (println banner)
+      (System/exit 0))
+    (condp = (:service (print-vals "Options :" options))
+        :storm (start-storm)
+        :api (start-api)
+        :default (throw "Invalid Service :" (:s options)))))
 

@@ -14,11 +14,11 @@
                  [clj-http "0.5.3"]
 
                  [joda-time "1.6"]
-                 [clj-time "0.3.7"]
+                 [clj-time "0.4.4"]
                  [slingshot "0.10.2"]
 
-                 [org.clojars.nakkaya.javax.mail/imap "1.4.3"]
-                 [org.clojars.nakkaya.javax.mail/mail "1.4.3"]
+                 ;; [org.clojars.nakkaya.javax.mail/imap "1.4.3"]
+                 ;; [org.clojars.nakkaya.javax.mail/mail "1.4.3"]
 
                  [org.clojars.amit/zolo_fb_chat "0.0.1"]
                  
@@ -33,6 +33,8 @@
                  [org.slf4j/slf4j-api "1.7.0"]
                  [clj-logging-config "1.9.10"]
                  [me.moocar/logback-gelf "0.9.6p2"]
+
+                 [org.clojure/tools.cli "0.2.2"]
                  
                  [zolodeck/demonic "0.1.0-SNAPSHOT"]
                  [zolodeck/zolo-utils "0.1.0-SNAPSHOT"]
@@ -44,7 +46,9 @@
                org.slf4j/slf4j-log4j12
                org.slf4j/slf4j-api
                org.slf4j/slf4j-nop
+               org.slf4j/log4j-over-sl4f
                log4j/log4j
+               clj-time
                commons-logging/commons-logging
                org.clojure/tools.logging]
 
@@ -57,7 +61,8 @@
 
   :hooks [leiningen.hooks.difftest]
 
-  :dev-dependencies [[storm "0.8.1" :exclusions [org.slf4j/log4j-over-sl4fj]]
+  :dev-dependencies [[storm "0.8.1" :exclusions [org.slf4j/log4j-over-sl4fj
+                                                 org.slf4j/slf4j-log4j12]]
                      [clj-stacktrace "0.2.4"]
                      [swank-clojure "1.3.3"]
                      [ring-serve "0.1.2"]
