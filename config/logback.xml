@@ -36,7 +36,7 @@
     <additionalField>ip-address:_ip_address</additionalField>
   </appender>
 
-  <logger name="org.apache" level="INFO" />
+  <logger name="org.apache" level="ERROR" />
   <logger name="datomic" level="ERROR" />
 
   <root level="trace">
