@@ -14,7 +14,7 @@
                  [clj-http "0.5.3"]
 
                  [joda-time "1.6"]
-                 [clj-time "0.3.7"]
+                 [clj-time "0.4.4"]
                  [slingshot "0.10.2"]
 
                  [org.clojars.nakkaya.javax.mail/imap "1.4.3"]
@@ -36,7 +36,9 @@
                  
                  [zolodeck/demonic "0.1.0-SNAPSHOT"]
                  [zolodeck/zolo-utils "0.1.0-SNAPSHOT"]
-                 [world-country-list "1.0.0-SNAPSHOT"]]
+                 [world-country-list "1.0.0-SNAPSHOT"]
+
+                 [org.clojure/tools.cli "0.2.2"]]
 
     ;; Global exclusions are applied across the board, as an alternative
   ;; to duplication for multiple depedencies with the same excluded libraries.

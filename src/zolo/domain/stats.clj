@@ -30,4 +30,8 @@
   {:average (zolo-math/average (map :contact/score (:user/contacts u)))
    :messagecount (message-count u)
    ;;TODO This needs to be tested
-   :weak-contacts (doall (map fe/format-contact (take 5 (sort-by :contact/score (:user/contacts u)))))})
+   :strong-contacts (doall (map fe/format-contact (contact/strong-contacts u 5)))   
+   :weak-contacts (doall (map fe/format-contact (contact/weak-contacts u 5)))
+   :connect-soon (doall (map fe/format-contact (contact/forgotten-contacts u true 5)))
+   :never-contacted (doall (map fe/format-contact (contact/forgotten-contacts u false 5)))
+   })
