@@ -15,9 +15,7 @@
             [zolo.domain.message :as message]
             [sandbar.auth :as sandbar]
             [clojure.set :as set]
-            [zolo.utils.logger :as logger]
-            [clj-time.core :as time]
-            [clj-time.coerce :as time-coerce]))
+            [zolo.utils.logger :as logger]))
 
 (defn current-user []
   (dissoc (sandbar/current-user) :username :roles))
@@ -61,17 +59,6 @@
 
 (defn reload [u]
   (find-by-guid (:user/guid u)))
-
-(defn all-messages-in-the-past [u num-days]
-  (let [one-week-ago (time/minus (time/now) (time/days num-days))]
-    (->> u
-         :user/contacts
-         (mapcat :contact/messages)
-         
-         (filter #(time/after? (time-coerce/to-date-time (:message/date %)) one-week-ago)))))
-
-(defn all-message-count-in-the-past [u num-days]
-  (count (all-messages-in-the-past u num-days)))
 
 (defn signup-new-user [social-user]
   (-> social-user

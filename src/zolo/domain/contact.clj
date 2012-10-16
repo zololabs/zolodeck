@@ -36,36 +36,6 @@
   ;;TODO Need to create a social detail for new contact 
   )
 
-(defn recent-message-time [c]
-  (->> c
-       :contact/messages
-       (sort-by :message/date)
-       last
-       :message/date))
-
-(defn no-messages? [c]
-  (-> c :contact/messages empty?))
-
-(defn forgotten-contacts [u ever-messaged? number]
-  (let [contacts (->> u :user/contacts (sort-by recent-message-time))
-        contacts (if ever-messaged?
-                   (remove no-messages? contacts)
-                   (filter no-messages? contacts))]
-    (take number contacts)))
-
-(defn weak-contacts [u number]
-  (->> u
-       :user/contacts
-       (sort-by :contact/score)
-       (take number)))
-
-(defn strong-contacts [u number]
-  (->> u
-       :user/contacts
-       (sort-by :contact/score)
-       reverse
-       (take number)))
-
 (defn fresh-contacts-for-social-identity [social-identity]
   (let [{provider :social/provider
          access-token :social/auth-token
