@@ -25,6 +25,12 @@
 (defn fb-app-secret []
   (get-in CONFIG-MAP [ENV :fb-app-secret]))
 
+(defn user-update-wait-fb-millis []
+  (get-in CONFIG-MAP [ENV :user-update-wait-fb-millis]))
+
+(defn stale-users-wait-fb-millis []
+  (get-in CONFIG-MAP [ENV :stale-users-wait-fb-millis]))
+
 (defn li-api-key []
   (get-in CONFIG-MAP [ENV :li-api-key]))
 

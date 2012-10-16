@@ -3,23 +3,30 @@
         backtype.storm.clojure
         backtype.storm.config)
   (:require [zolo.setup.datomic-setup :as datomic]
+            [zolo.setup.config :as conf]
             [zolodeck.demonic.core :as demonic]
             [zolo.domain.user :as user]
             [zolo.utils.logger :as logger]
             [zolodeck.utils.calendar :as zolo-cal])
   (:import [backtype.storm StormSubmitter LocalCluster]))
 
-(def UPDATE-FREQUENCE-MILLIS (* 1000 60 60)) ;; 1 HOUR
+(defn pause [msg millis]
+  (logger/trace "[Sleep ms:" millis "] " msg)
+  (Thread/sleep millis))
+
+(def USER-UPDATE-WAIT (conf/user-update-wait-fb-millis)) ;; 1 HOUR
+
+(def STALE-USERS-WAIT (conf/stale-users-wait-fb-millis)) ;; 1 MINUTE
 
 (defn recently-updated [[guid last-updated]]
   (let [now (zolo-cal/now)
         elapsed (- now (.getTime last-updated))
-        recent? (< elapsed UPDATE-FREQUENCE-MILLIS)]
+        recent? (< elapsed USER-UPDATE-WAIT)]
     (logger/trace "User:" guid ", recently updated:" recent?)
     recent?))
 
 (defn user-guids-to-process []
-  (print-vals "Finding User GUIDS to process...")
+  (logger/info "Finding User GUIDS to process...")
   (demonic/in-demarcation
    (->> (user/find-all-user-guids-and-last-updated)
         (remove recently-updated)
@@ -27,30 +34,31 @@
         (map str))))
 
 (defn init-guids [guids-atom]
-  (print-vals "InitGuids...")  
-  (reset! guids-atom (user-guids-to-process)))
+  (logger/info "InitGuids...")  
+  (reset! guids-atom (user-guids-to-process))
+  (if (empty? @guids-atom)
+    (do
+      (pause "Waiting 10s for stale users..." STALE-USERS-WAIT)
+      (recur guids-atom))
+    guids-atom))
 
-(defn next-guid [guids-atom]
-  (when (empty? @guids-atom)
-    (print-vals "guids is empty... calling init-guids")
-    (init-guids guids-atom)
-    (when (empty? @guids-atom)
-      (logger/trace "Waiting 10s for stale users...")
-      (Thread/sleep 10000)))
+(defn pop-guid [guids-atom]
   (let [f (first @guids-atom)]
     (swap! guids-atom rest)
     f))
 
+(defn next-guid [guids-atom]
+  (if (empty? @guids-atom)
+    (recur (init-guids guids-atom))
+    (pop-guid guids-atom)))
+
 (defspout user-spout ["user-guid"]
   [conf context collector]
   (let [guids (atom nil)]
-    (init-guids guids)
     (spout
      (nextTuple []
-                (Thread/sleep 1000)
-                (print-vals "Facebook spout emitting...")
                 (let [n (next-guid guids)]
-                  (print-vals "Next GUID is:" n)
+                  (logger/info "Facebook spout emitting GUID:" n)
                   (emit-spout! collector [n])))
      (ack [id]))))
 
@@ -59,7 +67,7 @@
     (demonic/in-demarcation
      (let [guid (.getStringByField tuple "user-guid")
            u (user/find-by-guid-string guid)]
-       (print-vals "Processing user:" (:user/first-name u))
+       (logger/info "Processing user:" (:user/first-name u))
        (demonic/in-demarcation
         (user/refresh-user-data u))
                                         ;(emit-bolt! collector [u] :anchor tuple)
@@ -75,15 +83,15 @@
 
 (defn run-local! []
   (let [cluster (LocalCluster.)]
-    (print-vals "Submitting topology...")
+    (logger/trace "Submitting topology...")
     (.submitTopology cluster "facebook" {TOPOLOGY-DEBUG true} (fb-topology))
-    (Thread/sleep 60000)
-    (print-vals "Shutting down cluster!")
+    (pause "Running topology for 1 minute" 60000)
+    (logger/trace "Shutting down cluster!")
     (.shutdown cluster)))
 
 (defn run-local-forever! []
   (let [cluster (LocalCluster.)]
-    (print-vals "Submitting topology...")
+    (logger/trace "Submitting topology...")
     (.submitTopology cluster "facebook" {TOPOLOGY-DEBUG true} (fb-topology))))
 
 ;; (require '[zolo.storm.facebook :as fb]) (fb/run-local!)
