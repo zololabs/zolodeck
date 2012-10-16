@@ -39,6 +39,7 @@
   <logger name="org.apache" level="ERROR" />
   <logger name="backtype.storm" level="ERROR" />
   <logger name="datomic" level="ERROR" />
+  <logger name="com.netflix" level="ERROR" />
 
   <root level="trace">
     <appender-ref ref="GELF" />
