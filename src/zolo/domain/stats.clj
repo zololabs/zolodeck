@@ -34,4 +34,6 @@
    :weak-contacts (doall (map fe/format-contact (contact/weak-contacts u 5)))
    :connect-soon (doall (map fe/format-contact (contact/forgotten-contacts u true 5)))
    :never-contacted (doall (map fe/format-contact (contact/forgotten-contacts u false 5)))
+   :all-week-interaction-count (user/all-message-count-in-the-past u 7)
+   :all-month-interaction-count (user/all-message-count-in-the-past u 31) 
    })
