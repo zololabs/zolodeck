@@ -18,8 +18,8 @@
       :social/first-name (:firstName profile-info)
       :social/last-name (:lastName profile-info)
       :social/email (:emailAddress profile-info)
-      :social/birth-day month
-      :social/birth-month day
+      :social/birth-day day
+      :social/birth-month month
       :social/birth-year year
       :social/photo-url (:pictureUrl profile-info)
       :social/profile-url (:publicProfileUrl profile-info)

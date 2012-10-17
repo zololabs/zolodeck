@@ -16,8 +16,8 @@
       :social/profile-url (:link friend)
       :social/country (countries/country-name-for country-code)
       :social/nickname (:username friend)
-      :social/birth-day month
-      :social/birth-month day
+      :social/birth-day day
+      :social/birth-month month
       :social/birth-year year
       :social/provider-uid (:id friend)
       :social/provider :provider/facebook

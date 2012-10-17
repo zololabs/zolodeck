@@ -20,6 +20,12 @@
 (defn current-user []
   (dissoc (sandbar/current-user) :username :roles))
 
+(defn find-all-users []
+  (->> (demonic/run-query '[:find ?u :where [?u :user/guid]])
+       (map first)
+       (map demonic/load-entity)
+       doall))
+
 (defn find-all-user-guids-and-last-updated []
   (demonic/run-query '[:find ?g ?l :where [?u :user/guid ?g] [?u :user/last-updated ?l]]))
 
