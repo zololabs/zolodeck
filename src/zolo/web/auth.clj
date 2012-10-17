@@ -17,4 +17,4 @@
     (when user
       (logger/debug "Found current user")
       (merge {:username (:user/guid user)
-              :roles #{:user}} (fb-user fb)))))
+              :roles #{:user}} user))))

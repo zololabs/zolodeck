@@ -43,13 +43,13 @@
   "Error level logging using print-style args."
   {:arglists '([message & more] [throwable message & more])}
   [& args]
-  `(logger/error (snipped-pretty ~@args)))
+  `(logger/error ~@args))
 
 (defmacro fatal
   "Fatal level logging using print-style args."
   {:arglists '([message & more] [throwable message & more])}
   [& args]
-  `(logger/fatal (snipped-pretty ~@args)))
+  `(logger/fatal ~@args))
 
 (defmacro with-logging-context [x & body]
   `(let [x# ~x

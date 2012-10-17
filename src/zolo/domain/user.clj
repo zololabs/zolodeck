@@ -44,10 +44,11 @@
   (logger/debug (str "Finding user for provider : " provider " and provider-uid : " provider-uid))
   (when provider-uid
     (-> (demonic/run-query
-         '[:find ?s :in $ ?provider-uid :where [?s :social/provider-uid ?provider-uid]] provider-uid)
+         '[:find ?i :in $ ?provider-uid :where [?i :identity/provider-uid ?provider-uid]] provider-uid)
+        print-vals
         ffirst
         demonic-helper/load-from-db
-        :user/_social-identities
+        :user/_user-identities
         first
         loadable/entity->loadable)))
 

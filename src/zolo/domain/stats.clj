@@ -56,8 +56,14 @@
     (->> u
          :user/contacts
          (mapcat :contact/messages)
-         
          (filter #(time/after? (time-coerce/to-date-time (:message/date %)) one-week-ago)))))
+
+;; (defn all-messages-between-dates [u from-time to-time]
+;;   (let [time-start (time/minus (time/now) (time/days num-days))]
+;;     (->> u
+;;          :user/contacts
+;;          (mapcat :contact/messages)
+;;          (filter #(time/after? (time-coerce/to-date-time (:message/date %)) one-week-ago))))  )
 
 (defn all-message-count-in-the-past [u num-days]
   (count (all-messages-in-the-past u num-days)))

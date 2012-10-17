@@ -5,6 +5,7 @@
   (:require [zolodeck.utils.string :as zolo-str]
             [zolodeck.utils.maps :as zolo-maps]
             [zolodeck.utils.calendar :as zolo-cal]
+            [zolo.utils.logger :as logger]
             [zolo.utils.domain :as utils-domain]
             [zolo.social.core :as social]
             [zolo.domain.social-identity :as social-identity]
@@ -36,14 +37,14 @@
   ;;TODO Need to create a social detail for new contact 
   )
 
-(defn fresh-contacts-for-social-identity [social-identity]
-  (let [{provider :social/provider
-         access-token :social/auth-token
-         provider-uid :social/provider-uid} social-identity]
+(defn fresh-contacts-for-user-identity [user-identity]
+  (let [{provider :identity/provider
+         access-token :identity/auth-token
+         provider-uid :identity/provider-uid} user-identity]
     (social/fetch-contacts provider access-token provider-uid)))
 
 (defn fresh-contacts [u]
-  (mapcat fresh-contacts-for-social-identity (:user/social-identities u)))
+  (mapcat fresh-contacts-for-user-identity (:user/user-identities u)))
 
 (defn update-contact [user fresh-contact]
   (let [contact (->> (:contact/social-identities fresh-contact)

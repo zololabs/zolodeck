@@ -47,16 +47,16 @@
     (map (fn [[provider-info msgs]]
            (process-contact-messages user provider-info msgs)) grouped)))
 
-(defn update-messages-for-social-identity [user social-identity]
-  (let [{provider :social/provider
-         access-token :social/auth-token
-         provider-uid :social/provider-uid} social-identity]
+(defn update-messages-for-user-identity [user user-identity]
+  (let [{provider :identity/provider
+         access-token :identity/auth-token
+         provider-uid :identity/provider-uid} user-identity]
     (->> (social/fetch-messages provider access-token provider-uid)
          (merge-messages user)
          (map demonic/insert)
          doall)))
 
 (defn update-messages [user]
-  (doseq [si (:user/social-identities user)]
-    (update-messages-for-social-identity user si)))
+  (doseq [ui (:user/user-identities user)]
+    (update-messages-for-user-identity user ui)))
 

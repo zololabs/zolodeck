@@ -11,30 +11,30 @@
     :user/last-name (:last_name extended-user-info)
     :user/login-provider-uid (:uid extended-user-info)}))
 
-(defn social-identity [access-token extended-user-info]
+(defn user-identity [access-token extended-user-info]
   (let [[month day year] (string/split "/" (:birthday_date extended-user-info))]
     (domain/force-schema-types
-     {:social/provider-uid (:uid extended-user-info)
-      :social/gender (social/gender-enum (:sex extended-user-info))
-      :social/country (get-in extended-user-info [:current_location :country])
-      :social/first-name (:first_name extended-user-info)
-      :social/last-name (:last_name extended-user-info)
-      :social/email (:email extended-user-info)
-      :social/birth-day day
-      :social/birth-month month
-      :social/birth-year year
-      :social/photo-url (:pic_big extended-user-info)
-      :social/thumbnail-url (:pic_small extended-user-info)
-      :social/profile-url (:profile_url extended-user-info)
-      :social/provider :provider/facebook
-      :social/auth-token access-token
-      :social/state (get-in extended-user-info [:current_location :state])
-      :social/city (get-in extended-user-info [:current_location :city])
-      :social/zip (get-in extended-user-info [:current_location :zip])
-      :social/nickname (:username extended-user-info)})))
+     {:identity/provider-uid (:uid extended-user-info)
+      :identity/gender (social/gender-enum (:sex extended-user-info))
+      :identity/country (get-in extended-user-info [:current_location :country])
+      :identity/first-name (:first_name extended-user-info)
+      :identity/last-name (:last_name extended-user-info)
+      :identity/email (:email extended-user-info)
+      :identity/birth-day day
+      :identity/birth-month month
+      :identity/birth-year year
+      :identity/photo-url (:pic_big extended-user-info)
+      :identity/thumbnail-url (:pic_small extended-user-info)
+      :identity/profile-url (:profile_url extended-user-info)
+      :identity/provider :provider/facebook
+      :identity/auth-token access-token
+      :identity/state (get-in extended-user-info [:current_location :state])
+      :identity/city (get-in extended-user-info [:current_location :city])
+      :identity/zip (get-in extended-user-info [:current_location :zip])
+      :identity/nickname (:username extended-user-info)})))
 
-(defn user-and-social-identity [access-token user-id]
+(defn user-and-user-identity [access-token user-id]
   (let [extended-info (gateway/extended-user-info access-token user-id)
         basic-user (basic-info extended-info)
-        identity (social-identity access-token extended-info)]
-    (assoc basic-user :user/social-identities [identity])))
+        identity (user-identity access-token extended-info)]
+    (assoc basic-user :user/user-identities [identity])))

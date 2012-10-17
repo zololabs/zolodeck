@@ -15,10 +15,31 @@
  ;;TODO Add login-provider info
 
  ;Social details
- (refs-fact-schema :user/social-identities false "A user's social detail records")   
+ (refs-fact-schema :user/user-identities false "A user's social detail records")   
 
  ;Contacts Information
  (refs-fact-schema :user/contacts false "A user's contacts"))
+
+(schema-set "USER IDENTITY FACTS"
+ (uuid-fact-schema   :identity/guid false "A GUID for the user identity record")
+ (string-fact-schema :identity/provider-uid  false  "A user's provider UID")
+ (enum-fact-schema   :identity/gender        false  "A user's gender")
+ (string-fact-schema :identity/country       false "A user's age")
+ (string-fact-schema :identity/first-name    false  "A user's first name")
+ (string-fact-schema :identity/last-name     false  "A user's last name")
+ (string-fact-schema :identity/email         false  "A user's email")
+ (long-fact-schema   :identity/birth-day     false  "A user's birthday")
+ (long-fact-schema   :identity/birth-month   false  "A user's birth month")
+ (long-fact-schema   :identity/birth-year    false  "A user's birth year")
+ (string-fact-schema :identity/photo-url     false  "A user's photo url")
+ (string-fact-schema :identity/thumbnail-url false "A user's thumbnail url")
+ (string-fact-schema :identity/profile-url   false  "A user's profile url")
+ (enum-fact-schema   :identity/provider         false  "A user's provider")
+ (string-fact-schema :identity/auth-token    false "The provider specific auth token")
+ (string-fact-schema :identity/state         false  "A user's state")
+ (string-fact-schema :identity/city          false  "A user's city")
+ (string-fact-schema :identity/zip           false  "A user's zip")
+ (string-fact-schema :identity/nickname      false  "A user's nick name"))
 
 (schema-set "SOCIAL ENTITY FACTS"
  (uuid-fact-schema   :social/guid          false "A GUID for the social details record")
@@ -39,7 +60,6 @@
  (string-fact-schema :social/state         false  "A user's state")
  (string-fact-schema :social/city          false  "A user's city")
  (string-fact-schema :social/zip           false  "A user's zip")
- 
  (string-fact-schema :social/nickname      false  "A user's nick name")
  )
 
