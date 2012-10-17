@@ -20,8 +20,8 @@
       :social/first-name (:first_name extended-user-info)
       :social/last-name (:last_name extended-user-info)
       :social/email (:email extended-user-info)
-      :social/birth-day month
-      :social/birth-month day
+      :social/birth-day day
+      :social/birth-month month
       :social/birth-year year
       :social/photo-url (:pic_big extended-user-info)
       :social/thumbnail-url (:pic_small extended-user-info)

@@ -12,7 +12,9 @@
     value))
 
 (defn force-schema-types [a-map]
-  (zolo-maps/transform-vals-with a-map force-schema-attrib))
+  (-> a-map
+      (zolo-maps/transform-vals-with force-schema-attrib)
+      (zolo-maps/select-keys-if (fn [k v] (not (nil? v))))))
 
 (defn group-first-by [attrib objects]
   (-> (group-by attrib objects)

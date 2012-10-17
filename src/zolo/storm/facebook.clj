@@ -73,7 +73,7 @@
                                         ;(emit-bolt! collector [u] :anchor tuple)
        ))
     (catch Exception e
-      (logger/error e "Exception in bolt!"))))
+      (logger/error e "Exception in bolt! Occured while processing tuple:" tuple))))
 
 (defn fb-topology []
   (topology
@@ -81,13 +81,14 @@
    {"2" (bolt-spec {"1" :shuffle}
                    process-user)}))
 
-(defn run-local! []
-  (let [cluster (LocalCluster.)]
-    (logger/trace "Submitting topology...")
-    (.submitTopology cluster "facebook" {TOPOLOGY-DEBUG true} (fb-topology))
-    (pause "Running topology for 1 minute" 60000)
-    (logger/trace "Shutting down cluster!")
-    (.shutdown cluster)))
+(defn run-local! [millis]
+  (future
+    (let [cluster (LocalCluster.)]
+      (logger/trace "Submitting topology...")
+      (.submitTopology cluster "facebook" {TOPOLOGY-DEBUG true} (fb-topology))
+      (pause "Running topology for 1 minute" millis)
+      (logger/trace "Shutting down cluster!")
+      (.shutdown cluster))))
 
 (defn run-local-forever! []
   (let [cluster (LocalCluster.)]

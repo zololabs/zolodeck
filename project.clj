@@ -95,4 +95,6 @@
   :deploy-app {:s3-bucket "s3p://zolodeck/releases/"
                :creds :env}
 
-  :main zolo.core)
+  :main zolo.core
+
+  :repl-retry-limit 1000)
