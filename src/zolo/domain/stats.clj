@@ -69,7 +69,6 @@
   (count (all-messages-in-the-past u num-days)))
 
 (defn message-count [u]
-  (print-vals "MessageCount for" (:user/first-name u))
   (->> u
        :user/contacts
        (mapcat :contact/messages)

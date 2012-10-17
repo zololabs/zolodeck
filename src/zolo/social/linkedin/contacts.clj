@@ -7,7 +7,7 @@
   (domain/force-schema-types
    {:social/provider-uid (:id contact)
     :social/profile-url (:publicProfileUrl contact)
-    :social/country (countries/country-name-for (print-vals "CountryCode:" (get-in contact [:location :country :code])))}))
+    :social/country (countries/country-name-for (get-in contact [:location :country :code]))}))
 
 (defn contact-object [contact]
   {:contact/first-name (:firstName contact)
