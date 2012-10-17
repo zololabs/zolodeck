@@ -26,6 +26,9 @@
       :social/provider :provider/linkedin
       :social/auth-token auth-token})))
 
+
+;; TODO - this needs to become user-and-user-identity (no longer using
+;; social-identities with users
 (defn user-and-social-identity [auth-token-map]
   (let [profile (gateway/profile-info (:oauth_token auth-token-map) (:oauth_token_secret auth-token-map))
         basic (basic-info profile)
