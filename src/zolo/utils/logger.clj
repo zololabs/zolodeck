@@ -1,20 +1,30 @@
 (ns zolo.utils.logger
   (:require [clojure.tools.logging :as logger]
             [zolodeck.utils.string :as string-utils])
-  (:use zolodeck.utils.debug)
+  (:use zolodeck.utils.debug
+        clojure.pprint)
   (:import [org.slf4j MDC]))
+
+(defn snip [s]
+  (-> s
+      (.substring 1 (dec (dec (.length s))))
+      (str "\n")))
+
+(defn snipped-pretty [& things]
+  (let [s (with-out-str (pprint things))]
+    (snip s)))
 
 (defmacro trace
   "Trace level logging using print-style args."
   {:arglists '([message & more] [throwable message & more])}
   [& args]
-  `(logger/trace ~@args))
+  `(logger/trace (snipped-pretty ~@args)))
 
 (defmacro debug
   "Debug level logging using print-style args."
   {:arglists '([message & more] [throwable message & more])}
   [& args]
-  `(logger/debug ~@args))
+  `(logger/debug (snipped-pretty ~@args)))
 
 
 (defmacro info
@@ -27,19 +37,19 @@
   "Warn level logging using print-style args."
   {:arglists '([message & more] [throwable message & more])}
   [& args]
-  `(logger/warn ~@args))
+  `(logger/warn (snipped-pretty ~@args)))
 
 (defmacro error
   "Error level logging using print-style args."
   {:arglists '([message & more] [throwable message & more])}
   [& args]
-  `(logger/error ~@args))
+  `(logger/error (snipped-pretty ~@args)))
 
 (defmacro fatal
   "Fatal level logging using print-style args."
   {:arglists '([message & more] [throwable message & more])}
   [& args]
-  `(logger/fatal ~@args))
+  `(logger/fatal (snipped-pretty ~@args)))
 
 (defmacro with-logging-context [x & body]
   `(let [x# ~x
