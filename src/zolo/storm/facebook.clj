@@ -69,8 +69,10 @@
            u (user/find-by-guid-string guid)]
        (logger/info "Processing user:" (:user/first-name u))
        (demonic/in-demarcation
+        (user/stamp-refresh-start u))
+       (demonic/in-demarcation
         (user/refresh-user-data u))
-                                        ;(emit-bolt! collector [u] :anchor tuple)
+       ;(emit-bolt! collector [u] :anchor tuple)
        ))
     (catch Exception e
       (logger/error e "Exception in bolt! Occured while processing tuple:" tuple))))

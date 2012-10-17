@@ -92,6 +92,10 @@
       (assoc :user/last-updated (zolo-cal/now-instant))
       demonic/insert))
 
+(defn stamp-refresh-start [u]
+  (-> u
+      (assoc :user/refresh-started (zolo-cal/now-instant))))
+
 (defn refresh-user-data [u]
     (logger/trace "RefreshUserData... starting now!")
     (contact/update-contacts u)
