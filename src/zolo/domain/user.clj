@@ -40,12 +40,17 @@
   (when guid-string
     (find-by-guid (java.util.UUID/fromString guid-string))))
 
+(defn find-by-login-provider-uid [login-provider-uid]
+  (when login-provider-uid
+    (-> (demonic/run-query '[:find ?u :in $ ?lpuid :where [?u :user/login-provider-uid ?lpuid]] login-provider-uid)
+        ffirst
+        demonic/load-entity)))
+
 (defn find-by-provider-and-provider-uid [provider provider-uid]
   (logger/debug (str "Finding user for provider : " provider " and provider-uid : " provider-uid))
   (when provider-uid
     (-> (demonic/run-query
          '[:find ?i :in $ ?provider-uid :where [?i :identity/provider-uid ?provider-uid]] provider-uid)
-        print-vals
         ffirst
         demonic-helper/load-from-db
         :user/_user-identities
@@ -67,10 +72,16 @@
 (defn reload [u]
   (find-by-guid (:user/guid u)))
 
+(defn reload-by-login-provider-uid [u]
+  (-> u
+      :user/login-provider-uid
+      find-by-login-provider-uid))
+
+;; TODO - reload-by-login-provider-uid assumes unique lpuid across all networks
 (defn signup-new-user [social-user]
   (-> social-user
       demonic/insert
-      reload))
+      reload-by-login-provider-uid))
 
 (defn update-scores [u]
   (doall (map contact/update-score (:user/contacts u)))
