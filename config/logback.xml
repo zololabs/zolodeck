@@ -21,7 +21,7 @@
 
   <appender name="GELF" class="me.moocar.logbackgelf.GelfAppender">
     <facility>${SERVICE}</facility>
-    <graylog2ServerHost>ip-10-101-54-244.ec2.internal</graylog2ServerHost>
+    <graylog2ServerHost>ip-10-32-14-174.ec2.interna</graylog2ServerHost>
     <graylog2ServerPort>12201</graylog2ServerPort>
     <useLoggerName>true</useLoggerName>
     <useThreadName>true</useThreadName>
