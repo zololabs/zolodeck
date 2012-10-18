@@ -15,7 +15,7 @@
                 (< (:contact/score %) upper))
           (:user/contacts u)))
 
-(defn contacts-stats [u]
+(defn network-stats [u]
   {:total (count (:user/contacts u))
    :strong (count (contacts-with-score-between u 250 10000000))
    :medium (count (contacts-with-score-between u 50 250))
@@ -74,7 +74,7 @@
        (mapcat :contact/messages)
        count))
 
-(defn network-stats [u]
+(defn other-stats [u]
   {:average (zolo-math/average (map :contact/score (:user/contacts u)))
    :messagecount (message-count u)
    ;;TODO This needs to be tested
