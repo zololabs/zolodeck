@@ -94,17 +94,19 @@
 
 (defn stamp-refresh-start [u]
   (-> u
-      (assoc :user/refresh-started (zolo-cal/now-instant))))
+      (assoc :user/refresh-started (zolo-cal/now-instant))
+      demonic/insert))
 
 (defn refresh-user-data [u]
-    (logger/trace "RefreshUserData... starting now!")
-    (contact/update-contacts u)
-    (logger/debug "Loaded contacts " (count (:user/contacts (reload u))))
-    (message/update-messages (reload u))
-    (logger/debug "Messages done")
-    (update-scores (reload u))
-    (stamp-updated-time (reload u))
-    (reload u))
+  (logger/trace "RefreshUserData... starting now!")
+  (stamp-refresh-start (reload u))
+  (contact/update-contacts u)
+  (logger/debug "Loaded contacts " (count (:user/contacts (reload u))))
+  (message/update-messages (reload u))
+  (logger/debug "Messages done")
+  (update-scores (reload u))
+  (stamp-updated-time (reload u))
+  (reload u))
 
 ;;TODO Junk function. Need to design the app
 (defn fully-loaded-user
