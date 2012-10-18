@@ -1,38 +1,22 @@
 (ns zolo.storm.facebook
   (:use zolodeck.utils.debug        
         backtype.storm.clojure
-        backtype.storm.config)
+        backtype.storm.config
+        zolo.storm.utils)
   (:require [zolo.setup.datomic-setup :as datomic]
             [zolo.setup.config :as conf]
             [zolodeck.demonic.core :as demonic]
             [zolo.domain.user :as user]
             [zolo.utils.logger :as logger]
-            [zolodeck.utils.calendar :as zolo-cal])
+            [zolodeck.utils.clojure :as clj])
   (:import [backtype.storm StormSubmitter LocalCluster]))
-
-(defn pause [msg millis]
-  (logger/trace "[Sleep ms:" millis "] " msg)
-  (Thread/sleep millis))
-
-(def USER-UPDATE-WAIT (conf/user-update-wait-fb-millis)) ;; 1 HOUR
-
-(def STALE-USERS-WAIT (conf/stale-users-wait-fb-millis)) ;; 1 MINUTE
-
-(defn recently-updated [[guid last-updated refresh-started]]
-  (let [now (zolo-cal/now)
-        elapsed-since-started (- now (.getTime refresh-started))        
-        elapsed-since-updated (- now (.getTime last-updated))
-        recent? (or (< elapsed-since-updated USER-UPDATE-WAIT)
-                    (< elapsed-since-started STALE-USERS-WAIT))]
-    (logger/trace "User:" guid ", recently updated:" recent?)
-    recent?))
 
 (defn user-guids-to-process []
   (logger/info "Finding User GUIDS to process...")
   (demonic/in-demarcation
-   (->> (user/find-all-user-guids-and-last-updated)
+   (->> (user/find-all-users-for-refreshes)
         (remove recently-updated)
-        (map first)
+        (map :user/guid)
         (map str))))
 
 (defn init-guids [guids-atom]
@@ -40,7 +24,7 @@
   (reset! guids-atom (user-guids-to-process))
   (if (empty? @guids-atom)
     (do
-      (pause "Waiting 10s for stale users..." STALE-USERS-WAIT)
+      (pause "Waiting for stale users..." STALE-USERS-WAIT)
       (recur guids-atom))
     guids-atom))
 
@@ -51,12 +35,15 @@
 
 (defn next-guid [guids-atom]
   (if (empty? @guids-atom)
-    (recur (init-guids guids-atom))
+    (do
+      (pause "Completed one pass of all GUIDS... now waiting..." USER-UPDATE-WAIT)
+      (recur (init-guids guids-atom)))
     (pop-guid guids-atom)))
 
 (defspout user-spout ["user-guid"]
   [conf context collector]
   (let [guids (atom nil)]
+    (init-guids guids)
     (spout
      (nextTuple []
                 (let [n (next-guid guids)]
@@ -73,9 +60,7 @@
        (demonic/in-demarcation
         (user/stamp-refresh-start u))
        (demonic/in-demarcation
-        (user/refresh-user-data u))
-       ;(emit-bolt! collector [u] :anchor tuple)
-       ))
+        (user/refresh-user-data u))))
     (catch Exception e
       (logger/error e "Exception in bolt! Occured while processing tuple:" tuple))))
 
@@ -90,13 +75,12 @@
     (let [cluster (LocalCluster.)]
       (logger/trace "Submitting topology...")
       (.submitTopology cluster "facebook" {TOPOLOGY-DEBUG true} (fb-topology))
-      (pause "Running topology for 1 minute" millis)
+      (pause "Running topology for " millis " millis...")
       (logger/trace "Shutting down cluster!")
       (.shutdown cluster))))
 
 (defn run-local-forever! []
+  (print-vals "UserGuidsToProcess:" (user-guids-to-process))
   (let [cluster (LocalCluster.)]
     (logger/trace "Submitting topology...")
     (.submitTopology cluster "facebook" {TOPOLOGY-DEBUG true} (fb-topology))))
-
-;; (require '[zolo.storm.facebook :as fb]) (fb/run-local!)

@@ -26,11 +26,12 @@
        (map demonic/load-entity)
        doall))
 
-(defn find-all-user-guids-and-last-updated []
-  (demonic/run-query '[:find ?g ?l ?r :where
-                       [?u :user/guid ?g]
-                       [?u :user/last-updated ?l]
-                       [?u :user/refresh-started ?r]]))
+(defn find-all-users-for-refreshes []
+  (->> (demonic/run-query '[:find ?u :where [?u :user/guid]])
+       (map first)
+       (map demonic-helper/load-from-db)
+       (map #(select-keys % [:user/guid :user/last-updated :user/refresh-started]))
+       doall))
 
 ;;TODO Duplication find-by-guid
 (defn find-by-guid [guid]
