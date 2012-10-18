@@ -68,7 +68,9 @@
   (topology
    {"1" (spout-spec user-spout)}
    {"2" (bolt-spec {"1" :shuffle}
-                   process-user)}))
+                   process-user
+                   ;:p 2
+                   )}))
 
 (defn run-local! [millis]
   (future

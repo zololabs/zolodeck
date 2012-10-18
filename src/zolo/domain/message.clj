@@ -43,9 +43,11 @@
            (utils-domain/update-fresh-entities-with-db-id (:contact/messages contact) fresh-messages :message/message-id :message/guid))))
 
 (defn merge-messages [user fresh-messages]
-  (let [grouped (group-by-provider-info user fresh-messages)]
-    (map (fn [[provider-info msgs]]
-           (process-contact-messages user provider-info msgs)) grouped)))
+  (let [grouped (group-by-provider-info user fresh-messages)
+        ret (map (fn [[provider-info msgs]]
+                   (process-contact-messages user provider-info msgs)) grouped)]
+    (logger/trace "Merged messages, count:" (count ret))
+    ret))
 
 (defn update-messages-for-user-identity [user user-identity]
   (let [{provider :identity/provider
