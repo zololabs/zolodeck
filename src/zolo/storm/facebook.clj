@@ -18,10 +18,12 @@
 
 (def STALE-USERS-WAIT (conf/stale-users-wait-fb-millis)) ;; 1 MINUTE
 
-(defn recently-updated [[guid last-updated]]
+(defn recently-updated [[guid last-updated refresh-started]]
   (let [now (zolo-cal/now)
-        elapsed (- now (.getTime last-updated))
-        recent? (< elapsed USER-UPDATE-WAIT)]
+        elapsed-since-started (- now (.getTime refresh-started))        
+        elapsed-since-updated (- now (.getTime last-updated))
+        recent? (or (< elapsed-since-updated USER-UPDATE-WAIT)
+                    (< elapsed-since-started STALE-USERS-WAIT))]
     (logger/trace "User:" guid ", recently updated:" recent?)
     recent?))
 

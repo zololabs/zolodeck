@@ -27,7 +27,10 @@
        doall))
 
 (defn find-all-user-guids-and-last-updated []
-  (demonic/run-query '[:find ?g ?l :where [?u :user/guid ?g] [?u :user/last-updated ?l]]))
+  (demonic/run-query '[:find ?g ?l ?r :where
+                       [?u :user/guid ?g]
+                       [?u :user/last-updated ?l]
+                       [?u :user/refresh-started ?r]]))
 
 ;;TODO Duplication find-by-guid
 (defn find-by-guid [guid]
