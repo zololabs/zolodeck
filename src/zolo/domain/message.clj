@@ -1,5 +1,6 @@
 (ns zolo.domain.message
-  (:use zolodeck.utils.debug)
+  (:use zolodeck.utils.debug
+        zolodeck.utils.clojure)
   (:require [clojure.set :as set]
             [zolodeck.utils.maps :as zolo-maps]
             [zolodeck.utils.calendar :as zolo-cal]
@@ -46,7 +47,7 @@
   (let [grouped (group-by-provider-info user fresh-messages)
         ret (map (fn [[provider-info msgs]]
                    (process-contact-messages user provider-info msgs)) grouped)]
-    (logger/trace "Merged messages, count:" (count ret))
+    ;(logger/trace "Merged messages, count:" (count ret))
     ret))
 
 (defn update-messages-for-user-identity [user user-identity]
@@ -55,8 +56,7 @@
          provider-uid :identity/provider-uid} user-identity]
     (->> (social/fetch-messages provider access-token provider-uid)
          (merge-messages user)
-         (map demonic/insert)
-         doall)))
+         (doeach demonic/insert))))
 
 (defn update-messages [user]
   (doseq [ui (:user/user-identities user)]
