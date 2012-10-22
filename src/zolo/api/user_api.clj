@@ -33,7 +33,7 @@
 
 (defn stats [request-params]
   (let [u (user/fully-loaded-user)]
-    {:contacts (stats/contacts-stats u)
-     :network (stats/network-stats u)}))
+    {:network (stats/network-stats u)
+     :other (stats/other-stats u)}))
 
 
