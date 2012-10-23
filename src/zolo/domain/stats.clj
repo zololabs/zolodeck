@@ -1,11 +1,14 @@
 (ns zolo.domain.stats
-  (:use zolodeck.utils.debug)
+  (:use zolodeck.utils.debug
+        zolodeck.utils.clojure)
   (:require [zolo.domain.user :as user]
             [zolo.domain.contact :as contact]
-            [zolo.utils.fe :as fe]            
+            [zolo.utils.fe :as fe]
+            [zolo.stats.message-distribution :as md]
             [zolo.domain.message :as message]
             [zolo.domain.score :as score]
             [zolodeck.utils.maps :as zolo-maps]
+            [zolodeck.utils.calendar :as zolo-cal]
             [zolodeck.utils.math :as zolo-math]
             [clj-time.core :as time]
             [clj-time.coerce :as time-coerce]))
@@ -34,10 +37,17 @@
        (sort-by :contact/score)
        (take number)))
 
-(defn- recent-message-time [c]
+(defn recent-message-time [c]
   (->> c
        :contact/messages
        (sort-by :message/date)
+       last
+       :message/date))
+
+(defn oldest-message-time [c]
+  (->> c
+       :contact/messages
+       (reverse-sort-by :message/date)
        last
        :message/date))
 
@@ -58,13 +68,6 @@
          (mapcat :contact/messages)
          (filter #(time/after? (time-coerce/to-date-time (:message/date %)) one-week-ago)))))
 
-;; (defn all-messages-between-dates [u from-time to-time]
-;;   (let [time-start (time/minus (time/now) (time/days num-days))]
-;;     (->> u
-;;          :user/contacts
-;;          (mapcat :contact/messages)
-;;          (filter #(time/after? (time-coerce/to-date-time (:message/date %)) one-week-ago))))  )
-
 (defn all-message-count-in-the-past [u num-days]
   (count (all-messages-in-the-past u num-days)))
 
@@ -75,13 +78,13 @@
        count))
 
 (defn other-stats [u]
-  {:average (zolo-math/average (map :contact/score (:user/contacts u)))
-   :messagecount (message-count u)
-   ;;TODO This needs to be tested
-   :strong-contacts (doall (map fe/format-contact (strong-contacts u 5)))   
-   :weak-contacts (doall (map fe/format-contact (weak-contacts u 5)))
-   :connect-soon (doall (map fe/format-contact (forgotten-contacts u true 5)))
-   :never-contacted (doall (map fe/format-contact (forgotten-contacts u false 5)))
-   :all-week-interaction-count (all-message-count-in-the-past u 7)
-   :all-month-interaction-count (all-message-count-in-the-past u 31) 
-   })
+  (merge {:average (zolo-math/average (map :contact/score (:user/contacts u)))
+          :messagecount (message-count u)
+          ;;TODO This needs to be tested
+          :strong-contacts (doall (map fe/format-contact (strong-contacts u 5)))   
+          :weak-contacts (doall (map fe/format-contact (weak-contacts u 5)))
+          :connect-soon (doall (map fe/format-contact (forgotten-contacts u true 5)))
+          :never-contacted (doall (map fe/format-contact (forgotten-contacts u false 5)))
+          :all-week-interaction-count (all-message-count-in-the-past u 7)
+          :all-month-interaction-count (all-message-count-in-the-past u 31)}
+         (md/distribution-stats u)))
