@@ -38,15 +38,6 @@
   ;;TODO For now Removing attachments
     ;;  (str "SELECT message_id, thread_id, author_id, body, created_time, attachment, viewer_id FROM message WHERE thread_id = " thread-id " and created_time > " start-time)
     (str "SELECT message_id, thread_id, author_id, body, created_time FROM message WHERE thread_id = " thread-id " and created_time > " start-time))
- 
-;; (defn update-message [subject recipient msg]
-;;   (when-not (= recipient (:author_id msg))
-;;     (-> msg
-;;         (assoc :subject subject)
-;;         (assoc :to recipient))))
- 
-;; (defn duplicate-msg-for-each-recipient [subject recipients msg]
-;;   (keep #(update-message subject % msg) recipients))
 
 (defn except-self [recipients {author-id :author_id}]
   (remove #(= author-id %) recipients))
