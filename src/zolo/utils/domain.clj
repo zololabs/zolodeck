@@ -7,6 +7,7 @@
   (if value
     (cond
      (and (schema/is-string? attrib) (not (string? value))) (str value)
+     (and (schema/is-strings? attrib) (not (every? string? value))) (map str value)
      (and (schema/is-long? attrib) (not (number? value))) (Long/parseLong value)
      :else value)
     value))

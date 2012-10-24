@@ -8,6 +8,8 @@
             [zolodeck.utils.maps :as maps]
             [zolodeck.utils.calendar :as zolo-cal]))
 
+(def MODE-INBOX "INBOX")
+
 (def FB-MESSAGE-KEYS
   {:attachment :message/attachments
    :provider :message/provider
@@ -25,7 +27,7 @@
   (-> fb-message
       (assoc :created_time (zolo-cal/millis->instant (-> fb-message :created_time (* 1000))))
       ;;TODO Make this an enum too
-      (assoc :mode "Inbox-Message")
+      (assoc :mode MODE-INBOX)
       (maps/update-all-map-keys FB-MESSAGE-KEYS)
       (assoc :message/provider :provider/facebook)
       (domain/force-schema-types)))
@@ -37,17 +39,28 @@
     ;;  (str "SELECT message_id, thread_id, author_id, body, created_time, attachment, viewer_id FROM message WHERE thread_id = " thread-id " and created_time > " start-time)
     (str "SELECT message_id, thread_id, author_id, body, created_time FROM message WHERE thread_id = " thread-id " and created_time > " start-time))
  
-(defn update-message [subject recipient msg]
-  (when-not (= recipient (:author_id msg))
+;; (defn update-message [subject recipient msg]
+;;   (when-not (= recipient (:author_id msg))
+;;     (-> msg
+;;         (assoc :subject subject)
+;;         (assoc :to recipient))))
+ 
+;; (defn duplicate-msg-for-each-recipient [subject recipients msg]
+;;   (keep #(update-message subject % msg) recipients))
+
+(defn except-self [recipients {author-id :author_id}]
+  (remove #(= author-id %) recipients))
+
+(defn associate-fields [subject recipients msg]
+  (let [actual-recipients (except-self recipients msg)]
     (-> msg
         (assoc :subject subject)
-        (assoc :to recipient))))
- 
-(defn duplicate-msg-for-each-recipient [subject recipients msg]
-  (keep #(update-message subject % msg) recipients))
- 
+        (assoc :to actual-recipients))))
+
 (defn expand-messages [subject recipients msgs]
-  (mapcat #(duplicate-msg-for-each-recipient subject recipients %) msgs))
+  ;(mapcat #(duplicate-msg-for-each-recipient subject recipients %) msgs)
+  (map #(associate-fields subject recipients %) msgs)
+  )
  
 (defn fetch-thread [auth-token thread-info start-time]
   (let [{thread-id :thread_id recipients :recipients subject :subject} thread-info]

@@ -74,7 +74,7 @@
 
 
 (schema-set "CONTACT ENTITY FACTS"
- (uuid-fact-schema :contact/guid false "A GUID for a contact")
+ (uuid-fact-schema   :contact/guid false "A GUID for a contact")
  ;;TODO Need to decide whether we need these or not           
  (string-fact-schema :contact/first-name true "A contact's first name") 
  (string-fact-schema :contact/last-name true "A contact's last name")
@@ -88,16 +88,16 @@
  (long-fact-schema :contact/score false "A contact's score"))
 
 (schema-set "MESSAGE ENTITY FACTS"
- (uuid-fact-schema :message/guid false "A GUID for messages")
- (string-fact-schema :message/message-id false "ID for this message")
+ (uuid-fact-schema    :message/guid false "A GUID for messages")
+ (string-fact-schema  :message/message-id false "ID for this message")
  ;;TODO Need to store this
- (enum-fact-schema :message/provider false "The platform: Facebook, LinkedIn, etc")
+ (enum-fact-schema    :message/provider false "The platform: Facebook, LinkedIn, etc")
  ;;TODO Need to change this to enum
- (string-fact-schema :message/mode false "Sub-type: wall-post, inbox-message, etc")
+ (string-fact-schema  :message/mode false "Sub-type: wall-post, inbox-message, etc")
  (strings-fact-schema :message/attachments false "list of links")
- (string-fact-schema :message/text true "The body of the message")
+ (string-fact-schema  :message/text true "The body of the message")
  (instant-fact-schema :message/date false "The date the message was received")
- (string-fact-schema :message/from false "The platform ID of the sender")
- (string-fact-schema :message/to false "The platform ID of the receiver")
- (string-fact-schema :message/thread-id false "The message thread id")
- (string-fact-schema :message/reply-to false "The platform ID of the sender"))
+ (string-fact-schema  :message/from false "The platform ID of the sender")
+ (strings-fact-schema  :message/to false "The platform ID of the receiver")
+ (string-fact-schema  :message/thread-id false "The message thread id")
+ (string-fact-schema  :message/reply-to false "The platform ID of the sender"))
