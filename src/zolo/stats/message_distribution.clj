@@ -16,7 +16,7 @@
   (update-in distribution (zolo-cal/get-year-month-week (:message/date message)) plus 1))
 
 (defn message-distribution [u]
-  (->> u :user/contacts (mapcat :contact/messages) (reduce message-distribution-reducer {})))
+  (->> u :user/messages (reduce message-distribution-reducer {})))
 
 (defn- collect-weeks [year month weekly-stats]
   (mapcat (fn [[week number]] (list [year month week] number)) weekly-stats))
@@ -43,8 +43,7 @@
 
 (defn first-or-last-message-time-for-user [u sorter]
   (->> u
-       :user/contacts
-       (mapcat :contact/messages)
+       :user/messages
        (sorter :message/date)
        last
        :message/date))
@@ -56,10 +55,10 @@
   (first-or-last-message-time-for-user u sort-by))
 
 (defn weekly-averages [u]
-  (let [min-date (print-vals "min:" (first-message-time-for-user u))
-        max-date (print-vals "max:" (last-message-time-for-user u))
-        weeks-between (print-vals "between weeks:" (zolo-cal/weeks-between min-date max-date))
-        number-of-messages (print-vals "number-of-msgs:" (count (mapcat :contact/messages (:user/contacts u))))]
+  (let [min-date (first-message-time-for-user u)
+        max-date (last-message-time-for-user u)
+        weeks-between (zolo-cal/weeks-between min-date max-date)
+        number-of-messages (count (:user/messages u))]
     {:weekly-average (float (/ number-of-messages weeks-between))}))
 
 (defn distribution-stats [u]

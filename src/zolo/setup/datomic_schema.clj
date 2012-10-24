@@ -40,7 +40,10 @@
  (string-fact-schema :identity/state         false  "A user's state")
  (string-fact-schema :identity/city          false  "A user's city")
  (string-fact-schema :identity/zip           false  "A user's zip")
- (string-fact-schema :identity/nickname      false  "A user's nick name"))
+ (string-fact-schema :identity/nickname      false  "A user's nick name")
+
+ ;Messages Information
+ (refs-fact-schema :user/messages false "A contact's messages"))
 
 (schema-set "SOCIAL ENTITY FACTS"
  (uuid-fact-schema   :social/guid          false "A GUID for the social details record")
@@ -81,10 +84,7 @@
 
  ;Social details
  (refs-fact-schema :contact/social-identities false "A contact's social detail records")
- 
- ;Messages Information
- (refs-fact-schema :contact/messages false "A contact's messages")
- 
+  
  (long-fact-schema :contact/score false "A contact's score"))
 
 (schema-set "MESSAGE ENTITY FACTS"
@@ -98,6 +98,6 @@
  (string-fact-schema  :message/text true "The body of the message")
  (instant-fact-schema :message/date false "The date the message was received")
  (string-fact-schema  :message/from false "The platform ID of the sender")
- (strings-fact-schema  :message/to false "The platform ID of the receiver")
+ (strings-fact-schema :message/to false "The platform ID of the receiver")
  (string-fact-schema  :message/thread-id false "The message thread id")
  (string-fact-schema  :message/reply-to false "The platform ID of the sender"))

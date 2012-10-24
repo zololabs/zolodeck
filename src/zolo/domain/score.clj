@@ -1,7 +1,8 @@
 (ns zolo.domain.score
-  (:use zolodeck.utils.debug))
+  (:use zolodeck.utils.debug)
+  (:require [zolo.domain.accessors :as dom]))
 
-(defn calculate [c]
-  (* 10 (count (:contact/messages c))))
+(defn calculate [u c]
+  (* 10 (count (dom/contact-messages u c))))
 
 

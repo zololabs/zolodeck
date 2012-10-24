@@ -4,7 +4,8 @@
         [zolodeck.demonic.core :only [insert run-query load-entity] :as demonic]
         [zolodeck.demonic.helper :only [load-from-db] :as demonic-helper]
         [zolodeck.demonic.loadable :only [entity->loadable] :as loadable]
-        zolodeck.utils.debug)
+        zolodeck.utils.debug
+        zolodeck.utils.clojure)
   (:require [zolo.utils.domain :as domain]
             [zolo.utils.readers :as readers]
             [zolo.domain.social-identity :as social-identity]
@@ -88,7 +89,7 @@
       reload-by-login-provider-uid))
 
 (defn update-scores [u]
-  (doall (map contact/update-score (:user/contacts u)))
+  (doeach #(contact/update-score u %) (:user/contacts u))
   (reload u))
 
 (defn stamp-updated-time [u]
@@ -122,5 +123,3 @@
          u)))
   ([]
      (fully-loaded-user (current-user))))
-
-

@@ -12,51 +12,23 @@
             [zolodeck.demonic.core :as demonic]
             [zolo.utils.logger :as logger]))
 
-;;TODO Need to find a better place for this function
-(defn user-provider-infos [user]
-  (->> user
-      :user/social-identities
-      (map social-identity/social-identity-info)))
+(defn message-identifier [m]
+  [(:message/provider m) (:message/message-id m)])
 
-(defn dissoc-user-messages [user grouped-messages]
-  (reduce (fn [msgs user-provider-info]
-            (dissoc msgs user-provider-info))
-          grouped-messages
-          (user-provider-infos user)))
-
-;;TODO Duplication
-(defn message-from-provider-info [m]
-  [(:message/provider m) (:message/from m)])
-
-(defn message-to-provider-info [m]
-  [(:message/provider m) (:message/to m)])
-
-(defn group-by-provider-info [user messages]
-  (let [grouped-by-from (group-by message-from-provider-info messages)
-        grouped-by-to (group-by message-to-provider-info messages)
-        grouped  (merge-with concat grouped-by-from grouped-by-to)]
-    (dissoc-user-messages user grouped)))
-
-(defn process-contact-messages [user provider-info fresh-messages]
-  (let [contact (or (contact/find-contact-by-provider-info user provider-info)
-                    (contact/create-contact user provider-info))]
-    (assoc contact :contact/messages
-           (utils-domain/update-fresh-entities-with-db-id (:contact/messages contact) fresh-messages :message/message-id :message/guid))))
-
-(defn merge-messages [user fresh-messages]
-  (let [grouped (group-by-provider-info user fresh-messages)
-        ret (map (fn [[provider-info msgs]]
-                   (process-contact-messages user provider-info msgs)) grouped)]
-    ;(logger/trace "Merged messages, count:" (count ret))
-    ret))
+(defn refreshed-messages [user fresh-messages]
+  (utils-domain/update-fresh-entities-with-db-id (:user/messages user)
+                                                 fresh-messages
+                                                 message-identifier
+                                                 :message/guid))
 
 (defn update-messages-for-user-identity [user user-identity]
   (let [{provider :identity/provider
          access-token :identity/auth-token
          provider-uid :identity/provider-uid} user-identity]
     (->> (social/fetch-messages provider access-token provider-uid)
-         (merge-messages user)
-         (doeach demonic/insert))))
+         (refreshed-messages user)
+         (assoc user :user/messages)
+         demonic/insert)))
 
 (defn update-messages [user]
   (doseq [ui (:user/user-identities user)]
