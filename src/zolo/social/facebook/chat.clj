@@ -12,7 +12,7 @@
   (swap! CONNECTIONS assoc uid chat-conn))
 
 (defn connect-user! [u]
-  (let [{uid :social/provider-uid access-token :social/auth-token} (user/fb-social-identity u)]
+  (let [{uid :social/provider-uid access-token :social/auth-token} (user/fb-user-identity u)]
     (logger/trace "UID:" uid)
     (logger/trace "AT:" access-token)    
     (add-to-connections! uid (FacebookChat. (conf/fb-app-id) access-token))))

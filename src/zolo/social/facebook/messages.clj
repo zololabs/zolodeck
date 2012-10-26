@@ -6,9 +6,12 @@
         zolodeck.utils.clojure)
   (:require [zolo.utils.domain :as domain]
             [zolodeck.utils.maps :as maps]
-            [zolodeck.utils.calendar :as zolo-cal]))
+            [zolo.social.facebook.stream :as stream]
+            [zolodeck.utils.calendar :as zolo-cal]
+            [clj-time.coerce :as ctc]))
 
 (def MODE-INBOX "INBOX")
+(def MODE-FEED "FEED")
 
 (def FB-MESSAGE-KEYS
   {:attachment :message/attachments
@@ -23,12 +26,35 @@
    ;;TODO Add :message/subject
    })
 
+(def FB-POST-KEYS
+  {:id :message/message-id
+   :from :message/from
+   :created_time :message/date
+   :message :message/text
+   :story :message/story
+   :to :message/to
+   :picture :message/picture 
+   :link :message/link
+   :icon :message/icon
+   :mode :message/mode
+})
+
 (defn fb-message->message [fb-message]
   (-> fb-message
       (assoc :created_time (zolo-cal/millis->instant (-> fb-message :created_time (* 1000))))
       ;;TODO Make this an enum too
       (assoc :mode MODE-INBOX)
       (maps/update-all-map-keys FB-MESSAGE-KEYS)
+      (assoc :message/provider :provider/facebook)
+      (domain/force-schema-types)))
+
+(defn fb-post->message [fb-post]
+  (-> fb-post
+      (assoc :created_time (ctc/to-date (:created_time fb-post)))
+      (assoc :from (get-in fb-post [:from :id]))
+      (assoc :to (map :id (get-in fb-post [:to :data])))
+      (assoc :mode MODE-FEED)
+      (maps/update-all-map-keys FB-POST-KEYS)
       (assoc :message/provider :provider/facebook)
       (domain/force-schema-types)))
 
@@ -68,3 +94,12 @@
           (map fb-message->message)))
   ([auth-token]
      (fetch-inbox auth-token "1990-01-01")))
+
+;; TODO this date needs to be based on last refreshed data
+(defn fetch-feed [auth-token user-id]
+  (->> (stream/recent-activity-until auth-token user-id "2012-10-01")
+       (map fb-post->message)))
+
+(defn fetch-all-messages [auth-token user-id]
+  (concat (fetch-inbox auth-token)
+          (fetch-feed auth-token user-id)))

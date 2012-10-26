@@ -30,6 +30,6 @@
 
 (defmethod social/fetch-messages :provider/facebook [provider access-token user-id]
   (logger/trace "FetchMessages:" provider)
-  (let [msgs (messages/fetch-inbox access-token)]
+  (let [msgs (messages/fetch-all-messages access-token user-id)]
     ;(logger/trace "Got messages, count:" (count msgs))
     msgs))

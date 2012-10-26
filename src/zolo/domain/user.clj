@@ -9,6 +9,7 @@
   (:require [zolo.utils.domain :as domain]
             [zolo.utils.readers :as readers]
             [zolo.domain.social-identity :as social-identity]
+            [zolo.domain.user-identity :as user-identity]
             [zolodeck.utils.string :as zolo-str]
             [zolodeck.utils.calendar :as zolo-cal]
             [zolodeck.utils.maps :as zolo-maps]
@@ -62,17 +63,17 @@
         first
         loadable/entity->loadable)))
 
-(defn fb-social-identity [u]
+(defn fb-user-identity [u]
   (->> u
-       :user/social-identities
-       (filter social-identity/is-fb?)
+       :user/user-identities
+       (filter user-identity/is-fb?)
        first))
 
 (defn fb-id [u]
-  (-> u fb-social-identity :social/provider-uid))
+  (-> u fb-user-identity :identity/provider-uid))
 
 (defn fb-access-token [u]
-  (-> u fb-social-identity :social/auth-token))
+  (-> u fb-user-identity :identity/auth-token))
 
 (defn reload [u]
   (find-by-guid (:user/guid u)))

@@ -18,6 +18,13 @@
 (defn- user-info-url [user-id]
   (str "https://graph.facebook.com/"  user-id))
 
+(defn recent-activity-url [user-id]
+  ;; (str "https://graph.facebook.com/"
+  ;;      user-id
+  ;;      "?fields=posts.fields(created_time,from,id,message,status_type,type,to,source,comments,likes)")
+  (str "https://graph.facebook.com/" user-id "/feed")
+  )
+
 (defn get-json [url access-token query-params]
   (-> (http/get url
                 {:query-params (merge {:access_token access-token} query-params)})
@@ -27,19 +34,26 @@
 (defn- get-json-body [url]
   (-> url http/get :body json/read-json))
 
-(defn- get-pages [payload]
+(defn- get-pages [payload items-done-tester-fn]
   (let [data (:data payload)
         has-next-url (get-in payload [:paging :next])]
-    (if has-next-url
-      (lazy-cat data (get-pages (get-json-body has-next-url)))
+    (print-vals "Get-pages, data payload count:" (count data))
+    (if (and has-next-url (not (items-done-tester-fn (last data))))
+      (lazy-cat data (get-pages (get-json-body has-next-url) items-done-tester-fn))
       data)))
 
 (defn get-json-all-pages [url access-token query-params]
   (-> url
       (get-json access-token query-params)
-      get-pages))
+      (get-pages (constantly false))))
+
+(defn get-json-pages-until [url access-token query-params items-done-tester-fn]
+  (-> url
+      (get-json access-token query-params)
+      (get-pages items-done-tester-fn)))
 
 (defn run-fql [access-token fql-string]
+  (print-vals "RunFQL: " fql-string)
   (-> (get-json "https://graph.facebook.com/fql" access-token {:q fql-string})
       :data))
 
