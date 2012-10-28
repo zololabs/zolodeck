@@ -1,5 +1,6 @@
 (ns zolo.social.facebook.gateway
-  (:use zolodeck.utils.debug)
+  (:use zolodeck.utils.debug
+        [slingshot.slingshot :only [throw+ try+]])
   (:require [clj-http.client :as http]
             [clojure.data.json :as json]
             [uri.core :as uri]
@@ -19,6 +20,9 @@
   (str "https://graph.facebook.com/"  user-id))
 
 (defn recent-activity-url [user-id]
+  (if (empty? user-id)
+    (throw+ {:type :missing-argument
+             :message "user-id must be specified when calling recent-activity-url"}))
   ;; (str "https://graph.facebook.com/"
   ;;      user-id
   ;;      "?fields=posts.fields(created_time,from,id,message,status_type,type,to,source,comments,likes)")

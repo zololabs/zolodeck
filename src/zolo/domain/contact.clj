@@ -29,13 +29,20 @@
          (map social-identity/social-identity-info)
          (some #(contacts-lookup %)))))
 
-(defn find-contact-by-provider-info [user provider-info]
-  ((contacts-lookup-table (:user/contacts user)) provider-info))
+(defn provider-info-by-provider [u]
+  (->> u
+       :user/contacts
+       (mapcat :contact/social-identities)
+       (map #(select-keys % [:social/provider :social/provider-uid]))
+       (group-by :social/provider)))
 
-(defn create-contact [user provider-info]
-  ;;(demonic/append-single user :user/contacts contact)
-  ;;TODO Need to create a social detail for new contact 
-  )
+;; (defn find-contact-by-provider-info [user provider-info]
+;;   ((contacts-lookup-table (:user/contacts user)) provider-info))
+
+;; (defn create-contact [user provider-info]
+;;   ;;(demonic/append-single user :user/contacts contact)
+;;   ;;TODO Need to create a social detail for new contact 
+;;   )
 
 (defn fresh-contacts-for-user-identity [user-identity]
   (let [{provider :identity/provider
@@ -77,3 +84,4 @@
 (defn update-score [u c]
   (->  (assoc c :contact/score (score/calculate u c))
        demonic/insert))
+

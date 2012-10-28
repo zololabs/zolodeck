@@ -1,5 +1,6 @@
 (ns zolo.setup.datomic-schema
-  (:use zolodeck.demonic.schema))
+  (:use zolodeck.demonic.schema
+        [datomic.api :only [tempid] :as db]))
 
 (def SCHEMA-TX (atom []))
 
@@ -106,3 +107,23 @@
  (string-fact-schema  :message/picture false "a picture about this message")
  (string-fact-schema  :message/link false "a link about this message")
  )
+
+
+(schema-set "DB-FNs" 
+            {:db/id #db/id [:db.part/user]
+             :db/ident :message-belongs-to-contact?
+             :db/fn (db/function
+                     {:lang "clojure"
+                      :params '[db provider from to legal-provider-infos]
+                      :code '(let [is-provider-id? (fn [m-provider m-from m-to [contact-provider contact-provider-uid]]
+                          (and (= m-provider contact-provider)
+                               (or (= m-from contact-provider-uid)
+                                   (some (fn [to] (= contact-provider-uid to)) m-to))))]
+    (some is-provider-id? legal-provider-infos))})})
+
+;; (schema-set "DB-FNs" 
+;;             {:db/id #db/id[:db.part/user]
+;;              :db/ident :message-belongs-to-contact?
+;;              :db/fn (db/function {:lang "clojure"
+;;                                   :params []
+;;                                   :code '(> 1 2)})})

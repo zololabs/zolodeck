@@ -15,8 +15,11 @@
 (defn social-identity-info [sd]
   [(:social/provider sd) (:social/provider-uid sd)])
 
+(defn is-provider? [si provider]
+  (= provider (:social/provider si)))
+
 (defn is-fb? [si]
-  (= :provider/facebook (:social/provider si)))
+  (is-provider? si :provider/facebook))
 
 (defn find-by-provider-and-provider-uid [provider provider-uid]
   ;;TODO Not using provider for now ... we need to start once we

@@ -97,7 +97,7 @@
 
 ;; TODO this date needs to be based on last refreshed data
 (defn fetch-feed [auth-token user-id]
-  (->> (stream/recent-activity-until auth-token user-id "2012-10-01")
+  (->> (stream/recent-activity-until auth-token user-id "2012-10-20")
        (map fb-post->message)))
 
 (defn fetch-all-messages [auth-token user-id]

@@ -20,16 +20,17 @@
 (defn login-dispatcher [params cookies]
   (get-in params [:provider]))
 
-(defn contacts-dispatcher [provider access-token user-id]
+(defn provider-dispatcher [provider access-token user-id]
   provider)
 
-(def messages-dispatcher contacts-dispatcher)
+;(def messages-dispatcher pr-dispatcher)
 
 (defmulti provider-uid login-dispatcher)
 
 (defmulti signup-user login-dispatcher)
 
-(defmulti fetch-contacts contacts-dispatcher)
+(defmulti fetch-contacts provider-dispatcher)
 
-(defmulti fetch-messages messages-dispatcher)
+(defmulti fetch-messages provider-dispatcher)
 
+(defmulti fetch-feed provider-dispatcher)
