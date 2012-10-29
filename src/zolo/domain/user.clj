@@ -8,6 +8,7 @@
         zolodeck.utils.clojure)
   (:require [zolo.utils.domain :as domain]
             [zolo.utils.readers :as readers]
+            [zolo.domain.accessors :as dom]
             [zolo.domain.social-identity :as social-identity]
             [zolo.domain.user-identity :as user-identity]
             [zolodeck.utils.string :as zolo-str]
@@ -90,7 +91,8 @@
       reload-by-login-provider-uid))
 
 (defn update-scores [u]
-  (doeach #(contact/update-score u %) (:user/contacts u))
+  (let [imbc (dom/inbox-messages-by-contacts u)]
+    (doeach #(contact/update-score imbc %) (:user/contacts u)))
   (reload u))
 
 (defn stamp-updated-time [u]

@@ -38,7 +38,7 @@
 (defn message-belongs? [provider from to legal-provider-infos]
   (some #(is-provider-id? provider from to %) legal-provider-infos))
 
-(defn contact-messages [u c]
+(defn- contact-messages [u c]
   (let [contact-providers (map contact-identifier (:contact/social-identities c))
         qr (demonic/run-query '[:find ?m :in $ ?contact-providers
                          :where

@@ -81,7 +81,7 @@
 (defn reload [c]
   (find-by-guid (:contact/guid c)))
 
-(defn update-score [u c]
-  (->  (assoc c :contact/score (score/calculate u c))
-       demonic/insert))
+(defn update-score [imbc c]
+  (-> (assoc c :contact/score (score/calculate imbc c))
+      demonic/insert))
 

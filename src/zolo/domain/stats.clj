@@ -38,32 +38,6 @@
        (sort-by :contact/score)
        (take number)))
 
-;; (defn recent-message-time [u c]
-;;   (->> c
-;;        (dom/contact-messages u)
-;;        (sort-by :message/date)
-;;        last
-;;        :message/date))
-
-;; (defn oldest-message-time [u c]
-;;   (->> c
-;;        (dom/contact-messages u)
-;;        (reverse-sort-by :message/date)
-;;        last
-;;        :message/date))
-
-(defn no-messages? [u c]
-  (->> c
-       (dom/contact-messages u)
-       empty?))
-
-;; (defn forgotten-contacts [imbc ever-messaged? number]
-;;   (let [contacts (->> u :user/contacts (sort-by #(recent-message-time u %)))
-;;         contacts (if ever-messaged?
-;;                    (remove #(no-messages? u %) contacts)
-;;                    (filter #(no-messages? u %) contacts))]
-;;     (take number contacts)))
-
 (defn forgotten-contacts [imbc number]
   (let [contacts (-> imbc
                      (zolo-maps/select-keys-if #(empty? %2))
@@ -95,13 +69,13 @@
 
 (defn other-stats [u]
   (let [imbc (dom/inbox-messages-by-contacts u)]
-    (merge {:average (zolo-math/average (map :contact/score (:user/contacts u)))
+    (merge {:averagescore (zolo-math/average (map :contact/score (:user/contacts u)))
             :messagecount (count (:user/messages u))
             ;;TODO This needs to be tested
-            :strong-contacts (domap #(fe/format-contact imbc u %) (strong-contacts u 5))   
-            :weak-contacts (domap #(fe/format-contact imbc u %) (weak-contacts u 5))
-            :connect-soon (domap #(fe/format-contact imbc u %) (forgetting-contacts imbc 5))
-            :never-contacted (domap #(fe/format-contact imbc u %) (forgotten-contacts imbc 5))
+            :strong-contacts (domap #(fe/format-contact imbc %) (strong-contacts u 5))   
+            :weak-contacts (domap #(fe/format-contact imbc %) (weak-contacts u 5))
+            :connect-soon (domap #(fe/format-contact imbc %) (forgetting-contacts imbc 5))
+            :never-contacted (domap #(fe/format-contact imbc %) (forgotten-contacts imbc 5))
             :all-week-interaction-count (all-message-count-in-the-past u 7)
             :all-month-interaction-count (all-message-count-in-the-past u 31)}
            (md/distribution-stats u imbc))))
