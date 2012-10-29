@@ -40,7 +40,8 @@
   (try
     (social/fetch-feed provider user-access-token contact-uid)
     (catch Exception e
-      (print-vals "Error occurred processing contact-uid:" contact-uid (.getMessage e)))))
+      (print-vals "Error occurred processing contact-uid:" contact-uid (.getMessage e))
+      nil)))
 
 (defn get-contact-feeds-for-user-identity [ui contacts-by-provider]
   (let [{provider :identity/provider
@@ -48,7 +49,8 @@
     (->> contacts-by-provider
          provider
          (map :social/provider-uid)
-         (mapcat #(get-contact-feed-for-contact provider access-token %)))))
+         (pmap #(get-contact-feed-for-contact provider access-token %))
+         (apply concat))))
 
 (defn get-contact-feeds-for-user [user]
   (let [contacts-by-provider (contact/provider-info-by-provider user)]
