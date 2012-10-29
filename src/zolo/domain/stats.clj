@@ -38,31 +38,51 @@
        (sort-by :contact/score)
        (take number)))
 
-(defn recent-message-time [u c]
-  (->> c
-       (dom/contact-messages u)
-       (sort-by :message/date)
-       last
-       :message/date))
+;; (defn recent-message-time [u c]
+;;   (->> c
+;;        (dom/contact-messages u)
+;;        (sort-by :message/date)
+;;        last
+;;        :message/date))
 
-(defn oldest-message-time [u c]
-  (->> c
-       (dom/contact-messages u)
-       (reverse-sort-by :message/date)
-       last
-       :message/date))
+;; (defn oldest-message-time [u c]
+;;   (->> c
+;;        (dom/contact-messages u)
+;;        (reverse-sort-by :message/date)
+;;        last
+;;        :message/date))
 
 (defn no-messages? [u c]
   (->> c
        (dom/contact-messages u)
        empty?))
 
-(defn forgotten-contacts [u ever-messaged? number]
-  (let [contacts (->> u :user/contacts (sort-by #(recent-message-time u %)))
-        contacts (if ever-messaged?
-                   (remove #(no-messages? u %) contacts)
-                   (filter #(no-messages? u %) contacts))]
+;; (defn forgotten-contacts [imbc ever-messaged? number]
+;;   (let [contacts (->> u :user/contacts (sort-by #(recent-message-time u %)))
+;;         contacts (if ever-messaged?
+;;                    (remove #(no-messages? u %) contacts)
+;;                    (filter #(no-messages? u %) contacts))]
+;;     (take number contacts)))
+
+(defn forgotten-contacts [imbc number]
+  (let [contacts (-> imbc
+                     (zolo-maps/select-keys-if #(empty? %2))
+                     keys)]
     (take number contacts)))
+
+(defn recent-message-time [[c messages]]
+  (->> messages
+       (sort-by :message/date)
+       last
+       :message/date))
+
+(defn forgetting-contacts [imbc number]
+  (let [imbc (-> imbc
+                 (zolo-maps/select-keys-if #(not (empty? %2))))]
+    (->> imbc
+         (sort-by recent-message-time)
+         keys
+         (take number))))
 
 (defn all-messages-in-the-past [u num-days]
   (let [one-week-ago (time/minus (time/now) (time/days num-days))]
@@ -74,13 +94,14 @@
   (count (all-messages-in-the-past u num-days)))
 
 (defn other-stats [u]
-  (merge {:average (zolo-math/average (map :contact/score (:user/contacts u)))
-          :messagecount (count (:user/messages u))
-          ;;TODO This needs to be tested
-          :strong-contacts (domap #(fe/format-contact u %) (strong-contacts u 5))   
-          :weak-contacts (domap #(fe/format-contact u %) (weak-contacts u 5))
-          :connect-soon (domap #(fe/format-contact u %) (forgotten-contacts u true 5))
-          :never-contacted (domap #(fe/format-contact u %) (forgotten-contacts u false 5))
-          :all-week-interaction-count (all-message-count-in-the-past u 7)
-          :all-month-interaction-count (all-message-count-in-the-past u 31)}
-         (md/distribution-stats u)))
+  (let [imbc (dom/inbox-messages-by-contacts u)]
+    (merge {:average (zolo-math/average (map :contact/score (:user/contacts u)))
+            :messagecount (count (:user/messages u))
+            ;;TODO This needs to be tested
+            :strong-contacts (domap #(fe/format-contact imbc u %) (strong-contacts u 5))   
+            :weak-contacts (domap #(fe/format-contact imbc u %) (weak-contacts u 5))
+            :connect-soon (domap #(fe/format-contact imbc u %) (forgetting-contacts imbc 5))
+            :never-contacted (domap #(fe/format-contact imbc u %) (forgotten-contacts imbc 5))
+            :all-week-interaction-count (all-message-count-in-the-past u 7)
+            :all-month-interaction-count (all-message-count-in-the-past u 31)}
+           (md/distribution-stats u imbc))))

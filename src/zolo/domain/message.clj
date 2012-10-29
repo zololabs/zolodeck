@@ -58,8 +58,7 @@
 
 (defn get-all-user-messages [user]
   (concat (get-messages-for-user user)
-          ;(get-contact-feeds-for-user user)
-          ))
+          (get-contact-feeds-for-user user)))
 
 (defn update-messages [user]
   (->> user

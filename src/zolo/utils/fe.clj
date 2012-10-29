@@ -4,7 +4,7 @@
             [clj-time.core :as time])
   (:import org.joda.time.DateTime))
 
-(defn days-not-contacted [u c]
+(defn days-not-contacted [u c imbc]
   (let [messages (dom/contact-messages u c)]
     (if (empty? messages)
       -1
@@ -18,11 +18,11 @@
             i (time/interval ts n)]
         (time/in-days i)))))
 
-(defn format-contact [u c]
+(defn format-contact [u imbc c]
   (let [si (first (:contact/social-identities c))]
     {:name (str (:contact/first-name c) " "
                 (:contact/last-name c))
      :guid (str (:contact/guid c))
      :picture-url (:social/photo-url si)
-     :days-not-contacted (days-not-contacted u c)
+     :days-not-contacted (days-not-contacted u c imbc)
      }))

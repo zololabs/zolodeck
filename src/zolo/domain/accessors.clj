@@ -54,16 +54,13 @@
          (map first)
          (map demonic/load-entity))))
 
-(defn- update-buckets-for [contacts-lookup buckets m contact-ids]
+(defn- update-buckets-for [buckets m contact-ids]
   (let [updater (fn [b contact-id]
-                  (let [c (contacts-lookup [(:message/provider m) contact-id])]
-                    (if c
-                      (update-in b [c] conj m)
-                      b)))]
+                  (update-in b [[(:message/provider m) contact-id]] conj m))]
     (reduce updater buckets contact-ids)))
 
-(defn- bucket-message [contacts-lookup buckets m]
-  (update-buckets-for contacts-lookup buckets m (conj (:message/to m) (:message/from m))))
+(defn- bucket-message [buckets m]
+  (update-buckets-for buckets m (conj (:message/to m) (:message/from m))))
 
 (defn- bucket-si [c buckets si]
   (assoc-in buckets [(contact-identifier si)] c))
@@ -81,8 +78,5 @@
 (defn inbox-messages-by-contacts [u]
   (let [contacts-lookup (contacts-by-social-identifier u)
         inbox-messages (filter #(= "INBOX" (:message/mode %)) (:user/messages u))
-        mbc (reduce (partial bucket-message contacts-lookup) {} inbox-messages)]
-    ;; (print-vals "mbc so far:" mbc)
-    ;; (reduce #(do (assoc-in %1 [%2] (or (mbc %2) []))) {} (:user/contacts u))
-    mbc
-    ))
+        mbc (reduce bucket-message {} inbox-messages)]
+    (reduce #(do (assoc-in %1 [(contacts-lookup %2)] (or (mbc %2) []))) {} (keys contacts-lookup))))
