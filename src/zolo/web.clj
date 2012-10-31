@@ -24,6 +24,13 @@
 (extend java.util.UUID json/Write-JSON
         {:write-json write-json-uuid})
 
+(extend java.util.Date json/Write-JSON
+        {:write-json (fn [d out escape-unicode?]
+                       (.print out (str "'" (zolo-cal/date-to-nice-string d) "'")))})
+
+;; (extend zolodeck.demonic.loadable.Loadable json/Write-JSON
+;;         {:write-json (fn [x out escape-unicode?] (.print out (json/json-str (.m x))))})
+
 (defn json-response [data & [status]]
   {:status (or status 200)
    :headers {"Content-Type" "application/json; charset=utf-8"

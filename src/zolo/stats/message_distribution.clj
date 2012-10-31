@@ -1,7 +1,9 @@
 (ns zolo.stats.message-distribution
   (:use zolodeck.utils.debug
         zolodeck.utils.clojure)
-  (:require [zolodeck.utils.calendar :as zolo-cal]
+  (:require [zolo.domain.accessors :as dom]
+            [zolodeck.utils.calendar :as zolo-cal]
+            [zolodeck.utils.maps :as zolo-maps]
             [clj-time.core :as time]
             [clj-time.coerce :as time-coerce]))
 
@@ -61,7 +63,7 @@
         number-of-messages (count messages)]
     {:weekly-average (float (/ number-of-messages weeks-between))}))
 
-(defn distribution-stats [u imbc]
+(defn distribution-stats [imbc]
   (let [messages (->> imbc vals (apply concat) (sort-by :message/date))]
     (merge (weekly-averages messages)
            (best-week messages))))

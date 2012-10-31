@@ -1,7 +1,9 @@
 (ns zolo.domain.accessors
   (:use zolodeck.utils.debug)
   (:require [zolodeck.demonic.core :as demonic]
-            [zolodeck.demonic.helper :as dhelp]))
+            [zolodeck.demonic.helper :as dhelp]
+            [clj-time.core :as time]
+            [clj-time.coerce :as time-coerce]))
 
 ;; (defn- message-is-from? [provider-uid m]
 ;;   (= provider-uid (:message/from m)))
@@ -75,8 +77,45 @@
        :user/contacts
        (reduce bucket-contact {})))
 
-(defn inbox-messages-by-contacts [u]
+;; (defn inbox-messages-by-contacts [u]
+;;   (let [contacts-lookup (contacts-by-social-identifier u)
+;;         inbox-messages (filter #(= "INBOX" (:message/mode %)) (:user/messages u))
+;;         mbc (reduce bucket-message {} inbox-messages)]
+;;     (reduce #(do (assoc-in %1 [(contacts-lookup %2)] (or (mbc %2) []))) {} (keys contacts-lookup))))
+
+(defn messages-in-the-past [num-days msgs]
+  (let [time-diff (time/minus (time/now) (time/days num-days))]
+    (filter #(time/after? (time-coerce/to-date-time (:message/date %)) time-diff) msgs)))
+
+;; (defn all-messages-in-the-past [mbc num-days]
+;;   (let [time-diff (time/minus (time/now) (time/days num-days))]
+;;     (->> mbc
+;;          vals
+;;          (apply concat)
+;;          (filter #(time/after? (time-coerce/to-date-time (:message/date %)) time-diff)))))
+
+(defn all-messages-in-the-past [mbc num-days]
+  (->> mbc
+       vals
+       (apply concat)
+       (messages-in-the-past num-days)))
+
+(defn all-message-count-in-the-past [mbc num-days]
+  (count (all-messages-in-the-past mbc num-days)))
+
+(defn messages-by-contacts [u message-filter-fn]
   (let [contacts-lookup (contacts-by-social-identifier u)
-        inbox-messages (filter #(= "INBOX" (:message/mode %)) (:user/messages u))
-        mbc (reduce bucket-message {} inbox-messages)]
-    (reduce #(do (assoc-in %1 [(contacts-lookup %2)] (or (mbc %2) []))) {} (keys contacts-lookup))))
+        inbox-messages (filter message-filter-fn (:user/messages u))
+        mbc (reduce bucket-message {} inbox-messages)
+        ;messages-for-contact (fn [c] (if-let [msgs (mbc c)] (sort-by :message/date msgs)))
+        ]
+    (reduce #(assoc-in %1 [(contacts-lookup %2)] (sort-by :message/date (mbc %2))) {} (keys contacts-lookup))))
+
+(defn inbox-messages-by-contacts [u]
+  (messages-by-contacts u #(= "INBOX" (:message/mode %))))
+
+(defn feed-messages-by-contacts [u]
+  (messages-by-contacts u #(= "FEED" (:message/mode %))))
+
+(defn all-messages-by-contacts [u]
+  (messages-by-contacts u (constantly true)))

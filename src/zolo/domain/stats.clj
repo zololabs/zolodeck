@@ -58,15 +58,6 @@
          keys
          (take number))))
 
-(defn all-messages-in-the-past [u num-days]
-  (let [one-week-ago (time/minus (time/now) (time/days num-days))]
-    (->> u
-         :user/messages
-         (filter #(time/after? (time-coerce/to-date-time (:message/date %)) one-week-ago)))))
-
-(defn all-message-count-in-the-past [u num-days]
-  (count (all-messages-in-the-past u num-days)))
-
 (defn other-stats [u]
   (let [imbc (dom/inbox-messages-by-contacts u)]
     (merge {:averagescore (zolo-math/average (map :contact/score (:user/contacts u)))
@@ -76,6 +67,12 @@
             :weak-contacts (domap #(fe/format-contact imbc %) (weak-contacts u 5))
             :connect-soon (domap #(fe/format-contact imbc %) (forgetting-contacts imbc 5))
             :never-contacted (domap #(fe/format-contact imbc %) (forgotten-contacts imbc 5))
-            :all-week-interaction-count (all-message-count-in-the-past u 7)
-            :all-month-interaction-count (all-message-count-in-the-past u 31)}
-           (md/distribution-stats u imbc))))
+            :all-week-interaction-count (dom/all-message-count-in-the-past imbc 7)
+            :all-month-interaction-count (dom/all-message-count-in-the-past imbc 31)}
+           (md/distribution-stats imbc))))
+
+(defn recent-activity [u]
+  (-> u
+      dom/feed-messages-by-contacts
+      (zolo-maps/transform-vals-with (fn [_ v] (dom/messages-in-the-past 7 v)))
+      (zolo-maps/update-all-map-keys #(select-keys % [:contact/first-name :contact/last-name :contact/score]))))
