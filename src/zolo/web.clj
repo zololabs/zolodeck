@@ -19,14 +19,14 @@
   (get-in *ZOLO-REQUEST* [:headers "origin"]))
 
 (defn- write-json-uuid [x out escape-unicode?]
-  (.print out (str "'" x "'")))
+  (.print out (str "\"" x "\"")))
 
 (extend java.util.UUID json/Write-JSON
         {:write-json write-json-uuid})
 
 (extend java.util.Date json/Write-JSON
         {:write-json (fn [d out escape-unicode?]
-                       (.print out (str "'" (zolo-cal/date-to-nice-string d) "'")))})
+                       (.print out (str "\"" (zolo-cal/date-to-string d (zolo-cal/simple-date-format "yyyy-MM-dd")) "\"")))})
 
 ;; (extend zolodeck.demonic.loadable.Loadable json/Write-JSON
 ;;         {:write-json (fn [x out escape-unicode?] (.print out (json/json-str (.m x))))})

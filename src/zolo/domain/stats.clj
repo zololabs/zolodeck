@@ -72,7 +72,16 @@
            (md/distribution-stats imbc))))
 
 (defn recent-activity [u]
-  (-> u
-      dom/feed-messages-by-contacts
-      (zolo-maps/transform-vals-with (fn [_ v] (dom/messages-in-the-past 7 v)))
-      (zolo-maps/update-all-map-keys #(select-keys % [:contact/first-name :contact/last-name :contact/score]))))
+  (let [message-display-keys [:message/text :message/date :message/story :message/icon :message/link :message/picture]
+        msg-date-filter (dom/message-filter-fn-for-days-within 2)
+        msg-selector (fn [m]
+                       (if (msg-date-filter m)
+                         (-> m
+                             (select-keys message-display-keys)
+                             (zolo-maps/update-all-map-keys name))))
+        contact-display-keys [:contact/guid :contact/first-name :contact/last-name :contact/score]
+        contact-for-display (fn [c] (select-keys c contact-display-keys))
+        a-few (fn [a-map] (apply hash-map (apply concat (take 3 a-map))))]    
+    (-> u
+        dom/feed-messages-by-contacts
+        (zolo-maps/transform-key-vals-with contact-for-display #(keep msg-selector %)))))

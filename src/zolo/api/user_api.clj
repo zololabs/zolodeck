@@ -35,7 +35,7 @@
   (let [u (user/fully-loaded-user)]
     {:network (stats/network-stats u)
      :other (stats/other-stats u)
-     :recent-activity (stats/recent-activity u)
+     :recent (stats/recent-activity u)
      }))
 
 
