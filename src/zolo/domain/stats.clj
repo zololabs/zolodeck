@@ -71,17 +71,33 @@
             :all-month-interaction-count (dom/all-message-count-in-the-past imbc 31)}
            (md/distribution-stats imbc))))
 
+(defn- activity-text-to-display [a]
+  (let [link (if-let [l (:message/link a)]
+               (str "Shared a <a href='" l "'>link</a>"))]
+    (or (a :message/text) (a :message/story) link)))
+
+(defn- activity-picture-to-display [a]
+  (or (a :message/picture) (a :message/icon)))
+
+(defn- feed-item-for-display [c item]
+  (let [contact-keys [:contact/guid :contact/first-name :contact/last-name :contact/score]
+        message-keys [:message/text :message/date :message/story :message/icon :message/link :message/picture]]
+    (-> (merge (select-keys c contact-keys)
+               (select-keys item message-keys))
+        ;(zolo-maps/update-val :message/date (fn [m k v] (zolo-cal/date-to-nice-string v)))
+        (zolo-maps/update-val :message/text (fn [m k v] (activity-text-to-display m)))
+        (zolo-maps/update-val :message/picture (fn [m k v] (activity-picture-to-display m)))
+        ;(dissoc :message/story :message/link :message/icon)
+        (zolo-maps/update-all-map-keys name))))
+
+(defn- fmbc->list [fmbc]
+  (->> fmbc
+       (mapcat (fn [[c feed-items]] (map (partial feed-item-for-display c) feed-items)))))
+
 (defn recent-activity [u]
-  (let [message-display-keys [:message/text :message/date :message/story :message/icon :message/link :message/picture]
-        msg-date-filter (dom/message-filter-fn-for-days-within 2)
-        msg-selector (fn [m]
-                       (if (msg-date-filter m)
-                         (-> m
-                             (select-keys message-display-keys)
-                             (zolo-maps/update-all-map-keys name))))
-        contact-display-keys [:contact/guid :contact/first-name :contact/last-name :contact/score]
-        contact-for-display (fn [c] (select-keys c contact-display-keys))
-        a-few (fn [a-map] (apply hash-map (apply concat (take 3 a-map))))]    
-    (-> u
-        dom/feed-messages-by-contacts
-        (zolo-maps/transform-key-vals-with contact-for-display #(keep msg-selector %)))))
+  (->> u
+       dom/feed-messages-by-contacts
+       fmbc->list
+       (reverse-sort-by #(% "date"))
+       (take 50)
+       print-vals))
