@@ -1,4 +1,5 @@
 (ns zolo.storm.facebook
+  (:gen-class)
   (:use zolodeck.utils.debug        
         backtype.storm.clojure
         backtype.storm.config
@@ -8,7 +9,8 @@
             [zolodeck.demonic.core :as demonic]
             [zolo.domain.user :as user]
             [zolo.utils.logger :as logger]
-            [zolodeck.utils.clojure :as clj])
+            [zolodeck.utils.clojure :as clj]
+            [clojure.tools.cli :as cli])
   (:import [backtype.storm StormSubmitter LocalCluster]))
 
 (defn user-guids-to-process []
@@ -86,3 +88,22 @@
   (let [cluster (LocalCluster.)]
     (logger/trace "Submitting topology...")
     (.submitTopology cluster "facebook" {TOPOLOGY-DEBUG true} (fb-topology))))
+
+
+(defn process-args [args]
+  (cli/cli args
+           ["-e"  "--env" "development/staging/production" :default "development" :parse-fn #(keyword (.toLowerCase %))]
+           ["-h" "--help" "Show help" :default false :flag true]))
+
+;;TODO Make this the entry point for running both in local and remote mode
+
+(defn -main [& cl-args]
+  (print-vals "CL Args :" cl-args)
+  (let [[options args banner] (process-args cl-args)]
+    (when (:help options)
+      (println banner)
+      (System/exit 0))
+    (let [env (:env options)
+          cluster (StormSubmitter. )]
+      (System/setProperty "ZOLODECK_ENV" env)
+      (.submitTopology cluster "facebook" {TOPOLOGY-DEBUG true} (fb-topology)))))
