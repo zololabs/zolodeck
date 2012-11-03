@@ -20,7 +20,7 @@
 (defn login-dispatcher [params cookies]
   (get-in params [:provider]))
 
-(defn provider-dispatcher [provider access-token user-id]
+(defn provider-dispatcher [provider access-token user-id date]
   provider)
 
 ;(def messages-dispatcher pr-dispatcher)

@@ -33,9 +33,10 @@
 
 (defn stats [request-params]
   (let [u (user/fully-loaded-user)]
-    {:network (stats/network-stats u)
-     :other (stats/other-stats u)
-     :recent (stats/recent-activity u)
-     }))
+    (if (user/been-processed? u)
+      {:network (stats/network-stats u)
+       :other (stats/other-stats u)
+       :recent (stats/recent-activity u)}
+      {:network {} :other {} :recent []})))
 
 

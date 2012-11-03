@@ -77,25 +77,12 @@
        :user/contacts
        (reduce bucket-contact {})))
 
-;; (defn inbox-messages-by-contacts [u]
-;;   (let [contacts-lookup (contacts-by-social-identifier u)
-;;         inbox-messages (filter #(= "INBOX" (:message/mode %)) (:user/messages u))
-;;         mbc (reduce bucket-message {} inbox-messages)]
-;;     (reduce #(do (assoc-in %1 [(contacts-lookup %2)] (or (mbc %2) []))) {} (keys contacts-lookup))))
-
 (defn message-filter-fn-for-days-within [num-days]
   (let [time-diff (time/minus (time/now) (time/days num-days))]
     #(time/after? (time-coerce/to-date-time (:message/date %)) time-diff)))
 
 (defn messages-in-the-past [num-days msgs]
   (filter (message-filter-fn-for-days-within num-days) msgs))
-
-;; (defn all-messages-in-the-past [mbc num-days]
-;;   (let [time-diff (time/minus (time/now) (time/days num-days))]
-;;     (->> mbc
-;;          vals
-;;          (apply concat)
-;;          (filter #(time/after? (time-coerce/to-date-time (:message/date %)) time-diff)))))
 
 (defn all-messages-in-the-past [mbc num-days]
   (->> mbc

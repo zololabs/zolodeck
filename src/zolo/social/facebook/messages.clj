@@ -6,6 +6,7 @@
         zolodeck.utils.clojure)
   (:require [zolo.utils.domain :as domain]
             [zolodeck.utils.maps :as maps]
+            [zolo.utils.logger :as logger]
             [zolo.social.facebook.stream :as stream]
             [zolodeck.utils.calendar :as zolo-cal]
             [clj-time.coerce :as ctc]))
@@ -88,6 +89,7 @@
 ;;TODO Random date is passed ... need to fix this
 (defn fetch-inbox
   ([auth-token start-date-yyyy-MM-dd-string]
+     (logger/trace "Fetching messages from:" start-date-yyyy-MM-dd-string)
      (->> INBOX-FQL
           (run-fql auth-token)
           (mapcat #(fetch-thread auth-token % (to-seconds start-date-yyyy-MM-dd-string)))
@@ -96,10 +98,11 @@
      (fetch-inbox auth-token "1990-01-01")))
 
 ;; TODO this date needs to be based on last refreshed data
-(defn fetch-feed [auth-token user-id]
-  (->> (stream/recent-activity-until auth-token user-id "2012-10-20")
+(defn fetch-feed [auth-token user-id yyyy-MM-dd-string]
+  (logger/trace "Fetching feed for user-id:" user-id ", from:" yyyy-MM-dd-string)
+  (->> (stream/recent-activity-until auth-token user-id yyyy-MM-dd-string)
        (map fb-post->message)))
 
-(defn fetch-all-messages [auth-token user-id]
-  (concat (fetch-inbox auth-token)
-          (fetch-feed auth-token user-id)))
+(defn fetch-all-messages [auth-token user-id date]
+  (concat (fetch-inbox auth-token date)
+          (fetch-feed auth-token user-id date)))

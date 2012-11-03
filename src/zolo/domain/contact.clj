@@ -48,7 +48,7 @@
   (let [{provider :identity/provider
          access-token :identity/auth-token
          provider-uid :identity/provider-uid} user-identity]
-    (social/fetch-contacts provider access-token provider-uid)))
+    (social/fetch-contacts provider access-token provider-uid "2012-10-22")))
 
 (defn fresh-contacts [u]
   (mapcat fresh-contacts-for-user-identity (:user/user-identities u)))

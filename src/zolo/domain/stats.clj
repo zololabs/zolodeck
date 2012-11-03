@@ -14,16 +14,19 @@
             [clj-time.core :as time]
             [clj-time.coerce :as time-coerce]))
 
+(defn contact-score [c]
+  (or (:contact/score c) 0))
+
 (defn contacts-with-score-between [u lower upper]
-  (filter #(and (>= (:contact/score %) lower)
-                (< (:contact/score %) upper))
+  (filter #(and (>= (contact-score %) lower)
+                (<  (contact-score %) upper))
           (:user/contacts u)))
 
 (defn network-stats [u]
-  {:total (count (:user/contacts u))
+  {:total  (count (:user/contacts u))
    :strong (count (contacts-with-score-between u 250 10000000))
    :medium (count (contacts-with-score-between u 50 250))
-   :weak (count (contacts-with-score-between u 0 50))})
+   :weak   (count (contacts-with-score-between u 0 50))})
 
 (defn strong-contacts [u number]
   (->> u
@@ -60,7 +63,7 @@
 
 (defn other-stats [u]
   (let [imbc (dom/inbox-messages-by-contacts u)]
-    (merge {:averagescore (zolo-math/average (map :contact/score (:user/contacts u)))
+    (merge {:averagescore (zolo-math/average (map contact-score (:user/contacts u)))
             :messagecount (count (:user/messages u))
             ;;TODO This needs to be tested
             :strong-contacts (domap #(fe/format-contact imbc %) (strong-contacts u 5))   
@@ -99,5 +102,4 @@
        dom/feed-messages-by-contacts
        fmbc->list
        (reverse-sort-by #(% "date"))
-       (take 50)
-       print-vals))
+       (take 50)))

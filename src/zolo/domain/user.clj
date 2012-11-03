@@ -126,3 +126,6 @@
          u)))
   ([]
      (fully-loaded-user (current-user))))
+
+(defn been-processed? [u]
+  (:user/last-updated u))

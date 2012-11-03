@@ -43,19 +43,6 @@
        last
        best-week-printer))
 
-;; (defn first-or-last-message-time-for-user [u sorter]
-;;   (->> u
-;;        :user/messages
-;;        (sorter :message/date)
-;;        last
-;;        :message/date))
-
-;; (defn first-message-time-for-user [u]
-;;   (first-or-last-message-time-for-user u reverse-sort-by))
-
-;; (defn last-message-time-for-user [u]
-;;   (first-or-last-message-time-for-user u sort-by))
-
 (defn weekly-averages [messages]
   (let [min-date (-> messages first :message/date)
         max-date (-> messages last :message/date)
@@ -64,6 +51,6 @@
     {:weekly-average (float (/ number-of-messages weeks-between))}))
 
 (defn distribution-stats [imbc]
-  (let [messages (->> imbc vals (apply concat) (sort-by :message/date))]
+  (let [messages (->> imbc vals (apply concat))]
     (merge (weekly-averages messages)
            (best-week messages))))

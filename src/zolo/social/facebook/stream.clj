@@ -37,7 +37,7 @@
   (gateway/get-json-pages-until
      (gateway/recent-activity-url provider-uid)
      auth-token
-     {:fields "from,created_time,message,story,to,type,picture,link,icon" :limit 50}
+     {:fields "from,created_time,message,story,to,type,picture,link,icon" :limit 200}
      (fn [i]
        ;(print-vals "Item date:" (ctc/to-date-time (:created_time i)) "test:" (.isBefore (ctc/to-date-time (:created_time i)) (ctc/to-date-time until-yyyy-mm-dd-string)))
        (.isAfter (ctc/to-date-time since-yyyy-mm-dd-string) (ctc/to-date-time (:created_time i))))))
