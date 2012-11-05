@@ -4,7 +4,8 @@
         zolodeck.utils.debug
         zolodeck.utils.calendar
         zolodeck.utils.clojure)
-  (:require [zolo.utils.domain :as domain]
+  (:require [clojure.data.json :as json]
+            [zolo.utils.domain :as domain]
             [zolodeck.utils.maps :as maps]
             [zolo.utils.logger :as logger]
             [zolo.social.facebook.stream :as stream]
@@ -75,27 +76,46 @@
         (assoc :subject subject)
         (assoc :to actual-recipients))))
 
-(defn expand-messages [subject recipients msgs]
-  ;(mapcat #(duplicate-msg-for-each-recipient subject recipients %) msgs)
-  (map #(associate-fields subject recipients %) msgs)
-  )
+(defn tag-message-fields [subject recipients msgs]
+  (map #(associate-fields subject recipients %) msgs))
  
-(defn fetch-thread [auth-token thread-info start-time]
+;; (defn fetch-thread [auth-token thread-info start-time]
+;;   (let [{thread-id :thread_id recipients :recipients subject :subject} thread-info]
+;;     (->> (message-fql thread-id start-time)
+;;          (run-fql auth-token)
+;;          (expand-messages subject recipients))))
+
+(defn- messages-fql-for-thread [auth-token thread-info start-time]
   (let [{thread-id :thread_id recipients :recipients subject :subject} thread-info]
-    (->> (message-fql thread-id start-time)
-         (run-fql auth-token)
-         (expand-messages subject recipients))))
- 
-;;TODO Random date is passed ... need to fix this
-(defn fetch-inbox
-  ([auth-token start-date-yyyy-MM-dd-string]
-     (logger/trace "Fetching messages from:" start-date-yyyy-MM-dd-string)
-     (->> INBOX-FQL
-          (run-fql auth-token)
-          (mapcat #(fetch-thread auth-token % (to-seconds start-date-yyyy-MM-dd-string)))
-          (map fb-message->message)))
-  ([auth-token]
-     (fetch-inbox auth-token "1990-01-01")))
+    [thread-id (message-fql thread-id start-time)]))
+
+(defn fetch-threads-info [auth-token]
+  (->> INBOX-FQL
+       (run-fql auth-token)
+       (maps/group-first-by :thread_id)))
+
+(defn- process-thread-result [threads-info {thread-id :name messages :fql_result_set}]
+  (tag-message-fields (get-in threads-info [thread-id :subject])
+                      (get-in threads-info [thread-id :recipients])
+                      messages))
+
+(defn fetch-inbox [auth-token start-date-yyyy-MM-dd-string]
+  (let [threads-info (fetch-threads-info auth-token)]
+    (->> (vals threads-info)
+         (mapcat #(messages-fql-for-thread auth-token % start-date-yyyy-MM-dd-string))
+         (apply hash-map)
+         (run-fql-multi auth-token)
+         (mapcat #(process-thread-result threads-info %)))))
+
+;; (defn fetch-inbox
+;;   ([auth-token start-date-yyyy-MM-dd-string]
+;;      (logger/trace "Fetching messages from:" start-date-yyyy-MM-dd-string)
+;;      (->> INBOX-FQL
+;;           (run-fql auth-token)
+;;           (mapcat #(fetch-thread auth-token % (to-seconds start-date-yyyy-MM-dd-string)))
+;;           (map fb-message->message)))
+;;   ([auth-token]
+;;      (fetch-inbox auth-token "1990-01-01")))
 
 ;; TODO this date needs to be based on last refreshed data
 (defn fetch-feed [auth-token user-id yyyy-MM-dd-string]
@@ -105,4 +125,5 @@
 
 (defn fetch-all-messages [auth-token user-id date]
   (concat (fetch-inbox auth-token date)
-          (fetch-feed auth-token user-id date)))
+          ;(fetch-feed auth-token user-id date)
+          ))

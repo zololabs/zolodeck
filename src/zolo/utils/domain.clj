@@ -20,10 +20,6 @@
       (zolo-maps/transform-vals-with force-schema-attrib)
       (zolo-maps/select-keys-if (fn [k v] (not (nil? v))))))
 
-(defn group-first-by [attrib objects]
-  (-> (group-by attrib objects)
-      (zolo-maps/transform-vals-with (fn [_ v] (first v)))))
-
 (defn update-fresh-entities-with-db-id [existing-entities fresh-entities group-by-fn guid-key]
   (if (empty? existing-entities)
     fresh-entities

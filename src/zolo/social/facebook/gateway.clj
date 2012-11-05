@@ -57,9 +57,15 @@
       (get-pages items-done-tester-fn)))
 
 (defn run-fql [access-token fql-string]
-  (print-vals "RunFQL: " fql-string)
+  ;; (print-vals "RunFQL: " fql-string)
   (-> (get-json "https://graph.facebook.com/fql" access-token {:q fql-string})
       :data))
+
+(defn run-fql-multi [access-token fql-strings-as-map]
+  ;; (print-vals "RunMultiFQL: " fql-strings-as-map)
+  (->> {:q (json/json-str fql-strings-as-map)}
+       (get-json "https://graph.facebook.com/fql" access-token)
+       :data))
 
 (defn user-info [access-token user-id]
   (get-json (user-info-url user-id) access-token {}))

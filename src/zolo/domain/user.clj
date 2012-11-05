@@ -119,11 +119,13 @@
 ;;TODO Junk function. Need to design the app
 (defn fully-loaded-user
   ([u]
-     (if (empty? (:user/contacts u))
+     #_(if (empty? (:user/contacts u))
        (refresh-user-data u)
        (do
          (logger/debug "User is already fully loaded")
-         u)))
+         u))
+
+     u)
   ([]
      (fully-loaded-user (current-user))))
 
