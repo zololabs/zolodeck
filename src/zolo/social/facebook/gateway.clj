@@ -3,9 +3,12 @@
         [slingshot.slingshot :only [throw+ try+]])
   (:require [clj-http.client :as http]
             [clojure.data.json :as json]
+            [zolodeck.utils.maps :as maps]
             [uri.core :as uri]
             [zolo.setup.config :as conf]
             [zolo.utils.logger :as logger]))
+
+(def FACEBOOK-BATCH-SIZE 50)
 
 (defn- encoded-request-params [body-map]
   {:content-type "application/x-www-form-urlencoded"
@@ -66,6 +69,15 @@
   (->> {:q (json/json-str fql-strings-as-map)}
        (get-json "https://graph.facebook.com/fql" access-token)
        :data))
+
+(defn process-fql-multi
+  "result-processor accepts two arguments: name of the query and the corresponding query result"
+  [access-token result-processor fql-strings-as-map]
+  (let [batches (maps/partition-into FACEBOOK-BATCH-SIZE fql-strings-as-map)]
+    (->> batches
+         (mapcat #(run-fql-multi access-token %))
+         (mapcat (fn [{query-name :name results :fql_result_set}]
+                   (result-processor query-name results))))))
 
 (defn user-info [access-token user-id]
   (get-json (user-info-url user-id) access-token {}))
