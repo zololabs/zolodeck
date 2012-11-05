@@ -93,14 +93,6 @@
                       (get-in threads-info [thread-id :recipients])
                       messages))
 
-;; (defn fetch-inbox [auth-token start-date-yyyy-MM-dd-string]
-;;   (let [threads-info (fetch-threads-info auth-token)]
-;;     (->> (vals threads-info)
-;;          (mapcat #(messages-fql-for-thread auth-token % start-date-yyyy-MM-dd-string))
-;;          (apply hash-map)
-;;          (run-fql-multi auth-token)
-;;          (mapcat #(process-thread-result threads-info %)))))
-
 (defn fetch-inbox [auth-token start-date-yyyy-MM-dd-string]
   (let [threads-info (fetch-threads-info auth-token)]
     (->> (vals threads-info)

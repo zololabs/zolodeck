@@ -21,6 +21,15 @@
 (defn is-fb? [si]
   (is-provider? si :provider/facebook))
 
+(defn fb-social-identity [c]
+  (->> c
+       :contact/social-identities
+       (filter is-fb?)
+       first))
+
+(defn fb-id [c]
+  (-> c fb-social-identity :social/provider-uid))
+
 (defn find-by-provider-and-provider-uid [provider provider-uid]
   ;;TODO Not using provider for now ... we need to start once we
   ;;figure how to store enum
