@@ -35,3 +35,7 @@
 (defmethod social/fetch-feed :provider/facebook [provider access-token user-id date]
   (logger/trace "FetchFeed:" provider user-id)
   (messages/fetch-feed access-token user-id date))
+
+(defmethod social/fetch-contact-feeds :provider/facebook [provider access-token last-updated-string provider-uids]
+  (logger/trace "FetchContactFeeds:" provider-uids)
+  (messages/fetch-all-contact-feeds access-token last-updated-string provider-uids))

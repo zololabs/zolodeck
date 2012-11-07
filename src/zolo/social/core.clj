@@ -34,3 +34,5 @@
 (defmulti fetch-messages provider-dispatcher)
 
 (defmulti fetch-feed provider-dispatcher)
+
+(defmulti fetch-contact-feeds (fn [provider _ _ _] provider))

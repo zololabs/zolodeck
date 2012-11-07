@@ -98,7 +98,8 @@
     (->> (vals threads-info)
          (mapcat #(messages-fql-for-thread auth-token % start-date-yyyy-MM-dd-string))
          (apply hash-map)
-         (process-fql-multi auth-token #(process-thread-result threads-info %1 %2)))))
+         (process-fql-multi auth-token #(process-thread-result threads-info %1 %2))
+         (map fb-post->message))))
 
 ;; TODO this date needs to be based on last refreshed data
 (defn fetch-feed [auth-token user-id yyyy-MM-dd-string]
@@ -108,5 +109,9 @@
 
 (defn fetch-all-messages [auth-token user-id date]
   (concat (fetch-inbox auth-token date)
-          ;(fetch-feed auth-token user-id date)
-          ))
+          (fetch-feed auth-token user-id date)))
+
+(defn fetch-all-contact-feeds [access-token last-updated-string provider-uids]
+  (->> provider-uids
+       (stream/fetch-contact-feeds access-token last-updated-string)
+       (map fb-post->message)))

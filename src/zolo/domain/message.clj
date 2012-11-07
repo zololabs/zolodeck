@@ -41,21 +41,36 @@
          :user/user-identities
          (mapcat #(get-messages-for-user-identity % last-updated-string)))))
 
-(defn get-contact-feed-for-contact [provider user-access-token contact-uid last-updated-string]
-  (try
-    (social/fetch-feed provider user-access-token contact-uid last-updated-string)
-    (catch Exception e
-      (print-vals "Error occurred processing contact-uid:" contact-uid (.getMessage e))
-      nil)))
+;; (defn get-contact-feed-for-contact [provider user-access-token contact-uid last-updated-string]
+;;   (try
+;;     (social/fetch-feed provider user-access-token contact-uid last-updated-string)
+;;     (catch Exception e
+;;       (print-vals "Error occurred processing contact-uid:" contact-uid (.getMessage e))
+;;       nil)))
+
+;; (defn get-contact-feeds-for-user-identity [ui contacts-by-provider last-updated-string]
+;;   (let [{provider :identity/provider
+;;          access-token :identity/auth-token} ui]
+;;     (->> contacts-by-provider
+;;          provider
+;;          (map :social/provider-uid)
+;;          (pmap #(get-contact-feed-for-contact provider access-token % last-updated-string))
+;;          (apply concat))))
+
+;; (defn get-contact-feeds-for-user [user]
+;;   (let [contacts-by-provider (contact/provider-info-by-provider user)
+;;         last-updated-string (or (-> user :user/last-updated zolo-cal/date-to-simple-string)
+;;                                 FEEDS-START-TIME)]
+;;     (->> user
+;;          :user/user-identities
+;;          (mapcat #(get-contact-feeds-for-user-identity % contacts-by-provider last-updated-string)))))
 
 (defn get-contact-feeds-for-user-identity [ui contacts-by-provider last-updated-string]
-  (let [{provider :identity/provider
-         access-token :identity/auth-token} ui]
+  (let [{provider :identity/provider access-token :identity/auth-token} ui]
     (->> contacts-by-provider
          provider
          (map :social/provider-uid)
-         (pmap #(get-contact-feed-for-contact provider access-token % last-updated-string))
-         (apply concat))))
+         (social/fetch-contact-feeds provider access-token last-updated-string))))
 
 (defn get-contact-feeds-for-user [user]
   (let [contacts-by-provider (contact/provider-info-by-provider user)
@@ -64,6 +79,7 @@
     (->> user
          :user/user-identities
          (mapcat #(get-contact-feeds-for-user-identity % contacts-by-provider last-updated-string)))))
+
 
 (defn get-all-user-messages [user]
   (concat (get-messages-for-user user)

@@ -32,6 +32,12 @@
   (str "https://graph.facebook.com/" user-id "/feed")
   )
 
+(defn create-url [url access-token query-params-map]
+  (->> query-params-map
+       (merge {:access_token access-token})
+       http/generate-query-string
+       (str url "?")))
+
 (defn get-json [url access-token query-params]
   (-> (http/get url
                 {:query-params (merge {:access_token access-token} query-params)})
@@ -60,7 +66,7 @@
       (get-pages items-done-tester-fn)))
 
 (defn run-fql [access-token fql-string]
-  ;; (print-vals "RunFQL: " fql-string)
+  (print-vals "RunFQL: " fql-string)
   (-> (get-json "https://graph.facebook.com/fql" access-token {:q fql-string})
       :data))
 
