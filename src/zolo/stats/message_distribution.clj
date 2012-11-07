@@ -44,8 +44,9 @@
        best-week-printer))
 
 (defn weekly-averages [messages]
-  (let [min-date (-> messages first :message/date)
-        max-date (-> messages last :message/date)
+  (let [sorted-messages (sort-by :message/date messages)
+        min-date (-> sorted-messages first :message/date)
+        max-date (-> sorted-messages last :message/date)
         weeks-between (zolo-cal/weeks-between min-date max-date)
         number-of-messages (count messages)]
     {:weekly-average (float (/ number-of-messages weeks-between))}))
