@@ -80,7 +80,6 @@
          :user/user-identities
          (mapcat #(get-contact-feeds-for-user-identity % contacts-by-provider last-updated-string)))))
 
-
 (defn get-all-user-messages [user]
   (concat (get-messages-for-user user)
           (get-contact-feeds-for-user user)))

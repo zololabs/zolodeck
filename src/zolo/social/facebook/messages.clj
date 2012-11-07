@@ -99,7 +99,7 @@
          (mapcat #(messages-fql-for-thread auth-token % start-date-yyyy-MM-dd-string))
          (apply hash-map)
          (process-fql-multi auth-token #(process-thread-result threads-info %1 %2))
-         (map fb-post->message))))
+         (map fb-message->message))))
 
 ;; TODO this date needs to be based on last refreshed data
 (defn fetch-feed [auth-token user-id yyyy-MM-dd-string]
