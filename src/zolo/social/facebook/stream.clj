@@ -66,7 +66,7 @@
          (http/post "https://graph.facebook.com/")
          :body
          json/read-json
-         (map #(json/read-json (:body %))))))
+         (keep (fn [r] (if-let [body (:body r)] (json/read-json body)))))))
 
 (defn process-contact-feeds-batch [access-token results done-pred urls]
   (let [bodies (batch-request access-token urls)
@@ -83,5 +83,5 @@
   (let [done? #(.isAfter (ctc/to-date-time last-updated-string) (ctc/to-date-time (:created_time %)))]
     (->> provider-uids
          (map #(recent-activity-url % access-token))
-         (partition-all 18)
+         (partition-all 15)
          (pmapcat #(process-contact-feeds-batch access-token [] done? %)))))
