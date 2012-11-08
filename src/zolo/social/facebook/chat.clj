@@ -1,6 +1,6 @@
 (ns zolo.social.facebook.chat
   (:use zolodeck.utils.debug)
-  (:require [zolo.setup.config :as conf]
+  (:require [zolo.setup.new-config :as conf]
             [zolo.domain.user :as user]
             [zolo.utils.logger :as logger])
   (:import [zolo.facebook.chat FacebookChat]))

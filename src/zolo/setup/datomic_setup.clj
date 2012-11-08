@@ -1,5 +1,5 @@
 (ns zolo.setup.datomic-setup
-  (:use [zolo.setup.config :as conf]
+  (:use [zolo.setup.new-config :as conf]
         [zolodeck.demonic.core :as demonic]
         [zolodeck.demonic.helper :as demonic-helper]
         [zolo.setup.datomic-schema :only [SCHEMA-TX] :as datomic-setup]

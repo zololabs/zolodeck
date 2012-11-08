@@ -6,7 +6,7 @@
             [zolo.web.status-codes :as http-status]
             [zolo.domain.user :as user]
             [zolo.utils.logger :as logger]
-            [zolo.setup.config :as config]
+            [zolo.setup.new-config :as config]
             [zolodeck.utils.calendar :as zolo-cal]))
 
 (def ^:dynamic *ZOLO-REQUEST*)

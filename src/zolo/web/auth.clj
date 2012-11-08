@@ -1,6 +1,6 @@
 (ns zolo.web.auth
   (:use zolodeck.utils.debug)
-  (:require [zolo.setup.config :as conf]
+  (:require [zolo.setup.new-config :as conf]
             [zolo.web.fb-auth :as fb-auth]
             [zolo.domain.user :as user]
             [zolodeck.utils.string :as zolo-str]

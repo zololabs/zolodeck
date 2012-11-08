@@ -1,6 +1,6 @@
 (ns zolo.storm.utils
   (:use zolodeck.utils.debug)
-  (:require [zolo.setup.config :as conf]
+  (:require [zolo.setup.new-config :as conf]
             [zolo.utils.logger :as logger]
             [zolodeck.utils.clojure :as clj]
             [zolodeck.demonic.core :as demonic]

@@ -4,7 +4,7 @@
   (:require [clj-http.client :as http]
             [clojure.data.json :as json]
             [uri.core :as uri]
-            [zolo.setup.config :as conf]
+            [zolo.setup.new-config :as conf]
             [zolo.utils.logger :as logger]))
 
 (defn- encoded-request-params [body-map]

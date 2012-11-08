@@ -45,7 +45,7 @@
         env (keyword (or (get-env-var "ZOLODECK_ENV") "development"))]
     (load-config config-file env)))
 
-(setup-config)
+;;(setup-config)
 
 (def FB-AUTH-COOKIE-NAME (str "fbsr_" (fb-app-id)))
 

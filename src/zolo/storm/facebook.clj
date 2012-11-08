@@ -3,9 +3,10 @@
   (:use zolodeck.utils.debug        
         backtype.storm.clojure
         backtype.storm.config
-        zolo.storm.utils)
+        zolo.storm.utils
+        zolo.social.bootstrap)
   (:require [zolo.setup.datomic-setup :as datomic]
-            [zolo.setup.config :as conf]
+            [zolo.setup.new-config :as new-conf]
             [zolodeck.demonic.core :as demonic]
             [zolo.domain.user :as user]
             [zolo.utils.logger :as logger]
@@ -44,6 +45,7 @@
 
 (defspout user-spout ["user-guid"]
   [conf context collector]
+  (zolo.setup.datomic-setup/init-connection)
   (let [guids (atom nil)]
     (init-guids guids)
     (spout
@@ -55,6 +57,7 @@
 
 (defbolt process-user [] [tuple collector]
   (try
+    (zolo.setup.datomic-setup/init-connection)
     (demonic/in-demarcation
      (let [guid (.getStringByField tuple "user-guid")
            u (user/find-by-guid-string guid)]
@@ -92,7 +95,7 @@
 
 (defn process-args [args]
   (cli/cli args
-           ["-e"  "--env" "development/staging/production" :default "development" :parse-fn #(keyword (.toLowerCase %))]
+           ["-e"  "--env" "development/staging/production" :default "development" :parse-fn #(.toLowerCase %)]
            ["-h" "--help" "Show help" :default false :flag true]))
 
 ;;TODO Make this the entry point for running both in local and remote mode
@@ -103,7 +106,6 @@
     (when (:help options)
       (println banner)
       (System/exit 0))
-    (let [env (:env options)
-          cluster (StormSubmitter. )]
+    (let [env (print-vals "Running in Environment :" (:env options))]
       (System/setProperty "ZOLODECK_ENV" env)
-      (.submitTopology cluster "facebook" {TOPOLOGY-DEBUG true} (fb-topology)))))
+      (StormSubmitter/submitTopology "facebook" {TOPOLOGY-DEBUG true} (fb-topology)))))
