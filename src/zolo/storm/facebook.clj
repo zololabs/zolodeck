@@ -38,7 +38,7 @@
 (defn next-guid [guids-atom]
   (if (empty? @guids-atom)
     (do
-      (pause "Completed one pass of all GUIDS... now waiting..." USER-UPDATE-WAIT)
+      (pause "Completed one pass of all GUIDS... now waiting..." STALE-USERS-WAIT)
       (recur (init-guids guids-atom)))
     (pop-guid guids-atom)))
 
