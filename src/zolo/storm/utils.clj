@@ -9,11 +9,10 @@
             [clj-time.coerce :as time-coerce]
             [zolodeck.utils.calendar :as zolo-cal]))
 
-(def NEW-USER-FRESHNESS-PERIOD (conf/new-user-freshness-millis)) ;; 1 HOUR
-
-(def USER-UPDATE-WAIT (conf/user-update-wait-fb-millis)) ;; 1 HOUR
-
-(def STALE-USERS-WAIT (conf/stale-users-wait-fb-millis)) ;; 1 MINUTE
+(def NEW-USER-FRESHNESS-PERIOD (conf/new-user-freshness-millis)) 
+(def NEW-USER-WAIT (conf/new-user-freshness-millis))
+(def USER-UPDATE-WAIT (conf/user-update-wait-fb-millis))
+(def STALE-USERS-WAIT (conf/stale-users-wait-fb-millis))
 
 (defn pause [msg millis]
   (logger/trace "[Sleep ms:" millis "] " msg)

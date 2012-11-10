@@ -65,14 +65,14 @@
   (reset! guids-atom (new-guids-to-process))
   (if (empty? @guids-atom)
     (do
-      (pause "Waiting for new users..." NEW-USER-FRESHNESS-PERIOD)
+      (pause "Waiting for new users..." NEW-USER-WAIT)
       (recur guids-atom))
     guids-atom))
 
 (defn next-new-guid [guids-atom]
   (if (empty? @guids-atom)
     (do
-      (pause "Completed one pass of NEW GUIDS... now waiting..." NEW-USER-FRESHNESS-PERIOD)
+      (pause "Completed one pass of NEW GUIDS... now waiting..." NEW-USER-WAIT)
       (recur (init-new-guids guids-atom)))
     (pop-guid guids-atom)))
 

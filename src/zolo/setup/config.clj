@@ -34,6 +34,9 @@
 (defn new-user-freshness-millis []
   (get-in CONFIG-MAP [ENV :new-user-freshness-millis]))
 
+(defn new-user-wait-millis []
+  (get-in CONFIG-MAP [ENV :new-user-wait-millis]))
+
 (defn li-api-key []
   (get-in CONFIG-MAP [ENV :li-api-key]))
 
