@@ -1,6 +1,7 @@
 (ns zolo.storm.facebook
   (:gen-class)
-  (:use zolodeck.utils.debug        
+  (:use zolodeck.utils.debug
+        zolodeck.utils.clojure
         backtype.storm.clojure
         backtype.storm.config
         zolo.storm.utils)
@@ -13,17 +14,23 @@
             [clojure.tools.cli :as cli])
   (:import [backtype.storm StormSubmitter LocalCluster]))
 
-(defn user-guids-to-process []
-  (logger/info "Finding User GUIDS to process...")
+(defn refresh-guids-to-process []
+  (logger/info "Finding Refresh GUIDS to process...")
   (demonic/in-demarcation
    (->> (user/find-all-users-for-refreshes)
-        (remove recently-updated)
-        (map :user/guid)
-        (map str))))
+        (remove recently-created-or-updated)
+        (domap #(str (:user/guid %))))))
 
-(defn init-guids [guids-atom]
-  (logger/info "InitGuids...")  
-  (reset! guids-atom (user-guids-to-process))
+(defn new-guids-to-process []
+  (logger/info "Finding New GUIDS to process...")
+  (demonic/in-demarcation
+   (->> (user/find-all-users-for-refreshes)
+        (filter is-brand-new-user?)
+        (domap #(str (:user/guid %))))))
+
+(defn init-refresh-guids [guids-atom]
+  (logger/info "InitRefreshGuids...")  
+  (reset! guids-atom (refresh-guids-to-process))
   (if (empty? @guids-atom)
     (do
       (pause "Waiting for stale users..." STALE-USERS-WAIT)
@@ -35,21 +42,48 @@
     (swap! guids-atom rest)
     f))
 
-(defn next-guid [guids-atom]
+(defn next-refresh-guid [guids-atom]
   (if (empty? @guids-atom)
     (do
-      (pause "Completed one pass of all GUIDS... now waiting..." STALE-USERS-WAIT)
-      (recur (init-guids guids-atom)))
+      (pause "Completed one pass of REFRESH GUIDS... now waiting..." STALE-USERS-WAIT)
+      (recur (init-refresh-guids guids-atom)))
     (pop-guid guids-atom)))
 
-(defspout user-spout ["user-guid"]
+(defspout refresh-user-spout ["user-guid"]
   [conf context collector]
   (let [guids (atom nil)]
-    (init-guids guids)
+    (init-refresh-guids guids)
     (spout
      (nextTuple []
-                (let [n (next-guid guids)]
-                  (logger/info "Facebook spout emitting GUID:" n)
+                (let [n (next-refresh-guid guids)]
+                  (logger/info "RefreshUserSpout emitting GUID:" n)
+                  (emit-spout! collector [n])))
+     (ack [id]))))
+
+(defn init-new-guids [guids-atom]
+  (logger/info "InitNewGuids...")
+  (reset! guids-atom (new-guids-to-process))
+  (if (empty? @guids-atom)
+    (do
+      (pause "Waiting for new users..." NEW-USER-FRESHNESS-PERIOD)
+      (recur guids-atom))
+    guids-atom))
+
+(defn next-new-guid [guids-atom]
+  (if (empty? @guids-atom)
+    (do
+      (pause "Completed one pass of NEW GUIDS... now waiting..." NEW-USER-FRESHNESS-PERIOD)
+      (recur (init-new-guids guids-atom)))
+    (pop-guid guids-atom)))
+
+(defspout new-user-spout ["user-guid"]
+  [conf context collector]
+  (let [guids (atom nil)]
+    (init-new-guids guids)
+    (spout
+     (nextTuple []
+                (let [n (next-new-guid guids)]
+                  (logger/info "NewUserSpout emitting GUID:" n)
                   (emit-spout! collector [n])))
      (ack [id]))))
 
@@ -68,8 +102,9 @@
 
 (defn fb-topology []
   (topology
-   {"1" (spout-spec user-spout)}
-   {"2" (bolt-spec {"1" :shuffle}
+   {"1" (spout-spec refresh-user-spout)
+    "2" (spout-spec new-user-spout)}
+   {"3" (bolt-spec {"1" :shuffle}
                    process-user
                    ;:p 2
                    )}))
@@ -84,7 +119,6 @@
       (.shutdown cluster))))
 
 (defn run-local-forever! []
-  (print-vals "UserGuidsToProcess:" (user-guids-to-process))
   (let [cluster (LocalCluster.)]
     (logger/trace "Submitting topology...")
     (.submitTopology cluster "facebook" {TOPOLOGY-DEBUG true} (fb-topology))))

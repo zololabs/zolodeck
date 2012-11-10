@@ -76,6 +76,13 @@
 (defn fb-access-token [u]
   (-> u fb-user-identity :identity/auth-token))
 
+(defn creation-time [u]
+  (->> (:user/guid u)
+       (run-query '[:find ?tx :in $ ?g :where [?u :user/guid ?g ?tx]])
+       ffirst
+       load-entity
+       :db/txInstant))
+
 (defn reload [u]
   (find-by-guid (:user/guid u)))
 
