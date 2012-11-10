@@ -96,7 +96,8 @@
        (demonic/in-demarcation
         (user/stamp-refresh-start u))
        (demonic/in-demarcation
-        (user/refresh-user-data u))))
+        (user/refresh-user-data u))
+       ))
     (catch Exception e
       (logger/error e "Exception in bolt! Occured while processing tuple:" tuple))))
 
@@ -104,7 +105,8 @@
   (topology
    {"1" (spout-spec refresh-user-spout)
     "2" (spout-spec new-user-spout)}
-   {"3" (bolt-spec {"1" :shuffle}
+   {"3" (bolt-spec {"1" :shuffle
+                    "2" :shuffle}
                    process-user
                    ;:p 2
                    )}))

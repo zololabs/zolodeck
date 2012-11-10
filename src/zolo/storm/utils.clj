@@ -29,8 +29,9 @@
       (< elapsed-since-updated USER-UPDATE-WAIT))))
 
 (defn is-brand-new-user?
-  ([now u]
-     (< (- now (.getTime (user/creation-time u))) NEW-USER-FRESHNESS-PERIOD))
+  ([now {refresh-started :user/refresh-started :as u}]
+     (and (not refresh-started)
+          (< (- now (.getTime (user/creation-time u))) NEW-USER-FRESHNESS-PERIOD)))
   ([u]
      (is-brand-new-user? (zolo-cal/now) u)))
 
@@ -54,7 +55,8 @@
          {:user/first-name "EF" :user/guid (clj/random-guid) :user/last-updated (inst-seconds-ago 600)}
          {:user/first-name "GH" :user/guid (clj/random-guid) :user/last-updated (inst-seconds-ago 600)}
          {:user/first-name "IJ" :user/guid (clj/random-guid) :user/last-updated (inst-seconds-ago 600) :user/refresh-started (inst-seconds-ago 5)}
-         {:user/first-name "KL" :user/guid (clj/random-guid) :user/last-updated (inst-seconds-ago 180)}]]
+         {:user/first-name "KL" :user/guid (clj/random-guid) :user/last-updated (inst-seconds-ago 180)}
+         {:user/first-name "MN" :user/guid (clj/random-guid)}]]
     (demonic/in-demarcation
      (doseq [d dummies]
        (demonic/insert d)))))
