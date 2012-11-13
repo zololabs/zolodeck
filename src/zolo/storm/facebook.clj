@@ -46,7 +46,8 @@
   (if (empty? @guids-atom)
     (do
       (short-pause "Completed one pass of REFRESH GUIDS... now waiting..." STALE-USERS-WAIT)
-      (recur (init-refresh-guids guids-atom)))
+      (init-refresh-guids guids-atom)
+      nil)
     (pop-guid guids-atom)))
 
 (defspout refresh-user-spout ["user-guid"]
@@ -55,7 +56,7 @@
     (init-refresh-guids guids)
     (spout
      (nextTuple []
-                (let [n (next-refresh-guid guids)]
+                (when-let [n (next-refresh-guid guids)]
                   (logger/info "RefreshUserSpout emitting GUID:" n)
                   (emit-spout! collector [n])))
      (ack [id]))))
