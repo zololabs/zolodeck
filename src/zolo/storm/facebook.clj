@@ -137,11 +137,9 @@
       (.shutdown cluster))))
 
 (defn run-local-forever! []
-  (setup-dummies)
   (let [cluster (LocalCluster.)]
     (logger/trace "Submitting topology...")
     (.submitTopology cluster "facebook" {TOPOLOGY-DEBUG true} (fb-topology))))
-
 
 (defn process-args [args]
   (cli/cli args

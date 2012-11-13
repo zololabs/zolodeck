@@ -15,8 +15,8 @@
 (def STALE-USERS-WAIT (conf/stale-users-wait-fb-millis))
 
 (defn short-pause [msg millis]
-  (logger/info "[100 ms pause:]" msg)
-  (Thread/sleep 100))
+  ;;(logger/info "[1 ms pause:]" msg)
+  (Thread/sleep 1))
 
 (defn- pause [msg millis]
   (logger/trace "[Sleep ms:" millis "] " msg)
