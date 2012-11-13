@@ -32,10 +32,8 @@
   (logger/info "InitRefreshGuids...")  
   (reset! guids-atom (refresh-guids-to-process))
   (if (empty? @guids-atom)
-    (do
-      (short-pause "Waiting for stale users..." STALE-USERS-WAIT)
-      (recur guids-atom))
-    guids-atom))
+    (short-pause "Waiting for stale users..." STALE-USERS-WAIT))
+  nil)
 
 (defn pop-guid [guids-atom]
   (let [f (first @guids-atom)]
@@ -53,40 +51,12 @@
 (defspout refresh-user-spout ["user-guid"]
   [conf context collector]
   (let [guids (atom nil)]
-    (init-refresh-guids guids)
     (spout
      (nextTuple []
                 (when-let [n (next-refresh-guid guids)]
                   (logger/info "RefreshUserSpout emitting GUID:" n)
                   (emit-spout! collector [n])))
      (ack [id]))))
-
-;; (defn init-new-guids [guids-atom]
-;;   (logger/info "InitNewGuids...")
-;;   (reset! guids-atom (new-guids-to-process))
-;;   (if (empty? @guids-atom)
-;;     (do
-;;       (short-pause "Waiting for new users..." NEW-USER-WAIT)
-;;       (recur guids-atom))
-;;     guids-atom))
-
-;; (defn next-new-guid [guids-atom]
-;;   (if (empty? @guids-atom)
-;;     (do
-;;       (short-pause "Completed one pass of NEW GUIDS... now waiting..." NEW-USER-WAIT)
-;;       (recur (init-new-guids guids-atom)))
-;;     (pop-guid guids-atom)))
-
-;; (defspout new-user-spout ["user-guid"]
-;;   [conf context collector]
-;;   (let [guids (atom nil)]
-;;     (init-new-guids guids)
-;;     (spout
-;;      (nextTuple []
-;;                 (let [n (next-new-guid guids)]
-;;                   (logger/info "NewUserSpout emitting GUID:" n)
-;;                   (emit-spout! collector [n])))
-;;      (ack [id]))))
 
 (defspout new-user-tx-spout ["user-guid"]
   [conf context collector]
