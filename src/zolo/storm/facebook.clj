@@ -15,7 +15,7 @@
   (:import [backtype.storm StormSubmitter LocalCluster]))
 
 (defn refresh-guids-to-process []
-  (logger/info "Finding Refresh GUIDS to process...")
+  ;;(logger/info "Finding Refresh GUIDS to process...")
   (demonic/in-demarcation
    (->> (user/find-all-users-for-refreshes)
         (remove recently-created-or-updated)
@@ -29,7 +29,7 @@
 ;;         (domap #(str (:user/guid %))))))
 
 (defn init-refresh-guids [guids-atom]
-  (logger/info "InitRefreshGuids...")  
+  ;;(logger/info "InitRefreshGuids...")  
   (reset! guids-atom (refresh-guids-to-process))
   (if (empty? @guids-atom)
     (short-pause "Waiting for stale users..." STALE-USERS-WAIT))
