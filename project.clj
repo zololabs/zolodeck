@@ -99,7 +99,7 @@
 
   :jvm-opts ["-Xmx1g"
              "-server"
-             "-agentpath:/Applications/YourKit_Java_Profiler_11.0.9.app/bin/mac/libyjpagent.jnilib"
+             ;; "-agentpath:/Applications/YourKit_Java_Profiler_11.0.9.app/bin/mac/libyjpagent.jnilib"
              ]
   
   :repl-retry-limit 1000)
