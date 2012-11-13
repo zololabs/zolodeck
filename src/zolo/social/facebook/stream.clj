@@ -83,5 +83,5 @@
   (let [done? #(.isAfter (ctc/to-date-time last-updated-string) (ctc/to-date-time (:created_time %)))]
     (->> provider-uids
          (map #(recent-activity-url % access-token))
-         (partition-all 15)
+         (partition-all 25)
          (pmapcat #(process-contact-feeds-batch access-token [] done? %)))))

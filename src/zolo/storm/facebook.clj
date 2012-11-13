@@ -70,6 +70,8 @@
                       (if (empty? guid)
                         (short-pause "Not a new user tx" 10)
                         (do
+                          (demonic/in-demarcation
+                           (-> guid user/find-by-guid-string user/stamp-refresh-start))
                           (logger/trace "Emitting NEW user guid" guid)
                           (emit-spout! collector [guid])))))))
      (ack [id]))))
@@ -81,10 +83,7 @@
            u (user/find-by-guid-string guid)]
        (logger/info "Processing user:" (:user/first-name u))
        (demonic/in-demarcation
-        (user/stamp-refresh-start u))
-       (demonic/in-demarcation
-        (user/refresh-user-data u))
-       ))
+        (user/refresh-user-data u))))
     (catch Exception e
       (logger/error e "Exception in bolt! Occured while processing tuple:" tuple))))
 
