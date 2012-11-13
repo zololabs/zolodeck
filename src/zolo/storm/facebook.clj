@@ -21,19 +21,19 @@
         (remove recently-created-or-updated)
         (domap #(str (:user/guid %))))))
 
-(defn new-guids-to-process []
-  (logger/info "Finding New GUIDS to process...")
-  (demonic/in-demarcation
-   (->> (user/find-all-users-for-refreshes)
-        (filter is-brand-new-user?)
-        (domap #(str (:user/guid %))))))
+;; (defn new-guids-to-process []
+;;   (logger/info "Finding New GUIDS to process...")
+;;   (demonic/in-demarcation
+;;    (->> (user/find-all-users-for-refreshes)
+;;         (filter is-brand-new-user?)
+;;         (domap #(str (:user/guid %))))))
 
 (defn init-refresh-guids [guids-atom]
   (logger/info "InitRefreshGuids...")  
   (reset! guids-atom (refresh-guids-to-process))
   (if (empty? @guids-atom)
     (do
-      (pause "Waiting for stale users..." STALE-USERS-WAIT)
+      (short-pause "Waiting for stale users..." STALE-USERS-WAIT)
       (recur guids-atom))
     guids-atom))
 
@@ -45,7 +45,7 @@
 (defn next-refresh-guid [guids-atom]
   (if (empty? @guids-atom)
     (do
-      (pause "Completed one pass of REFRESH GUIDS... now waiting..." STALE-USERS-WAIT)
+      (short-pause "Completed one pass of REFRESH GUIDS... now waiting..." STALE-USERS-WAIT)
       (recur (init-refresh-guids guids-atom)))
     (pop-guid guids-atom)))
 
@@ -60,31 +60,47 @@
                   (emit-spout! collector [n])))
      (ack [id]))))
 
-(defn init-new-guids [guids-atom]
-  (logger/info "InitNewGuids...")
-  (reset! guids-atom (new-guids-to-process))
-  (if (empty? @guids-atom)
-    (do
-      (pause "Waiting for new users..." NEW-USER-WAIT)
-      (recur guids-atom))
-    guids-atom))
+;; (defn init-new-guids [guids-atom]
+;;   (logger/info "InitNewGuids...")
+;;   (reset! guids-atom (new-guids-to-process))
+;;   (if (empty? @guids-atom)
+;;     (do
+;;       (short-pause "Waiting for new users..." NEW-USER-WAIT)
+;;       (recur guids-atom))
+;;     guids-atom))
 
-(defn next-new-guid [guids-atom]
-  (if (empty? @guids-atom)
-    (do
-      (pause "Completed one pass of NEW GUIDS... now waiting..." NEW-USER-WAIT)
-      (recur (init-new-guids guids-atom)))
-    (pop-guid guids-atom)))
+;; (defn next-new-guid [guids-atom]
+;;   (if (empty? @guids-atom)
+;;     (do
+;;       (short-pause "Completed one pass of NEW GUIDS... now waiting..." NEW-USER-WAIT)
+;;       (recur (init-new-guids guids-atom)))
+;;     (pop-guid guids-atom)))
 
-(defspout new-user-spout ["user-guid"]
+;; (defspout new-user-spout ["user-guid"]
+;;   [conf context collector]
+;;   (let [guids (atom nil)]
+;;     (init-new-guids guids)
+;;     (spout
+;;      (nextTuple []
+;;                 (let [n (next-new-guid guids)]
+;;                   (logger/info "NewUserSpout emitting GUID:" n)
+;;                   (emit-spout! collector [n])))
+;;      (ack [id]))))
+
+(defspout new-user-tx-spout ["user-guid"]
   [conf context collector]
-  (let [guids (atom nil)]
-    (init-new-guids guids)
+  (let [trq (demonic/transactions-report-queue)]
     (spout
      (nextTuple []
-                (let [n (next-new-guid guids)]
-                  (logger/info "NewUserSpout emitting GUID:" n)
-                  (emit-spout! collector [n])))
+                (let [tx-report (.poll trq)]
+                  (if-not tx-report
+                    (short-pause "No tx reports" 10)
+                    (let [guid (new-user-in-tx-report tx-report)]
+                      (if (empty? guid)
+                        (short-pause "Not a new user tx" 10)
+                        (do
+                          (logger/trace "Emitting NEW user guid" guid)
+                          (emit-spout! collector [guid])))))))
      (ack [id]))))
 
 (defbolt process-user [] [tuple collector]
@@ -104,7 +120,7 @@
 (defn fb-topology []
   (topology
    {"1" (spout-spec refresh-user-spout)
-    "2" (spout-spec new-user-spout)}
+    "2" (spout-spec new-user-tx-spout)}
    {"3" (bolt-spec {"1" :shuffle
                     "2" :shuffle}
                    process-user
@@ -116,11 +132,12 @@
     (let [cluster (LocalCluster.)]
       (logger/trace "Submitting topology...")
       (.submitTopology cluster "facebook" {TOPOLOGY-DEBUG true} (fb-topology))
-      (pause "Running topology for " millis " millis...")
+      (short-pause "Running topology for millis:" millis)
       (logger/trace "Shutting down cluster!")
       (.shutdown cluster))))
 
 (defn run-local-forever! []
+  (setup-dummies)
   (let [cluster (LocalCluster.)]
     (logger/trace "Submitting topology...")
     (.submitTopology cluster "facebook" {TOPOLOGY-DEBUG true} (fb-topology))))
