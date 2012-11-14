@@ -18,6 +18,9 @@ config/zolo.clj
 /devops/nginx/logs/error.log
 /devops/nginx/nginx.conf
 /devops/nginx/sites-enabled/fe.conf
+/devops/datomic/data
+/devops/datomic/logs
 /zolodeck-api-0.1.0-SNAPSHOT-standalone.jar
 /zolodeck-api-0.1.0-SNAPSHOT.jar
 /logs/developer.log
+/devops/datomic/free-transactor.properties
