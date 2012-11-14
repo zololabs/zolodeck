@@ -77,14 +77,11 @@ namespace :api do
     task :generate do 
       
       info "Generating API config for development and test environment"
+
+      @zolodeck_env = "development"
+      @datomic_host = "localhost"
+      @datomic_db_name = "zolodeck-dev"
       
-      bag = {:datomic => {
-                          :development => {:db => 'zolodeck-dev'},
-                          :test => {:db => 'zolodeck-test'}}}
-
-      bag[:datomic][:development][:db] ||= Shell.prompt("Datomic Development DB", "zolodeck-dev")
-      bag[:datomic][:test][:db] ||= Shell.prompt("Datomic Test DB", "zolodeck-test")
-
       Config.generate binding, "config/zolo.clj.erb", "config/zolo.clj"
 
       puts "Successfully Generated!!"

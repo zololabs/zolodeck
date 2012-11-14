@@ -46,9 +46,14 @@
 (defn get-env-var [v]
   (.get (System/getenv) v))
 
+(defn zolo-config-file-name [env]
+  (if (= env "test")
+    "zolo_test.clj"
+    "zolo.clj"))
+
 (defrunonce setup-config []
-  (let [config-file (java-io/resource "zolo.clj")
-        env (keyword (or (get-env-var "ZOLODECK_ENV") "development"))]
+  (let [env (keyword (or (get-env-var "ZOLODECK_ENV") "development"))
+        config-file (java-io/resource (zolo-config-file-name env))]
     (load-config config-file env)))
 
 (setup-config)
