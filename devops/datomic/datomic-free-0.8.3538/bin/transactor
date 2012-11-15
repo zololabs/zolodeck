@@ -1,0 +1,33 @@
+#!/bin/bash
+
+if [ "$1" == "" ]; then
+   echo "Usage: $0 properties-file-or-uri"
+   exit -1
+fi 
+
+# defaults
+XMS=-Xms96m
+XMX=-Xmx1g
+JAVA_ARGS="-XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -cp `bin/classpath`"
+
+# peel off JVM args
+while [ $# -gt 1 ]
+do
+    case "$1" in
+    # Stuff after '-J' in this argument goes to JVM
+        -Xmx*)
+            XMX=$1
+            ;;
+        -Xms*)
+            XMS=$1
+            ;;
+        *) 
+            JAVA_ARGS="$JAVA_ARGS $1"
+            ;;
+    esac
+    shift
+done
+
+java -server $XMX $XMS $JAVA_ARGS $DATOMIC_JAVA_OPTS clojure.main --main datomic.launcher "$@"
+
+

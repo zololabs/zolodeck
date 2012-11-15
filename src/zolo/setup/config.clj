@@ -41,8 +41,8 @@
   (.get (System/getenv) v))
 
 (defrunonce setup-config []
-  (let [config-file (java-io/resource "zolo.clj")
-        env (keyword (or (get-env-var "ZOLODECK_ENV") "development"))]
+  (let [env (keyword (or (get-env-var "ZOLODECK_ENV") "development"))
+        config-file (java-io/resource "zolo.clj")]
     (load-config config-file env)))
 
 (setup-config)
