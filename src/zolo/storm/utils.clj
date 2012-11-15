@@ -14,7 +14,7 @@
 
 (defn short-pause [msg]
   ;;(logger/info "[1 ms pause:]" msg)
-  (Thread/sleep 1))
+  (Thread/sleep 10))
 
 (defn- pause [msg millis]
   (logger/trace "[Sleep ms:" millis "] " msg)
@@ -22,7 +22,7 @@
 
 (defn refresh-started-recently? [now refresh-started]
   (if refresh-started
-    (let [elapsed-since-started (print-vals "since started:" (- now (.getTime refresh-started)))]
+    (let [elapsed-since-started (- now (.getTime refresh-started))]
       (< elapsed-since-started USER-UPDATE-WAIT))))
 
 (defn last-updated-recently? [now last-updated]
@@ -45,10 +45,10 @@
                     (refresh-started-recently? now refresh-started)
                     (last-updated-recently? now last-updated))]
     ;(logger/trace "User:" guid ", recently updated:" recent?)
-    (print-vals "guid:" guid
-                  "brand-new:" (is-brand-new-user? now u)
-                  "ref-recent:" (refresh-started-recently? now refresh-started)
-                  "last-updated:" (last-updated-recently? now last-updated))
+    ;; (print-vals "guid:" guid
+    ;;               "brand-new:" (is-brand-new-user? now u)
+    ;;               "ref-recent:" (refresh-started-recently? now refresh-started)
+    ;;               "last-updated:" (last-updated-recently? now last-updated))
     recent?))
 
 (defn new-user-in-tx-report [tx-report]

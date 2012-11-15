@@ -78,8 +78,8 @@
      (let [guid (.getStringByField tuple "user-guid")
            u (user/find-by-guid-string guid)]
        (logger/info "Processing user:" (:user/first-name u))
-       ;; (demonic/in-demarcation
-       ;;  (user/refresh-user-data u))
+       (demonic/in-demarcation
+        (user/refresh-user-data u))
        ))
     (catch Exception e
       (logger/error e "Exception in bolt! Occured while processing tuple:" tuple))))
