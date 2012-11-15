@@ -24,18 +24,18 @@
     (users/user-and-user-identity access-token user-id)))
 
 (defmethod social/fetch-contacts :provider/facebook [provider access-token user-id date]
-  (logger/trace "FetchContacts:" provider)
+  ;(logger/trace "FetchContacts:" provider)
   (let [friends (gateway/friends-list access-token user-id)]
     (doall (map contacts/contact-object friends))))
 
 (defmethod social/fetch-messages :provider/facebook [provider access-token user-id date]
-  (logger/trace "FetchMessages:" provider)
+  ;(logger/trace "FetchMessages:" provider)
   (messages/fetch-all-messages access-token user-id date))
 
 (defmethod social/fetch-feed :provider/facebook [provider access-token user-id date]
-  (logger/trace "FetchFeed:" provider user-id)
+  ;(logger/trace "FetchFeed:" provider user-id)
   (messages/fetch-feed access-token user-id date))
 
 (defmethod social/fetch-contact-feeds :provider/facebook [provider access-token last-updated-string provider-uids]
-  (logger/trace "FetchContactFeeds:" provider-uids)
+  ;(logger/trace "FetchContactFeeds:" provider-uids)
   (messages/fetch-all-contact-feeds access-token last-updated-string provider-uids))

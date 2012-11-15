@@ -99,8 +99,7 @@
 
 (defn update-scores [u]
   (let [imbc (dom/inbox-messages-by-contacts u)]
-    (doeach #(contact/update-score imbc %) (:user/contacts u)))
-  (print-vals "updated-scores"))
+    (doeach #(contact/update-score imbc %) (:user/contacts u))))
 
 (defn stamp-updated-time [u]
   (-> u
