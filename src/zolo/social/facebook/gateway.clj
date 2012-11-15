@@ -65,6 +65,11 @@
       (get-json access-token query-params)
       (get-pages items-done-tester-fn)))
 
+(defn get-json-first-page [url access-token query-params]
+  (-> url
+      (get-json access-token query-params)
+      (get-pages (constantly false))))
+
 (defn run-fql [access-token fql-string]
   (print-vals "RunFQL: " fql-string)
   (-> (get-json "https://graph.facebook.com/fql" access-token {:q fql-string})

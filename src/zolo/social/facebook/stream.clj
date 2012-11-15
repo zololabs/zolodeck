@@ -37,14 +37,15 @@
                    (str "SELECT post_id,actor_id FROM stream_tag WHERE target_id = " provider-uid)))
 
 (defn recent-activity-until [auth-token provider-uid since-unix-time-stamp]
-  (gateway/get-json-pages-until
-     (gateway/recent-activity-url provider-uid)
-     auth-token
-     {:fields "from,created_time,message,story,to,type,picture,link,icon"
-      :since since-unix-time-stamp
-      :limit 200}
-     (fn [i]
-       (.isAfter (zolo-cal/seconds->joda-time since-unix-time-stamp) (ctc/to-date-time (:created_time i))))))
+  (:data
+   (gateway/get-json
+    (gateway/recent-activity-url provider-uid)
+    auth-token
+    {:fields "from,created_time,message,story,to,type,picture,link,icon"
+     :since since-unix-time-stamp
+     :limit 200}
+    ;;#(.isAfter (zolo-cal/seconds->joda-time since-unix-time-stamp) (ctc/to-date-time (:created_time %)))
+    )))
 
 (defn recent-activity-url [provider-uid access-token]
   (gateway/create-url (str provider-uid "/feed")

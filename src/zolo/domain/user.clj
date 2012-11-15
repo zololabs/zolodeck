@@ -100,7 +100,7 @@
 (defn update-scores [u]
   (let [imbc (dom/inbox-messages-by-contacts u)]
     (doeach #(contact/update-score imbc %) (:user/contacts u)))
-  (reload u))
+  (print-vals "updated-scores"))
 
 (defn stamp-updated-time [u]
   (-> u
@@ -117,10 +117,13 @@
   (stamp-refresh-start (reload u))
   (contact/update-contacts u)
   (logger/debug "Loaded contacts " (count (:user/contacts (reload u))))
-  (message/update-messages (reload u))
+  (message/update-inbox-messages (reload u))
+  (message/update-feed-messages-for-all-contacts (reload u))
   (logger/debug "Messages done")
   (update-scores (reload u))
+  (logger/debug "Scores done")  
   (stamp-updated-time (reload u))
+  (logger/debug "Refresh done")  
   (reload u))
 
 ;;TODO Junk function. Need to design the app

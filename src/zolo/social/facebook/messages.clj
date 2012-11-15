@@ -62,10 +62,10 @@
 
 (def INBOX-FQL "SELECT thread_id, recipients , subject  FROM thread WHERE folder_id = 0 ")
  
-(defn message-fql [thread-id start-time]
+(defn message-fql [thread-id start-unix-time-stamp]
   ;;TODO For now Removing attachments
     ;;  (str "SELECT message_id, thread_id, author_id, body, created_time, attachment, viewer_id FROM message WHERE thread_id = " thread-id " and created_time > " start-time)
-    (str "SELECT message_id, thread_id, author_id, body, created_time FROM message WHERE thread_id = " thread-id " and created_time > " start-time))
+    (str "SELECT message_id, thread_id, author_id, body, created_time FROM message WHERE thread_id = " thread-id " and created_time > " start-unix-time-stamp))
 
 (defn except-self [recipients {author-id :author_id}]
   (remove #(= author-id %) recipients))
@@ -79,9 +79,9 @@
 (defn tag-message-fields [subject recipients msgs]
   (map #(associate-fields subject recipients %) msgs))
  
-(defn- messages-fql-for-thread [auth-token thread-info start-time]
+(defn- messages-fql-for-thread [auth-token thread-info start-unix-time-stamp]
   (let [{thread-id :thread_id recipients :recipients subject :subject} thread-info]
-    [thread-id (message-fql thread-id start-time)]))
+    [thread-id (message-fql thread-id start-unix-time-stamp)]))
 
 (defn fetch-threads-info [auth-token]
   (->> INBOX-FQL
@@ -93,10 +93,10 @@
                       (get-in threads-info [thread-id :recipients])
                       messages))
 
-(defn fetch-inbox [auth-token start-date-yyyy-MM-dd-string]
+(defn fetch-inbox [auth-token start-unix-time-stamp]
   (let [threads-info (fetch-threads-info auth-token)]
     (->> (vals threads-info)
-         (mapcat #(messages-fql-for-thread auth-token % start-date-yyyy-MM-dd-string))
+         (mapcat #(messages-fql-for-thread auth-token % start-unix-time-stamp))
          (apply hash-map)
          (process-fql-multi auth-token #(process-thread-result threads-info %1 %2))
          (domap fb-message->message))))
