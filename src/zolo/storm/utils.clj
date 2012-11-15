@@ -46,7 +46,7 @@
         recent? (or (is-brand-new-user? now u)
                     (refresh-started-recently? now refresh-started)
                     (last-updated-recently? now last-updated))]
-    (logger/trace "User:" guid ", recently updated:" recent?)
+    ;(logger/trace "User:" guid ", recently updated:" recent?)
     recent?))
 
 (defn new-user-in-tx-report [tx-report]

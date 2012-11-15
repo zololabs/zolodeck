@@ -5,7 +5,8 @@
             [zolodeck.utils.maps :as zolo-maps]
             [zolodeck.utils.calendar :as zolo-cal]
             [zolo.utils.domain :as utils-domain]
-            [zolo.domain.contact :as contact]
+            [zolo.domain.accessors :as dom]
+            [zolo.domain.contact :as contact]            
             [zolo.domain.social-identity :as social-identity]
             [zolo.domain.user-identity :as user-identity]
             [zolo.social.core :as social]            
@@ -13,8 +14,9 @@
             [zolodeck.demonic.core :as demonic]
             [zolo.utils.logger :as logger]))
 
-(def MESSAGES-START-TIME "2000-10-22")
-(def FEEDS-START-TIME    "2012-10-22")
+(def MESSAGES-START-TIME   "2000-10-22")
+(def FEEDS-START-TIME-DATE "2012-10-22")
+(def FEEDS-START-TIME-SECONDS (-> #inst "2012-10-22" .getTime zolo-cal/to-seconds))  
 
 (defn message-identifier [m]
   [(:message/provider m) (:message/message-id m)])
@@ -24,6 +26,8 @@
                                                  fresh-messages
                                                  message-identifier
                                                  :message/guid))
+
+
 
 ;;;;;; MESSAGES
 
@@ -55,7 +59,7 @@
 (defn get-contact-feeds-for-user [user]
   (let [contacts-by-provider (contact/provider-info-by-provider user)
         last-updated-string (or (-> user :user/last-updated zolo-cal/date-to-simple-string)
-                                FEEDS-START-TIME)]
+                                FEEDS-START-TIME-DATE)]
     (->> user
          :user/user-identities
          (mapcat #(get-contact-feeds-for-user-identity % contacts-by-provider last-updated-string)))))
@@ -70,3 +74,18 @@
        (refreshed-messages user)
        (assoc user :user/messages)
        demonic/insert))
+
+(defn- update-messages-for-contact-and-provider [user feed-messages si]
+  (let [{contact-uid :social/provider-uid provider :social/provider} si
+        auth-token (-> user (dom/user-identity-for-provider provider) :identity/auth-token)
+        fmg (group-by :message/provider feed-messages)
+        date (->> provider fmg (sort-by :message/date) last :message/date)
+        seconds (if date (-> date .getTime zolo-cal/to-seconds))
+        feed-messages (social/fetch-feed provider auth-token contact-uid (or seconds FEEDS-START-TIME-SECONDS))]
+    (demonic/append-multiple user :user/messages feed-messages)))
+
+(defn update-messages-for-contact [user contact]
+  (let [fmbc (-> user dom/feed-messages-by-contacts)
+        feed-messages (fmbc contact)
+        identities (:contact/social-identities contact)]
+    (doeach #(update-messages-for-contact-and-provider user feed-messages %) identities)))

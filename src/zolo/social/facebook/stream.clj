@@ -36,14 +36,15 @@
   (gateway/run-fql auth-token
                    (str "SELECT post_id,actor_id FROM stream_tag WHERE target_id = " provider-uid)))
 
-(defn recent-activity-until [auth-token provider-uid since-yyyy-mm-dd-string]
+(defn recent-activity-until [auth-token provider-uid since-unix-time-stamp]
   (gateway/get-json-pages-until
      (gateway/recent-activity-url provider-uid)
      auth-token
-     {:fields "from,created_time,message,story,to,type,picture,link,icon" :limit 200}
+     {:fields "from,created_time,message,story,to,type,picture,link,icon"
+      :since since-unix-time-stamp
+      :limit 200}
      (fn [i]
-       ;(print-vals "Item date:" (ctc/to-date-time (:created_time i)) "test:" (.isBefore (ctc/to-date-time (:created_time i)) (ctc/to-date-time until-yyyy-mm-dd-string)))
-       (.isAfter (ctc/to-date-time since-yyyy-mm-dd-string) (ctc/to-date-time (:created_time i))))))
+       (.isAfter (zolo-cal/seconds->joda-time since-unix-time-stamp) (ctc/to-date-time (:created_time i))))))
 
 (defn recent-activity-url [provider-uid access-token]
   (gateway/create-url (str provider-uid "/feed")

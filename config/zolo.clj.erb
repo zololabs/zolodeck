@@ -32,7 +32,7 @@
  
  
  :development {
-               :datomic-db "datomic:mem://<%= bag[:datomic][:development][:db] %>"
+               :datomic-db "datomic:free://localhost:4334/<%= bag[:datomic][:development][:db] %>"
                
                :kiss-api "0574cc154095cc7ddcaa04480daa22903da7f1b7"
                
@@ -45,8 +45,8 @@
                :new-user-freshness-millis (* 1000 10 2) ;; 2 minutes
                :new-user-wait-millis (* 1000 10) ;; 10 seconds
 
-               :user-update-wait-fb-millis (* 1000 60 5) ;; 5 minutes
-               :stale-users-wait-fb-millis (* 1000 10) ;; 10 seconds
+               :user-update-wait-fb-millis (* 1000 60 10) ;; 5 minutes
+               :stale-users-wait-fb-millis (* 1000 10 15) ;; 10 seconds
                
                :li-api-key "p8rw9l9pzvl8"
                :li-secret-key "1thkgbvKwrcFdZ7N"

@@ -31,6 +31,7 @@
 (defn init-refresh-guids [guids-atom]
   ;;(logger/info "InitRefreshGuids...")  
   (reset! guids-atom (refresh-guids-to-process))
+  ;(logger/trace "Number of Refresh GUIDS:" (count @guids-at))
   (if (empty? @guids-atom)
     (short-pause "Waiting for stale users..." STALE-USERS-WAIT))
   nil)
@@ -54,6 +55,8 @@
     (spout
      (nextTuple []
                 (when-let [n (next-refresh-guid guids)]
+                  (demonic/in-demarcation
+                   (-> n user/find-by-guid-string user/stamp-refresh-start))                  
                   (logger/info "RefreshUserSpout emitting GUID:" n)
                   (emit-spout! collector [n])))
      (ack [id]))))

@@ -109,3 +109,9 @@
 
 (defn all-messages-by-contacts [u]
   (messages-by-contacts u (constantly true)))
+
+(defn user-identity-for-provider [u provider]
+  (->> u
+       :user/user-identities
+       (filter #(= provider (:identity/provider %)))
+       first))
