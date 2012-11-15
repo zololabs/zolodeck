@@ -28,14 +28,8 @@
 (defn user-update-wait-fb-millis []
   (get-in CONFIG-MAP [ENV :user-update-wait-fb-millis]))
 
-(defn stale-users-wait-fb-millis []
-  (get-in CONFIG-MAP [ENV :stale-users-wait-fb-millis]))
-
 (defn new-user-freshness-millis []
   (get-in CONFIG-MAP [ENV :new-user-freshness-millis]))
-
-(defn new-user-wait-millis []
-  (get-in CONFIG-MAP [ENV :new-user-wait-millis]))
 
 (defn li-api-key []
   (get-in CONFIG-MAP [ENV :li-api-key]))

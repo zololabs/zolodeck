@@ -10,11 +10,9 @@
             [zolodeck.utils.calendar :as zolo-cal]))
 
 (def NEW-USER-FRESHNESS-PERIOD (conf/new-user-freshness-millis)) 
-(def NEW-USER-WAIT (conf/new-user-freshness-millis))
 (def USER-UPDATE-WAIT (conf/user-update-wait-fb-millis))
-(def STALE-USERS-WAIT (conf/stale-users-wait-fb-millis))
 
-(defn short-pause [msg millis]
+(defn short-pause [msg]
   ;;(logger/info "[1 ms pause:]" msg)
   (Thread/sleep 1))
 
@@ -24,8 +22,8 @@
 
 (defn refresh-started-recently? [now refresh-started]
   (if refresh-started
-    (let [elapsed-since-started (- now (.getTime refresh-started))]
-      (< elapsed-since-started STALE-USERS-WAIT))))
+    (let [elapsed-since-started (print-vals "since started:" (- now (.getTime refresh-started)))]
+      (< elapsed-since-started USER-UPDATE-WAIT))))
 
 (defn last-updated-recently? [now last-updated]
   (if last-updated
@@ -47,6 +45,10 @@
                     (refresh-started-recently? now refresh-started)
                     (last-updated-recently? now last-updated))]
     ;(logger/trace "User:" guid ", recently updated:" recent?)
+    (print-vals "guid:" guid
+                  "brand-new:" (is-brand-new-user? now u)
+                  "ref-recent:" (refresh-started-recently? now refresh-started)
+                  "last-updated:" (last-updated-recently? now last-updated))
     recent?))
 
 (defn new-user-in-tx-report [tx-report]

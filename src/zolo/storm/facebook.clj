@@ -21,19 +21,12 @@
         (remove recently-created-or-updated)
         (domap #(str (:user/guid %))))))
 
-;; (defn new-guids-to-process []
-;;   (logger/info "Finding New GUIDS to process...")
-;;   (demonic/in-demarcation
-;;    (->> (user/find-all-users-for-refreshes)
-;;         (filter is-brand-new-user?)
-;;         (domap #(str (:user/guid %))))))
-
 (defn init-refresh-guids [guids-atom]
   ;;(logger/info "InitRefreshGuids...")  
   (reset! guids-atom (refresh-guids-to-process))
   ;(logger/trace "Number of Refresh GUIDS:" (count @guids-at))
   (if (empty? @guids-atom)
-    (short-pause "Waiting for stale users..." STALE-USERS-WAIT))
+    (short-pause "Waiting for stale users..."))
   nil)
 
 (defn pop-guid [guids-atom]
@@ -44,7 +37,7 @@
 (defn next-refresh-guid [guids-atom]
   (if (empty? @guids-atom)
     (do
-      (short-pause "Completed one pass of REFRESH GUIDS... now waiting..." STALE-USERS-WAIT)
+      (short-pause "Completed one pass of REFRESH GUIDS... now waiting...")
       (init-refresh-guids guids-atom)
       nil)
     (pop-guid guids-atom)))
@@ -68,10 +61,10 @@
      (nextTuple []
                 (let [tx-report (.poll trq)]
                   (if-not tx-report
-                    (short-pause "No tx reports" 10)
+                    (short-pause "No tx reports")
                     (let [guid (new-user-in-tx-report tx-report)]
                       (if (empty? guid)
-                        (short-pause "Not a new user tx" 10)
+                        (short-pause "Not a new user tx")
                         (do
                           (demonic/in-demarcation
                            (-> guid user/find-by-guid-string user/stamp-refresh-start))
@@ -85,8 +78,9 @@
      (let [guid (.getStringByField tuple "user-guid")
            u (user/find-by-guid-string guid)]
        (logger/info "Processing user:" (:user/first-name u))
-       (demonic/in-demarcation
-        (user/refresh-user-data u))))
+       ;; (demonic/in-demarcation
+       ;;  (user/refresh-user-data u))
+       ))
     (catch Exception e
       (logger/error e "Exception in bolt! Occured while processing tuple:" tuple))))
 
@@ -105,7 +99,7 @@
     (let [cluster (LocalCluster.)]
       (logger/trace "Submitting topology...")
       (.submitTopology cluster "facebook" {TOPOLOGY-DEBUG true} (fb-topology))
-      (short-pause "Running topology for millis:" millis)
+      (short-pause "Running topology for millis:")
       (logger/trace "Shutting down cluster!")
       (.shutdown cluster))))
 
