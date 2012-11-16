@@ -49,8 +49,9 @@
      (nextTuple []
                 (when-let [n (next-refresh-guid guids)]
                   (demonic/in-demarcation
-                   (-> n user/find-by-guid-string user/stamp-refresh-start))                  
-                  (logger/info "RefreshUserSpout emitting GUID:" n)
+                   (let [u (user/find-by-guid-string n)]
+                     (user/stamp-refresh-start u)                  
+                     (logger/info "RefreshUserSpout emitting GUID:" n "for" (:user/first-name u))))
                   (emit-spout! collector [n])))
      (ack [id]))))
 
