@@ -78,6 +78,7 @@
 
 (defn -main [& cl-args]
   (print-vals "CL Args :" cl-args)
+  (print-vals "Starting in zolodeck ENV : " (zolo.setup.config/get-env-var "ZOLODECK_ENV"))
   (let [[options args banner] (process-args cl-args)]
     (when (:help options)
       (println banner)
