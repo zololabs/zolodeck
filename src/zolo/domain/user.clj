@@ -112,18 +112,19 @@
       demonic/insert))
 
 (defn refresh-user-data [u]
-  (logger/trace "RefreshUserData... starting now!")
-  (stamp-refresh-start (reload u))
-  (contact/update-contacts u)
-  (logger/debug "Loaded contacts " (count (:user/contacts (reload u))))
-  (message/update-inbox-messages (reload u))
-  (message/update-feed-messages-for-all-contacts (reload u))
-  (logger/debug "Messages done")
-  (update-scores (reload u))
-  (logger/debug "Scores done")  
-  (stamp-updated-time (reload u))
-  (logger/debug "Refresh done")  
-  (reload u))
+  (let [first-name (:user/first-name u)]
+    (logger/trace first-name "RefreshUserData... starting now!")
+    (stamp-refresh-start (reload u))
+    (contact/update-contacts u)
+    (logger/info first-name "Loaded contacts " (count (:user/contacts (reload u))))
+    (message/update-inbox-messages (reload u))
+    (message/update-feed-messages-for-all-contacts (reload u))
+    (logger/info first-name "messages done")
+    (update-scores (reload u))
+    (logger/info first-name "scoreing done")  
+    (stamp-updated-time (reload u))
+    (logger/info first-name "Refresh done")  
+    (reload u)))
 
 ;;TODO Junk function. Need to design the app
 (defn fully-loaded-user
