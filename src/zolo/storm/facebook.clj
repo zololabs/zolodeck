@@ -67,8 +67,9 @@
                         (short-pause "Not a new user tx")
                         (do
                           (demonic/in-demarcation
-                           (-> guid user/find-by-guid-string user/stamp-refresh-start))
-                          (logger/trace "Emitting NEW user guid" guid)
+                           (let [u (user/find-by-guid-string guid)]
+                             (user/stamp-refresh-start u)
+                             (logger/trace "Emitting NEW user guid" guid "for" (:user/first-name u)))) 
                           (emit-spout! collector [guid])))))))
      (ack [id]))))
 
