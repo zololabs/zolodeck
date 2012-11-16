@@ -26,11 +26,7 @@
   (if (empty? user-id)
     (throw+ {:type :missing-argument
              :message "user-id must be specified when calling recent-activity-url"}))
-  ;; (str "https://graph.facebook.com/"
-  ;;      user-id
-  ;;      "?fields=posts.fields(created_time,from,id,message,status_type,type,to,source,comments,likes)")
-  (str "https://graph.facebook.com/" user-id "/feed")
-  )
+  (str "https://graph.facebook.com/" user-id "/feed"))
 
 (defn create-url [url access-token query-params-map]
   (->> query-params-map

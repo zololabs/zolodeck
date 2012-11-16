@@ -26,16 +26,11 @@
                                                  message-identifier
                                                  :message/guid))
 
-;;;;;; MESSAGES
-
 (defn get-messages-for-user-identity [user-identity last-updated-string]
   (let [{provider :identity/provider
          access-token :identity/auth-token
          provider-uid :identity/provider-uid} user-identity]
     (social/fetch-messages provider access-token provider-uid last-updated-string)))
-
-;; (defn update-contact-feed [user provider contact-provider-uid user-access-token]
-;;   (social/fetch-feed provider user-access-token contact-provider-uid))
 
 (defn get-messages-for-user [user]
   (let [date (->> user dom/inbox-messages (sort-by :message/date) last :message/date)
@@ -44,44 +39,10 @@
          :user/user-identities
          (mapcat #(get-messages-for-user-identity % (or seconds MESSAGES-START-TIME-SECONDS))))))
 
-;;;;;; FEEDS
-
-;; (defn get-contact-feeds-for-user-identity [ui contacts-by-provider last-updated-string]
-;;   (let [{provider :identity/provider access-token :identity/auth-token} ui]
-;;     (->> contacts-by-provider
-;;          provider
-;;          (map :social/provider-uid)
-;;          (social/fetch-contact-feeds provider access-token last-updated-string))))
-
-;; (defn get-contact-feeds-for-user [user]
-;;   (let [contacts-by-provider (contact/provider-info-by-provider user)
-;;         last-updated-string (or (-> user :user/last-updated zolo-cal/date-to-simple-string)
-;;                                 FEEDS-START-TIME-DATE)]
-;;     (->> user
-;;          :user/user-identities
-;;          (mapcat #(get-contact-feeds-for-user-identity % contacts-by-provider last-updated-string)))))
-
-;; (defn get-all-user-messages [user]
-;;   (concat (get-messages-for-user user)
-;;           (get-contact-feeds-for-user user)))
-
-;; (defn update-inbox-messages [user]
-;;   (let [existing (dom/inbox-messages user)
-;;         fresh (get-messages-for-user user)
-;;         refreshed (utils-domain/update-fresh-entities-with-db-id existing fresh message-identifier :message/guid)]
-;;     (doeach demonic/insert refreshed)))
-
 (defn update-inbox-messages [user]
   (->> user
        get-messages-for-user
        (demonic/append-multiple user :user/messages)))
-
-;; (defn update-messages [user]
-;;   (->> user
-;;        get-all-user-messages
-;;        (refreshed-messages user)
-;;        (assoc user :user/messages)
-;;        demonic/insert))
 
 (defn- update-messages-for-contact-and-provider [user feed-messages si]
   (try-catch

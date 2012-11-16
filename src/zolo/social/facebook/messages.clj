@@ -104,7 +104,7 @@
 ;; TODO this date needs to be based on last refreshed data
 (defn fetch-feed [auth-token user-id yyyy-MM-dd-string]
   ;(logger/trace "Fetching feed for user-id:" user-id ", from:" yyyy-MM-dd-string)
-  (->> (stream/recent-activity-until auth-token user-id yyyy-MM-dd-string)
+  (->> (stream/recent-activity auth-token user-id yyyy-MM-dd-string)
        (domap fb-post->message)))
 
 (defn fetch-all-messages [auth-token user-id date]

@@ -96,9 +96,7 @@
 (defn messages-by-contacts [u message-filter-fn]
   (let [contacts-lookup (contacts-by-social-identifier u)
         inbox-messages (filter message-filter-fn (:user/messages u))
-        mbc (reduce bucket-message {} inbox-messages)
-        ;messages-for-contact (fn [c] (if-let [msgs (mbc c)] (sort-by :message/date msgs)))
-        ]
+        mbc (reduce bucket-message {} inbox-messages)]
     (reduce #(assoc-in %1 [(contacts-lookup %2)] (sort-by :message/date (mbc %2))) {} (keys contacts-lookup))))
 
 (defn inbox-messages-by-contacts [u]

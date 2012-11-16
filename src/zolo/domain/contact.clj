@@ -36,14 +36,6 @@
        (map #(select-keys % [:social/provider :social/provider-uid]))
        (group-by :social/provider)))
 
-;; (defn find-contact-by-provider-info [user provider-info]
-;;   ((contacts-lookup-table (:user/contacts user)) provider-info))
-
-;; (defn create-contact [user provider-info]
-;;   ;;(demonic/append-single user :user/contacts contact)
-;;   ;;TODO Need to create a social detail for new contact 
-;;   )
-
 (defn fresh-contacts-for-user-identity [user-identity]
   (let [{provider :identity/provider
          access-token :identity/auth-token
