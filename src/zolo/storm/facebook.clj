@@ -93,8 +93,7 @@
    {"3" (bolt-spec {"1" :shuffle
                     "2" :shuffle}
                    process-user
-                   ;:p 2
-                   )}))
+                   :p 2)}))
 
 (defn run-local! [millis]
   (future
