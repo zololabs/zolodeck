@@ -84,7 +84,7 @@
     (->> batches
          (mapcat #(run-fql-multi access-token %))
          (mapcat (fn [{query-name :name results :fql_result_set}]
-                   (result-processor query-name results))))))
+                   (result-processor (str query-name) results))))))
 
 (defn user-info [access-token user-id]
   (get-json (user-info-url user-id) access-token {}))
