@@ -36,7 +36,9 @@
   ;;---- USER
   (POST "/users" {params :params cookies :cookies} (web/json-response (user-api/signin-user params cookies)))  
   (GET "/users/:id" [id] (web/json-response (current-user)))
- 
+
+  (POST "/messages" {params :params} (web/json-response (user-api/send-message params)))
+  
   ;;---- User Stats
   (GET "/user-stats" {params :params} (web/json-response (user-api/stats params)))
   

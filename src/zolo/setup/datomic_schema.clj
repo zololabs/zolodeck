@@ -105,5 +105,14 @@
  (string-fact-schema  :message/story false "what this message is about")
  (string-fact-schema  :message/icon false "an icon to represent this message")
  (string-fact-schema  :message/picture false "a picture about this message")
- (string-fact-schema  :message/link false "a link about this message")
- )
+ (string-fact-schema  :message/link false "a link about this message"))
+
+(schema-set "TEMP MESSAGE ENTITY FACTS"
+ (uuid-fact-schema   :temp-message/guid false "A GUID for temporary messages")
+ (enum-fact-schema   :temp-message/provider false "The provider platform of this temp message")
+ (string-fact-schema :temp-message/mode false "The sub-type of this message")
+ (string-fact-schema :temp-message/text true "The body of this message")
+ (instant-fact-schema :temp-message/date false "The date this message was received/sent")
+ (string-fact-schema :temp-message/from false "The platform ID of the sender")
+ (strings-fact-schema :temp-message/to false "The platform IDs of the receivers")
+ (strings-fact-schema :temp-message/thread-id false "The Thread ID of this message"))
