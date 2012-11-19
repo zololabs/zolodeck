@@ -39,10 +39,16 @@
          :user/user-identities
          (mapcat #(get-messages-for-user-identity % (or seconds MESSAGES-START-TIME-SECONDS))))))
 
+(defn delete-temp-messages [user]
+  (->> user
+       :user/temp-messages
+       (doeach demonic/delete)))
+
 (defn update-inbox-messages [user]
   (->> user
        get-messages-for-user
-       (demonic/append-multiple user :user/messages)))
+       (demonic/append-multiple user :user/messages)
+       (delete-temp-messages user)))
 
 (defn- update-messages-for-contact-and-provider [user feed-messages si]
   (try-catch
@@ -64,3 +70,14 @@
   (->> user
        :user/contacts
        (pdoeach #(update-messages-for-contact user %) 20)))
+
+(defn create-new [from-user provider-string to-uid text thread-id]
+  (let [m {:temp-message/provider (social/provider-enum provider-string)
+           :temp-message/from (user-identity/fb-id from-user)
+           :temp-message/to to-uid
+           :temp-message/text text
+           :temp-message/thread-id thread-id
+           :temp-message/mode "INBOX"
+           :temp-message/date (zolo-cal/now-instant)}]
+    (demonic/append-single from-user :user/temp-messages m)
+    m))

@@ -42,8 +42,8 @@
           (format-user true)))))
 
 (defn send-message [request-params]
-  (let [{provider :provider from :from to :to text :text thread-id :thread_id} request-params]
-    (message/create-new provider from to text thread-id)))
+  (let [{provider :provider to-uid :to_uid text :text thread-id :thread_id} request-params]
+    (message/create-new (user/current-user) provider to-uid text thread-id)))
 
 (defn stats [request-params]
   (let [u (user/fully-loaded-user)]

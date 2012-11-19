@@ -64,17 +64,10 @@
         first
         loadable/entity->loadable)))
 
-(defn fb-user-identity [u]
-  (->> u
-       :user/user-identities
-       (filter user-identity/is-fb?)
-       first))
-
-(defn fb-id [u]
-  (-> u fb-user-identity :identity/provider-uid))
-
-(defn fb-access-token [u]
-  (-> u fb-user-identity :identity/auth-token))
+(defn provider-uid [user provider]
+  (condp  = provider 
+    :provider/facebook (user-identity/fb-id user)
+    (throw+ {:type :bad-data :message (str "Unknown provider specified: " provider)})))
 
 (defn creation-time [u]
   (->> (:user/guid u)

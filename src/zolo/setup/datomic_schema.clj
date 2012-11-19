@@ -20,7 +20,11 @@
  (refs-fact-schema :user/user-identities false "A user's social detail records")   
 
  ;Contacts Information
- (refs-fact-schema :user/contacts false "A user's contacts"))
+ (refs-fact-schema :user/contacts false "A user's contacts")
+
+ ;Messages Information
+ (refs-fact-schema :user/messages false "A contact's messages")
+ (refs-fact-schema :user/temp-messages false "A contact's temp messages"))
 
 (schema-set "USER IDENTITY FACTS"
  (uuid-fact-schema   :identity/guid false "A GUID for the user identity record")
@@ -41,10 +45,7 @@
  (string-fact-schema :identity/state         false  "A user's state")
  (string-fact-schema :identity/city          false  "A user's city")
  (string-fact-schema :identity/zip           false  "A user's zip")
- (string-fact-schema :identity/nickname      false  "A user's nick name")
-
- ;Messages Information
- (refs-fact-schema :user/messages false "A contact's messages"))
+ (string-fact-schema :identity/nickname      false  "A user's nick name"))
 
 (schema-set "SOCIAL ENTITY FACTS"
  (uuid-fact-schema   :social/guid          false "A GUID for the social details record")
