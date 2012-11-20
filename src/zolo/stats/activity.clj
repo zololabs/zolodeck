@@ -22,11 +22,23 @@
                 (<  (contact-score %) upper))
           (:user/contacts u)))
 
-(defn network-stats [u]
+(defn not-contacted-for-days [imbc days]
+  (let [now (zolo-cal/now-joda)
+        selector-fn (fn [c msgs]
+                      (if-let [d (-> msgs last :message/date)]
+                        (-> d
+                            ctc/to-date-time
+                            (time/plus (time/days days))
+                            (.isBefore now))))
+        last-contacted-in (zolo-maps/select-keys-if imbc selector-fn)]
+    (keys last-contacted-in)))
+
+(defn network-stats [u imbc]
   {:total  (count (:user/contacts u))
    :strong (count (contacts-with-score-between u 250 10000000))
    :medium (count (contacts-with-score-between u 50 250))
-   :weak   (count (contacts-with-score-between u 0 50))})
+   :weak   (count (contacts-with-score-between u 0 50))
+   :quartered (count (not-contacted-for-days imbc 90))})
 
 (defn strong-contacts [u number]
   (->> u
@@ -47,17 +59,6 @@
                      keys)]
     (take number contacts)))
 
-(defn not-contacted-for-days [imbc days]
-  (let [now (zolo-cal/now-joda)
-        selector-fn (fn [c msgs]
-                      (if-let [d (-> msgs last :message/date)]
-                        (-> d
-                            ctc/to-date-time
-                            (time/plus (time/days days))
-                            (.isBefore now))))
-        last-contacted-in (zolo-maps/select-keys-if imbc selector-fn)]
-    (keys last-contacted-in)))
-
 (defn recent-message-time [[c messages]]
   (->> messages
        (sort-by :message/date)
@@ -72,19 +73,17 @@
          keys
          (take number))))
 
-(defn other-stats [u]
-  (let [imbc (dom/inbox-messages-by-contacts u)]
-    (merge {:averagescore (zolo-math/average (map contact-score (:user/contacts u)))
-            :messagecount (count (:user/messages u))
-            ;;TODO This needs to be tested
-            :strong-contacts (domap #(fe/format-contact imbc %) (strong-contacts u 5))   
-            :weak-contacts (domap #(fe/format-contact imbc %) (weak-contacts u 5))
-            :connect-soon (domap #(fe/format-contact imbc %) (forgetting-contacts imbc 5))
-            :never-contacted (domap #(fe/format-contact imbc %) (forgotten-contacts imbc 5))
-            :quartered-contacts (count (not-contacted-for-days imbc 90))
-            :all-week-interaction-count (dom/all-message-count-in-the-past imbc 7)
-            :all-month-interaction-count (dom/all-message-count-in-the-past imbc 31)}
-           (md/distribution-stats imbc))))
+(defn other-stats [u imbc]
+  (merge {:averagescore (zolo-math/average (map contact-score (:user/contacts u)))
+          :messagecount (count (:user/messages u))
+          ;;TODO This needs to be tested
+          :strong-contacts (domap #(fe/format-contact imbc %) (strong-contacts u 5))   
+          :weak-contacts (domap #(fe/format-contact imbc %) (weak-contacts u 5))
+          :connect-soon (domap #(fe/format-contact imbc %) (forgetting-contacts imbc 5))
+          :never-contacted (domap #(fe/format-contact imbc %) (forgotten-contacts imbc 5))
+          :all-week-interaction-count (dom/all-message-count-in-the-past imbc 7)
+          :all-month-interaction-count (dom/all-message-count-in-the-past imbc 31)}
+         (md/distribution-stats imbc)))
 
 (defn- activity-text-to-display [a]
   (let [link (if-let [l (:message/link a)]

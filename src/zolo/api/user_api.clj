@@ -5,7 +5,8 @@
    [zolo.social.core :as social]
    [sandbar.auth :as sandbar]
    [zolo.domain.user :as user]
-   [zolo.domain.message :as message]   
+   [zolo.domain.message :as message]
+   [zolo.domain.accessors :as dom]   
    [zolo.stats.activity :as activity]
    [zolo.social.facebook.chat :as fb-chat]
    [zolo.social.core :as social-core]
@@ -45,12 +46,16 @@
   (let [{provider :provider to-uid :to_uid text :text thread-id :thread_id} request-params]
     (message/create-new (user/current-user) provider to-uid text thread-id)))
 
+(defn empty-stats []
+  {:network {} :other {} :recent []})
+
 (defn stats [request-params]
   (let [u (user/fully-loaded-user)]
     (if (user/been-processed? u)
-      {:network (activity/network-stats u)
-       :other (activity/other-stats u)
-       :recent (activity/recent-activity u)}
-      {:network {} :other {} :recent []})))
+      (let [imbc (dom/inbox-messages-by-contacts u)]
+        {:network (activity/network-stats u imbc)
+         :other (activity/other-stats u imbc)
+         :recent (activity/recent-activity u)})
+      (empty-stats))))
 
 
