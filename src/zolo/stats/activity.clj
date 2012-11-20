@@ -1,4 +1,4 @@
-(ns zolo.domain.activity
+(ns zolo.stats.activity
   (:use zolodeck.utils.debug
         zolodeck.utils.clojure)
   (:require [zolo.domain.user :as user]
@@ -12,7 +12,7 @@
             [zolodeck.utils.calendar :as zolo-cal]
             [zolodeck.utils.math :as zolo-math]
             [clj-time.core :as time]
-            [clj-time.coerce :as time-coerce]))
+            [clj-time.coerce :as ctc]))
 
 (defn contact-score [c]
   (or (:contact/score c) 0))
@@ -47,6 +47,17 @@
                      keys)]
     (take number contacts)))
 
+(defn not-contacted-for-days [imbc days]
+  (let [now (zolo-cal/now-joda)
+        selector-fn (fn [c msgs]
+                      (if-let [d (-> msgs last :message/date)]
+                        (-> d
+                            ctc/to-date-time
+                            (time/plus (time/days days))
+                            (.isBefore now))))
+        last-contacted-in (zolo-maps/select-keys-if imbc selector-fn)]
+    (keys last-contacted-in)))
+
 (defn recent-message-time [[c messages]]
   (->> messages
        (sort-by :message/date)
@@ -70,6 +81,7 @@
             :weak-contacts (domap #(fe/format-contact imbc %) (weak-contacts u 5))
             :connect-soon (domap #(fe/format-contact imbc %) (forgetting-contacts imbc 5))
             :never-contacted (domap #(fe/format-contact imbc %) (forgotten-contacts imbc 5))
+            :quartered-contacts (count (not-contacted-for-days imbc 90))
             :all-week-interaction-count (dom/all-message-count-in-the-past imbc 7)
             :all-month-interaction-count (dom/all-message-count-in-the-past imbc 31)}
            (md/distribution-stats imbc))))
