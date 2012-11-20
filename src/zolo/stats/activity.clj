@@ -1,4 +1,4 @@
-(ns zolo.domain.stats
+(ns zolo.domain.activity
   (:use zolodeck.utils.debug
         zolodeck.utils.clojure)
   (:require [zolo.domain.user :as user]

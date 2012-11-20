@@ -6,7 +6,7 @@
    [sandbar.auth :as sandbar]
    [zolo.domain.user :as user]
    [zolo.domain.message :as message]   
-   [zolo.domain.stats :as stats]
+   [zolo.stats.activity :as activity]
    [zolo.social.facebook.chat :as fb-chat]
    [zolo.social.core :as social-core]
    [zolo.utils.logger :as logger]))
@@ -48,9 +48,9 @@
 (defn stats [request-params]
   (let [u (user/fully-loaded-user)]
     (if (user/been-processed? u)
-      {:network (stats/network-stats u)
-       :other (stats/other-stats u)
-       :recent (stats/recent-activity u)}
+      {:network (activity/network-stats u)
+       :other (activity/other-stats u)
+       :recent (activity/recent-activity u)}
       {:network {} :other {} :recent []})))
 
 
