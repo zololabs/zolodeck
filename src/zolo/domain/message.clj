@@ -47,8 +47,8 @@
 (defn update-inbox-messages [user]
   (->> user
        get-messages-for-user
-       (demonic/append-multiple user :user/messages)
-       (delete-temp-messages user)))
+       (demonic/append-multiple user :user/messages))
+  (delete-temp-messages user))
 
 (defn- update-messages-for-contact-and-provider [user feed-messages si]
   (try-catch
