@@ -11,11 +11,16 @@
 (defn add-to-connections! [uid chat-conn]
   (swap! CONNECTIONS assoc uid chat-conn))
 
+(defn chat-connected? [uid]
+  (if-let [conn (CONNECTIONS uid)]
+    (.isLive conn)))
+
 (defn connect-user! [u]
-  (let [{uid :social/provider-uid access-token :social/auth-token} (user-identity/fb-user-identity u)]
-    (logger/trace "UID:" uid)
-    (logger/trace "AT:" access-token)    
-    (add-to-connections! uid (FacebookChat. (conf/fb-app-id) access-token))))
+  (let [{uid :identity/provider-uid access-token :identity/auth-token} (user-identity/fb-user-identity u)]
+    (when-not (chat-connected? uid)
+      (logger/trace "UID:" uid)
+      (logger/trace "AT:" access-token)    
+      (add-to-connections! uid (FacebookChat. (conf/fb-app-id) access-token)))))
 
 (defn jid-for [uid]
   (str "-" uid "@chat.facebook.com"))
