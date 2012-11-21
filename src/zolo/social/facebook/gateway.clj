@@ -101,4 +101,4 @@
 
 (defn friends-list [access-token user-id]
   (get-json-all-pages "https://graph.facebook.com/me/friends" access-token
-                      {:fields "id,first_name,last_name,gender,locale,link,username,installed,bio,birthday,education,email,hometown,interested_in,location,picture,relationship_status,significant_other,website"}))
+                      {:fields "id,first_name,last_name,gender,locale,link,username,installed,bio,birthday,education,email,hometown,interested_in,location,picture.type(large),relationship_status,significant_other,website"}))
