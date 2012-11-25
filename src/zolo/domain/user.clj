@@ -119,18 +119,5 @@
     (logger/info first-name "Refresh done")  
     (reload u)))
 
-;;TODO Junk function. Need to design the app
-(defn fully-loaded-user
-  ([u]
-     #_(if (empty? (:user/contacts u))
-       (refresh-user-data u)
-       (do
-         (logger/debug "User is already fully loaded")
-         u))
-
-     u)
-  ([]
-     (fully-loaded-user (current-user))))
-
 (defn been-processed? [u]
   (:user/last-updated u))

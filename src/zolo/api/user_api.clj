@@ -42,20 +42,23 @@
           log-into-fb-chat
           (format-user true)))))
 
-(defn send-message [request-params]
-  (let [{provider :provider to-uid :to_uid text :text thread-id :thread_id} request-params]
-    (message/create-new (user/current-user) provider to-uid text thread-id)))
-
 (defn empty-stats []
   {:network {} :other {} :recent []})
 
+(defn user-stats [u]
+  (if (user/been-processed? u)
+    (let [imbc (dom/inbox-messages-by-contacts u)]
+      {:network (activity/network-stats u imbc)
+       :other (activity/other-stats u imbc)
+       :recent (activity/recent-activity u)})
+    (empty-stats)))
+
+(defn send-message [request-params]
+  (let [{provider :provider to-uid :to_uid text :text thread-id :thread_id} request-params]
+    (message/create-new (user/current-user) provider to-uid text thread-id)
+    (user-stats (user/current-user))))
+
 (defn stats [request-params]
-  (let [u (user/fully-loaded-user)]
-    (if (user/been-processed? u)
-      (let [imbc (dom/inbox-messages-by-contacts u)]
-        {:network (activity/network-stats u imbc)
-         :other (activity/other-stats u imbc)
-         :recent (activity/recent-activity u)})
-      (empty-stats))))
+  (user-stats (user/current-user)))
 
 
