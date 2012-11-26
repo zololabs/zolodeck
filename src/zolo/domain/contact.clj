@@ -70,6 +70,10 @@
         ffirst
         demonic/load-entity)))
 
+(defn find-by-guid-string [guid-string]
+  (when guid-string
+    (find-by-guid (java.util.UUID/fromString guid-string))))
+
 (defn reload [c]
   (find-by-guid (:contact/guid c)))
 

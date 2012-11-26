@@ -5,6 +5,9 @@
    [zolo.social.core :as social]
    [sandbar.auth :as sandbar]
    [zolo.domain.user :as user]
+   [zolo.domain.contact :as contact]
+   [zolo.domain.social-identity :as social-identity]
+   [zolo.domain.user-identity :as user-identity]
    [zolo.domain.message :as message]
    [zolo.domain.accessors :as dom]   
    [zolo.stats.activity :as activity]
@@ -54,7 +57,10 @@
     (empty-stats)))
 
 (defn send-message [request-params]
-  (let [{provider :provider to-uid :to_uid text :text thread-id :thread_id} request-params]
+  (let [{provider :provider contact-guid :to-uid text :text thread-id :thread_id} request-params
+        from-uid (-> (current-user) user-identity/fb-id)
+        to-uid (-> contact-guid contact/find-by-guid-string social-identity/fb-id)]
+    (fb-chat/send-message from-uid to-uid text)
     (message/create-new (user/current-user) provider to-uid text thread-id)
     (user-stats (user/current-user))))
 

@@ -72,11 +72,11 @@
        (pdoeach #(update-messages-for-contact user %) 20)))
 
 (defn create-new [from-user provider-string to-uid text thread-id]
-  (let [m {:temp-message/provider (social/provider-enum provider-string)
+  (let [m {:temp-message/provider (social/provider-enum (.toUpperCase provider-string))
            :temp-message/from (user-identity/fb-id from-user)
            :temp-message/to to-uid
            :temp-message/text text
-           :temp-message/thread-id thread-id
+;           :temp-message/thread-id thread-id
            :temp-message/mode "INBOX"
            :temp-message/date (zolo-cal/now-instant)}]
     (demonic/append-single from-user :user/temp-messages m)
