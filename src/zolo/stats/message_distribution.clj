@@ -21,14 +21,14 @@
   (reduce message-distribution-reducer {} messages))
 
 (defn- collect-weeks [year month weekly-stats]
-  (mapcat (fn [[week number]] (list [year month week] number)) weekly-stats))
+  (domapcat (fn [[week number]] (list [year month week] number)) weekly-stats))
 
 (defn- collect-months [year monthly-stats]
-  (mapcat (fn [[month weekly-stats]] (collect-weeks year month weekly-stats)) monthly-stats))
+  (domapcat (fn [[month weekly-stats]] (collect-weeks year month weekly-stats)) monthly-stats))
 
 (defn by-year-month-week [yearly-stats]
   (->>
-   (mapcat (fn [[year monthly-stats]] (collect-months year monthly-stats)) yearly-stats)
+   (domapcat (fn [[year monthly-stats]] (collect-months year monthly-stats)) yearly-stats)
    (apply hash-map )))
 
 (defn best-week-printer [[[y m w] n]]
