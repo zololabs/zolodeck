@@ -91,7 +91,10 @@
        (messages-in-the-past num-days)))
 
 (defn all-message-count-in-the-past [mbc num-days]
-  (count (all-messages-in-the-past mbc num-days)))
+  (->> (all-messages-in-the-past mbc num-days)
+       (keep :message/message-id)
+       distinct
+       count))
 
 (defn messages-by-contacts [u message-filter-fn]
   (let [contacts-lookup (contacts-by-social-identifier u)
