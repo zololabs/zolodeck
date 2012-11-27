@@ -56,13 +56,48 @@
          (map first)
          (map demonic/load-entity))))
 
+(defn is-temp-message? [m]
+  (:temp-message/guid m))
+
+(defn is-inbox-message? [m]
+  (or (= "INBOX" (:message/mode m))
+      (is-temp-message? m)))
+
+(defn is-feed-message? [m]
+  (or (= "FEED" (:message/mode m))))
+
+(defn message-from [m]
+  (if (is-temp-message? m)
+    (:temp-message/from m)
+    (:message/from m)))
+
+(defn message-to [m]
+  (if (is-temp-message? m)
+    (:temp-message/to m)
+    (:message/to m)))
+
+(defn message-provider [m]
+  (if (is-temp-message? m)
+    (:temp-message/provider m)
+    (:message/provider m)))
+
+(defn message-date [m]
+  (if (is-temp-message? m)
+    (:temp-message/date m)
+    (:message/date m)))
+
+(defn message-id [m]
+  (if (is-temp-message? m)
+    (:temp-message/guid m)
+    (:message/message-id m)))
+
 (defn- update-buckets-for [buckets m contact-ids]
   (let [updater (fn [b contact-id]
-                  (update-in b [[(:message/provider m) contact-id]] conj m))]
+                  (update-in b [[(message-provider m) contact-id]] conj m))]
     (reduce updater buckets contact-ids)))
 
 (defn- bucket-message [buckets m]
-  (update-buckets-for buckets m (conj (:message/to m) (:message/from m))))
+  (update-buckets-for buckets m (conj (message-to m) (message-from m))))
 
 (defn- bucket-si [c buckets si]
   (assoc-in buckets [(contact-identifier si)] c))
@@ -79,7 +114,7 @@
 
 (defn message-filter-fn-for-days-within [num-days]
   (let [time-diff (time/minus (time/now) (time/days num-days))]
-    #(time/after? (time-coerce/to-date-time (:message/date %)) time-diff)))
+    #(time/after? (time-coerce/to-date-time (message-date %)) time-diff)))
 
 (defn messages-in-the-past [num-days msgs]
   (filter (message-filter-fn-for-days-within num-days) msgs))
@@ -92,7 +127,7 @@
 
 (defn all-message-count-in-the-past [mbc num-days]
   (->> (all-messages-in-the-past mbc num-days)
-       (keep :message/message-id)
+       (keep message-id)
        distinct
        count))
 
@@ -101,13 +136,13 @@
         all-messages (concat (:user/messages u) (:user/temp-messages u))
         inbox-messages (filter message-filter-fn all-messages)
         mbc (reduce bucket-message {} inbox-messages)]
-    (reduce #(assoc-in %1 [(contacts-lookup %2)] (sort-by :message/date (mbc %2))) {} (keys contacts-lookup))))
+    (reduce #(assoc-in %1 [(contacts-lookup %2)] (sort-by message-date (mbc %2))) {} (keys contacts-lookup))))
 
 (defn inbox-messages-by-contacts [u]
-  (messages-by-contacts u #(= "INBOX" (:message/mode %))))
+  (messages-by-contacts u is-inbox-message?))
 
 (defn feed-messages-by-contacts [u]
-  (messages-by-contacts u #(= "FEED" (:message/mode %))))
+  (messages-by-contacts u is-feed-message?))
 
 (defn all-messages-by-contacts [u]
   (messages-by-contacts u (constantly true)))

@@ -15,7 +15,7 @@
   (if-not x y (+ x y)))
 
 (defn- message-distribution-reducer [distribution message]
-  (update-in distribution (zolo-cal/get-year-month-week (:message/date message)) plus 1))
+  (update-in distribution (zolo-cal/get-year-month-week (dom/message-date message)) plus 1))
 
 (defn message-distribution [messages]
   (reduce message-distribution-reducer {} messages))
@@ -37,7 +37,7 @@
 
 (defn best-week [messages]
   (->> messages
-       (distinct-by :message/message-id)
+       (distinct-by dom/message-id)
        message-distribution
        by-year-month-week
        (sort-by val)
@@ -45,9 +45,9 @@
        best-week-printer))
 
 (defn weekly-averages [messages]
-  (let [sorted-messages (sort-by :message/date messages)
-        min-date (-> sorted-messages first :message/date)
-        max-date (-> sorted-messages last :message/date)
+  (let [sorted-messages (sort-by dom/message-date messages)
+        min-date (-> sorted-messages first dom/message-date)
+        max-date (-> sorted-messages last dom/message-date)
         weeks-between (zolo-cal/weeks-between min-date max-date)
         number-of-messages (count messages)]
     {:weekly-average (float (/ number-of-messages weeks-between))}))
