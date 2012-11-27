@@ -37,6 +37,7 @@
 
 (defn best-week [messages]
   (->> messages
+       (distinct-by :message/message-id)
        message-distribution
        by-year-month-week
        (sort-by val)
