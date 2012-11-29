@@ -73,6 +73,19 @@
          keys
          (take number))))
 
+(defn- message-filter-fn-for-days-within [num-days]
+  (let [time-diff (time/minus (time/now) (time/days num-days))]
+    #(time/after? (ctc/to-date-time (dom/message-date %)) time-diff)))
+
+(defn all-messages-in-the-past [imbc num-days]
+  (->> imbc
+       dom/messages-from-imbc
+       (filter (message-filter-fn-for-days-within num-days))))
+
+(defn all-message-count-in-the-past [imbc num-days]
+  (->> (all-messages-in-the-past imbc num-days)
+       count))
+
 (defn other-stats [u imbc]
   (merge {:averagescore (zolo-math/average (map contact-score (:user/contacts u)))
           :messagecount (count (:user/messages u))
@@ -81,8 +94,8 @@
           :weak-contacts (domap #(fe/format-contact imbc %) (weak-contacts u 5))
           :connect-soon (domap #(fe/format-contact imbc %) (forgetting-contacts imbc 5))
           :never-contacted (domap #(fe/format-contact imbc %) (forgotten-contacts imbc 5))
-          :all-week-interaction-count (dom/all-message-count-in-the-past imbc 7)
-          :all-month-interaction-count (dom/all-message-count-in-the-past imbc 31)}
+          :all-week-interaction-count (all-message-count-in-the-past imbc 7)
+          :all-month-interaction-count (all-message-count-in-the-past imbc 31)}
          (md/distribution-stats imbc)))
 
 (defn- activity-text-to-display [a]

@@ -37,7 +37,6 @@
 
 (defn best-week [messages]
   (->> messages
-       (distinct-by dom/message-id)
        message-distribution
        by-year-month-week
        (sort-by val)
@@ -53,6 +52,6 @@
     {:weekly-average (float (/ number-of-messages weeks-between))}))
 
 (defn distribution-stats [imbc]
-  (let [messages (->> imbc vals (apply concat))]
+  (let [messages (dom/messages-from-imbc imbc)]
     (merge (weekly-averages messages)
            (best-week messages))))

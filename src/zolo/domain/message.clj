@@ -33,7 +33,7 @@
     (social/fetch-messages provider access-token provider-uid last-updated-string)))
 
 (defn get-messages-for-user [user]
-  (let [date (->> user dom/inbox-messages (sort-by :message/date) last :message/date)
+  (let [date (->> user dom/inbox-messages-for-user (sort-by :message/date) last :message/date)
         seconds (if date (-> date .getTime zolo-cal/to-seconds))]
     (->> user
          :user/user-identities

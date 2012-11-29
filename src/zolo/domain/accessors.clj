@@ -1,9 +1,8 @@
 (ns zolo.domain.accessors
-  (:use zolodeck.utils.debug)
+  (:use zolodeck.utils.debug
+        zolodeck.utils.clojure)
   (:require [zolodeck.demonic.core :as demonic]
-            [zolodeck.demonic.helper :as dhelp]
-            [clj-time.core :as time]
-            [clj-time.coerce :as time-coerce]))
+            [zolodeck.demonic.helper :as dhelp]))
 
 ;; (defn- message-is-from? [provider-uid m]
 ;;   (= provider-uid (:message/from m)))
@@ -112,25 +111,6 @@
        :user/contacts
        (reduce bucket-contact {})))
 
-(defn message-filter-fn-for-days-within [num-days]
-  (let [time-diff (time/minus (time/now) (time/days num-days))]
-    #(time/after? (time-coerce/to-date-time (message-date %)) time-diff)))
-
-(defn messages-in-the-past [num-days msgs]
-  (filter (message-filter-fn-for-days-within num-days) msgs))
-
-(defn all-messages-in-the-past [mbc num-days]
-  (->> mbc
-       vals
-       (apply concat)
-       (messages-in-the-past num-days)))
-
-(defn all-message-count-in-the-past [mbc num-days]
-  (->> (all-messages-in-the-past mbc num-days)
-       (keep message-id)
-       distinct
-       count))
-
 (defn messages-by-contacts [u message-filter-fn]
   (let [contacts-lookup (contacts-by-social-identifier u)
         all-messages (concat (:user/messages u) (:user/temp-messages u))
@@ -147,11 +127,16 @@
 (defn all-messages-by-contacts [u]
   (messages-by-contacts u (constantly true)))
 
-(defn inbox-messages [u]
-  (->> u
-       (inbox-messages-by-contacts)
+(defn messages-from-imbc [imbc]
+  (->> imbc
        vals
-       (apply concat)))
+       (apply concat)
+       (distinct-by message-id)))
+
+(defn inbox-messages-for-user [u]
+  (->> u
+       inbox-messages-by-contacts
+       messages-from-imbc))
 
 (defn user-identity-for-provider [u provider]
   (->> u
