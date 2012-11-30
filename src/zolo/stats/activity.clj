@@ -74,8 +74,10 @@
          (take number))))
 
 (defn- message-filter-fn-for-days-within [num-days]
-  (let [time-diff (time/minus (time/now) (time/days num-days))]
-    #(time/after? (ctc/to-date-time (dom/message-date %)) time-diff)))
+  (if (neg? num-days)
+    (constantly true)
+    (let [time-diff (time/minus (time/now) (time/days num-days))]
+      #(time/after? (ctc/to-date-time (dom/message-date %)) time-diff))))
 
 (defn all-messages-in-the-past [imbc num-days]
   (->> imbc
@@ -127,3 +129,11 @@
        fmbc->list
        (reverse-sort-by #(% "date"))
        (take 50)))
+
+(defn daily-counts [imbc]
+  (let [msgs (dom/messages-from-imbc imbc)
+        msgs-dates  (map #(zolo-cal/start-of-day-inst (dom/message-date %)) msgs)
+        msgs-freq (frequencies msgs-dates)
+        all-dates (-> msgs-dates first zolo-cal/all-dates-through-today)]
+    (reduce (fn [ret date]
+              (conj ret [(zolo-cal/date-to-simple-string date) (or (msgs-freq date) 0)])) () all-dates)))

@@ -53,7 +53,8 @@
     (let [imbc (dom/inbox-messages-by-contacts u)]
       {:network (activity/network-stats u imbc)
        :other (activity/other-stats u imbc)
-       :recent (activity/recent-activity u)})
+       :recent (activity/recent-activity u)
+       :interactions (activity/daily-counts imbc)})
     (empty-stats)))
 
 (defn send-message [request-params]

@@ -131,7 +131,8 @@
   (->> imbc
        vals
        (apply concat)
-       (distinct-by message-id)))
+       (distinct-by message-id)
+       (sort-by message-date)))
 
 (defn inbox-messages-for-user [u]
   (->> u
