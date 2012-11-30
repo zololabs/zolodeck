@@ -136,4 +136,4 @@
         msgs-freq (frequencies msgs-dates)
         all-dates (-> msgs-dates first zolo-cal/all-dates-through-today)]
     (reduce (fn [ret date]
-              (conj ret [(zolo-cal/date-to-simple-string date) (or (msgs-freq date) 0)])) () all-dates)))
+              (conj ret [(zolo-cal/date-to-simple-string date) (or (msgs-freq date) 0)])) [] all-dates)))
