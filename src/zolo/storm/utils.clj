@@ -7,16 +7,23 @@
             [zolodeck.demonic.core :as demonic]
             [clj-time.core :as time]
             [clj-time.coerce :as time-coerce]
-            [zolodeck.utils.calendar :as zolo-cal]))
+            [zolodeck.utils.calendar :as zolo-cal])
+  (:import [backtype.storm.tuple Values Fields]))
 
 (def NEW-USER-FRESHNESS-PERIOD (conf/new-user-freshness-millis)) 
 (def USER-UPDATE-WAIT (conf/user-update-wait-fb-millis))
+
+(defn values [& things]
+  (Values. (into-array things)))
+
+(defn fields [& things]
+  (Fields. things))
 
 (defn short-pause [msg]
   ;;(logger/info "[1 ms pause:]" msg)
   (Thread/sleep 10))
 
-(defn- pause [msg millis]
+(defn pause [msg millis]
   (logger/trace "[Sleep ms:" millis "] " msg)
   (Thread/sleep millis))
 
