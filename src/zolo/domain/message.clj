@@ -69,7 +69,7 @@
 (defn update-feed-messages-for-all-contacts [user]
   (->> user
        :user/contacts
-       (pdoeach #(update-messages-for-contact user %) 20)))
+       (pdoeach #(update-messages-for-contact user %) 20 true)))
 
 (defn create-new [from-user provider-string to-uid text thread-id]
   (let [m {:temp-message/provider (social/provider-enum (.toUpperCase provider-string))

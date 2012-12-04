@@ -127,12 +127,20 @@
 (defn all-messages-by-contacts [u]
   (messages-by-contacts u (constantly true)))
 
+(defn cleanup-messages [msgs]
+  (->> msgs
+       (distinct-by message-id)
+       (sort-by message-date)))
+
 (defn messages-from-imbc [imbc]
   (->> imbc
        vals
        (apply concat)
-       (distinct-by message-id)
-       (sort-by message-date)))
+       cleanup-messages))
+
+(defn messages-for-contact [imbc contact]
+  (->> (imbc contact)
+       cleanup-messages))
 
 (defn inbox-messages-for-user [u]
   (->> u

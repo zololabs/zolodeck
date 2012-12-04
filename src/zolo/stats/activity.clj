@@ -88,13 +88,28 @@
   (->> (all-messages-in-the-past imbc num-days)
        count))
 
+(defn daily-counts [msgs]
+  (let [msgs-dates (map #(zolo-cal/start-of-day-inst (dom/message-date %)) msgs)
+        msgs-freq (frequencies msgs-dates)
+        all-dates (-> msgs-dates first zolo-cal/all-dates-through-today)]
+    (reduce (fn [ret date]
+              (conj ret [(zolo-cal/date-to-simple-string date) (or (msgs-freq date) 0)])) [] all-dates)))
+
+(defn connect-soon-contacts [imbc]
+  (let [contacts (forgetting-contacts imbc 5)
+        prepare-contact (fn [c]
+                          (let [msgs (dom/messages-for-contact imbc c)]
+                            (merge (fe/format-contact imbc c)
+                                   {:interactions (daily-counts msgs)})))]
+    (domap prepare-contact contacts)))
+
 (defn other-stats [u imbc]
   (merge {:averagescore (zolo-math/average (map contact-score (:user/contacts u)))
           :messagecount (count (:user/messages u))
           ;;TODO This needs to be tested
           :strong-contacts (domap #(fe/format-contact imbc %) (strong-contacts u 5))   
           :weak-contacts (domap #(fe/format-contact imbc %) (weak-contacts u 5))
-          :connect-soon (domap #(fe/format-contact imbc %) (forgetting-contacts imbc 5))
+          :connect-soon (connect-soon-contacts imbc)
           :never-contacted (domap #(fe/format-contact imbc %) (forgotten-contacts imbc 5))
           :all-week-interaction-count (all-message-count-in-the-past imbc 7)
           :all-month-interaction-count (all-message-count-in-the-past imbc 31)}
@@ -130,10 +145,7 @@
        (reverse-sort-by #(% "date"))
        (take 50)))
 
-(defn daily-counts [imbc]
-  (let [msgs (dom/messages-from-imbc imbc)
-        msgs-dates  (map #(zolo-cal/start-of-day-inst (dom/message-date %)) msgs)
-        msgs-freq (frequencies msgs-dates)
-        all-dates (-> msgs-dates first zolo-cal/all-dates-through-today)]
-    (reduce (fn [ret date]
-              (conj ret [(zolo-cal/date-to-simple-string date) (or (msgs-freq date) 0)])) [] all-dates)))
+(defn daily-counts-for-network [imbc]
+  (-> imbc
+      dom/messages-from-imbc
+      daily-counts))

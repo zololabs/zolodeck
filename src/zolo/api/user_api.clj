@@ -54,7 +54,7 @@
       {:network (activity/network-stats u imbc)
        :other (activity/other-stats u imbc)
        :recent (activity/recent-activity u)
-       :interactions (activity/daily-counts imbc)})
+       :interactions (activity/daily-counts-for-network imbc)})
     (empty-stats)))
 
 (defn send-message [request-params]
