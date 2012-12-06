@@ -2,32 +2,11 @@
   (:use zolodeck.utils.debug
         zolodeck.utils.clojure)
   (:require [zolodeck.demonic.core :as demonic]
-            [zolodeck.demonic.helper :as dhelp]))
-
-;; (defn- message-is-from? [provider-uid m]
-;;   (= provider-uid (:message/from m)))
-
-;; (defn- message-is-to? [provider-uid m]
-;;   (some #{provider-uid} (:message/to m)))
-
-;; (defn- message-belongs-to-contact [provider provider-uid m]
-;;   (and (= provider (:message/provider m))
-;;        (or (message-is-from? provider-uid m)
-;;            (message-is-to? provider-uid m))))
+            [zolodeck.demonic.helper :as dhelp]
+            [zolodeck.utils.maps :as zolo-maps]))
 
 (defn- contact-identifier [c]
   [(:social/provider c) (:social/provider-uid c)])
-
-;; (defn- messages-for-contact-identifier [[provider provider-uid] messages]
-;;   (filter #(message-belongs-to-contact provider provider-uid %) messages))
-
-;; TODO - convert contact-messages into a datalog query
-;; (defn contact-messages [u c]
-;;   (let [contact-providers (map contact-identifier (:contact/social-identities c))
-;;         messages (:user/messages u)]
-;;     (mapcat #(messages-for-contact-identifier % messages) contact-providers)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn is-provider-id? [m-provider m-from m-to [contact-provider contact-provider-uid]]
   ;(println "mp,mf,mt,cp, cpuid:" m-provider "," m-from "," m-to "," contact-provider contact-provider-uid)  
@@ -106,7 +85,7 @@
        :contact/social-identities
        (reduce (partial bucket-si c) buckets)))
 
-(defn contacts-by-social-identifier [u]
+(defn- contacts-by-social-identifier [u]
   (->> u
        :user/contacts
        (reduce bucket-contact {})))

@@ -9,6 +9,7 @@
    [zolo.domain.social-identity :as social-identity]
    [zolo.domain.user-identity :as user-identity]
    [zolo.domain.message :as message]
+   [zolo.domain.interaction :as interaction]
    [zolo.domain.accessors :as dom]   
    [zolo.stats.activity :as activity]
    [zolo.social.facebook.chat :as fb-chat]
@@ -50,9 +51,10 @@
 
 (defn user-stats [u]
   (if (user/been-processed? u)
-    (let [imbc (dom/inbox-messages-by-contacts u)]
+    (let [imbc (dom/inbox-messages-by-contacts u)
+          ibc (interaction/interactions-by-contacts imbc)]
       {:network (activity/network-stats u imbc)
-       :other (activity/other-stats u imbc)
+       :other (activity/other-stats u imbc ibc)
        :recent (activity/recent-activity u)
        :interactions (activity/daily-counts-for-network imbc)})
     (empty-stats)))

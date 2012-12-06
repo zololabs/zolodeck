@@ -79,13 +79,15 @@
     (let [time-diff (time/minus (time/now) (time/days num-days))]
       #(time/after? (ctc/to-date-time (dom/message-date %)) time-diff))))
 
-(defn all-messages-in-the-past [imbc num-days]
-  (->> imbc
-       dom/messages-from-imbc
+(defn all-interactions-in-the-past [ibc num-days]
+  (->> ibc
+       vals
+       (apply concat)
+       (keep last)
        (filter (message-filter-fn-for-days-within num-days))))
 
-(defn all-message-count-in-the-past [imbc num-days]
-  (->> (all-messages-in-the-past imbc num-days)
+(defn all-interaction-count-in-the-past [ibc num-days]
+  (->> (all-interactions-in-the-past ibc num-days)
        count))
 
 (defn daily-counts [msgs]
@@ -103,7 +105,7 @@
                                    {:interactions (daily-counts msgs)})))]
     (domap prepare-contact contacts)))
 
-(defn other-stats [u imbc]
+(defn other-stats [u imbc ibc]
   (merge {:averagescore (zolo-math/average (map contact-score (:user/contacts u)))
           :messagecount (count (:user/messages u))
           ;;TODO This needs to be tested
@@ -111,8 +113,8 @@
           :weak-contacts (domap #(fe/format-contact imbc %) (weak-contacts u 5))
           :connect-soon (connect-soon-contacts imbc)
           :never-contacted (domap #(fe/format-contact imbc %) (forgotten-contacts imbc 5))
-          :all-week-interaction-count (all-message-count-in-the-past imbc 7)
-          :all-month-interaction-count (all-message-count-in-the-past imbc 31)}
+          :all-week-interaction-count (all-interaction-count-in-the-past ibc 7)
+          :all-month-interaction-count (all-interaction-count-in-the-past ibc 31)}
          (md/distribution-stats imbc)))
 
 (defn- activity-text-to-display [a]
