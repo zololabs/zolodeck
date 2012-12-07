@@ -69,6 +69,11 @@
     (:temp-message/guid m)
     (:message/message-id m)))
 
+(defn interaction-date [i]
+  (-> i
+      first
+      message-date))
+
 (defn- update-buckets-for [buckets m contact-ids]
   (let [updater (fn [b contact-id]
                   (update-in b [[(message-provider m) contact-id]] conj m))]
@@ -116,6 +121,17 @@
        vals
        (apply concat)
        cleanup-messages))
+
+(defn interactions-from-ibc [ibc]
+  (->> ibc
+       vals
+       (apply concat)
+       squeeze))
+
+(defn messages-from-interactions [interactions]
+  (-> interactions
+      flatten
+      squeeze))
 
 (defn messages-for-contact [imbc contact]
   (->> (imbc contact)

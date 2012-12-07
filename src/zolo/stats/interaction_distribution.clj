@@ -1,4 +1,4 @@
-(ns zolo.stats.message-distribution
+(ns zolo.stats.interaction-distribution
   (:use zolodeck.utils.debug
         zolodeck.utils.clojure)
   (:require [zolo.domain.accessors :as dom]
@@ -14,11 +14,11 @@
 (defn plus [x y]
   (if-not x y (+ x y)))
 
-(defn- message-distribution-reducer [distribution message]
-  (update-in distribution (zolo-cal/get-year-month-week (dom/message-date message)) plus 1))
+(defn- interaction-distribution-reducer [distribution interaction]
+  (update-in distribution (zolo-cal/get-year-month-week (dom/interaction-date interaction)) plus 1))
 
-(defn message-distribution [messages]
-  (reduce message-distribution-reducer {} messages))
+(defn interaction-distribution [interactions]
+  (reduce interaction-distribution-reducer {} interactions))
 
 (defn- collect-weeks [year month weekly-stats]
   (domapcat (fn [[week number]] (list [year month week] number)) weekly-stats))
@@ -35,23 +35,24 @@
   {:best-week-date (zolo-cal/joda-dt-to-nice-string (.withWeekOfWeekyear (time/date-time y m) w))
    :best-week-interaction-count n})
 
-(defn best-week [messages]
-  (->> messages
-       message-distribution
+(defn best-week [interactions]
+  (->> interactions
+       interaction-distribution
        by-year-month-week
        (sort-by val)
        last
        best-week-printer))
 
-(defn weekly-averages [messages]
-  (let [sorted-messages (sort-by dom/message-date messages)
+(defn weekly-averages [interactions]
+  (let [messages (dom/messages-from-interactions interactions)
+        sorted-messages (sort-by dom/message-date messages)
         min-date (-> sorted-messages first dom/message-date)
         max-date (-> sorted-messages last dom/message-date)
         weeks-between (zolo-cal/weeks-between min-date max-date)
-        number-of-messages (count messages)]
-    {:weekly-average (float (/ number-of-messages weeks-between))}))
+        number-of-interactions (count interactions)]
+    {:weekly-average (float (/ number-of-interactions weeks-between))}))
 
-(defn distribution-stats [imbc]
-  (let [messages (dom/messages-from-imbc imbc)]
-    (merge (weekly-averages messages)
-           (best-week messages))))
+(defn distribution-stats [ibc]
+  (let [interactions (dom/interactions-from-ibc ibc)]
+    (merge (weekly-averages interactions)
+           (best-week interactions))))

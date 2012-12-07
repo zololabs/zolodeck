@@ -5,7 +5,7 @@
             [zolo.domain.contact :as contact]
             [zolo.domain.accessors :as dom]
             [zolo.utils.fe :as fe]
-            [zolo.stats.message-distribution :as md]
+            [zolo.stats.interaction-distribution :as int-d]
             [zolo.domain.message :as message]
             [zolo.domain.score :as score]
             [zolodeck.utils.maps :as zolo-maps]
@@ -53,22 +53,22 @@
        (sort-by :contact/score)
        (take number)))
 
-(defn forgotten-contacts [imbc number]
-  (let [contacts (-> imbc
+(defn forgotten-contacts [ibc number]
+  (let [contacts (-> ibc
                      (zolo-maps/select-keys-if #(empty? %2))
                      keys)]
     (take number contacts)))
 
-(defn recent-message-time [[c messages]]
-  (->> messages
+(defn recent-message-time [[c interactions]]
+  (->> interactions
+       dom/messages-from-interactions
        (sort-by :message/date)
        last
        :message/date))
 
-(defn forgetting-contacts [imbc number]
-  (let [imbc (-> imbc
-                 (zolo-maps/select-keys-if #(not (empty? %2))))]
-    (->> imbc
+(defn forgetting-contacts [ibc number]
+  (let [ibc (zolo-maps/select-keys-if ibc #(not (empty? %2)))]
+    (->> ibc
          (sort-by recent-message-time)
          keys
          (take number))))
@@ -81,8 +81,7 @@
 
 (defn all-interactions-in-the-past [ibc num-days]
   (->> ibc
-       vals
-       (apply concat)
+       dom/interactions-from-ibc
        (keep last)
        (filter (message-filter-fn-for-days-within num-days))))
 
@@ -90,32 +89,32 @@
   (->> (all-interactions-in-the-past ibc num-days)
        count))
 
-(defn daily-counts [msgs]
-  (let [msgs-dates (map #(zolo-cal/start-of-day-inst (dom/message-date %)) msgs)
-        msgs-freq (frequencies msgs-dates)
-        all-dates (-> msgs-dates first zolo-cal/all-dates-through-today)]
+(defn daily-counts [interactions]
+  (let [interactions-dates (map #(zolo-cal/start-of-day-inst (dom/interaction-date %)) interactions)
+        interactions-freq (frequencies interactions-dates)
+        all-dates (-> interactions-dates first zolo-cal/all-dates-through-today)]
     (reduce (fn [ret date]
-              (conj ret [(zolo-cal/date-to-simple-string date) (or (msgs-freq date) 0)])) [] all-dates)))
+              (conj ret [(zolo-cal/date-to-simple-string date) (or (interactions-freq date) 0)])) [] all-dates)))
 
-(defn connect-soon-contacts [imbc]
-  (let [contacts (forgetting-contacts imbc 5)
+(defn connect-soon-contacts [ibc]
+  (let [contacts (forgetting-contacts ibc 5)
         prepare-contact (fn [c]
-                          (let [msgs (dom/messages-for-contact imbc c)]
-                            (merge (fe/format-contact imbc c)
-                                   {:interactions (daily-counts msgs)})))]
+                          (let [interactions (ibc c)]
+                            (merge (fe/format-contact ibc c)
+                                   {:interactions (daily-counts interactions)})))]
     (domap prepare-contact contacts)))
 
-(defn other-stats [u imbc ibc]
+(defn other-stats [u ibc]
   (merge {:averagescore (zolo-math/average (map contact-score (:user/contacts u)))
           :messagecount (count (:user/messages u))
           ;;TODO This needs to be tested
-          :strong-contacts (domap #(fe/format-contact imbc %) (strong-contacts u 5))   
-          :weak-contacts (domap #(fe/format-contact imbc %) (weak-contacts u 5))
-          :connect-soon (connect-soon-contacts imbc)
-          :never-contacted (domap #(fe/format-contact imbc %) (forgotten-contacts imbc 5))
+          :strong-contacts (domap #(fe/format-contact ibc %) (strong-contacts u 5))   
+          :weak-contacts (domap #(fe/format-contact ibc %) (weak-contacts u 5))
+          :connect-soon (connect-soon-contacts ibc)
+          :never-contacted (domap #(fe/format-contact ibc %) (forgotten-contacts ibc 5))
           :all-week-interaction-count (all-interaction-count-in-the-past ibc 7)
           :all-month-interaction-count (all-interaction-count-in-the-past ibc 31)}
-         (md/distribution-stats imbc)))
+         (int-d/distribution-stats ibc)))
 
 (defn- activity-text-to-display [a]
   (let [link (if-let [l (:message/link a)]
@@ -147,7 +146,7 @@
        (reverse-sort-by #(% "date"))
        (take 50)))
 
-(defn daily-counts-for-network [imbc]
-  (-> imbc
-      dom/messages-from-imbc
+(defn daily-counts-for-network [ibc]
+  (-> ibc
+      dom/interactions-from-ibc
       daily-counts))
