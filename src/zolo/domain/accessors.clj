@@ -126,6 +126,7 @@
   (->> ibc
        vals
        (apply concat)
+       (sort-by interaction-date)
        squeeze))
 
 (defn messages-from-interactions [interactions]
