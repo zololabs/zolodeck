@@ -1,7 +1,8 @@
 (ns zolo.setup.config
   (:use zolodeck.utils.clojure
         zolodeck.utils.debug)
-  (:require [clojure.java.io :as java-io]))
+  (:require [clojure.java.io :as java-io]
+            [zolo.utils.logger :as logger]))
 
 (declare CONFIG-MAP)
 (declare ^:dynamic ENV)
@@ -41,8 +42,9 @@
   (.get (System/getenv) v))
 
 (defrunonce setup-config []
-  (let [env (keyword (or (get-env-var "ZOLODECK_ENV") "development"))
+  (let [env (keyword (or (get-env-var "ZOLODECK_ENV") "staging"))
         config-file (java-io/resource "zolo.clj")]
+    (logger/trace "Setup config running under env:" env)
     (load-config config-file env)))
 
 (setup-config)

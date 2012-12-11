@@ -12,7 +12,10 @@
             [zolo.utils.logger :as logger]
             [zolodeck.utils.clojure :as clj]
             [clojure.tools.cli :as cli])
-  (:import [backtype.storm StormSubmitter LocalCluster]))
+  (:import [backtype.storm StormSubmitter LocalCluster]
+           [storm.trident TridentTopology]
+           ;[zolo.storm.fns PrintVals UpdateContacts UpdateMessages]
+           ))
 
 (defn refresh-guids-to-process []
   ;;(logger/info "Finding Refresh GUIDS to process...")
@@ -44,6 +47,7 @@
 
 (defspout refresh-user-spout ["user-guid"]
   [conf context collector]
+  (datomic/init-connection)
   (let [guids (atom nil)]
     (spout
      (nextTuple []
@@ -57,7 +61,8 @@
 
 (defspout new-user-tx-spout ["user-guid"]
   [conf context collector]
-  (let [trq (demonic/transactions-report-queue)]
+  (datomic/init-connection)
+  (let [trq (demonic/transactions-report-queue)]    
     (spout
      (nextTuple []
                 (let [tx-report (.poll trq)]
@@ -76,6 +81,7 @@
 
 (defbolt process-user [] [tuple collector]
   (try
+    (datomic/init-connection)
     (demonic/in-demarcation
      (let [guid (.getStringByField tuple "user-guid")
            u (user/find-by-guid-string guid)]
@@ -95,14 +101,24 @@
                    process-user
                    :p 2)}))
 
+;; (defn fb-trident []
+;;   (let [t (TridentTopology.)]
+;;     (-> t
+;;         (.newStream "refresh-spout" refresh-user-spout)
+;;         (.each (fields "user-guid") (UpdateContacts.) (fields "contact-guid"))
+;;         (.each (fields "contact-guid") (UpdateMessages.) (fields "ignored")))
+;;     (.build t)))
+
 (defn run-local! [millis]
   (future
+    (datomic/init-connection)
     (let [cluster (LocalCluster.)]
       (logger/trace "Submitting topology...")
       (.submitTopology cluster "facebook" {TOPOLOGY-DEBUG true} (fb-topology))
-      (short-pause "Running topology for millis:")
+      (pause "Running topology for millis:"millis)
       (logger/trace "Shutting down cluster!")
-      (.shutdown cluster))))
+      ;;(.shutdown cluster)
+      )))
 
 (defn run-local-forever! []
   (let [cluster (LocalCluster.)]
@@ -111,7 +127,7 @@
 
 (defn process-args [args]
   (cli/cli args
-           ["-e"  "--env" "development/staging/production" :default "development" :parse-fn #(keyword (.toLowerCase %))]
+           ["-e"  "--env" "development/staging/production" :default "development" :parse-fn #(.toLowerCase %)]
            ["-h" "--help" "Show help" :default false :flag true]))
 
 ;;TODO Make this the entry point for running both in local and remote mode
@@ -122,7 +138,6 @@
     (when (:help options)
       (println banner)
       (System/exit 0))
-    (let [env (:env options)
-          cluster (StormSubmitter. )]
+    (let [env (:env options)]
       (System/setProperty "ZOLODECK_ENV" env)
-      (.submitTopology cluster "facebook" {TOPOLOGY-DEBUG true} (fb-topology)))))
+      (StormSubmitter/submitTopology "facebook" {TOPOLOGY-DEBUG true} (fb-topology)))))
