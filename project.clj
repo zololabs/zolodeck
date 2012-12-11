@@ -35,12 +35,14 @@
                  [me.moocar/logback-gelf "0.9.6p2"]
 
                  [org.clojure/tools.cli "0.2.2"]
-                 
-                 [zolodeck/demonic "0.1.0-SNAPSHOT"]
+
+                 [com.datomic/datomic "0.8.3646"]
+                 [zolodeck/demonic "0.1.0-SNAPSHOT" :exclusions [com.datomic/datomic-free]]
                  [zolodeck/zolo-utils "0.1.0-SNAPSHOT"]
                  [world-country-list "1.0.0-SNAPSHOT"]
 
-                 [org.clojure/tools.cli "0.2.2"]]
+                 [org.clojure/tools.cli "0.2.2"]
+                 ]
 
     ;; Global exclusions are applied across the board, as an alternative
   ;; to duplication for multiple depedencies with the same excluded libraries.
@@ -88,7 +90,7 @@
   :warn-on-reflection false
   
   :repositories {"jboss" "http://repository.jboss.org/nexus/content/groups/public/"
-                 "local" ~(str (.toURI (java.io.File. "mvn_repo")))}
+                 "local_repo" ~(str (.toURI (java.io.File. "mvn_repo")))}
   
   :resources-path "config"
 
