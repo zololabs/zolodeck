@@ -20,12 +20,14 @@
             [zolo.social.bootstrap]
             [zolo.social.core :as social]
             [zolo.api.user-api :as user-api]
+            [zolo.api.server-api :as server-api]
             [zolo.utils.logger :as logger]
             [zolo.web :as web]
             [zolo.storm.facebook :as fb]))
 
 (def security-policy
   [#"/permission-denied*" :any
+   #"/server/status" :any
    #"/users" :any
    #"/users.*" :user
    #".*" :user])
@@ -41,6 +43,9 @@
   
   ;;---- User Stats
   (GET "/user-stats" {params :params} (web/json-response (user-api/stats params)))
+
+  ;;---- Server Status
+  (GET "/server/status" {params :params} (web/json-response (server-api/status params)))
   
   ;;---- GENERAL
   (GET "/permission-denied*" []  (web/json-response {:error "Permission Denied"} 403))

@@ -23,6 +23,10 @@
 (defn current-user []
   (dissoc (sandbar/current-user) :username :roles))
 
+(defn count-users []
+  (-> (demonic/run-query '[:find ?u :where [?u :user/guid]])
+      count))
+
 (defn find-all-users []
   (->> (demonic/run-query '[:find ?u :where [?u :user/guid]])
        (map first)
