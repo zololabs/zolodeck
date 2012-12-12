@@ -105,6 +105,7 @@
   (merge
    (select-keys request [:request-method :query-string :uri :server-name])
    {:trace-id (trace-id request)
+    :env (config/environment)
     :ip-address (get-in request [:headers "x-real-ip"])
     :guid (guid-from-cookie request)}))
 
