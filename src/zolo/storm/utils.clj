@@ -21,7 +21,7 @@
 
 (defn short-pause [msg]
   ;;(logger/info "[1 ms pause:]" msg)
-  (Thread/sleep 10))
+  (Thread/sleep 100))
 
 (defn pause [msg millis]
   (logger/trace "[Sleep ms:" millis "] " msg)

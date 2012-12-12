@@ -11,7 +11,8 @@
             [zolo.domain.user :as user]
             [zolo.utils.logger :as logger]
             [zolodeck.utils.clojure :as clj]
-            [clojure.tools.cli :as cli])
+            [clojure.tools.cli :as cli]
+            [zolo.social.bootstrap])
   (:import [backtype.storm StormSubmitter LocalCluster]
            [storm.trident TridentTopology]
            ;[zolo.storm.fns PrintVals UpdateContacts UpdateMessages]
@@ -47,6 +48,7 @@
 
 (defspout refresh-user-spout ["user-guid"]
   [conf context collector]
+  (logger/trace "RefreshSpout, initializing Datomic...")  
   (datomic/init-connection)
   (let [guids (atom nil)]
     (spout
@@ -61,6 +63,7 @@
 
 (defspout new-user-tx-spout ["user-guid"]
   [conf context collector]
+  (logger/trace "NewUserSpout, initializing Datomic...")    
   (datomic/init-connection)
   (let [trq (demonic/transactions-report-queue)]    
     (spout
@@ -99,7 +102,7 @@
    {"3" (bolt-spec {"1" :shuffle
                     "2" :shuffle}
                    process-user
-                   :p 2)}))
+                   :p 32)}))
 
 ;; (defn fb-trident []
 ;;   (let [t (TridentTopology.)]
@@ -140,4 +143,5 @@
       (System/exit 0))
     (let [env (:env options)]
       (System/setProperty "ZOLODECK_ENV" env)
+      (logger/trace "Submitting Facebook topology via fb-topology")
       (StormSubmitter/submitTopology "facebook" {TOPOLOGY-DEBUG true} (fb-topology)))))
