@@ -64,10 +64,13 @@
         ))))
 
 
-(defn start-api []
-  (zolo.setup.datomic-setup/init-datomic)
-  (run-jetty (var app) {:port 4000
-                        :join? false}))  
+(defn start-api
+  ([]
+     (start-api 4000))
+  ([port]
+     (zolo.setup.datomic-setup/init-datomic)
+     (run-jetty (var app) {:port port
+                           :join? false})))  
 
 (defn start-storm []
   (zolo.setup.datomic-setup/init-datomic)
@@ -76,6 +79,7 @@
 (defn process-args [args]
   (cli/cli args
            ["-s"  "--service" "storm/api" :default "api" :parse-fn #(keyword (.toLowerCase %))]
+           ["-p" "--port" "Listen on this port" :default 4000  :parse-fn #(Integer. %)] 
            ["-h" "--help" "Show help" :default false :flag true]))
 
 (defn -main [& cl-args]
@@ -87,6 +91,6 @@
       (System/exit 0))
     (condp = (:service (print-vals "Options :" options))
         :storm (start-storm)
-        :api (start-api)
+        :api (start-api (:port options))
         :default (throw "Invalid Service :" (:s options)))))
 

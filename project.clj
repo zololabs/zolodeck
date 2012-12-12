@@ -44,7 +44,7 @@
                  [org.clojure/tools.cli "0.2.2"]
                  ]
 
-    ;; Global exclusions are applied across the board, as an alternative
+  ;; Global exclusions are applied across the board, as an alternative
   ;; to duplication for multiple depedencies with the same excluded libraries.
   :exclusions [org.clojure/clojure
                org.slf4j/slf4j-log4j12
