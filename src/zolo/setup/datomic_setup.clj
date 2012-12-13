@@ -9,7 +9,7 @@
   (->> @datomic-setup/SCHEMA-TX
        (demonic/init-db (conf/datomic-db-name))))
 
-(defn init-connection []
+(defrunonce init-connection []
   (demonic-helper/setup-connection (conf/datomic-db-name)))
 
 (defn reset []

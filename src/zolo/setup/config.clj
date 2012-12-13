@@ -1,49 +1,51 @@
 (ns zolo.setup.config
   (:use zolodeck.utils.clojure
         zolodeck.utils.debug)
-  (:require [clojure.java.io :as java-io]))
+  (:require [clojure.java.io :as java-io]
+            [zolo.utils.logger :as logger]))
 
 (declare CONFIG-MAP)
 (declare ^:dynamic ENV)
 
-(defn load-config [config-file env]
-  (def ^:dynamic ENV env)
-  (def CONFIG-MAP (load-string (slurp config-file))))
+(defn environment []
+  (get-in CONFIG-MAP [:zolodeck-env]))
+
+(defn load-config [config-file]
+  (let [config-map (load-string (slurp config-file))]
+    (def CONFIG-MAP config-map)
+    (def ^:dynamic ENV (environment))))
 
 (defn production-mode? []
   (= :production ENV))
 
-(defn environment []
-  ENV)
-
 (defn datomic-db-name [] 
-  (get-in CONFIG-MAP [ENV :datomic-db]))
+  (get-in CONFIG-MAP [:configs ENV :datomic-db]))
 
 (defn fb-app-id []
-  (get-in CONFIG-MAP [ENV :fb-app-id]))
+  (get-in CONFIG-MAP [:configs ENV :fb-app-id]))
 
 (defn fb-app-secret []
-  (get-in CONFIG-MAP [ENV :fb-app-secret]))
+  (get-in CONFIG-MAP [:configs ENV :fb-app-secret]))
 
 (defn user-update-wait-fb-millis []
-  (get-in CONFIG-MAP [ENV :user-update-wait-fb-millis]))
+  (get-in CONFIG-MAP [:configs ENV :user-update-wait-fb-millis]))
 
 (defn new-user-freshness-millis []
-  (get-in CONFIG-MAP [ENV :new-user-freshness-millis]))
+  (get-in CONFIG-MAP [:configs ENV :new-user-freshness-millis]))
 
 (defn li-api-key []
-  (get-in CONFIG-MAP [ENV :li-api-key]))
+  (get-in CONFIG-MAP [:configs ENV :li-api-key]))
 
 (defn li-secret-key []
-  (get-in CONFIG-MAP [ENV :li-secret-key]))
+  (get-in CONFIG-MAP [:configs ENV :li-secret-key]))
 
 (defn get-env-var [v]
   (.get (System/getenv) v))
 
 (defrunonce setup-config []
-  (let [env (keyword (or (get-env-var "ZOLODECK_ENV") "development"))
-        config-file (java-io/resource "zolo.clj")]
-    (load-config config-file env)))
+  (let [config-file (str (System/getProperty "user.home") "/.zolo/zolo.clj")]
+    (logger/trace "Loading config file:" config-file)
+    (load-config config-file)))
 
 (setup-config)
 
