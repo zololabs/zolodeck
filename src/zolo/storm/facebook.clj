@@ -136,12 +136,4 @@
 ;;TODO Make this the entry point for running both in local and remote mode
 
 (defn -main [& cl-args]
-  (print-vals "CL Args :" cl-args)
-  (let [[options args banner] (process-args cl-args)]
-    (when (:help options)
-      (println banner)
-      (System/exit 0))
-    (let [env (:env options)]
-      (System/setProperty "ZOLODECK_ENV" env)
-      (logger/trace "Submitting Facebook topology via fb-topology")
-      (StormSubmitter/submitTopology "facebook" {TOPOLOGY-DEBUG true} (fb-topology)))))
+  (StormSubmitter/submitTopology "facebook" {TOPOLOGY-DEBUG true} (fb-topology)))
