@@ -74,15 +74,18 @@ namespace :api do
   namespace :config do
 
     desc "Generate API config for development and test"
-    task :generate do 
+    task :generate do
       
       info "Generating API config for development and test environment"
 
       @zolodeck_env = "development"
       @datomic_host = "localhost"
       @datomic_db_name = "zolodeck-dev"
+
       
-      Config.generate binding, "config/zolo.clj.erb", "config/zolo.clj"
+      sh "mkdir ~/.zolo" unless File.exist?(File.expand_path("~/.zolo"))
+
+      Config.generate binding, "config/zolo.clj.erb", File.expand_path("~/.zolo/zolo.clj")
 
       puts "Successfully Generated!!"
     end
