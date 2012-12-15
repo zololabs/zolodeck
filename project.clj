@@ -11,7 +11,7 @@
                  [sandbar/sandbar "0.4.0-SNAPSHOT"]
 
                  [org.clojure/data.json "0.1.2"]
-                 [clj-http "0.5.3"]
+                 [clj-http "0.5.3" :exclusions [commons-logging]]
 
                  [joda-time "1.6"]
                  [clj-time "0.4.4"]
@@ -31,7 +31,7 @@
                  [ch.qos.logback/logback-classic "1.0.7"]
                  [ch.qos.logback/logback-core "1.0.6"]
                  [org.slf4j/slf4j-api "1.7.0"]
-                 [clj-logging-config "1.9.10"]
+                 [clj-logging-config "1.9.10" :exclusions [log4j]]
                  [me.moocar/logback-gelf "0.9.6p2"]
 
                  [org.clojure/tools.cli "0.2.2"]
@@ -51,6 +51,8 @@
                org.slf4j/slf4j-api
                org.slf4j/slf4j-nop
                org.slf4j/log4j-over-sl4f
+               org.slf4j/jcl-over-slf4j
+               org.slf4j/jul-to-slf4j
                log4j/log4j
                clj-time
                commons-logging/commons-logging
