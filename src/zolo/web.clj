@@ -121,6 +121,6 @@
       (logger/with-logging-context (logging-context request)
         (logger/debug "REQUEST : " request)
         (let [response (handler request)]
-          (logger/debug "RESPONSE : " response)
+          (logger/debug "RESPONSE : " (assoc response :body "FILTERED"))
           response))
       (handler request))))
