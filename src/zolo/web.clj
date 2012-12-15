@@ -83,10 +83,16 @@
                   "Access-Control-Max-Age" "60"}}
       (handler request))))
 
+(defn not-ignore-logging? [request]
+  (nil? (#{"/server/status"} (:uri request))))
+
 (defn wrap-user-info-logging [handler]
   (fn [request]
-    (logger/debug "Current User loaded? : " (not (nil? (user/current-user))))
-    (logger/with-logging-context {:guid (:user/guid (user/current-user))}
+    (if (not-ignore-logging? request)
+      (do
+        (logger/debug "Current User loaded? : " (not (nil? (user/current-user))))
+        (logger/with-logging-context {:guid (:user/guid (user/current-user))}
+          (handler request)))
       (handler request))))
 
 (defn guid-from-cookie [request]
@@ -111,8 +117,10 @@
 
 (defn wrap-request-logging [handler]
   (fn [request]
-    (logger/with-logging-context (logging-context request)
-      (logger/debug "REQUEST : " request)
-      (let [response (handler request)]
-        (logger/debug "RESPONSE : " response)
-        response))))
+    (if (not-ignore-logging? request)
+      (logger/with-logging-context (logging-context request)
+        (logger/debug "REQUEST : " request)
+        (let [response (handler request)]
+          (logger/debug "RESPONSE : " response)
+          response))
+      (handler request))))
