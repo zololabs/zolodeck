@@ -23,8 +23,9 @@
                                (assoc :name "zolodeck-api-storm"))]
     (run-lein-task "uberjar" project)
     (run-lein-task "uberjar" zolo-storm-project)
-    (println "*******************************************************")
-    (println "Need to run lein deps again before you development work")
-    (println "*******************************************************")))
+    (println "\n")
+    (println "*************************************************************")
+    (println "Need to run lein deps again before you start development work")
+    (println "*************************************************************")))
 
 
