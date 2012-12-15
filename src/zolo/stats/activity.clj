@@ -35,9 +35,9 @@
 
 (defn network-stats [u imbc]
   {:total  (count (:user/contacts u))
-   :strong (count (contacts-with-score-between u 250 10000000))
-   :medium (count (contacts-with-score-between u 50 250))
-   :weak   (count (contacts-with-score-between u 0 50))
+   :strong (count (contacts-with-score-between u 25 1000000))
+   :medium (count (contacts-with-score-between u 5 25))
+   :weak   (count (contacts-with-score-between u 0 5))
    :quartered (count (not-contacted-for-days imbc 90))})
 
 (defn strong-contacts [u number]
