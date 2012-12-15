@@ -11,6 +11,7 @@
             [zolo.domain.accessors :as dom]
             [zolo.domain.social-identity :as social-identity]
             [zolo.domain.user-identity :as user-identity]
+            [zolo.domain.interaction :as interaction]
             [zolodeck.utils.string :as zolo-str]
             [zolodeck.utils.calendar :as zolo-cal]
             [zolodeck.utils.maps :as zolo-maps]
@@ -95,8 +96,8 @@
       reload-by-login-provider-uid))
 
 (defn update-scores [u]
-  (let [imbc (dom/inbox-messages-by-contacts u)]
-    (doeach #(contact/update-score imbc %) (:user/contacts u))))
+  (let [ibc (-> u dom/inbox-messages-by-contacts interaction/interactions-by-contacts)]
+    (doeach #(contact/update-score ibc %) (:user/contacts u))))
 
 (defn stamp-updated-time [u]
   (-> u
