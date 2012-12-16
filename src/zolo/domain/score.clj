@@ -2,7 +2,7 @@
   (:use zolodeck.utils.debug)
   (:require [zolo.domain.accessors :as dom]))
 
-(defn calculate [imbc c]
-  (* 10 (count (imbc c))))
+(defn calculate [ibc c]
+  (* 10 (count (ibc c))))
 
 
