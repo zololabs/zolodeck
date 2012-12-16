@@ -24,3 +24,5 @@ config/zolo.clj
 /zolodeck-api-0.1.0-SNAPSHOT.jar
 /logs/developer.log
 /devops/datomic/free-transactor.properties
+/zolodeck-api-storm-0.1.0-SNAPSHOT-standalone.jar
+/zolodeck-api-storm-0.1.0-SNAPSHOT.jar
