@@ -4,6 +4,7 @@
   (:require [clj-http.client :as http]
             [clojure.data.json :as json]
             [zolodeck.utils.maps :as maps]
+            [zolodeck.utils.string :as string]
             [uri.core :as uri]
             [zolo.setup.config :as conf]
             [zolo.utils.logger :as logger]))
@@ -28,6 +29,11 @@
              :message "user-id must be specified when calling recent-activity-url"}))
   (str "https://graph.facebook.com/" user-id "/feed"))
 
+(defn extend-access-token-url [access-token app-id app-secret]
+  (str "https://graph.facebook.com/oauth/access_token?client_id=" app-id
+       "&client_secret=" app-secret
+       "&grant_type=fb_exchange_token&fb_exchange_token=" access-token))
+
 (defn create-url [url access-token query-params-map]
   (->> query-params-map
        (merge {:access_token access-token})
@@ -40,8 +46,11 @@
       :body
       json/read-json))
 
+(defn- get-body [url]
+  (-> url http/get :body))
+
 (defn- get-json-body [url]
-  (-> url http/get :body json/read-json))
+  (-> url get-body json/read-json))
 
 (defn- get-pages [payload items-done-tester-fn]
   (let [data (:data payload)
@@ -85,6 +94,13 @@
          (mapcat #(run-fql-multi access-token %))
          (mapcat (fn [{query-name :name results :fql_result_set}]
                    (result-processor (str query-name) results))))))
+
+(defn extended-access-token [access-token]
+  (-> access-token
+      (extend-access-token-url (conf/fb-app-id) (conf/fb-app-secret))
+      get-body
+      string/parse-query-string
+      :access_token))
 
 (defn user-info [access-token user-id]
   (get-json (user-info-url user-id) access-token {}))
