@@ -19,6 +19,7 @@
 ;;TODO (siva) this is an experiment ..need to change this though
 (defn format-user [user new?]
   {:guid (str (:user/guid user))
+   :email (user-identity/fb-email user)
    :new new?})
 
 (defn log-into-fb-chat [user]

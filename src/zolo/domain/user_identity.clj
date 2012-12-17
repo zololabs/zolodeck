@@ -19,3 +19,8 @@
 (defn fb-access-token [u]
   (-> u fb-user-identity :identity/auth-token))
 
+(defn fb-email [u]
+  (->> u
+       fb-user-identity
+       :identity/email))
+
