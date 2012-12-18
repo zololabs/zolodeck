@@ -19,7 +19,8 @@
             [zolo.domain.message :as message]
             [sandbar.auth :as sandbar]
             [clojure.set :as set]
-            [zolo.utils.logger :as logger]))
+            [zolo.utils.logger :as logger]
+            [zolo.social.facebook.gateway :as fb-gateway]))
 
 (defn current-user []
   (dissoc (sandbar/current-user) :username :roles))
@@ -99,6 +100,15 @@
   (let [ibc (-> u dom/inbox-messages-by-contacts interaction/interactions-by-contacts)]
     (doeach #(contact/update-score ibc %) (:user/contacts u))))
 
+;; TODO move this into social core
+(defn extend-fb-token [u]
+  (let [fb-ui (user-identity/fb-user-identity u)
+        short (:identity/auth-token fb-ui)
+        extended (fb-gateway/extended-access-token short)]
+    (-> fb-ui
+        (assoc :identity/auth-token extended)
+        demonic/insert)))
+
 (defn stamp-updated-time [u]
   (-> u
       (assoc :user/last-updated (zolo-cal/now-instant))
@@ -113,6 +123,7 @@
   (let [first-name (:user/first-name u)]
     (logger/trace first-name "RefreshUserData... starting now!")
     (stamp-refresh-start (reload u))
+    (extend-fb-token (reload u))
     (contact/update-contacts u)
     (logger/info first-name "Loaded contacts " (count (:user/contacts (reload u))))
     (message/update-inbox-messages (reload u))
