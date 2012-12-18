@@ -37,10 +37,12 @@
                  [org.clojure/tools.cli "0.2.2"]
 
                  [com.datomic/datomic "0.8.3646"]
+                 [com.netflix.curator/curator-framework "1.0.1"]
                  [zolodeck/demonic "0.1.0-SNAPSHOT" :exclusions [com.datomic/datomic-free]]
+
                  [zolodeck/zolo-utils "0.1.0-SNAPSHOT"]
                  [world-country-list "1.0.0-SNAPSHOT"]
-
+                 
                  [org.clojure/tools.cli "0.2.2"]
                  ]
 
@@ -53,7 +55,9 @@
                org.slf4j/log4j-over-sl4f
                org.slf4j/jul-to-slf4j
                log4j/log4j
+               log4j
                clj-time
+               org.netflix.curator/curator-framework
                commons-logging/commons-logging
                org.clojure/tools.logging]
 
@@ -66,8 +70,9 @@
 
   :hooks [leiningen.hooks.difftest]
 
-  :dev-dependencies [[storm "0.8.1" :exclusions [org.slf4j/log4j-over-sl4fj
-                                                 org.slf4j/slf4j-log4j12]]
+  :dev-dependencies [[storm "0.8.2-wip20" :exclusions [org.slf4j/log4j-over-sl4fj
+                                                       org.slf4j/slf4j-log4j12
+                                                       com.netflix.curator/curator-framework]]
                      [clj-stacktrace "0.2.4"]
                      [swank-clojure "1.3.3"]
                      [ring-serve "0.1.2"]
