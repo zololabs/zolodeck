@@ -14,12 +14,12 @@ namespace :api do
 
   desc "Todos from API project"
   task :todos do
-    sh "cd api ; lein notes;"
+    sh "lein notes;"
   end
 
   desc "Getting deps for API project"
   task :deps do
-    sh "cd api ; lein deps; lein build-checkouts;"
+    sh "lein deps; lein build-checkouts;"
   end
   
   namespace :test do
@@ -27,20 +27,20 @@ namespace :api do
     desc "Runs API unit tests"
     task :unit do
       info "Running API Unit Tests"
-      sh "cd api; ZOLODECK_ENV=test lein test"
+      sh "ZOLODECK_ENV=test lein test"
     end
 
     desc "Runs API integration tests"
     task :integration do
       info "Running API Integration Tests"
       info "Example : (deftest ^:integration test-upsert-user)"
-      sh "cd api; ZOLODECK_ENV=test lein test :integration"
+      sh "ZOLODECK_ENV=test lein test :integration"
     end
 
     desc "Runs API all tests"
     task :all do
       info "Running API Unit and Integration Tests"
-      sh "cd api; ZOLODECK_ENV=test lein test :all"
+      sh "ZOLODECK_ENV=test lein test :all"
     end
   end
 
@@ -54,7 +54,7 @@ namespace :api do
                1) Eval zolo.core
                2) (serve-headless zolo.core/app 4000)
     EOS
-    sh ("cd api; lein swank " + port)
+    sh ("; lein swank " + port)
   end
 
   desc "Start API Server"
@@ -68,7 +68,7 @@ namespace :api do
                a) Eval zolo.core
                b) (serve-headless zolo.core/app 4000)
     EOS
-    sh ("cd api; lein run")
+    sh ("lein run --service api")
   end
 
   namespace :config do
