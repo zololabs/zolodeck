@@ -5,7 +5,8 @@
             [zolo.social.facebook.users :as users]            
             [zolo.social.facebook.contacts :as contacts]
             [zolo.social.facebook.messages :as messages]
-            [zolo.utils.logger :as logger]))
+            [zolo.utils.logger :as logger]
+            [zolodeck.utils.maps :as zolo-maps]))
 
 (defn login-creds [request-params]
   (let [creds (get-in request-params [:providerLoginInfo :authResponse])]
@@ -16,7 +17,14 @@
       login-creds
       :userID))
 
-;; TODO add schema validation check for this API (facebook login)
+(defmethod social/fetch-creds social/FACEBOOK [request-params cookies]
+  (let [creds (login-creds request-params)]
+    (-> creds
+        (assoc :access-token (creds :accessToken))
+        (assoc :user-id (creds :userID))
+        (dissoc :accessToken :userID))))
+
+; TODO add schema validation check for this API (facebook login)
 (defmethod social/signup-user social/FACEBOOK [request-params cookies]
   (logger/trace "FACEBOOK LOGIN params:" request-params)
   (logger/trace "FACEBOOK LOGIN cookies:" cookies)

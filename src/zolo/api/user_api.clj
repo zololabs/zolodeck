@@ -37,6 +37,7 @@
   (if-let [user (find-user request-params cookies)]
     (do
       (logger/debug "User already in system")
+      (user/update-creds user (social/fetch-creds request-params cookies))
       (log-into-fb-chat user)
       (format-user user false))
     (do
@@ -44,6 +45,7 @@
       (-> request-params
           (social/signup-user cookies)
           user/signup-new-user
+          user/update-with-extended-fb-auth-token          
           log-into-fb-chat
           (format-user true)))))
 

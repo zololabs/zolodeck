@@ -90,6 +90,26 @@
       :user/login-provider-uid
       find-by-login-provider-uid))
 
+(defn update-with-extended-fb-auth-token
+  ([user old-at]
+     (let [fb-ui (user-identity/fb-user-identity user)
+           extended (fb-gateway/extended-access-token old-at)]
+       (-> fb-ui
+           (assoc :identity/auth-token extended)
+           demonic/insert)
+       (reload user)))
+  ([user]
+     (let [fb-ui (user-identity/fb-user-identity user)
+           old-at (:identity/auth-token fb-ui)]
+       (update-with-extended-fb-auth-token user old-at))))
+
+(defn update-creds [user creds]
+  (update-with-extended-fb-auth-token user (:access-token creds)))
+
+;; TODO move this into social core
+(defn extend-fb-token [u]
+  (update-with-extended-fb-auth-token u))
+
 ;; TODO - reload-by-login-provider-uid assumes unique lpuid across all networks
 (defn signup-new-user [social-user]
   (-> social-user
@@ -99,15 +119,6 @@
 (defn update-scores [u]
   (let [ibc (-> u dom/inbox-messages-by-contacts interaction/interactions-by-contacts)]
     (doeach #(contact/update-score ibc %) (:user/contacts u))))
-
-;; TODO move this into social core
-(defn extend-fb-token [u]
-  (let [fb-ui (user-identity/fb-user-identity u)
-        short (:identity/auth-token fb-ui)
-        extended (fb-gateway/extended-access-token short)]
-    (-> fb-ui
-        (assoc :identity/auth-token extended)
-        demonic/insert)))
 
 (defn stamp-updated-time [u]
   (-> u
