@@ -101,21 +101,26 @@
     (reduce (fn [ret date]
               (conj ret [(zolo-cal/date-to-simple-string date) (or (interactions-freq date) 0)])) [] all-dates)))
 
-(defn connect-soon-contacts [ibc]
-  (let [contacts (forgetting-contacts ibc 5)
-        prepare-contact (fn [c]
-                          (let [interactions (ibc c)]
-                            (merge (fe/format-contact ibc c)
-                                   {:interactions (daily-counts interactions)})))]
-    (domap prepare-contact contacts)))
+(defn suggest-contact [ibc c]
+  (let [interactions (ibc c)]
+    (merge (->> c
+               contact/suggest-contact
+               (fe/format-contact ibc))
+           {:interactions (daily-counts interactions)})))
+
+(defn connect-soon-contacts [u ibc]
+  (let [suggested-contacts (contact/todays-suggested-contacts u)
+        contacts (if (empty? suggested-contacts)
+                   (forgetting-contacts ibc 5)
+                   suggested-contacts)]
+    (domap #(suggest-contact ibc %) contacts)))
 
 (defn other-stats [u ibc]
   (merge {:averagescore (zolo-math/average (map contact-score (:user/contacts u)))
           :messagecount (count (:user/messages u))
-          ;;TODO This needs to be tested
           :strong-contacts (domap #(fe/format-contact ibc %) (strong-contacts u 5))   
           :weak-contacts (domap #(fe/format-contact ibc %) (weak-contacts u 5))
-          :connect-soon (connect-soon-contacts ibc)
+          :connect-soon (connect-soon-contacts u ibc)
           :never-contacted (domap #(fe/format-contact ibc %) (forgotten-contacts ibc 5))
           :all-week-interaction-count (all-interaction-count-in-the-past ibc 7)
           :all-month-interaction-count (all-interaction-count-in-the-past ibc 31)}

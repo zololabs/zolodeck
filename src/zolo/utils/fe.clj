@@ -23,4 +23,5 @@
      :guid (str (:contact/guid c))
      :picture-url (:social/photo-url si)
      :days-not-contacted (days-not-contacted c ibc)
+     :suggested-at (:contact/suggested-at c)
      }))

@@ -42,8 +42,33 @@
          provider-uid :identity/provider-uid} user-identity]
     (social/fetch-contacts provider access-token provider-uid "2012-10-22")))
 
+;;TODO Duplication find-by-guid
+(defn find-by-guid [guid]
+  (when guid
+    (-> (demonic/run-query '[:find ?c :in $ ?guid :where [?c :contact/guid ?guid]] guid)
+        ffirst
+        demonic/load-entity)))
+
+(defn find-by-guid-string [guid-string]
+  (when guid-string
+    (find-by-guid (java.util.UUID/fromString guid-string))))
+
+(defn reload [c]
+  (find-by-guid (:contact/guid c)))
+
 (defn fresh-contacts [u]
   (mapcat fresh-contacts-for-user-identity (:user/user-identities u)))
+
+(defn todays-suggested-contacts [u]
+  (filter #(zolo-cal/same-day-instance? (:contact/suggested-at %) (zolo-cal/now-instant)) (:user/contacts u)))
+
+(defn suggest-contact [c]
+  (if (zolo-cal/same-day-instance? (:contact/suggested-at c) (zolo-cal/now-instant))
+    c
+    (-> c
+        (assoc :contact/suggested-at (zolo-cal/now-instant))
+        demonic/insert
+        reload)))
 
 (defn update-contact [user fresh-contact]
   (let [contact (->> (:contact/social-identities fresh-contact)
@@ -63,19 +88,6 @@
     (-> (assoc user :user/contacts updated-contacts)
         demonic/insert)))
 
-;;TODO Duplication find-by-guid
-(defn find-by-guid [guid]
-  (when guid
-    (-> (demonic/run-query '[:find ?c :in $ ?guid :where [?c :contact/guid ?guid]] guid)
-        ffirst
-        demonic/load-entity)))
-
-(defn find-by-guid-string [guid-string]
-  (when guid-string
-    (find-by-guid (java.util.UUID/fromString guid-string))))
-
-(defn reload [c]
-  (find-by-guid (:contact/guid c)))
 
 (defn update-score [ibc c]
   (-> (assoc c :contact/score (score/calculate ibc c))
