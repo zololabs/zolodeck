@@ -59,14 +59,14 @@
 (defn fresh-contacts [u]
   (mapcat fresh-contacts-for-user-identity (:user/user-identities u)))
 
-(defn todays-suggested-contacts [u]
-  (filter #(zolo-cal/same-day-instance? (:contact/suggested-at %) (zolo-cal/now-instant)) (:user/contacts u)))
+(defn suggested-contacts [u suggestion-set]
+  (filter #(= suggestion-set (:contact/suggestion-set %)) (:user/contacts u)))
 
-(defn suggest-contact [c]
-  (if (zolo-cal/same-day-instance? (:contact/suggested-at c) (zolo-cal/now-instant))
+(defn suggest-contact [suggestion-set c]
+  (if (= suggestion-set (:contact/suggestion-set c))
     c
     (-> c
-        (assoc :contact/suggested-at (zolo-cal/now-instant))
+        (assoc :contact/suggestion-set suggestion-set)
         demonic/insert
         reload)))
 

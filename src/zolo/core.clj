@@ -55,9 +55,10 @@
 (def app
   (web/wrap-request-binding  
    (web/wrap-options
-    (-> application-routes
+    (-> application-routes        
         web/wrap-user-info-logging
-        handler/api          
+        web/wrap-client-date
+        handler/api
         wrap-json-params
         (with-security security-policy auth/authenticator)
         web/wrap-accept-header-validation

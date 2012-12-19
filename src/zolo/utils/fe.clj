@@ -23,5 +23,9 @@
      :guid (str (:contact/guid c))
      :picture-url (:social/photo-url si)
      :days-not-contacted (days-not-contacted c ibc)
-     :suggested-at (:contact/suggested-at c)
+     :suggestion-set (:contact/suggestion-set c)
      }))
+
+(defn client-date [request-params]
+  (when (:client-date request-params)
+    (print-vals (:client-date request-params))))

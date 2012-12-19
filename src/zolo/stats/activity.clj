@@ -101,26 +101,33 @@
     (reduce (fn [ret date]
               (conj ret [(zolo-cal/date-to-simple-string date) (or (interactions-freq date) 0)])) [] all-dates)))
 
-(defn suggest-contact [ibc c]
+;;TODO Move all these suggestions to its own namespace
+(defn suggest-contact [suggestion-set ibc c]
   (let [interactions (ibc c)]
     (merge (->> c
-               contact/suggest-contact
+                (contact/suggest-contact suggestion-set)
                (fe/format-contact ibc))
            {:interactions (daily-counts interactions)})))
 
-(defn connect-soon-contacts [u ibc]
-  (let [suggested-contacts (contact/todays-suggested-contacts u)
+(defn suggestion-set [client-date]
+  (str (zolo-cal/year-from-instant client-date) "-"
+       (zolo-cal/month-from-instant client-date) "-"
+       (zolo-cal/date-from-instant client-date)))
+
+(defn connect-soon-contacts [u ibc client-date]
+  (let [suggestion-set (suggestion-set client-date)
+        suggested-contacts (contact/suggested-contacts u suggestion-set)
         contacts (if (empty? suggested-contacts)
                    (forgetting-contacts ibc 5)
                    suggested-contacts)]
-    (domap #(suggest-contact ibc %) contacts)))
+    (domap #(suggest-contact suggestion-set ibc %) contacts)))
 
-(defn other-stats [u ibc]
+(defn other-stats [u ibc client-date]
   (merge {:averagescore (zolo-math/average (map contact-score (:user/contacts u)))
           :messagecount (count (:user/messages u))
           :strong-contacts (domap #(fe/format-contact ibc %) (strong-contacts u 5))   
           :weak-contacts (domap #(fe/format-contact ibc %) (weak-contacts u 5))
-          :connect-soon (connect-soon-contacts u ibc)
+          :connect-soon (connect-soon-contacts u ibc client-date)
           :never-contacted (domap #(fe/format-contact ibc %) (forgotten-contacts ibc 5))
           :all-week-interaction-count (all-interaction-count-in-the-past ibc 7)
           :all-month-interaction-count (all-interaction-count-in-the-past ibc 31)}

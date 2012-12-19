@@ -52,12 +52,12 @@
 (defn empty-stats []
   {:network {} :other {} :recent []})
 
-(defn user-stats [u]
+(defn user-stats [u client-date]
   (if (user/been-processed? u)
     (let [imbc (dom/inbox-messages-by-contacts u)
           ibc (interaction/interactions-by-contacts imbc)]
       {:network (activity/network-stats u imbc)
-       :other (activity/other-stats u ibc)
+       :other (activity/other-stats u ibc client-date)
        :recent (activity/recent-activity u)
        :interactions (activity/daily-counts-for-network ibc)})
     (empty-stats)))
@@ -71,6 +71,6 @@
     (user-stats (user/reload (user/current-user)))))
 
 (defn stats [request-params]
-  (user-stats (user/current-user)))
+  (user-stats (user/current-user) (:client-date request-params)))
 
 

@@ -88,7 +88,7 @@
  (refs-fact-schema :contact/social-identities false "A contact's social detail records")
 
  ;Suggested Date
- (instant-fact-schema :contact/suggested-at false "Date a contact was suggested to user to connect")
+ (string-fact-schema :contact/suggestion-set false "Set when a contact was suggested")
  
  (long-fact-schema :contact/score false "A contact's score"))
 
