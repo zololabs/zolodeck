@@ -68,7 +68,7 @@
         to-uid (-> contact-guid contact/find-by-guid-string social-identity/fb-id)]
     (fb-chat/send-message from-uid to-uid text)
     (message/create-new (user/current-user) provider to-uid text thread-id)
-    (user-stats (user/reload (user/current-user)))))
+    (user-stats (user/reload (user/current-user)) (:client-date request-params))))
 
 (defn stats [request-params]
   (user-stats (user/current-user) (:client-date request-params)))
