@@ -9,6 +9,7 @@
             [zolo.utils.domain :as utils-domain]
             [zolo.social.core :as social]
             [zolo.domain.social-identity :as social-identity]
+            [zolo.domain.accessors :as dom]
             [zolodeck.demonic.core :as demonic]
             [zolo.domain.score :as score]
             [clojure.set :as set]))
@@ -92,4 +93,14 @@
 (defn update-score [ibc c]
   (-> (assoc c :contact/score (score/calculate ibc c))
       demonic/insert))
+
+(defn last-send-message [ibc c]
+  (->> (ibc c)
+       dom/messages-from-interactions
+       (sort-by dom/message-date)
+       last))
+
+(defn is-contacted-on? [ibc c dt]
+  (print-vals "Client Date : " dt)
+  (zolo-cal/same-day-instance? dt (dom/message-date (print-vals "Last Send Message Date :" (last-send-message ibc c)))))
 

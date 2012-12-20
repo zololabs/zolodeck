@@ -128,5 +128,5 @@
 (defn wrap-client-date [handler]
   (fn [request]
     (-> request
-        (update-in [:params :client-date] #(zolo-cal/date-string->instant "EEE MMM dd yyyy" %))
+        (update-in [:params :client-date] #(zolo-cal/date-string->instant :rfc822 %))
         handler)))
