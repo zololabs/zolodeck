@@ -50,6 +50,9 @@
           log-into-fb-chat
           (format-user true)))))
 
+(defn- client-date [request-params]
+  (-> request-params :client-tz Long/parseLong (zolo-cal/now-joda)))
+
 (defn empty-stats []
   {:network {} :other {} :recent []})
 
@@ -69,9 +72,9 @@
         to-uid (-> contact-guid contact/find-by-guid-string social-identity/fb-id)]
     (fb-chat/send-message from-uid to-uid text)
     (message/create-new (user/current-user) provider to-uid text thread-id)
-    (user-stats (user/reload (user/current-user)) (:client-date request-params))))
+    (user-stats (user/reload (user/current-user)) (client-date request-params))))
 
 (defn stats [request-params]
-  (user-stats (user/current-user) (-> request-params :client-tz Long/parseLong (zolo-cal/now-joda))))
+  (user-stats (user/current-user) (client-date request-params)))
 
 

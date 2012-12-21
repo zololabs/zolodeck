@@ -90,6 +90,5 @@
        last))
 
 (defn is-contacted-on? [ibc c dt]
-  (print-vals "Client Date : " dt)
   (zolo-cal/same-day-instance? dt (dom/message-date (last-send-message ibc c))))
 

@@ -120,7 +120,8 @@
   (-> u
       (assoc :user/suggestion-set-name set-name)
       (assoc :user/suggestion-set-contacts suggested-contacts)
-      demonic/insert))
+      demonic/insert)
+  suggested-contacts)
 
 (defn suggestion-set [u suggestion-set-name]
   (if (= suggestion-set-name (:user/suggestion-set-name u))
