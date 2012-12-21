@@ -14,7 +14,8 @@
    [zolo.stats.activity :as activity]
    [zolo.social.facebook.chat :as fb-chat]
    [zolo.social.core :as social-core]
-   [zolo.utils.logger :as logger]))
+   [zolo.utils.logger :as logger]
+   [zolodeck.utils.calendar :as zolo-cal]))
 
 ;;TODO (siva) this is an experiment ..need to change this though
 (defn format-user [user new?]
@@ -71,6 +72,6 @@
     (user-stats (user/reload (user/current-user)) (:client-date request-params))))
 
 (defn stats [request-params]
-  (user-stats (user/current-user) (:client-date request-params)))
+  (user-stats (user/current-user) (-> request-params :client-tz Long/parseLong (zolo-cal/now-joda))))
 
 

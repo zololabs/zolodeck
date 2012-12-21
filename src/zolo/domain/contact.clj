@@ -60,17 +60,6 @@
 (defn fresh-contacts [u]
   (mapcat fresh-contacts-for-user-identity (:user/user-identities u)))
 
-(defn suggested-contacts [u suggestion-set]
-  (filter #(= suggestion-set (:contact/suggestion-set %)) (:user/contacts u)))
-
-(defn suggest-contact [suggestion-set c]
-  (if (= suggestion-set (:contact/suggestion-set c))
-    c
-    (-> c
-        (assoc :contact/suggestion-set suggestion-set)
-        demonic/insert
-        reload)))
-
 (defn update-contact [user fresh-contact]
   (let [contact (->> (:contact/social-identities fresh-contact)
                      (find-contact-from-lookup user))]
@@ -102,5 +91,5 @@
 
 (defn is-contacted-on? [ibc c dt]
   (print-vals "Client Date : " dt)
-  (zolo-cal/same-day-instance? dt (dom/message-date (print-vals "Last Send Message Date :" (last-send-message ibc c)))))
+  (zolo-cal/same-day-instance? dt (dom/message-date (last-send-message ibc c))))
 

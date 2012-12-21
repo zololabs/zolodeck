@@ -102,25 +102,25 @@
               (conj ret [(zolo-cal/date-to-simple-string date) (or (interactions-freq date) 0)])) [] all-dates)))
 
 ;;TODO Move all these suggestions to its own namespace
-(defn suggestion-set [client-date]
-  (str (zolo-cal/year-from-instant client-date) "-"
+(defn suggestion-set-name [client-date]
+  (str "ss-"
+       (zolo-cal/year-from-instant client-date) "-"
        (zolo-cal/month-from-instant client-date) "-"
        (zolo-cal/date-from-instant client-date)))
 
-(defn suggest-contact [client-date ibc c]
+(defn format-suggested-contact [client-date ibc c]
   (let [interactions (ibc c)]
-    (merge (->> c
-                (contact/suggest-contact (suggestion-set client-date))
-                (fe/format-contact ibc))
+    (merge (fe/format-contact ibc c)
            {:contacted-today (contact/is-contacted-on? ibc c client-date)
             :interactions (daily-counts interactions)})))
 
 (defn connect-soon-contacts [u ibc client-date]
-  (let [suggested-contacts (contact/suggested-contacts u (suggestion-set client-date))
+  (let [set-name (suggestion-set-name client-date)
+        suggested-contacts (user/suggestion-set u set-name)
         contacts (if (empty? suggested-contacts)
-                   (forgetting-contacts ibc 5)
+                   (user/new-suggestion-set u set-name (forgetting-contacts ibc 5))
                    suggested-contacts)]
-    (domap #(suggest-contact client-date ibc %) contacts)))
+    (domap #(format-suggested-contact client-date ibc %) contacts)))
 
 (defn other-stats [u ibc client-date]
   (merge {:averagescore (zolo-math/average (map contact-score (:user/contacts u)))

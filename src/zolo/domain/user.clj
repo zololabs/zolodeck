@@ -116,6 +116,16 @@
       demonic/insert
       reload-by-login-provider-uid))
 
+(defn new-suggestion-set [u set-name suggested-contacts]
+  (-> u
+      (assoc :user/suggestion-set-name set-name)
+      (assoc :user/suggestion-set-contacts suggested-contacts)
+      demonic/insert))
+
+(defn suggestion-set [u suggestion-set-name]
+  (if (= suggestion-set-name (:user/suggestion-set-name u))
+    (:user/suggestion-set-contacts u)))
+
 (defn update-scores [u]
   (let [ibc (-> u dom/inbox-messages-by-contacts interaction/interactions-by-contacts)]
     (doeach #(contact/update-score ibc %) (:user/contacts u))))

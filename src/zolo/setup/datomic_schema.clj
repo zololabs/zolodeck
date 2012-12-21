@@ -24,7 +24,11 @@
 
  ;Messages Information
  (refs-fact-schema :user/messages false "A contact's messages")
- (refs-fact-schema :user/temp-messages false "A contact's temp messages"))
+ (refs-fact-schema :user/temp-messages false "A contact's temp messages")
+
+  ;Suggested Set
+ (string-fact-schema :user/suggestion-set-name false "Set of contact guids that represent a recent suggested set")
+ (refs-fact-schema :user/suggestion-set-contacts false "Set of contact guids that represent a recent suggested set"))
 
 (schema-set "USER IDENTITY FACTS"
  (uuid-fact-schema   :identity/guid false "A GUID for the user identity record")
@@ -86,9 +90,6 @@
 
  ;Social details
  (refs-fact-schema :contact/social-identities false "A contact's social detail records")
-
- ;Suggested Date
- (string-fact-schema :contact/suggestion-set false "Set when a contact was suggested")
  
  (long-fact-schema :contact/score false "A contact's score"))
 
