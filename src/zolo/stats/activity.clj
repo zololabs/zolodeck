@@ -18,7 +18,7 @@
   (or (:contact/score c) 0))
 
 (defn contacts-with-score-between [u lower upper]
-  (->> (filter #(and (>= (contact-score %) lower) (<  (contact-score %) upper)) (:user/contacts u))
+  (->> (filter #(and (>= (contact-score %) lower) (<= (contact-score %) upper)) (:user/contacts u))
        (sort-by :contact/score)
        reverse))
 
