@@ -1,6 +1,7 @@
 (ns zolo.api.user-api
   (:use zolo.domain.user
-        zolodeck.utils.debug)
+        zolodeck.utils.debug
+        zolodeck.utils.clojure)
   (:require
    [zolo.social.core :as social]
    [sandbar.auth :as sandbar]
@@ -51,7 +52,7 @@
           (format-user true)))))
 
 (defn- client-date [request-params]
-  (-> request-params :client-tz Long/parseLong (zolo-cal/now-joda)))
+  (-> request-params :client-tz parse-int (zolo-cal/now-joda)))
 
 (defn empty-stats []
   {:network {} :other {} :recent []})
