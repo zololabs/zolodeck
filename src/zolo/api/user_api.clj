@@ -62,7 +62,7 @@
           ibc (interaction/interactions-by-contacts imbc)]
       {:network (activity/network-stats u imbc)
        :other (activity/other-stats u ibc client-date)
-       :recent (activity/recent-activity u)
+       ;; :recent (activity/recent-activity u)
        :interactions (activity/daily-counts-for-network ibc)})
     (empty-stats)))
 
