@@ -90,5 +90,5 @@
        last))
 
 (defn is-contacted-on? [ibc c dt]
-  (zolo-cal/same-day-instance? dt (dom/message-date (last-send-message ibc c))))
+  (zolo-cal/same-day-instance? dt (dom/message-date-in-tz (last-send-message ibc c) (zolo-cal/time-zone-offset dt))))
 

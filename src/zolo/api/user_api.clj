@@ -1,6 +1,5 @@
 (ns zolo.api.user-api
-  (:use zolo.domain.user
-        zolodeck.utils.debug
+  (:use zolodeck.utils.debug
         zolodeck.utils.clojure)
   (:require
    [zolo.social.core :as social]
@@ -51,7 +50,7 @@
           log-into-fb-chat
           (format-user true)))))
 
-(defn- client-date [request-params]
+(defn client-date [request-params]
   (-> request-params :client-tz parse-int (zolo-cal/now-joda)))
 
 (defn empty-stats []
@@ -69,7 +68,7 @@
 
 (defn send-message [request-params]
   (let [{provider :provider contact-guid :to-uid text :text thread-id :thread_id} request-params
-        from-uid (-> (current-user) user-identity/fb-id)
+        from-uid (-> (user/current-user) user-identity/fb-id)
         to-uid (-> contact-guid contact/find-by-guid-string social-identity/fb-id)]
     (fb-chat/send-message from-uid to-uid text)
     (message/create-new (user/current-user) provider to-uid text thread-id)

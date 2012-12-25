@@ -3,7 +3,8 @@
         zolodeck.utils.clojure)
   (:require [zolodeck.demonic.core :as demonic]
             [zolodeck.demonic.helper :as dhelp]
-            [zolodeck.utils.maps :as zolo-maps]))
+            [zolodeck.utils.maps :as zolo-maps]
+            [zolodeck.utils.calendar :as zolo-cal]))
 
 (defn- contact-identifier [c]
   [(:social/provider c) (:social/provider-uid c)])
@@ -63,6 +64,11 @@
   (if (is-temp-message? m)
     (:temp-message/date m)
     (:message/date m)))
+
+(defn message-date-in-tz [m tz-offset-minutes]
+  (-> m
+      message-date
+      (zolo-cal/in-time-zone tz-offset-minutes)))
 
 (defn message-id [m]
   (if (is-temp-message? m)
