@@ -23,6 +23,7 @@
             [zolo.api.server-api :as server-api]
             [zolo.utils.logger :as logger]
             [zolo.web :as web]
+            [zolo.setup.config :as config]
             [zolo.storm.facebook :as fb]))
 
 (def security-policy
@@ -80,7 +81,8 @@
 
 (defn start-storm []
   (zolo.setup.datomic-setup/init-datomic)
-  (fb/run-local-forever!))
+  (logger/with-logging-context {:env (config/environment)}
+    (fb/run-local-forever!)))
 
 (defn process-args [args]
   (cli/cli args
