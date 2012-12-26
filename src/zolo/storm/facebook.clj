@@ -102,7 +102,7 @@
    {"3" (bolt-spec {"1" :shuffle
                     "2" :shuffle}
                    process-user
-                   :p 4)}))
+                   :p 2)}))
 
 ;; (defn fb-trident []
 ;;   (let [t (TridentTopology.)]
