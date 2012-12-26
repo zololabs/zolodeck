@@ -15,7 +15,11 @@
             [zolo.utils.logger :as logger]))
 
 (def MESSAGES-START-TIME-SECONDS (-> #inst "2000-10-22" .getTime zolo-cal/to-seconds))
-(def FEEDS-START-TIME-SECONDS (-> #inst "2012-10-22" .getTime zolo-cal/to-seconds))  
+
+(defn feeds-start-time-seconds []
+  (-> (zolo-cal/now-joda)
+      (zolo-cal/minus 1 :week)
+      (zolo-cal/to-seconds)))
 
 (defn message-identifier [m]
   [(:message/provider m) (:message/message-id m)])
@@ -57,7 +61,7 @@
          fmg (group-by :message/provider feed-messages)
          date (->> provider fmg (sort-by :message/date) last :message/date)
          seconds (if date (-> date .getTime zolo-cal/to-seconds))
-         feed-messages (social/fetch-feed provider auth-token contact-uid (or seconds FEEDS-START-TIME-SECONDS))]
+         feed-messages (social/fetch-feed provider auth-token contact-uid (or seconds (feeds-start-time-seconds)))]
      (demonic/append-multiple user :user/messages feed-messages))))
 
 (defn update-messages-for-contact [user contact]
