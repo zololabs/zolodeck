@@ -91,7 +91,8 @@
        (logger/info "Processing user:" (:user/first-name u))
        (demonic/in-demarcation
         (user/refresh-user-data u))
-       ))
+       (demonic/in-demarcation
+        (user/refresh-user-scores u))))
     (catch Exception e
       (logger/error e "Exception in bolt! Occured while processing tuple:" tuple))))
 

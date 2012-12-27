@@ -49,6 +49,7 @@
         min-date (-> sorted-messages first dom/message-date)
         max-date (-> sorted-messages last dom/message-date)
         weeks-between (zolo-cal/weeks-between min-date max-date)
+        weeks-between (if (zero? weeks-between) 1 weeks-between)
         number-of-interactions (count interactions)]
     {:weekly-average (float (/ number-of-interactions weeks-between))}))
 

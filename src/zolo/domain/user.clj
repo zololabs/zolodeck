@@ -146,16 +146,21 @@
     (logger/trace first-name "RefreshUserData... starting now!")
     (stamp-refresh-start (reload u))
     (extend-fb-token (reload u))
-    (contact/update-contacts u)
+    (contact/update-contacts (reload u))
     (logger/info first-name "Loaded contacts " (count (:user/contacts (reload u))))
     (message/update-inbox-messages (reload u))
     (message/update-feed-messages-for-all-contacts (reload u))
     (logger/info first-name "messages done")
+    (logger/info first-name "Refresh data done")
+    nil))
+
+(defn refresh-user-scores [u]
+  (let [first-name (:user/first-name u)]
     (update-scores (reload u))
-    (logger/info first-name "scoreing done")  
+    (logger/info first-name "scoring done")  
     (stamp-updated-time (reload u))
-    (logger/info first-name "Refresh done")  
-    (reload u)))
+    (logger/info first-name "Refresh Score done")
+    nil))
 
 (defn been-processed? [u]
   (:user/last-updated u))
