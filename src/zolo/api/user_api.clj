@@ -67,10 +67,9 @@
     (empty-stats)))
 
 (defn send-message [request-params]
-  (let [{provider :provider contact-guid :to-uid text :text thread-id :thread_id} request-params
-        from-uid (-> (user/current-user) user-identity/fb-id)
+  (let [{provider :provider contact-guid :to-uid text :text thread-id :thread_id} request-params 
         to-uid (-> contact-guid contact/find-by-guid-string social-identity/fb-id)]
-    (fb-chat/send-message from-uid to-uid text)
+    (fb-chat/send-message (user/current-user) to-uid text)
     (message/create-new (user/current-user) provider to-uid text thread-id)
     (-> (user/current-user)
         user/reload

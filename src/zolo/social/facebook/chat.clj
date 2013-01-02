@@ -18,13 +18,14 @@
 (defn connect-user! [u]
   (let [{uid :identity/provider-uid access-token :identity/auth-token} (user-identity/fb-user-identity u)]
     (when-not (chat-connected? uid)
-      (logger/debug "UID:" uid)
-      (logger/debug "AT:" access-token)    
       (add-to-connections! uid (FacebookChat. (conf/fb-app-id) access-token)))))
 
 (defn jid-for [uid]
   (str "-" uid "@chat.facebook.com"))
 
-(defn send-message [from-uid to-uid message]
-  (let [chat (@CONNECTIONS from-uid)]
-    (.sendMessage chat (jid-for to-uid) message)))
+(defn send-message [from-user to-uid message]
+  (connect-user! from-user)
+  (-> from-user
+      user-identity/fb-id
+      (@CONNECTIONS)
+      (.sendMessage (jid-for to-uid) message)))
