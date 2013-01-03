@@ -75,6 +75,11 @@
     (:temp-message/guid m)
     (:message/message-id m)))
 
+(defn message-guid [m]
+  (if (is-temp-message? m)
+    (:temp-message/guid m)
+    (:message/guid m)))
+
 (defn interaction-date [i]
   (-> i
       first

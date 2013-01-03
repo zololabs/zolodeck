@@ -22,13 +22,13 @@
       (zolo-cal/to-seconds)))
 
 (defn message-identifier [m]
-  [(:message/provider m) (:message/message-id m)])
+  [(dom/message-provider m) (dom/message-id m)])
 
 (defn refreshed-messages [user fresh-messages]
   (utils-domain/update-fresh-entities-with-db-id (:user/messages user)
                                                  fresh-messages
                                                  message-identifier
-                                                 :message/guid))
+                                                 dom/message-guid))
 
 (defn get-messages-for-user-identity [user-identity last-updated-string]
   (let [{provider :identity/provider
@@ -37,7 +37,12 @@
     (social/fetch-messages provider access-token provider-uid last-updated-string)))
 
 (defn get-messages-for-user [user]
-  (let [date (->> user dom/inbox-messages-for-user (sort-by :message/date) last :message/date)
+  (let [date (->> user
+                  dom/inbox-messages-for-user
+                  (remove dom/is-temp-message?)
+                  (sort-by :message/date)
+                  last
+                  :message/date)
         seconds (if date (-> date .getTime zolo-cal/to-seconds))]
     (->> user
          :user/user-identities
@@ -58,8 +63,8 @@
   (try-catch
    (let [{contact-uid :social/provider-uid provider :social/provider} si
          auth-token (-> user (dom/user-identity-for-provider provider) :identity/auth-token)
-         fmg (group-by :message/provider feed-messages)
-         date (->> provider fmg (sort-by :message/date) last :message/date)
+         fmg (group-by dom/message-provider feed-messages)
+         date (->> provider fmg (sort-by dom/message-date) last dom/message-date)
          seconds (if date (-> date .getTime zolo-cal/to-seconds))
          feed-messages (social/fetch-feed provider auth-token contact-uid (or seconds (feeds-start-time-seconds)))]
      (demonic/append-multiple user :user/messages feed-messages))))
