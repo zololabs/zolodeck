@@ -25,11 +25,13 @@
 (defn not-contacted-for-days [imbc days]
   (let [now (zolo-cal/now-joda)
         selector-fn (fn [c msgs]
-                      (if-let [d (-> msgs last :message/date)]
-                        (-> d
-                            ctc/to-date-time
-                            (time/plus (time/days days))
-                            (.isBefore now))))
+                      (if (empty? msgs)
+                        true
+                        (if-let [d (->> msgs (sort-by dom/message-date) last dom/message-date)]
+                          (-> d
+                              ctc/to-date-time
+                              (time/plus (time/days days))
+                              (.isBefore now)))))
         last-contacted-in (zolo-maps/select-keys-if imbc selector-fn)]
     (keys last-contacted-in)))
 
@@ -67,9 +69,9 @@
 (defn recent-message-time [[c interactions]]
   (->> interactions
        dom/messages-from-interactions
-       (sort-by :message/date)
+       (sort-by dom/message-date)
        last
-       :message/date))
+       dom/message-date))
 
 (defn forgetting-contacts [ibc number]
   (let [ibc (zolo-maps/select-keys-if ibc #(not (empty? %2)))]
