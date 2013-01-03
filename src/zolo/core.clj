@@ -58,7 +58,6 @@
    (web/wrap-options
     (-> application-routes        
         web/wrap-user-info-logging
-        web/wrap-client-date
         handler/api
         wrap-json-params
         (with-security security-policy auth/authenticator)

@@ -124,9 +124,3 @@
           (logger/debug "RESPONSE : " (assoc response :body "FILTERED"))
           response))
       (handler request))))
-
-(defn wrap-client-date [handler]
-  (fn [request]
-    (-> request
-        (update-in [:params :client-date] #(zolo-cal/date-string->instant :rfc822 %))
-        handler)))
