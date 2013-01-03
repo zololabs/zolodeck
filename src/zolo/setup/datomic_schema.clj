@@ -49,7 +49,8 @@
  (string-fact-schema :identity/state         false  "A user's state")
  (string-fact-schema :identity/city          false  "A user's city")
  (string-fact-schema :identity/zip           false  "A user's zip")
- (string-fact-schema :identity/nickname      false  "A user's nick name"))
+ (string-fact-schema :identity/nickname      false  "A user's nick name")
+ (boolean-fact-schema :identity/permissions-granted false "Whether a user has given permission needed"))
 
 (schema-set "SOCIAL ENTITY FACTS"
  (uuid-fact-schema   :social/guid          false "A GUID for the social details record")

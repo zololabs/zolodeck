@@ -29,7 +29,7 @@
   (logger/trace "FACEBOOK LOGIN params:" request-params)
   (logger/trace "FACEBOOK LOGIN cookies:" cookies)
   (let [{access-token :accessToken user-id :userID} (login-creds request-params)]
-    (users/user-and-user-identity access-token user-id)))
+    (users/user-and-user-identity access-token user-id request-params)))
 
 (defmethod social/fetch-contacts :provider/facebook [provider access-token user-id date]
   ;(logger/trace "FetchContacts:" provider)

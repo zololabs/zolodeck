@@ -11,7 +11,7 @@
     :user/last-name (:last_name extended-user-info)
     :user/login-provider-uid (:uid extended-user-info)}))
 
-(defn user-identity [access-token extended-user-info]
+(defn user-identity [access-token extended-user-info request-params]
   (let [[month day year] (string/split "/" (:birthday_date extended-user-info))]
     (domain/force-schema-types
      {:identity/provider-uid (:uid extended-user-info)
@@ -31,10 +31,11 @@
       :identity/state (get-in extended-user-info [:current_location :state])
       :identity/city (get-in extended-user-info [:current_location :city])
       :identity/zip (get-in extended-user-info [:current_location :zip])
-      :identity/nickname (:username extended-user-info)})))
+      :identity/nickname (:username extended-user-info)
+      :identity/permissions-granted (:permissions_granted request-params)})))
 
-(defn user-and-user-identity [access-token user-id]
+(defn user-and-user-identity [access-token user-id request-params]
   (let [extended-info (gateway/extended-user-info access-token user-id)
         basic-user (basic-info extended-info)
-        identity (user-identity access-token extended-info)]
+        identity (user-identity access-token extended-info request-params)]
     (assoc basic-user :user/user-identities [identity])))
