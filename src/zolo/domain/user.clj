@@ -103,6 +103,13 @@
            old-at (:identity/auth-token fb-ui)]
        (update-with-extended-fb-auth-token user old-at))))
 
+(defn update-permissions-granted [user permissions-granted]
+  (-> user
+      user-identity/fb-user-identity
+      (assoc :identity/permissions-granted permissions-granted)
+      demonic/insert)
+  (reload user))
+
 (defn update-creds [user creds]
   (update-with-extended-fb-auth-token user (:access-token creds)))
 

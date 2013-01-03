@@ -39,6 +39,7 @@
     (do
       (logger/debug "User already in system")
       (user/update-creds user (social/fetch-creds request-params cookies))
+      (user/update-permissions-granted user (:permissions_granted request-params))
       (log-into-fb-chat user)
       (format-user user false))
     (do
