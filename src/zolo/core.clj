@@ -30,7 +30,7 @@
   [#"/permission-denied*" :any
    #"/server/status" :any
    #"/users" :any
-   #"/users.*" :user
+   #"/users/*" :user
    #".*" :user])
 
 (defroutes application-routes

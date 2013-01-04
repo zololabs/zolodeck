@@ -35,7 +35,6 @@
    (social/provider-uid request-params cookies)))
 
 (defn- update-user-creds [user request-params cookies]
-  (logger/debug "User already in system")
   (user/update-creds user (social/fetch-creds request-params cookies))
   (user/update-permissions-granted user (:permissions_granted request-params))
   (log-into-fb-chat user)
