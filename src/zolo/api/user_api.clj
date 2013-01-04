@@ -34,14 +34,18 @@
    (social-core/provider request-params)
    (social/provider-uid request-params cookies)))
 
+(defn- update-user-creds [user request-params cookies]
+  (logger/debug "User already in system")
+  (user/update-creds user (social/fetch-creds request-params cookies))
+  (user/update-permissions-granted user (:permissions_granted request-params))
+  (log-into-fb-chat user)
+  (format-user user false))
+
 (defn signin-user [request-params cookies]
   (if-let [user (find-user request-params cookies)]
     (do
       (logger/debug "User already in system")
-      (user/update-creds user (social/fetch-creds request-params cookies))
-      (user/update-permissions-granted user (:permissions_granted request-params))
-      (log-into-fb-chat user)
-      (format-user user false))
+      (update-user-creds user request-params cookies))
     (do
       (logger/debug "New User is getting created with this request params : " request-params)
       (-> request-params
@@ -50,6 +54,9 @@
           user/update-with-extended-fb-auth-token          
           log-into-fb-chat
           (format-user true)))))
+
+(defn update-user [request-params cookies]
+  (update-user-creds (user/current-user) request-params cookies))
 
 (defn client-date [request-params]
   (-> request-params :client-tz parse-int (zolo-cal/now-joda)))
