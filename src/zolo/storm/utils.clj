@@ -43,9 +43,16 @@
       (< elapsed-since-updated USER-UPDATE-WAIT))))
 
 (defn is-brand-new-user?
-  ([now {refresh-started :user/refresh-started :as u}]
+  ([now {refresh-started :user/refresh-started creation-time :user-temp/creation-time :as u}]
      (and (not refresh-started)
-          (< (- now (.getTime (user/creation-time u))) NEW-USER-FRESHNESS-PERIOD)))
+          (< (- now (.getTime creation-time)) NEW-USER-FRESHNESS-PERIOD)))
+  ([u]
+     (is-brand-new-user? (zolo-cal/now) u)))
+
+(defn is-recently-permitted?
+  ([now {refresh-started :user/refresh-started permissions-time :user/fb-permissions-time :as u}]
+     (and (not refresh-started)
+          (< (- now (.getTime permissions-time)) NEW-USER-FRESHNESS-PERIOD)))
   ([u]
      (is-brand-new-user? (zolo-cal/now) u)))
 

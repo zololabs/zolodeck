@@ -25,7 +25,11 @@
 
 (defn fb-permissions-time [u]
   (let [uig (-> u fb-user-identity :identity/guid)]
-    (->> (run-query '[:find ?tx :in $ ?g :where [?u :identity/guid ?g] [?u :identity/permissions-granted true ?tx]] uig)
+    (->> (run-query '[:find ?tx :in $ ?g
+                      :where
+                      [?u :identity/guid ?g]
+                      [?u :identity/permissions-granted true ?tx]]
+                    uig)
          ffirst
          load-entity
          :db/txInstant)))

@@ -29,18 +29,31 @@
   (-> (demonic/run-query '[:find ?u :where [?u :user/guid]])
       count))
 
+(defn creation-time [u]
+  (->> (:user/guid u)
+       (run-query '[:find ?tx :in $ ?g :where [?u :user/guid ?g ?tx]])
+       ffirst
+       load-entity
+       :db/txInstant))
+
 (defn find-all-users []
   (->> (demonic/run-query '[:find ?u :where [?u :user/guid]])
        (map first)
        (map demonic/load-entity)
        doall))
 
+(defn- user-for-refresh [u]
+  (-> (select-keys u [:user/guid :user/last-updated :user/refresh-started :user/fb-permissions-time])
+      (assoc :user-temp/fb-permissions-time (user-identity/fb-permissions-time u))
+      (assoc :user-temp/creation-time (creation-time u))))
+
 ;; TODO use datalog to only find users with permissions granted
 (defn find-all-users-for-refreshes []
   (->> (demonic/run-query '[:find ?u :where [?u :user/guid]])
        (map first)
        (map demonic-helper/load-from-db)
-       (map #(select-keys % [:user/guid :user/last-updated :user/refresh-started]))
+       ;(map #(select-keys % [:user/guid :user/last-updated :user/refresh-started :user/fb-permissions-time]))
+       (map user-for-refresh)
        doall))
 
 ;;TODO Duplication find-by-guid
@@ -75,13 +88,6 @@
   (condp  = provider 
     :provider/facebook (user-identity/fb-id user)
     (throw+ {:type :bad-data :message (str "Unknown provider specified: " provider)})))
-
-(defn creation-time [u]
-  (->> (:user/guid u)
-       (run-query '[:find ?tx :in $ ?g :where [?u :user/guid ?g ?tx]])
-       ffirst
-       load-entity
-       :db/txInstant))
 
 (defn reload [u]
   (find-by-guid (:user/guid u)))

@@ -67,7 +67,7 @@
   (demonic/in-demarcation
    (let [u (user/find-by-guid-string guid)]
      (user/stamp-refresh-start u)
-     (logger/trace "Emitting " new-or-perm " user guid" guid " for " (:user/first-name u) " " (:user/last-name u))))
+     (logger/trace "NewPermSpout emitting " new-or-perm " user guid" guid " for " (:user/first-name u) " " (:user/last-name u))))
   (emit-spout! collector [guid]))
 
 (defspout new-user-tx-spout ["user-guid"]
