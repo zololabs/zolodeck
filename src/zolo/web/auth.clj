@@ -15,6 +15,6 @@
   (let [{{fb :value} conf/FB-AUTH-COOKIE-NAME {li :value} conf/LI-AUTH-COOKIE-NAME} (:cookies req)
         user (fb-user fb)]
     (when user
-      (logger/debug "Found current user")
+      (logger/debug "Found current user :" (:user/guid user))
       (merge {:username (:user/guid user)
               :roles #{:user}} user))))
