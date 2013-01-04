@@ -5,6 +5,7 @@
             [zolo.utils.logger :as logger]
             [zolodeck.utils.clojure :as clj]
             [zolodeck.demonic.core :as demonic]
+            [zolodeck.demonic.helper :as dh]
             [clj-time.core :as time]
             [clj-time.coerce :as time-coerce]
             [zolodeck.utils.calendar :as zolo-cal])
@@ -20,7 +21,11 @@
   (Fields. things))
 
 (defn short-pause [msg]
-  ;;(logger/info "[1 ms pause:]" msg)
+  ;;(logger/info "[100 ms pause:]" msg)
+  (Thread/sleep 100))
+
+(defn short-log [msg]
+  (logger/debug "[100 ms pause:]" msg)
   (Thread/sleep 100))
 
 (defn pause [msg millis]
@@ -66,6 +71,20 @@
                                  :where 
                                  [$data _ ?us ?ug _ true]] (demonic/schema-attrib-id :user/guid))
         ffirst
+        str)))
+
+(defn permissions-granted-in-tx-report [tx-report]
+  (demonic/in-demarcation
+   (->> tx-report
+        :tx-data
+        (demonic/run-raw-query '[:find ?ue :in ?us $data
+                                 :where 
+                                 [$data ?ue ?us true _ true]] (demonic/schema-attrib-id :identity/permissions-granted))
+        ffirst
+        dh/load-from-db
+        :user/_user-identities
+        first
+        :user/guid
         str)))
 
 (defn inst-seconds-ago [seconds]

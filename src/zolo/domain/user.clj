@@ -35,6 +35,7 @@
        (map demonic/load-entity)
        doall))
 
+;; TODO use datalog to only find users with permissions granted
 (defn find-all-users-for-refreshes []
   (->> (demonic/run-query '[:find ?u :where [?u :user/guid]])
        (map first)
