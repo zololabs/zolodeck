@@ -27,20 +27,20 @@ namespace :api do
     desc "Runs API unit tests"
     task :unit do
       info "Running API Unit Tests"
-      sh "ZOLODECK_ENV=test lein test"
+      sh "lein test"
     end
 
     desc "Runs API integration tests"
     task :integration do
       info "Running API Integration Tests"
       info "Example : (deftest ^:integration test-upsert-user)"
-      sh "ZOLODECK_ENV=test lein test :integration"
+      sh "lein test :integration"
     end
 
     desc "Runs API all tests"
     task :all do
       info "Running API Unit and Integration Tests"
-      sh "ZOLODECK_ENV=test lein test :all"
+      sh "lein test :all"
     end
   end
 

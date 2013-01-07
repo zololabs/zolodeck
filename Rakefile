@@ -1,31 +1,5 @@
 Dir['tasks/*.rake'].each { |file| load(file) }
 
-task :default => [:'zolo:test:all']
-
-namespace :zolo do
-  
-  desc "Bootstrap"
-  task :boot => ['utils:lein_plugins', :'api:boot', :'api:test:all']
-
-  namespace :test do
-    
-    desc "Run Unit tests"
-    task :unit => [:'api:test:unit']
-
-    desc "Run Integration tests"
-    task :integration => [:'api:test:integration']
-
-    desc "Run All tests"
-    task :all => [:'api:test:all']
-
-  end
-
-  desc "Todos from All project"
-  task :todos  => [:'api:todos']
-
-end
-
-
 namespace :utils do
 
   desc "Clean up Zolodeck jars from local maven repo"
