@@ -83,6 +83,10 @@
   (-> (assoc c :contact/score (score/calculate ibc c))
       demonic/insert))
 
+(defn set-muted [c muted?]
+  (-> (assoc c :contact/muted muted?)
+      demonic/insert))
+
 (defn last-send-message [ibc c]
   (->> (ibc c)
        dom/messages-from-interactions

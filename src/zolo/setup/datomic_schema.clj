@@ -91,7 +91,8 @@
 
  ;Social details
  (refs-fact-schema :contact/social-identities false "A contact's social detail records")
- 
+
+ (boolean-fact-schema :contact/muted false "Whether a contact is muted or not")
  (long-fact-schema :contact/score false "A contact's score"))
 
 (schema-set "MESSAGE ENTITY FACTS"

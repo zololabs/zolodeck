@@ -20,6 +20,7 @@
             [zolo.social.bootstrap]
             [zolo.social.core :as social]
             [zolo.api.user-api :as user-api]
+            [zolo.api.contact-api :as contact-api]
             [zolo.api.server-api :as server-api]
             [zolo.utils.logger :as logger]
             [zolo.web :as web]
@@ -31,6 +32,7 @@
    #"/server/status" :any
    #"/users" :any
    #"/users/*" :user
+   #"/contacts/*" :user
    #".*" :user])
 
 (defroutes application-routes
@@ -40,6 +42,9 @@
   (POST "/users" {params :params cookies :cookies} (web/json-response (user-api/signin-user params cookies)))
   (PUT "/users/:guid" {params :params cookies :cookies} (web/json-response (user-api/signin-user params cookies)))  
   (GET "/users/:guid" [guid] (web/json-response (current-user)))
+
+  ;;--- Contact
+  (PUT "/contacts/:guid" {params :params} (web/json-response (contact-api/update-contact params)))
 
   (POST "/messages" {params :params} (web/json-response (user-api/send-message params)))
   
