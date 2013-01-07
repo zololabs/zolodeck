@@ -9,6 +9,7 @@
             [zolo.setup.config :as conf]
             [zolodeck.demonic.core :as demonic]
             [zolo.domain.user :as user]
+            [zolo.domain.user-identity :as user-identity]            
             [zolo.utils.logger :as logger]
             [zolodeck.utils.clojure :as clj]
             [clojure.tools.cli :as cli]
@@ -56,10 +57,18 @@
                 (when-let [n (next-refresh-guid guids)]
                   (demonic/in-demarcation
                    (let [u (user/find-by-guid-string n)]
-                     (user/stamp-refresh-start u)                  
-                     (logger/info "RefreshUserSpout emitting GUID:" n "for" (:user/first-name u))))
-                  (emit-spout! collector [n])))
+                     (when (user-identity/fb-permissions-granted? u)
+                       (user/stamp-refresh-start u)
+                       (logger/info "RefreshUserSpout emitting GUID:" n " for " (:user/first-name u) " " (:user/last-name u))
+                       (emit-spout! collector [n]))))))
      (ack [id]))))
+
+(defn emit-new-or-perm-user [guid new-or-perm collector]
+  (demonic/in-demarcation
+   (let [u (user/find-by-guid-string guid)]
+     (user/stamp-refresh-start u)
+     (logger/trace "NewPermSpout emitting " new-or-perm " user guid" guid " for " (:user/first-name u) " " (:user/last-name u))))
+  (emit-spout! collector [guid]))
 
 (defspout new-user-tx-spout ["user-guid"]
   [conf context collector]
@@ -71,15 +80,15 @@
                 (let [tx-report (.poll trq)]
                   (if-not tx-report
                     (short-pause "No tx reports")
-                    (let [guid (new-user-in-tx-report tx-report)]
-                      (if (empty? guid)
-                        (short-pause "Not a new user tx")
-                        (do
-                          (demonic/in-demarcation
-                           (let [u (user/find-by-guid-string guid)]
-                             (user/stamp-refresh-start u)
-                             (logger/trace "Emitting NEW user guid" guid "for" (:user/first-name u)))) 
-                          (emit-spout! collector [guid])))))))
+                    (let [new-guid (new-user-in-tx-report tx-report)
+                          perm-guid (permissions-granted-in-tx-report tx-report)]
+                      (condp = [(not (empty? new-guid)) (not (empty? perm-guid))] 
+                        [true true]   (emit-new-or-perm-user new-guid :NEW collector)
+                        [true false]  (short-log (str "Insufficient permissions given for: " new-guid))
+                        [false true]  (emit-new-or-perm-user perm-guid :PERMISSION collector)
+                        [false false] (short-pause "Not a NewUser TX or a Perm TX")
+                       )
+                      ))))
      (ack [id]))))
 
 (defbolt process-user [] [tuple collector]
