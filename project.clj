@@ -36,7 +36,7 @@
 
                  [org.clojure/tools.cli "0.2.2"]
 
-                 [com.datomic/datomic "0.8.3664"]
+                 [com.datomic/datomic "0.8.3704"]
                  [com.netflix.curator/curator-framework "1.0.1"]
                  [zolodeck/demonic "0.1.0-SNAPSHOT" :exclusions [com.datomic/datomic-free]]
 

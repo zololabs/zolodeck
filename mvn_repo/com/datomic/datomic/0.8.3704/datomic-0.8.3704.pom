@@ -11,7 +11,7 @@
  <groupId>com.datomic</groupId>
  <artifactId>datomic-pro</artifactId>
  <name>datomic-pro</name>
- <version>0.8.3646</version>
+ <version>0.8.3704</version>
  <organization>
   <name>Metadata Partners, LLC</name>
   <url>http://datomic.com</url>
@@ -145,7 +145,7 @@
   <dependency>
    <groupId>spy</groupId>
    <artifactId>spymemcached</artifactId>
-   <version>2.8.1</version>
+   <version>2.8.9</version>
   </dependency>
   <dependency>
    <groupId>couchbase</groupId>
