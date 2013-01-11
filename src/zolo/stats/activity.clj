@@ -78,6 +78,7 @@
     (->> ibc
          (sort-by recent-message-time)
          keys
+         (remove :contact/muted)
          (take number))))
 
 (defn- message-filter-fn-for-days-within [num-days]
