@@ -21,7 +21,7 @@
   (let [obj (find-server-object)]
     (if obj obj (new-server-obj))))
 
-(defn- within-minutes [old-inst new-inst number-of-minutes]
+(defn- within-minutes? [old-inst new-inst number-of-minutes]
   (if-not (and old-inst new-inst)
     false
     (<= (zolo-cal/minutes-between old-inst new-inst) number-of-minutes)))
@@ -35,13 +35,8 @@
   (let [now (zolo-cal/now-instant)
         server-obj (find-or-create-server-object)
         last-updated (:server/last-updated server-obj)]
-    (if (within-minutes last-updated now 7)
-      (do
-        (update-server-obj server-obj now)
-        true)
-      (do
-        (update-server-obj server-obj now)
-        false))))
+    (update-server-obj server-obj now)
+    (within-minutes? last-updated now 7)))
 
 (defn status [request-params]
   (if (check-datomic)
