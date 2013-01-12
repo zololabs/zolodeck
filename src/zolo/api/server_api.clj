@@ -43,11 +43,9 @@
         (update-server-obj server-obj now)
         false))))
 
-(defn datomic [request-params]
-  (check-datomic))
-
 (defn status [request-params]
-  {:no-of-users (user/count-users)})
-
+  (if (check-datomic)
+    {:no-of-users (user/count-users)}
+    (throw (RuntimeException. "Didn't write to Datomic in past 7 minutes..."))))
 
 

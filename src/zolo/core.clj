@@ -53,7 +53,6 @@
 
   ;;---- Server Status
   (GET "/server/status" {params :params} (web/json-response (server-api/status params)))
-  (GET "/server/datomic" {params :params} (web/json-response (server-api/datomic params)))
   
   ;;---- GENERAL
   (GET "/permission-denied*" []  (web/json-response {:error "Permission Denied"} 403))
