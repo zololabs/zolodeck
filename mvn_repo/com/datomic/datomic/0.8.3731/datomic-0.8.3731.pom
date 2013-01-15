@@ -9,8 +9,8 @@
 <project  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" >
  <modelVersion>4.0.0</modelVersion>
  <groupId>com.datomic</groupId>
- <artifactId>datomic-pro</artifactId>
- <name>datomic-pro</name>
+ <artifactId>datomic-free</artifactId>
+ <name>datomic-free</name>
  <version>0.8.3731</version>
  <organization>
   <name>Metadata Partners, LLC</name>
@@ -77,29 +77,6 @@
    </exclusions>
   </dependency>
   <dependency>
-   <groupId>com.netflix.curator</groupId>
-   <artifactId>curator-framework</artifactId>
-   <version>1.2.3</version>
-   <exclusions>
-    <exclusion>
-     <groupId>org.slf4j</groupId>
-     <artifactId>slf4j-log4j12</artifactId>
-    </exclusion>
-    <exclusion>
-     <groupId>org.slf4j</groupId>
-     <artifactId>log4j</artifactId>
-    </exclusion>
-    <exclusion>
-     <groupId>log4j</groupId>
-     <artifactId>log4j</artifactId>
-    </exclusion>
-    <exclusion>
-     <groupId>com.google.guava</groupId>
-     <artifactId>guava</artifactId>
-    </exclusion>
-   </exclusions>
-  </dependency>
-  <dependency>
    <groupId>org.hornetq</groupId>
    <artifactId>hornetq-core</artifactId>
    <version>2.2.21.Final</version>
@@ -122,12 +99,6 @@
    </exclusions>
   </dependency>
   <dependency>
-   <groupId>com.basho.riak</groupId>
-   <artifactId>riak-client</artifactId>
-   <version>1.0.6</version>
-   <scope>provided</scope>
-  </dependency>
-  <dependency>
    <groupId>com.h2database</groupId>
    <artifactId>h2</artifactId>
    <version>1.3.165</version>
@@ -146,12 +117,6 @@
    <groupId>spy</groupId>
    <artifactId>spymemcached</artifactId>
    <version>2.8.9</version>
-  </dependency>
-  <dependency>
-   <groupId>couchbase</groupId>
-   <artifactId>couchbase-client</artifactId>
-   <version>1.0.3</version>
-   <scope>provided</scope>
   </dependency>
   <dependency>
    <groupId>com.amazonaws</groupId>

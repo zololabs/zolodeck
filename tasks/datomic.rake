@@ -16,6 +16,40 @@ namespace :datomic do
 
     sh (command)
   end
-  
+
+  namespace :client do
+
+    desc "Update Datomic Client jars in mvn_repo"
+    task :update, :version  do |t, args|
+      version = args[:version]
+      info "Checking whether zolo-repo has datomic #{version} installed"
+      datomic_server_dir = Dir.pwd + "/../zolo-repo/datomic/datomic-free-#{version}"
+      datomic_client_dir = Dir.pwd + "/mvn_repo/com/datomic/datomic/#{version}"
+
+      if File.exists? datomic_server_dir
+        if File.exists? datomic_client_dir
+          info "Datomic Client #{version} is already installed"
+        else
+          info "Deleting older versions"
+          cmd = "rm -rf " + Dir.pwd + "/mvn_repo/com/datomic/datomic"
+          sh cmd
+          info "Updating Datomic Client Libs"
+          cmd = "mvn install:install-file -DgroupId=com.datomic -DartifactId=datomic -Dfile=#{datomic_server_dir}/datomic-free-#{version}.jar -DpomFile=#{datomic_server_dir}/pom.xml -DlocalRepositoryPath=mvn_repo"
+          sh cmd
+          info "Checkin changes in mvn_repo to github"
+          info "Update project.clj to dependent on datomic verion : #{version}"
+        end
+      else
+        info <<-EOS
+Update Datomic in Zolo-repo Project
+   1) cd ../zolo-repo
+   2) rake datomic:local:update[#{version}]
+        EOS
+      end
+
+    end
+
+  end
+    
 end
     
