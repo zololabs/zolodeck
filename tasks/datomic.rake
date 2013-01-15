@@ -11,7 +11,7 @@ namespace :datomic do
   desc "Start Datomic"
   task :start  => :config do
 
-    command = "cd "+ Dir.pwd + "/devops/datomic/current ; ./bin/transactor " + Dir.pwd + "/devops/datomic/free-transactor.properties"
+    command = "cd "+ Dir.pwd + "/../zolo-repo/datomic/datomic-free-* ; ./bin/transactor " + Dir.pwd + "/devops/datomic/free-transactor.properties"
     info "Datomic is getting started"
 
     sh (command)
