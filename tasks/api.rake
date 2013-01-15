@@ -10,6 +10,11 @@ namespace :api do
     info "Getting Deps and Building projects in Checkout folder"
     sh "lein deps; lein build-checkouts;"
     Rake::Task["api:config:generate"].execute
+  end
+
+  desc "Setup Devs Computer"
+  task :setup do
+    Rake::Task["api:boot"].execute
     STDOUT.puts "What Datomic Version you want to use?"
     version = STDIN.gets.strip
     info "Setting up datomic client #{version}"
