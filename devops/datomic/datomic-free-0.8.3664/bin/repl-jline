@@ -1,6 +1,0 @@
-#!/bin/bash
-/usr/bin/env java -server -Xmx1g -cp `bin/classpath` jline.ConsoleRunner clojure.main -i "bin/bridge.clj" -r
-
-
-
-
