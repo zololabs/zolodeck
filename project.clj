@@ -98,7 +98,7 @@
   :repositories {"jboss" "http://repository.jboss.org/nexus/content/groups/public/"
                  "local_repo" ~(str (.toURI (java.io.File. "mvn_repo")))}
   
-  :resources-path "config"
+  :resources-path "~/.zolo"
 
   :deploy-app {:s3-bucket "s3p://zolodeck/releases/"
                :creds :env}

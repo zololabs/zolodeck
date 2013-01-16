@@ -82,6 +82,16 @@ namespace :api do
       Config.generate binding, Dir.pwd + "/../zolo-repo/site-cookbooks/api/templates/default/zolo.clj.erb", File.expand_path("~/.zolo/zolo.clj")
 
       puts "Successfully Generated!!"
+
+      info "Generating logback config"
+
+      @graylog2_host = "monitor.zolodeck.com"
+      @development = true
+
+      Config.generate binding, Dir.pwd + "/../zolo-repo/site-cookbooks/api/templates/default/logback.xml.erb", File.expand_path("~/.zolo/logback.xml")
+
+      puts "Successfully Generated!!"
+      
     end
     
   end
