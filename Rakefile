@@ -17,3 +17,26 @@ namespace :utils do
   end
 
 end
+
+namespace :test do
+  
+  desc "Runs API unit tests"
+  task :unit do
+    info "Running API Unit Tests"
+    sh "lein test"
+  end
+  
+  desc "Runs API integration tests"
+  task :integration do
+    info "Running API Integration Tests"
+    info "Example : (deftest ^:integration test-upsert-user)"
+    sh "lein test :integration"
+  end
+  
+  desc "Runs API all tests"
+  task :all do
+    info "Running API Unit and Integration Tests"
+    sh "lein test :all"
+  end
+end
+
