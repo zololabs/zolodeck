@@ -61,7 +61,8 @@ namespace :api do
             1) rake api:swank
             2) In slime
                a) Eval zolo.core
-               b) (serve-headless zolo.core/app 4000)
+               b) (do (zolo.setup.datomic-setup/init-datomic)
+                      (serve-headless zolo.core/app 4000))
     EOS
     sh ("lein run --service api")
   end
