@@ -1,6 +1,6 @@
 namespace :ci do
 
-  task :run do
+  task :setup do
     info "Checkout/update zolo-repo"
     if File.exists? "#{Dir.pwd}/../zolo-repo"
       sh "cd ../zolo-repo; git pull"
@@ -11,6 +11,6 @@ namespace :ci do
     Rake::Task["utils:m2clean"].invoke
     Rake::Task["api:config:generate"].invoke
   end
-  
+
 end
 
