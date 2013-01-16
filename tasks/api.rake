@@ -3,12 +3,7 @@ namespace :api do
   desc "BootStraps API project"
   task :boot do
     info "Bootstrapping API project"
-    info "Deleting Zolodeck Libs from local m2"
-    sh " rm -rf ~/.m2/repository/zolodeck/"
-    info "Updating submodules"
-    sh "git submodule init; git submodule sync ; git submodule update"
-    info "Getting Deps and Building projects in Checkout folder"
-    sh "lein deps; lein build-checkouts;"
+    Rake::Task["utils:m2clean"].execute
     Rake::Task["api:config:generate"].execute
   end
 
@@ -88,13 +83,12 @@ namespace :api do
       info "Generating API config for development and test environment"
 
       @zolodeck_env = "development"
-      @datomic_host = "localhost"
-      @datomic_db_name = "zolodeck-dev"
-
+      @datomic_uri = "datomic:free://localhost:4334/zolodeck-dev"
+      @kiss_api_key = "0574cc154095cc7ddcaa04480daa22903da7f1b7"
       
       sh "mkdir ~/.zolo" unless File.exist?(File.expand_path("~/.zolo"))
 
-      Config.generate binding, "config/zolo.clj.erb", File.expand_path("~/.zolo/zolo.clj")
+      Config.generate binding, Dir.pwd + "/../zolo-repo/site-cookbooks/api/templates/default/zolo.clj.erb", File.expand_path("~/.zolo/zolo.clj")
 
       puts "Successfully Generated!!"
     end
