@@ -7,15 +7,6 @@ namespace :api do
     Rake::Task["api:config:generate"].execute
   end
 
-  desc "Setup Devs Computer"
-  task :setup do
-    Rake::Task["api:boot"].execute
-    STDOUT.puts "What Datomic Version you want to use?"
-    version = STDIN.gets.strip
-    info "Setting up datomic client #{version}"
-    Rake::Task["datomic:client:update"].invoke(version) 
-  end
-
   desc "Todos from API project"
   task :todos do
     sh "lein notes;"
