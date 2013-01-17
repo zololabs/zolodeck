@@ -91,7 +91,8 @@
                     (use 'com.georgejahad.difform)
                     (use 'zolo.utils.readers)
                     (use 'zolodeck.demonic.core)
-                    (use 'zolo.test.core-utils))
+                    (use 'zolo.test.core-utils)
+                    (use 'zolo.setup.config))
 
   :warn-on-reflection false
   
