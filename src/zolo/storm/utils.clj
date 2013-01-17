@@ -11,8 +11,11 @@
             [zolodeck.utils.calendar :as zolo-cal])
   (:import [backtype.storm.tuple Values Fields]))
 
-(def NEW-USER-FRESHNESS-PERIOD (conf/new-user-freshness-millis)) 
-(def USER-UPDATE-WAIT (conf/user-update-wait-fb-millis))
+(defn new-user-freshness-period []
+  (conf/new-user-freshness-millis))
+
+(defn user-update-wait []
+  (conf/user-update-wait-fb-millis))
 
 (defn values [& things]
   (Values. (into-array things)))
@@ -35,24 +38,24 @@
 (defn refresh-started-recently? [now refresh-started]
   (if refresh-started
     (let [elapsed-since-started (- now (.getTime refresh-started))]
-      (< elapsed-since-started USER-UPDATE-WAIT))))
+      (< elapsed-since-started (user-update-wait)))))
 
 (defn last-updated-recently? [now last-updated]
   (if last-updated
     (let [elapsed-since-updated (- now (.getTime last-updated))]
-      (< elapsed-since-updated USER-UPDATE-WAIT))))
+      (< elapsed-since-updated (user-update-wait)))))
 
 (defn is-brand-new-user?
   ([now {refresh-started :user/refresh-started creation-time :user-temp/creation-time :as u}]
      (and (not refresh-started)
-          (< (- now (.getTime creation-time)) NEW-USER-FRESHNESS-PERIOD)))
+          (< (- now (.getTime creation-time)) (new-user-freshness-period))))
   ([u]
      (is-brand-new-user? (zolo-cal/now) u)))
 
 (defn is-recently-permitted?
   ([now {refresh-started :user/refresh-started permissions-time :user/fb-permissions-time :as u}]
      (and (not refresh-started)
-          (< (- now (.getTime permissions-time)) NEW-USER-FRESHNESS-PERIOD)))
+          (< (- now (.getTime permissions-time)) (new-user-freshness-period))))
   ([u]
      (is-brand-new-user? (zolo-cal/now) u)))
 
