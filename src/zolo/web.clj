@@ -105,7 +105,7 @@
        ".rh-" RANDOM-PROCESS-ID
        ".c-" @PROCESS-COUNTER
        ".ts-" (zolo-cal/now)  
-       ".v-" config/GIT-HEAD-SHA))
+       ".v-" (config/git-head-sha)))
 
 (defn logging-context [request]
   (swap! PROCESS-COUNTER inc)

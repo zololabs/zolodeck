@@ -55,8 +55,11 @@
     (load-config config-file)
     (set-system-properties (system-properties))))
 
-(def FB-AUTH-COOKIE-NAME (str "fbsr_" (fb-app-id)))
+(defn fb-auth-cookie-name []
+  (str "fbsr_" (fb-app-id)))
 
-(def LI-AUTH-COOKIE-NAME (str "linkedin_oauth_" (li-api-key)))
+(defn li-auth-cookie-name []
+  (str "linkedin_oauth_" (li-api-key)))
 
-(def GIT-HEAD-SHA (or (get-env-var "GIT_HEAD_SHA") "GIT-SHA-NOT-SET"))
+(defn git-head-sha []
+  (or (get-env-var "GIT_HEAD_SHA") "GIT-SHA-NOT-SET"))

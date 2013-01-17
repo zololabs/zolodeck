@@ -9,13 +9,13 @@
             [zolo.social.linkedin.token :as token]))
 
 (defmethod social/provider-uid social/LINKEDIN [request-params cookies]
-  (-> (get-in cookies [conf/LI-AUTH-COOKIE-NAME :value])
+  (-> (get-in cookies [(conf/li-auth-cookie-name) :value])
       token/parse-oauth-cookie
       :member_id))
 
 ;; TODO check for key :oauth_problem in li-at
 (defmethod social/signup-user social/LINKEDIN [request-params cookies]
-  (let [auth-cookie-string (get-in cookies [conf/LI-AUTH-COOKIE-NAME :value])
+  (let [auth-cookie-string (get-in cookies [(conf/li-auth-cookie-name) :value])
         parsed-cookie (token/parse-oauth-cookie auth-cookie-string)
         li-at (token/access-token (:access_token parsed-cookie))]
     (print-vals "LI-AT:" li-at)

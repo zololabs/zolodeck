@@ -12,7 +12,7 @@
     (user/find-by-provider-and-provider-uid :provider/facebook fb-id)))
 
 (defn authenticator [req]
-  (let [{{fb :value} conf/FB-AUTH-COOKIE-NAME {li :value} conf/LI-AUTH-COOKIE-NAME} (:cookies req)
+  (let [{{fb :value} (conf/fb-auth-cookie-name) {li :value} (conf/li-auth-cookie-name)} (:cookies req)
         user (fb-user fb)]
     (when user
       (logger/debug "Found current user :" (:user/guid user))
