@@ -8,11 +8,12 @@
            [org.scribe.model OAuthRequest Response Token Verb]
            [org.scribe.oauth OAuthService])  )
 
-(def SERVICE (-> (ServiceBuilder.)
-                 (.provider LinkedInApi)
-                 (.apiKey (conf/li-api-key))
-                 (.apiSecret (conf/li-secret-key))
-                 .build))
+(defn service []
+  (-> (ServiceBuilder.)
+      (.provider LinkedInApi)
+      (.apiKey (conf/li-api-key))
+      (.apiSecret (conf/li-secret-key))
+      .build))
 
 (def PROFILE-URL "http://api.linkedin.com/v1/people/~:(id,first-name,last-name,industry,location:(country:(code)),date-of-birth,email-address,picture-url,public-profile-url)")
 
@@ -24,7 +25,7 @@
 (defn- http-action [url method oauth-token oauth-token-secret]
   (let [req (OAuthRequest. method url)]
     (.addHeader req "x-li-format" "json")    
-    (.signRequest SERVICE (token-for oauth-token oauth-token-secret) req)
+    (.signRequest (service) (token-for oauth-token oauth-token-secret) req)
     (-> req .send .getBody)))
 
 (defn http-post
