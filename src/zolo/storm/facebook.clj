@@ -6,7 +6,7 @@
         backtype.storm.config
         zolo.storm.utils)
   (:require [zolo.setup.datomic-setup :as datomic]
-            [zolo.setup.config :as conf]
+            [zolo.setup.config :as config]
             [zolodeck.demonic.core :as demonic]
             [zolo.domain.user :as user]
             [zolo.domain.user-identity :as user-identity]            
@@ -49,7 +49,8 @@
 
 (defspout refresh-user-spout ["user-guid"]
   [conf context collector]
-  (logger/trace "RefreshSpout, initializing Datomic...")  
+  (logger/trace "RefreshSpout, initializing Datomic...")
+  (config/setup-config)
   (datomic/init-connection)
   (let [guids (atom nil)]
     (spout
@@ -72,7 +73,8 @@
 
 (defspout new-user-tx-spout ["user-guid"]
   [conf context collector]
-  (logger/trace "NewUserSpout, initializing Datomic...")    
+  (logger/trace "NewUserSpout, initializing Datomic...")
+  (config/setup-config)
   (datomic/init-connection)
   (let [trq (demonic/transactions-report-queue)]    
     (spout
@@ -93,6 +95,7 @@
 
 (defbolt process-user [] [tuple collector]
   (try
+    (config/setup-config)
     (datomic/init-connection)
     (demonic/in-demarcation
      (let [guid (.getStringByField tuple "user-guid")
@@ -124,6 +127,7 @@
 
 (defn run-local! [millis]
   (future
+    (config/setup-config)
     (datomic/init-connection)
     (let [cluster (LocalCluster.)]
       (logger/trace "Submitting topology...")
