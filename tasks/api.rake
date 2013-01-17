@@ -25,6 +25,7 @@ namespace :api do
       @zolodeck_env = "development"
       @datomic_uri = "datomic:free://localhost:4334/zolodeck-dev"
       @kiss_api_key = "0574cc154095cc7ddcaa04480daa22903da7f1b7"
+      @system_properties = "{}"
       
       sh "mkdir ~/.zolo" unless File.exist?(File.expand_path("~/.zolo"))
 

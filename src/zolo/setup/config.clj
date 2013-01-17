@@ -39,15 +39,21 @@
 (defn li-secret-key []
   (get-in CONFIG-MAP [:configs ENV :li-secret-key]))
 
+(defn system-properties []
+  (get-in CONFIG-MAP [:configs ENV :system-properties]))
+
+(defn set-system-properties [properties]
+  (map (fn [[k v]]
+         (System/setProperty k v)) properties))
+
 (defn get-env-var [v]
   (.get (System/getenv) v))
 
 (defrunonce setup-config []
   (let [config-file (str (System/getProperty "user.home") "/.zolo/zolo.clj")]
     (logger/trace "Loading config file:" config-file)
-    (load-config config-file)))
-
-(setup-config)
+    (load-config config-file)
+    (set-system-properties (system-properties))))
 
 (def FB-AUTH-COOKIE-NAME (str "fbsr_" (fb-app-id)))
 
