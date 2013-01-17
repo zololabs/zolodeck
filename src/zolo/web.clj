@@ -35,7 +35,8 @@
   {:status (or status 200)
    :headers {"Content-Type" "application/json; charset=utf-8"
              "Access-Control-Allow-Origin" (request-origin)
-             "Access-Control-Allow-Credentials" "true"}
+             "Access-Control-Allow-Credentials" "true"
+             "Cache-Control:" "max-age=0, no-cache,  must-revalidate"}
    :body (json/json-str data)})
 
 (defn error-response [error-object]

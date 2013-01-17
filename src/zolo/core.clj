@@ -96,6 +96,7 @@
            ["-h" "--help" "Show help" :default false :flag true]))
 
 (defn -main [& cl-args]
+  (config/setup-config)
   (print-vals "CL Args :" cl-args)
   (let [[options args banner] (process-args cl-args)]
     (when (:help options)

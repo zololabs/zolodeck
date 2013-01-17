@@ -100,6 +100,8 @@
   
   :resources-path "config"
 
+  :extra-classpath-dirs [~(str (System/getProperty "user.home") "/.zolo")]
+
   :deploy-app {:s3-bucket "s3p://zolodeck/releases/"
                :creds :env}
 
