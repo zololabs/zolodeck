@@ -7,49 +7,49 @@
 
 (defmacro trace [& args]
   `(let [l# (list ~@args)
-         v# (apply str (interleave l# (repeat " ")))]
+         v# (apply pr-str l#)]
      (logger/trace v#)
      (last l#)))
 
 (defmacro trace-> [& args]
   `(let [l# (list ~@args)
-         v# (apply str l#)]
+         v# (apply pr-str l#)]
      (logger/trace v#)
      (first l#)))
 
 (defmacro debug [& args]
   `(let [l# (list ~@args)
-         v# (apply str l#)]
+         v# (apply pr-str l#)]
      (logger/debug v#)
      (last l#)))
 
 (defmacro debug-> [& args]
   `(let [l# (list ~@args)
-         v# (apply str l#)]
+         v# (apply pr-str l#)]
      (logger/debug v#)
      (first l#)))
 
 (defmacro info [& args]
   `(let [l# (list ~@args)
-         v# (apply str l#)]
+         v# (apply pr-str l#)]
      (logger/info v#)
      (last l#)))
 
 (defmacro info-> [& args]
   `(let [l# (list ~@args)
-         v# (apply str l#)]
+         v# (apply pr-str l#)]
      (logger/info v#)
      (first l#)))
 
 (defmacro warn [& args]
   `(let [l# (list ~@args)
-         v# (apply str l#)]
+         v# (apply pr-str l#)]
      (logger/warn v#)
      (last l#)))
 
 (defmacro warn-> [& args]
   `(let [l# (list ~@args)
-         v# (apply str l#)]
+         v# (apply pr-str l#)]
      (logger/warn v#)
      (first l#)))
 
