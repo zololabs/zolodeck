@@ -104,7 +104,11 @@
        (demonic/in-demarcation
         (user/refresh-user-data u))
        (demonic/in-demarcation
-        (user/refresh-user-scores u))))
+        (user/refresh-user-scores u))
+       (demonic/in-demarcation
+        (logger/info "Completed bolt for " (:user/first-name u) " with " (count (:user/contacts (user/reload u))) " contacts"))
+       (if (> (- (count (:user/contacts (user/reload u))) (count (:user/contacts u))) 10)
+         (throw (RuntimeException. (str "Zombie warning for " (:user/first-name u)))))))
     (catch Exception e
       (logger/error e "Exception in bolt! Occured while processing tuple:" tuple))))
 

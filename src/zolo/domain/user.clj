@@ -163,13 +163,15 @@
     (contact/update-contacts (reload u))
     (logger/info first-name "Loaded contacts " (count (:user/contacts (reload u))))
     (message/update-inbox-messages (reload u))
+    (logger/info first-name "Inbox messages done for " (count (:user/contacts (reload u))) " contacts")    
     (message/update-feed-messages-for-all-contacts (reload u))
-    (logger/info first-name "messages done")
+    (logger/info first-name "Feed messages done for " (count (:user/contacts (reload u))) " contacts")
     (logger/info first-name "Refresh data done")
     nil))
 
 (defn refresh-user-scores [u]
   (let [first-name (:user/first-name u)]
+    (logger/trace first-name "Scoring " (count (:user/contacts (reload u))) " contacts")
     (update-scores (reload u))
     (logger/info first-name "scoring done")  
     (stamp-updated-time (reload u))
