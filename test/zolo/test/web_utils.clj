@@ -1,17 +1,25 @@
 (ns zolo.test.web-utils
   (:use zolodeck.utils.maps
-        [clojure.test :only [run-tests deftest is are testing]])
-  (:require [zolo.core :as server]))
+        [clojure.test :only [run-tests deftest is are testing]]
+        zolodeck.utils.debug)
+  (:require [zolo.core :as server]
+            [clojure.data.json :as json]))
 
-(defn compojure-request [method resource stringified-params]
+(defn compojure-request [method resource jsonified-body-str params]
   {:request-method method 
-   :uri resource 
-   :params stringified-params
+   :uri resource
+   :params params
+   :body (java.io.StringReader. jsonified-body-str)
    :headers {"accept" "application/vnd.zololabs.zolodeck.v1+json"
-             "authorization" "fb DUMMYONE"}})
+             "authorization" "fb DUMMYONE"
+             "content-type" "application/json; charset=UTF-8"}
+   :content-type "application/json; charset=UTF-8"})
 
-(defn web-request [method resource params]
-  (server/app (compojure-request method resource (stringify-map params))))
+(defn web-request
+  ([method resource body]
+     (web-request method resource body {}))
+  ([method resource body params]
+     (server/app (compojure-request method resource (json/json-str body) params))))
 
 (defn was-response-status? [{:keys [web-response] :as scenario} expected-status]
   (let [{:keys [status headers body]} web-response]
@@ -24,6 +32,3 @@
 
 (defn new-user-url []
   "/users")
-
-(defn friends-list-url []
-  "/friends")

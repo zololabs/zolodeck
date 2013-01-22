@@ -77,6 +77,7 @@
                      [swank-clojure "1.3.3"]
                      [ring-serve "0.1.2"]
                      [zolodeck/clj-social-lab "1.0.0-SNAPSHOT"]
+                     [org.clojars.runa/conjure "2.1.1"]
                      [difform "1.1.2"]]
   
   :min-lein-version "1.7.0"
