@@ -1,5 +1,6 @@
 (ns zolo.social.core
-  (:use zolodeck.utils.debug))
+  (:use zolodeck.utils.debug
+        [slingshot.slingshot :only [throw+ try+]]))
 
 (def FACEBOOK "FACEBOOK")
 (def LINKEDIN "LINKEDIN")
@@ -38,3 +39,7 @@
 (defmulti fetch-feed provider-dispatcher)
 
 (defmulti fetch-contact-feeds (fn [provider _ _ _] provider))
+
+(defmethod provider-uid nil [request-params cookies]
+  (throw+ {:type :forbidden :message "Provider UID is nil"}))
+

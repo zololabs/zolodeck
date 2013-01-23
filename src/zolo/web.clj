@@ -52,6 +52,9 @@
      (catch [:type :not-found] e
        (logger/error e "Not found :")
        (error-response e))
+     (catch [:type :forbidden] e
+       (logger/error e "Permission denied :")
+       (error-response e))
      (catch Exception e
        (logger/error e "Exception Occured :")
        (json-response {:error (.getMessage e)} 500)))))

@@ -19,7 +19,7 @@
 
 (defn decode-signed-request-for-scenarios [scenario]
   (fn [encoded-signed-request]
-    (when (:fb-user scenario) 
+    (when (:current-user scenario) 
       {:code "123" :user_id (get-in scenario [:authResponse :userID])})))
 
 (defmacro with-scenario [scenario & body]
@@ -31,7 +31,6 @@
   ([scenario]
      (login-as-valid-facebook-user scenario default-fb-login-credentials))
   ([scenario user]
-     (assoc scenario :fb-user user)
      (assoc scenario :current-user user)))
 
 (defn assert-user-in-datomic [scenario assertion-function]
@@ -44,6 +43,9 @@
 
 (defn assert-user-present-in-datomic [scenario]
   (assert-user-in-datomic scenario assertions/assert-datomic-id-present))
+
+(defn assert-user-not-present-in-datomic [scenario]
+  (assert-user-in-datomic scenario assertions/assert-datomic-id-not-present))
 
 (defn jsonify-body-if-needed [response]
   (if (not (empty? (:body response)))
