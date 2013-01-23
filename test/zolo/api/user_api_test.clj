@@ -1,6 +1,7 @@
 (ns zolo.api.user-api-test
   (:use [clojure.test :only [run-tests deftest is are testing]]
         zolodeck.demonic.test
+        zolodeck.demonic.core
         zolodeck.utils.debug
         zolo.scenario
         zolo.test.web-utils
