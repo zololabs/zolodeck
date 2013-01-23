@@ -19,11 +19,11 @@ namespace :api do
 
     desc "Generate API config for development and test"
     task :generate , :env do |t , args|
-    
-      env = args[:env] || "development"
-      info "Generating API config for #{env} environment"
 
-      @zolodeck_env = env
+      @zolodeck_env = args[:env] || "development"
+      info "Generating API config for #{@zolodeck_env} environment"
+
+      @env = "development"
       @datomic_uri = "datomic:free://localhost:4334/zolodeck-dev"
       @kiss_api_key = "0574cc154095cc7ddcaa04480daa22903da7f1b7"
       @system_properties = "{}"
