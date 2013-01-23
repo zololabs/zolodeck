@@ -19,7 +19,7 @@
      (let [mickey (lab/create-user "Mickey" "Mouse")
            params (request-params mickey)
            cookies {}
-           canonical-user (print-vals (social/signup-user params cookies))]
+           canonical-user (social/signup-user params cookies)]
        (is (= "Mickey" (:user/first-name canonical-user)))
        (is (= "Mickey" (:identity/first-name (first (:user/user-identities canonical-user)))))))))
 
