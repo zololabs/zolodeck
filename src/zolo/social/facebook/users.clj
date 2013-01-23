@@ -20,6 +20,7 @@
       :identity/first-name (:first_name extended-user-info)
       :identity/last-name (:last_name extended-user-info)
       :identity/email (:email extended-user-info)
+      :identity/locale (:locale extended-user-info)
       :identity/birth-day day
       :identity/birth-month month
       :identity/birth-year year

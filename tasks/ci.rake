@@ -9,7 +9,7 @@ namespace :ci do
     end
 
     Rake::Task["utils:m2clean"].invoke
-    Rake::Task["api:config:generate"].invoke
+    Rake::Task["api:config:generate"].invoke("test")
   end
 
 end

@@ -1,6 +1,29 @@
 (ns zolo.test.assertions
   (:use zolodeck.utils.debug
-        [clojure.test :only [is are]]))
+        zolodeck.utils.clojure
+        [clojure.test :only [is are]])
+  (:require [zolo.social.core :as social]))
+
+(defn assert-map-values [m1 m1-keys m2 m2-keys]
+  (is (= (count (remove nil? (vals (select-keys m1 m1-keys))))
+           (count (remove nil? (vals (select-keys m2 m2-keys))))
+           (count m1-keys)
+           (count m2-keys)) "No of keys don't match")
+  (doall (map #(is (= (%1 m1) (%2 m2)) (str %1 " does not match " %2)) m1-keys m2-keys)))
+
+(defn assert-basic-user-info [fb-user canonical-user]
+  (let [fb-user-keys [:first_name :last_name :uid]
+        canonical-user-keys [:user/first-name :user/last-name :user/login-provider-uid]]
+    (assert-map-values fb-user fb-user-keys canonical-user canonical-user-keys)))
+
+(defn assert-user-identity [fb-user canonical-user-identity]
+  (let [fb-user-keys [:uid :first_name :last_name :username :locale :email :pic_small :pic_big :profile_url]
+        canonical-user-identity-keys [:identity/provider-uid :identity/first-name :identity/last-name :identity/nickname :identity/locale  :identity/email  :identity/thumbnail-url :identity/photo-url :identity/profile-url ]]
+    (assert-map-values fb-user fb-user-keys canonical-user-identity canonical-user-identity-keys)
+    ;; assert birthday
+    (is (= (social/gender-enum (:sex fb-user)) (:identity/gender canonical-user-identity)))
+    ;; assert location
+    ))
 
 ;; Domain Related Ones
 (defn assert-contacts-are-same [expected-contact actual-contact]

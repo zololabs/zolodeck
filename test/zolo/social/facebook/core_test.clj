@@ -2,7 +2,8 @@
   (:use [clojure.test :only [run-tests deftest is are testing]]
         zolodeck.utils.debug
         zolo.scenarios.user
-        conjure.core)
+        conjure.core
+        zolo.test.assertions)
   (:require [zolo.social.facebook.core :as fb-core]
             [zolo.social.core :as social]
             [zolo.social.facebook.gateway :as fb-gateway]
@@ -20,6 +21,6 @@
            params (request-params mickey)
            cookies {}
            canonical-user (social/signup-user params cookies)]
-       (is (= "Mickey" (:user/first-name canonical-user)))
-       (is (= "Mickey" (:identity/first-name (first (:user/user-identities canonical-user)))))))))
+       (assert-basic-user-info mickey canonical-user)
+       (assert-user-identity mickey (first (:user/user-identities canonical-user)))))))
 
