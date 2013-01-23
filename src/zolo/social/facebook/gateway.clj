@@ -17,9 +17,6 @@
    :throw-exceptions false
    :body (uri/form-url-encode body-map)})
 
-(defn- me-url []
-  "https://graph.facebook.com/me")
-
 (defn- user-info-url [user-id]
   (str "https://graph.facebook.com/"  user-id))
 
@@ -104,9 +101,6 @@
 
 (defn user-info [access-token user-id]
   (get-json (user-info-url user-id) access-token {}))
-
-(defn me-info [access-token]
-  (get-json (me-url) access-token {}))
 
 (defn- extended-user-info-fql-for [user-id]
   (str "select uid, first_name, last_name, username, sex, birthday_date, locale, current_location, email, pic_small, pic_big, profile_url from user where uid = '" user-id "'"))
