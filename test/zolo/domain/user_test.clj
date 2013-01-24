@@ -27,6 +27,3 @@
          (is (= 1 (count users)))
          (is (= (:user/guid granted-user) (:user/guid (first users)))))))))
 
-'(deftest test-refresh-user-data
-  (demonic-testing "First time user"
-    ))

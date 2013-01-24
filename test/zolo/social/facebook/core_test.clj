@@ -10,13 +10,13 @@
             [zolo.social.facebook.gateway :as fb-gateway]
             [zolo.social.facebook.messages :as fb-messages]
             [zolodeck.clj-social-lab.facebook.core :as fb-lab]
-            [zolo.personas.core :as personas]))
+            [zolo.personas.factory :as personas]))
 
 (deftest test-signup-user
   (fb-lab/in-facebook-lab
    (stubbing [fb-gateway/extended-user-info personas/fake-extended-user-info]
      (let [mickey (fb-lab/create-user "Mickey" "Mouse")
-           params (personas/request-params mickey)
+           params (personas/request-params mickey true)
            cookies {}
            canonical-user (social/signup-user params cookies)]
        (assert-basic-user-info mickey canonical-user)
