@@ -34,7 +34,7 @@ namespace :datomic do
           cmd = "rm -rf " + Dir.pwd + "/mvn_repo/com/datomic/datomic"
           sh cmd
           info "Updating Datomic Client Libs"
-          cmd = "mvn install:install-file -DgroupId=com.datomic -DartifactId=datomic -Dfile=#{datomic_server_dir}/datomic-free-#{version}.jar -DpomFile=#{datomic_server_dir}/pom.xml -DlocalRepositoryPath=mvn_repo"
+          cmd = "mvn deploy:deploy-file -DgroupId=com.datomic -DartifactId=datomic -Dfile=#{datomic_server_dir}/datomic-free-#{version}.jar -DpomFile=#{datomic_server_dir}/pom.xml -Durl=file:mvn_repo"
           sh cmd
           info "Checkin changes in mvn_repo to github"
           info "Update project.clj to dependent on datomic verion : #{version}"
@@ -53,3 +53,5 @@ Update Datomic in Zolo-repo Project
     
 end
     
+
+

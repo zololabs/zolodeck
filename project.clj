@@ -91,7 +91,6 @@
                     (use 'zolo.utils.readers)
                     (use 'zolodeck.demonic.core)
                     (use 'zolo.test.core-utils)
-                    (use 'zolo.test.core-utils)
                     (use 'zolo.setup.config))
 
   :warn-on-reflection false
@@ -99,8 +98,6 @@
   :repositories {"jboss" "http://repository.jboss.org/nexus/content/groups/public/"
                  "local_repo" ~(str (.toURI (java.io.File. "mvn_repo")))}
   
-  :resources-path "config"
-
   :extra-classpath-dirs [~(str (System/getProperty "user.home") "/.zolo")]
 
   :bootclasspath true
