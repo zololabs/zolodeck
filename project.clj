@@ -15,7 +15,7 @@
 
                  [joda-time "1.6"]
                  [clj-time "0.4.4"]
-                 [slingshot "0.10.2"]
+                 [slingshot "0.10.3"]
 
                  ;; [org.clojars.nakkaya.javax.mail/imap "1.4.3"]
                  ;; [org.clojars.nakkaya.javax.mail/mail "1.4.3"]
@@ -83,15 +83,16 @@
   :test-selectors {:default (fn [t] (not (:integration t)))
                    :integration :integration
                    :all (fn [t] true)}
-  
-  :project-init (do (use 'ring.util.serve) 
-                    (use 'clojure.pprint)
-                    (use 'clojure.test)
-                    (use 'com.georgejahad.difform)
-                    (use 'zolo.utils.readers)
-                    (use 'zolodeck.demonic.core)
-                    (use 'zolo.test.core-utils)
-                    (use 'zolo.setup.config))
+
+  :repl-options {:init-ns zolo.core
+                 :init (do (use 'ring.util.serve) 
+                           (use 'clojure.pprint)
+                           (use 'clojure.test)
+                           (use 'com.georgejahad.difform)
+                           (use 'zolo.utils.readers)
+                           (use 'zolodeck.demonic.core)
+                           (use 'zolo.test.core-utils)
+                           (use 'zolo.setup.config))}
 
   :warn-on-reflection false
   

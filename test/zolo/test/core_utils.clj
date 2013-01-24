@@ -7,6 +7,9 @@
 
 (def ^:dynamic *file-path-prefix* nil)
 
+(zolo.setup.config/setup-config)
+(zolo.setup.datomic-setup/init-datomic)
+
 (defmacro is-not [body]
   `(is (not ~body)))
 

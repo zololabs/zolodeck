@@ -5,15 +5,13 @@
         zolodeck.utils.debug
         zolo.scenario
         zolo.test.web-utils
+        zolo.test.core-utils
         zolo.web.status-codes)
   (:require [zolo.domain.user :as user]
             [zolo.api.user-api :as user-api]))
 
-(zolo.setup.config/setup-config)
-(zolo.setup.datomic-setup/init-datomic)
-
 (deftest test-upsert-user
-  (demonic-testing "New User"
+  '(demonic-testing "New User"
     (-> (new-scenario)
         login-as-valid-facebook-user
         post-new-user
@@ -25,4 +23,6 @@
         assert-user-not-present-in-datomic
         post-new-user
         (was-response-status? (:forbidden STATUS-CODES))
-        assert-user-not-present-in-datomic)))
+        assert-user-not-present-in-datomic))
+
+  )

@@ -1,21 +1,20 @@
 (ns zolo.api.user-api
   (:use zolodeck.utils.debug
         zolodeck.utils.clojure)
-  (:require
-   [zolo.social.core :as social]
-   [sandbar.auth :as sandbar]
-   [zolo.domain.user :as user]
-   [zolo.domain.contact :as contact]
-   [zolo.domain.social-identity :as social-identity]
-   [zolo.domain.user-identity :as user-identity]
-   [zolo.domain.message :as message]
-   [zolo.domain.interaction :as interaction]
-   [zolo.domain.accessors :as dom]   
-   [zolo.stats.activity :as activity]
-   [zolo.social.facebook.chat :as fb-chat]
-   [zolo.social.core :as social-core]
-   [zolo.utils.logger :as logger]
-   [zolodeck.utils.calendar :as zolo-cal]))
+  (:require [zolo.social.core :as social]
+            [sandbar.auth :as sandbar]
+            [zolo.domain.user :as user]
+            [zolo.domain.contact :as contact]
+            [zolo.domain.social-identity :as social-identity]
+            [zolo.domain.user-identity :as user-identity]
+            [zolo.domain.message :as message]
+            [zolo.domain.interaction :as interaction]
+            [zolo.domain.accessors :as dom]   
+            [zolo.stats.activity :as activity]
+            [zolo.social.facebook.chat :as fb-chat]
+            [zolo.social.core :as social-core]
+            [zolo.utils.logger :as logger]
+            [zolodeck.utils.calendar :as zolo-cal]))
 
 ;;TODO (siva) this is an experiment ..need to change this though
 (defn format-user [user new?]

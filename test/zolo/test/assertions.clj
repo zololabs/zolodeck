@@ -4,7 +4,8 @@
         [clojure.test :only [is are]])
   (:require [zolo.social.core :as social]
             [zolo.social.facebook.messages :as fb-messages]
-            [zolodeck.utils.calendar :as zolo-cal]))
+            [zolodeck.utils.calendar :as zolo-cal]
+            [zolodeck.demonic.core :as demonic]))
 
 (defn assert-map-values [m1 m1-keys m2 m2-keys]
   (is (= (count m1-keys) (count m2-keys)) "No of keys don't match")
@@ -60,7 +61,7 @@
 
 ;; Datomic related Ones
 (defn has-datomic-id? [entity]
-  (not (nil? (:db/id entity))))
+  (number? (:db/id entity)))
 
 (defn assert-datomic-id-present [entity]
   (is (has-datomic-id? entity)))
@@ -68,4 +69,12 @@
 (defn assert-datomic-id-not-present [entity]
   (is (not (has-datomic-id? entity))))
 
+(defn datomic-entity-count [a n]
+  (count (demonic/run-query '[:find ?e :in $ ?a :where [?e ?a _]] a)))
+
+(defn assert-datomic-user-count [n]
+  (is (= n (datomic-entity-count :user/guid n))))
+
+(defn assert-datomic-user-identity-count [n]
+  (is (= n (datomic-entity-count :identity/guid n))))
 
