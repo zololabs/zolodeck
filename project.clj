@@ -68,8 +68,6 @@
             [lein-notes "0.0.1"]
             [lein-deploy-app "0.1.0"]]
 
-  :hooks [leiningen.hooks.difftest]
-
   :profiles {:dev {:dependencies [[storm "0.8.2-wip20" :exclusions [org.slf4j/log4j-over-sl4fj
                                                                     org.slf4j/slf4j-log4j12
                                                                     com.netflix.curator/curator-framework]]

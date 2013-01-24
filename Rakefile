@@ -6,7 +6,7 @@ namespace :utils do
   task :m2clean do
     info "Deleting Zolodeck Libs from local m2"
     sh " rm -rf ~/.m2/repository/zolodeck/"
-    sh "lein deps; lein build-checkouts;"
+    sh "lein deps"
   end
 
   desc "Install Lein Plugins needed for this project"
