@@ -2,7 +2,9 @@
   (:use zolodeck.utils.debug
         zolodeck.utils.clojure
         [clojure.test :only [is are]])
-  (:require [zolo.social.core :as social]))
+  (:require [zolo.social.core :as social]
+            [zolo.social.facebook.messages :as fb-messages]
+            [zolodeck.utils.calendar :as zolo-cal]))
 
 (defn assert-map-values [m1 m1-keys m2 m2-keys]
   (is (= (count m1-keys) (count m2-keys)) "No of keys don't match")
@@ -43,6 +45,13 @@
         canonical-contact-keys [:contact/first-name :contact/last-name]]
     (assert-map-values fb-contact fb-contact-keys canonical-contact canonical-contact-keys)
     (assert-social-identity fb-contact (first (:contact/social-identities canonical-contact)))))
+
+(defn assert-message [fb-message canonical-message]
+  (let [fb-message-keys [:attachment :author_id :body :message_id :thread_id :to]
+        canonical-message-keys [:message/attachments :message/from :message/text :message/message-id :message/thread-id :message/to]]
+    (assert-map-values fb-message fb-message-keys canonical-message canonical-message-keys)
+    (is (= :provider/facebook (:message/provider canonical-message)))
+    (is (= (zolo-cal/millis->instant (-> fb-message :created_time (* 1000))) (:message/date canonical-message)))))
 
 ;; Domain Related Ones
 (defn assert-contacts-are-same [expected-contact actual-contact]

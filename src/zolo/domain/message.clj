@@ -30,11 +30,11 @@
                                                  message-identifier
                                                  dom/message-guid))
 
-(defn get-messages-for-user-identity [user-identity last-updated-string]
+(defn get-messages-for-user-identity [user-identity last-updated-seconds]
   (let [{provider :identity/provider
          access-token :identity/auth-token
          provider-uid :identity/provider-uid} user-identity]
-    (social/fetch-messages provider access-token provider-uid last-updated-string)))
+    (social/fetch-messages provider access-token provider-uid last-updated-seconds)))
 
 (defn get-messages-for-user [user]
   (let [date (->> user

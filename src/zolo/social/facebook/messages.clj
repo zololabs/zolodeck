@@ -98,18 +98,16 @@
     (->> (vals threads-info)
          (mapcat #(messages-fql-for-thread auth-token % start-unix-time-stamp))
          (apply hash-map)
-         (process-fql-multi auth-token #(process-thread-result threads-info %1 %2))
-         (domap fb-message->message))))
+         (process-fql-multi auth-token #(process-thread-result threads-info %1 %2)))))
 
 ;; TODO this date needs to be based on last refreshed data
 (defn fetch-feed [auth-token user-id yyyy-MM-dd-string]
   ;(logger/trace "Fetching feed for user-id:" user-id ", from:" yyyy-MM-dd-string)
-  (->> (stream/recent-activity auth-token user-id yyyy-MM-dd-string)
-       (domap fb-post->message)))
+  (stream/recent-activity auth-token user-id yyyy-MM-dd-string))
 
 (defn fetch-all-messages [auth-token user-id date]
-  (concat (fetch-inbox auth-token date)
-          (fetch-feed auth-token user-id date)))
+  (concat (domap fb-message->message (fetch-inbox auth-token date))
+          (domap fb-post->message (fetch-feed auth-token user-id date))))
 
 (defn fetch-all-contact-feeds [access-token last-updated-string provider-uids]
   (->> provider-uids
