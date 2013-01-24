@@ -78,3 +78,9 @@
 (defn assert-datomic-user-identity-count [n]
   (is (= n (datomic-entity-count :identity/guid n))))
 
+(defn assert-datomic-contact-count [n]
+  (is (= n (datomic-entity-count :contact/guid n))))
+
+(defn assert-datomic-social-count [n]
+  (is (= n (datomic-entity-count :social/guid n))))
+

@@ -3,6 +3,7 @@
         conjure.core)
   (:require [zolodeck.clj-social-lab.facebook.core :as fb-lab]
             [zolo.social.facebook.gateway :as fb-gateway]
+            [zolo.social.facebook.messages :as fb-messages]
             [zolo.social.core :as social]
             [zolo.domain.user :as user]
             [zolo.domain.message :as message]))
@@ -29,6 +30,14 @@
 
 (defn fake-fetch-feed [& args]
   [])
+
+(defmacro in-social-lab [& body]
+  `(fb-lab/in-facebook-lab
+    (stubbing [fb-gateway/extended-user-info fake-extended-user-info
+               fb-gateway/friends-list fake-friends-list
+               fb-messages/fetch-inbox fake-fetch-inbox
+               fb-messages/fetch-feed personas/fake-fetch-feed]
+      ~@body)))
 
 (defn create-new-db-user
   ([first-name last-name]
