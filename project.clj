@@ -70,17 +70,17 @@
 
   :hooks [leiningen.hooks.difftest]
 
-  :dev-dependencies [[storm "0.8.2-wip20" :exclusions [org.slf4j/log4j-over-sl4fj
-                                                       org.slf4j/slf4j-log4j12
-                                                       com.netflix.curator/curator-framework]]
-                     [clj-stacktrace "0.2.4"]
-                     [swank-clojure "1.3.3"]
-                     [ring-serve "0.1.2"]
-                     [zolodeck/clj-social-lab "1.0.0-SNAPSHOT"]
-                     [org.clojars.runa/conjure "2.1.1"]
-                     [difform "1.1.2"]]
-  
-  :min-lein-version "1.7.0"
+  :profiles {:dev {:dependencies [[storm "0.8.2-wip20" :exclusions [org.slf4j/log4j-over-sl4fj
+                                                                    org.slf4j/slf4j-log4j12
+                                                                    com.netflix.curator/curator-framework]]
+                                  [clj-stacktrace "0.2.4"]
+                                  [swank-clojure "1.3.3"]
+                                  [ring-serve "0.1.2"]
+                                  [zolodeck/clj-social-lab "1.0.0-SNAPSHOT"]
+                                  [org.clojars.runa/conjure "2.1.1"]
+                                  [difform "1.1.2"]]}}
+
+  :min-lein-version "2.0.0"
 
   :test-selectors {:default (fn [t] (not (:integration t)))
                    :integration :integration
@@ -93,6 +93,7 @@
                     (use 'zolo.utils.readers)
                     (use 'zolodeck.demonic.core)
                     (use 'zolo.test.core-utils)
+                    (use 'zolo.test.core-utils)
                     (use 'zolo.setup.config))
 
   :warn-on-reflection false
@@ -103,6 +104,8 @@
   :resources-path "config"
 
   :extra-classpath-dirs [~(str (System/getProperty "user.home") "/.zolo")]
+
+  :bootclasspath true
 
   :deploy-app {:s3-bucket "s3p://zolodeck/releases/"
                :creds :env}
