@@ -74,20 +74,26 @@
                              [ring-serve "0.1.2"]
                              [zolodeck/clj-social-lab "1.0.0-SNAPSHOT"]
                              [org.clojars.runa/conjure "2.1.1"]
-                             [difform "1.1.2"]]}
+                             [difform "1.1.2"]]
+              :resource-paths [~(str (System/getProperty "user.home") "/.zolo")]}
              :provided
              {:dependencies [[storm "0.8.2-wip20" :exclusions [org.slf4j/log4j-over-sl4fj
                                                                org.slf4j/slf4j-log4j12
                                                                com.netflix.curator/curator-framework]]]}}
 
+  :uberjar-name ~(str "zolodeck-api-"
+                      (or (System/getenv "BUILD_NUMBER") "local")
+                      "-"
+                      (or (System/getenv "BUILD_ID") "")
+                      "-standalone.jar")
+  
   :min-lein-version "2.0.0"
 
   :test-selectors {:default (fn [t] (not (:integration t)))
                    :integration :integration
                    :all (fn [t] true)}
 
-  :repl-options {:init-ns zolo.core
-                 :init (do (use 'ring.util.serve) 
+  :repl-options {:init (do (use 'ring.util.serve) 
                            (use 'clojure.pprint)
                            (use 'clojure.test)
                            (use 'com.georgejahad.difform)
@@ -101,8 +107,6 @@
   :repositories {"jboss" "http://repository.jboss.org/nexus/content/groups/public/"
                  "local_repo" ~(str (.toURI (java.io.File. "mvn_repo")))}
   
-  :extra-classpath-dirs [~(str (System/getProperty "user.home") "/.zolo")]
-
   :bootclasspath true
 
   :deploy-app {:s3-bucket "s3p://zolodeck/releases/"
@@ -113,10 +117,4 @@
   :jvm-opts ["-Xmx1g"
              "-server"
              ;; "-agentpath:/Applications/YourKit_Java_Profiler_11.0.9.app/bin/mac/libyjpagent.jnilib"
-             ]
-
-  :uberjar-name ~(str "zolodeck-api-"
-                      (or (System/getenv "BUILD_NUMBER") "local")
-                      "-"
-                      (or (System/getenv "BUILD_ID") "")
-                      "-standalone.jar"))
+             ])
