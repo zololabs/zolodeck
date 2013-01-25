@@ -11,7 +11,7 @@
             [zolo.api.user-api :as user-api]))
 
 (deftest test-upsert-user
-  '(demonic-testing "New User"
+  (demonic-testing "New User"
     (-> (new-scenario)
         login-as-valid-facebook-user
         post-new-user
