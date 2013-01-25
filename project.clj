@@ -36,7 +36,7 @@
 
                  [org.clojure/tools.cli "0.2.2"]
 
-                 [com.datomic/datomic "0.8.3731"]
+                 [com.datomic/datomic "0.8.3767"]
                  [com.netflix.curator/curator-framework "1.0.1"]
                  [zolodeck/demonic "0.1.0-SNAPSHOT" :exclusions [com.datomic/datomic-free]]
 
@@ -61,12 +61,8 @@
                commons-logging/commons-logging
                org.clojure/tools.logging]
 
-  :plugins [[lein-swank "1.4.4"]
-            [lein-pprint "1.1.1"]
-            [lein-ring "0.6.2"]
-            [lein-difftest "1.3.8"]
-            [lein-notes "0.0.1"]
-            [lein-deploy-app "0.1.0"]]
+  :plugins [[lein-pprint "1.1.1"]
+            [lein-ring "0.6.2"]]
 
   :profiles {:dev
              {:dependencies [[clj-stacktrace "0.2.4"]
@@ -107,7 +103,7 @@
   :repositories {"jboss" "http://repository.jboss.org/nexus/content/groups/public/"
                  "local_repo" ~(str (.toURI (java.io.File. "mvn_repo")))}
   
-  :bootclasspath true
+  :bootclasspath false
 
   :deploy-app {:s3-bucket "s3p://zolodeck/releases/"
                :creds :env}

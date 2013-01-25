@@ -12,7 +12,6 @@ namespace :utils do
   desc "Install Lein Plugins needed for this project"
   task :lein_plugins do
     sh "lein plugin install lein-difftest 1.3.7"
-    sh "lein plugin install lein-notes 0.0.1"
     sh "lein plugin install lein-clojars 0.8.0"
   end
 

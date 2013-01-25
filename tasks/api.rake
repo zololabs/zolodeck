@@ -6,10 +6,10 @@ namespace :api do
     info ("Starting API server in port: " + port)
     info <<-EOS
          If you want to do incremental development. Start the server by 
-            1) rake api:swank
-            2) In slime
+            1) In Emacs
                a) Eval zolo.core
-               b) (do (zolo.setup.datomic-setup/init-datomic)
+               b) (do (zolo.setup.config/setup-config)
+                      (zolo.setup.datomic-setup/init-datomic)
                       (serve-headless zolo.core/app 4000))
     EOS
     sh ("lein run --service api")

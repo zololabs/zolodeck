@@ -11,7 +11,7 @@
  <groupId>com.datomic</groupId>
  <artifactId>datomic-free</artifactId>
  <name>datomic-free</name>
- <version>0.8.3731</version>
+ <version>0.8.3767</version>
  <organization>
   <name>Metadata Partners, LLC</name>
   <url>http://datomic.com</url>
