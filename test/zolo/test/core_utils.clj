@@ -19,6 +19,14 @@
 (defn now-for-test []
   (timestamp-for-test (System/currentTimeMillis)))
 
+(defmacro demonic-integration-testing [doc & body]
+  `(testing ~doc
+     (zolo.setup.datomic-setup/reset)
+     (try
+       ~@body
+       (finally
+        (zolo.setup.datomic-setup/reset)))))
+
 (defn run-all-zolo-tests 
   ([dir]
      (binding [*file-path-prefix* dir

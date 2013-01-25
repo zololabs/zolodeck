@@ -8,7 +8,7 @@
   (:require [zolo.domain.user :as user]
             [zolo.web.fb-auth :as fb-auth]
             [clojure.data.json :as json]
-            [zolo.test.assertions :as assertions]))
+            [zolo.test.assertions.datomic :as db-assert]))
 
 (defn new-scenario []
   {:datomic true})
@@ -42,10 +42,10 @@
   scenario)
 
 (defn assert-user-present-in-datomic [scenario]
-  (assert-user-in-datomic scenario assertions/assert-datomic-id-present))
+  (assert-user-in-datomic scenario db-assert/assert-datomic-id-present))
 
 (defn assert-user-not-present-in-datomic [scenario]
-  (assert-user-in-datomic scenario assertions/assert-datomic-id-not-present))
+  (assert-user-in-datomic scenario db-assert/assert-datomic-id-not-present))
 
 (defn jsonify-body-if-needed [response]
   (if (not (empty? (:body response)))

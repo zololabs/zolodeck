@@ -89,7 +89,9 @@
                    :integration :integration
                    :all (fn [t] true)}
 
-  :repl-options {:init (do (use 'ring.util.serve) 
+  :repl-options {:init-ns zolo.core
+                 :init (do (use 'zolo.core)
+                           (use 'ring.util.serve) 
                            (use 'clojure.pprint)
                            (use 'clojure.test)
                            (use 'com.georgejahad.difform)
