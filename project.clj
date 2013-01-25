@@ -52,9 +52,9 @@
                org.slf4j/slf4j-log4j12
                org.slf4j/slf4j-api
                org.slf4j/slf4j-nop
-               org.slf4j/log4j-over-slf4j
-               org.slf4j/jcl-over-slf4j
-               org.slf4j/jul-to-slf4j
+               ;org.slf4j/log4j-over-slf4j
+               ;org.slf4j/jcl-over-slf4j
+               ;org.slf4j/jul-to-slf4j
                log4j/log4j
                log4j
                clj-time
