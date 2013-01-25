@@ -22,7 +22,7 @@
 
                  [org.clojars.amit/zolo_fb_chat "0.0.1"]
                  
-                 [org.clojure/core.match "0.2.0-alpha9"]
+                 [org.clojure/core.match "0.2.0-alpha11"]
 
                  [org.scribe/scribe "1.3.2"] ;;oauth for LinkedIn
 
@@ -52,7 +52,8 @@
                org.slf4j/slf4j-log4j12
                org.slf4j/slf4j-api
                org.slf4j/slf4j-nop
-               org.slf4j/log4j-over-sl4f
+               org.slf4j/log4j-over-slf4j
+               org.slf4j/jcl-over-slf4j
                org.slf4j/jul-to-slf4j
                log4j/log4j
                log4j
@@ -66,7 +67,6 @@
 
   :profiles {:dev
              {:dependencies [[clj-stacktrace "0.2.4"]
-                             [swank-clojure "1.3.3"]
                              [ring-serve "0.1.2"]
                              [zolodeck/clj-social-lab "1.0.0-SNAPSHOT"]
                              [org.clojars.runa/conjure "2.1.1"]
