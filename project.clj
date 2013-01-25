@@ -117,5 +117,6 @@
 
   :uberjar-name ~(str "zolodeck-api-"
                       (or (System/getenv "BUILD_NUMBER") "local")
+                      "-"
                       (or (System/getenv "BUILD_ID") "")
                       "-standalone.jar"))
