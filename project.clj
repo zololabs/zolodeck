@@ -68,15 +68,17 @@
             [lein-notes "0.0.1"]
             [lein-deploy-app "0.1.0"]]
 
-  :profiles {:dev {:dependencies [[storm "0.8.2-wip20" :exclusions [org.slf4j/log4j-over-sl4fj
-                                                                    org.slf4j/slf4j-log4j12
-                                                                    com.netflix.curator/curator-framework]]
-                                  [clj-stacktrace "0.2.4"]
-                                  [swank-clojure "1.3.3"]
-                                  [ring-serve "0.1.2"]
-                                  [zolodeck/clj-social-lab "1.0.0-SNAPSHOT"]
-                                  [org.clojars.runa/conjure "2.1.1"]
-                                  [difform "1.1.2"]]}}
+  :profiles {:dev
+             {:dependencies [[clj-stacktrace "0.2.4"]
+                             [swank-clojure "1.3.3"]
+                             [ring-serve "0.1.2"]
+                             [zolodeck/clj-social-lab "1.0.0-SNAPSHOT"]
+                             [org.clojars.runa/conjure "2.1.1"]
+                             [difform "1.1.2"]]}
+             :provided
+             {:dependencies [[storm "0.8.2-wip20" :exclusions [org.slf4j/log4j-over-sl4fj
+                                                               org.slf4j/slf4j-log4j12
+                                                               com.netflix.curator/curator-framework]]]}}
 
   :min-lein-version "2.0.0"
 
@@ -112,5 +114,8 @@
              "-server"
              ;; "-agentpath:/Applications/YourKit_Java_Profiler_11.0.9.app/bin/mac/libyjpagent.jnilib"
              ]
-  
-  :repl-retry-limit 1000)
+
+  :uberjar-name ~(str "zolodeck-api-"
+                      (or (System/getProperty "BUILD_NUMBER") "local")
+                      (or (System/getProperty "BUILD_ID") "")
+                      "-standalone.jar"))
