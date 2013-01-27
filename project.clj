@@ -63,7 +63,8 @@
                org.clojure/tools.logging]
 
   :plugins [[lein-pprint "1.1.1"]
-            [lein-ring "0.6.2"]]
+            [lein-ring "0.6.2"]
+            [lein-cloverage "1.0.2"]]
 
   :profiles {:dev
              {:dependencies [[clj-stacktrace "0.2.4"]

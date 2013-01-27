@@ -54,3 +54,52 @@
          (d-assert/contacts-are-same daisy db-daisy)
          (d-assert/contacts-are-same donald db-donald)
          (d-assert/contacts-are-same minnie db-minnie))))))
+
+
+(deftest test-mute-contact
+  (demonic-testing "Muting a contact"
+    (personas/in-social-lab
+     (let [mickey (fb-lab/create-user "Mickey" "Mouse")
+           donald (fb-lab/create-friend "Donald" "Duck")
+           goofy (fb-lab/create-friend "Goofy" "Dog")
+           db-mickey (user/signup-new-user (create-social-user mickey))]
+
+       (fb-lab/make-friend mickey donald)
+       (fb-lab/make-friend mickey goofy)
+       
+       (fb-lab/login-as mickey)
+
+       (contact/update-contacts (user/reload db-mickey))       
+       
+       (let [[db-donald db-goofy] (sort-by :contact/first-name (:user/contacts (user/reload db-mickey)))]
+         (contact/set-muted db-goofy true)
+         (d-assert/contact-is-muted (contact/reload db-goofy))
+         (d-assert/contact-is-not-muted (contact/reload db-donald))))))
+
+  (demonic-integration-testing "Muting, then updating"
+    (personas/in-social-lab
+     (let [mickey (fb-lab/create-user "Mickey" "Mouse")
+           donald (fb-lab/create-friend "Donald" "Duck")
+           goofy (fb-lab/create-friend "Goofy" "Dog")
+           db-mickey (in-demarcation (user/signup-new-user (create-social-user mickey)))]
+
+       (fb-lab/make-friend mickey goofy)
+       
+       (fb-lab/login-as mickey)
+
+       (in-demarcation (contact/update-contacts (user/reload db-mickey)))
+       
+       (in-demarcation
+        (let [db-goofy (first (:user/contacts (user/reload db-mickey)))]
+          (contact/set-muted db-goofy true)
+          (d-assert/contact-is-muted (contact/reload db-goofy))))
+
+       (fb-lab/make-friend mickey donald)
+       (in-demarcation (contact/update-contacts (user/reload db-mickey)))
+
+       (in-demarcation (user/update-scores (user/reload db-mickey)))
+
+       (in-demarcation
+        (let [[db-donald db-goofy] (sort-by :contact/first-name (print-vals (:user/contacts (user/reload db-mickey))))]
+          (d-assert/contact-is-muted (contact/reload db-goofy))
+          (d-assert/contact-is-not-muted (contact/reload db-donald))))))))

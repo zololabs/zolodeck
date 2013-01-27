@@ -22,3 +22,9 @@
                      db-contact [:contact/first-name :contact/last-name])
 
   (social-identities-are-same fb-contact (first (:contact/social-identities db-contact))))
+
+(defn contact-is-muted [db-contact]
+  (is (:contact/muted db-contact) (str (:contact/first-name db-contact) " is not muted!")))
+
+(defn contact-is-not-muted [db-contact]
+  (is (not (:contact/muted db-contact)) (str (:contact/first-name db-contact) " is muted!")))
