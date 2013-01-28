@@ -100,7 +100,7 @@
        (in-demarcation (user/update-scores (user/reload db-mickey)))
 
        (in-demarcation
-        (let [[db-donald db-goofy] (sort-by :contact/first-name (print-vals (:user/contacts (user/reload db-mickey))))]
+        (let [[db-donald db-goofy] (sort-by :contact/first-name (:user/contacts (user/reload db-mickey)))]
           (d-assert/contact-is-muted (contact/reload db-goofy))
           (d-assert/contact-is-not-muted (contact/reload db-donald))))))))
 
