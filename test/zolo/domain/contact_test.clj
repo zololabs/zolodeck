@@ -103,3 +103,32 @@
         (let [[db-donald db-goofy] (sort-by :contact/first-name (print-vals (:user/contacts (user/reload db-mickey))))]
           (d-assert/contact-is-muted (contact/reload db-goofy))
           (d-assert/contact-is-not-muted (contact/reload db-donald))))))))
+
+(deftest test-update-contacts-repeatedly
+  (demonic-integration-testing  "Returning User"
+    (personas/in-social-lab
+     (let [mickey (fb-lab/create-user "Mickey" "Mouse")
+           donald (fb-lab/create-friend "Donald" "Duck")
+           minnie (fb-lab/create-friend "Minnie" "Mouse")
+           db-mickey (in-demarcation (user/signup-new-user (create-social-user mickey)))]
+
+       (fb-lab/make-friend mickey donald)
+       
+       (fb-lab/login-as mickey)
+
+       (in-demarcation
+        (contact/update-contacts (user/reload db-mickey)))
+
+       (in-demarcation
+        (fb-lab/make-friend mickey minnie)
+        (contact/update-contacts (user/reload db-mickey)))
+
+       (in-demarcation
+        (is (= 2 (count (versions db-mickey :user/contacts)))))
+
+       (dotimes [n 100]
+         (in-demarcation
+          (contact/update-contacts (user/reload db-mickey))))
+       
+       (in-demarcation
+        (is (= 2 (count (versions db-mickey :user/contacts)))))))))
