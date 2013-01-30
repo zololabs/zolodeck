@@ -47,3 +47,10 @@
     (is (= :provider/facebook (:message/provider canonical-message)))
     (is (= (zolo-cal/millis->instant (-> fb-message :created_time (* 1000))) (:message/date canonical-message)))))
 
+(defn assert-feed [fb-feed canonical-feed]
+  (let [fb-feed-keys [:id :from :created_time :message :story :to :picture :link :icon]
+        canonical-feed-keys [:message/message-id :message/from :message/date :message/text :message/story :message/to :message/picture :message/link :message/icon]]
+    (assert-map-values fb-feed fb-feed-keys canonical-feed canonical-feed-keys)
+    (is (= :provider/facebook (:message/provider canonical-feed)))
+    (is (= (zolo-cal/millis->instant (-> fb-feed :created_time (* 1000))) (:message/date canonical-feed)))))
+

@@ -6,6 +6,7 @@
   (:require [zolo.social.facebook.core :as fb-core]
             [zolo.social.core :as social]
             [zolo.domain.message :as message]
+            [zolo.domain.accessors :as dom]
             [zolo.social.facebook.gateway :as fb-gateway]
             [zolo.social.facebook.messages :as fb-messages]
             [zolodeck.clj-social-lab.facebook.core :as fb-lab]
@@ -56,10 +57,30 @@
            m4 (fb-lab/send-message mickey daisy "2" "Hi, how's  it going?" "2012-06-01")
            m5 (fb-lab/send-message daisy mickey "2" "Good, I finished writing the tests" "2012-06-02")]
        
-       (let [fb-messages (sort-by :message/date (social/fetch-messages :provider/facebook (:access-token mickey) (:uid mickey) message/MESSAGES-START-TIME-SECONDS))]
+       (let [fb-messages (sort-by dom/message-date (social/fetch-messages :provider/facebook (:access-token mickey) (:uid mickey) message/MESSAGES-START-TIME-SECONDS))]
          (c-assert/assert-message m1 (nth fb-messages 0))
          (c-assert/assert-message m2 (nth fb-messages 1))
          (c-assert/assert-message m3 (nth fb-messages 2))
          (c-assert/assert-message m4 (nth fb-messages 3))
          (c-assert/assert-message m5 (nth fb-messages 4)))))))
+
+
+;; (deftest test-fetch-feeds
+;;   (personas/in-social-lab
+;;    (let [mickey (fb-lab/create-user "Mickey" "Mouse")
+;;          donald (fb-lab/create-user "Donald" "Duck")
+;;          daisy (fb-lab/create-user "Daisy" "Duck")]
+     
+;;      (fb-lab/login-as mickey)
+     
+;;      (fb-lab/make-friend mickey donald)
+;;      (fb-lab/make-friend mickey daisy)
+
+;;      (let [f1 (fb-lab/post-to-wall mickey donald "hey check this link out" "2012-05-01")
+;;            f2 (fb-lab/post-to-wall mickey daisy "happy birthday" "2012-05-02")
+;;            f3 (fb-lab/post-to-wall daisy donald "check this picture" "2012-06-02")]
+       
+;;        (let [[donald1 donald3] (print-vals (sort-by dom/message-date (social/fetch-feed :provider/facebook (:access-token mickey) (:uid donald) message/MESSAGES-START-TIME-SECONDS)))]
+;;          (c-assert/assert-feed f1 donald1)
+;;          (c-assert/assert-feed f3 donald3))))))
 

@@ -28,3 +28,14 @@
 
 (defn contact-is-not-muted [db-contact]
   (is (not (:contact/muted db-contact)) (str (:contact/first-name db-contact) " is muted!")))
+
+
+(defn messages-are-same [fb-message db-message]
+  (let [fb-message-keys [:author_id :body :message_id :thread_id :to]
+        db-message-keys [:message/from :message/text :message/message-id :message/thread-id :message/to]]
+    (assert-map-values fb-message fb-message-keys db-message db-message-keys)
+    (is (= :provider/facebook (:message/provider db-message)))
+    (is (= (zolo-cal/millis->instant (-> fb-message :created_time (* 1000))) (:message/date db-message)))
+    (if (empty? (:attachment fb-message))
+      (is (nil? (:message/attachments db-message)))
+      (is (same-value? (:attachment fb-message) (:message/attachments db-message))))))

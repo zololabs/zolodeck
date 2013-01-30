@@ -15,6 +15,7 @@
             [zolo.setup.datomic-setup :as datomic-setup]
             [zolodeck.clj-social-lab.facebook.core :as fb-lab]))
 
+;;TODO Duplicate Function
 (defn create-social-user [fb-user]
   (-> fb-user
       (personas/request-params true)
@@ -95,13 +96,15 @@
           (d-assert/contact-is-muted (contact/reload db-goofy))))
 
        (fb-lab/make-friend mickey donald)
+       (fb-lab/update-user (:id goofy) {:first_name "Giify"})       
        (in-demarcation (contact/update-contacts (user/reload db-mickey)))
 
        (in-demarcation (user/update-scores (user/reload db-mickey)))
 
        (in-demarcation
-        (let [[db-donald db-goofy] (sort-by :contact/first-name (:user/contacts (user/reload db-mickey)))]
-          (d-assert/contact-is-muted (contact/reload db-goofy))
+        (let [[db-donald db-giify] (sort-by :contact/first-name (:user/contacts (user/reload db-mickey)))]
+          (d-assert/contact-is-muted (contact/reload db-giify))
+          (is (= "Giify" (:social/first-name (first (:contact/social-identities db-giify)))))
           (d-assert/contact-is-not-muted (contact/reload db-donald))))))))
 
 (deftest test-update-contacts-repeatedly

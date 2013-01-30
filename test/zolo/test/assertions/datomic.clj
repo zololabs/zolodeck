@@ -33,3 +33,6 @@
 (defn assert-datomic-social-count [n]
   (is (= n (datomic-entity-count :social/guid n))))
 
+(defn assert-datomic-message-count [n]
+  (is (= n (datomic-entity-count :message/guid n))))
+

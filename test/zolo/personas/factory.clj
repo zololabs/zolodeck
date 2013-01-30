@@ -29,6 +29,8 @@
       fb-lab/fetch-messages))
 
 (defn fake-fetch-feed [& args]
+ ; (-> (fb-lab/current-user)
+ ;     fb-lab/fetch-feeds)
   [])
 
 (defmacro in-social-lab [& body]
@@ -36,7 +38,7 @@
     (stubbing [fb-gateway/extended-user-info fake-extended-user-info
                fb-gateway/friends-list fake-friends-list
                fb-messages/fetch-inbox fake-fetch-inbox
-               fb-messages/fetch-feed personas/fake-fetch-feed]
+               fb-messages/fetch-feed fake-fetch-feed]
       ~@body)))
 
 (defn create-new-db-user
