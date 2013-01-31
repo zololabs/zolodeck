@@ -6,7 +6,8 @@
   (:require [zolo.social.core :as social]
             [zolo.social.facebook.messages :as fb-messages]
             [zolodeck.utils.calendar :as zolo-cal]
-            [zolodeck.demonic.core :as demonic]))
+            [zolodeck.demonic.core :as demonic]
+            [clj-time.coerce :as ctc]))
 
 (defn assert-basic-user-info [fb-user canonical-user]
   (let [fb-user-keys [:first_name :last_name :uid]
@@ -48,9 +49,13 @@
     (is (= (zolo-cal/millis->instant (-> fb-message :created_time (* 1000))) (:message/date canonical-message)))))
 
 (defn assert-feed [fb-feed canonical-feed]
-  (let [fb-feed-keys [:id :from :created_time :message :story :to :picture :link :icon]
-        canonical-feed-keys [:message/message-id :message/from :message/date :message/text :message/story :message/to :message/picture :message/link :message/icon]]
+  (let [fb-feed-keys [:id :message :story :picture :link :icon]
+        canonical-feed-keys [:message/message-id  :message/text :message/story :message/picture :message/link :message/icon]]
     (assert-map-values fb-feed fb-feed-keys canonical-feed canonical-feed-keys)
     (is (= :provider/facebook (:message/provider canonical-feed)))
-    (is (= (zolo-cal/millis->instant (-> fb-feed :created_time (* 1000))) (:message/date canonical-feed)))))
+    (is (= (-> fb-feed :from :id)  (:message/from canonical-feed)))
+    (is (= (->> fb-feed :to :data (map :id))  (:message/to canonical-feed)))
+    ;;TODO Need to do this check
+    ;;(is (= (ctc/to-date (:created_time fb-feed)) (:message/date canonical-feed)))
+    ))
 

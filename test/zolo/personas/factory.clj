@@ -4,6 +4,7 @@
   (:require [zolodeck.clj-social-lab.facebook.core :as fb-lab]
             [zolo.social.facebook.gateway :as fb-gateway]
             [zolo.social.facebook.messages :as fb-messages]
+            [zolo.social.facebook.stream :as fb-stream]
             [zolo.social.core :as social]
             [zolo.domain.user :as user]
             [zolo.domain.message :as message]))
@@ -28,17 +29,15 @@
   (-> (fb-lab/current-user)
       fb-lab/fetch-messages))
 
-(defn fake-fetch-feed [& args]
- ; (-> (fb-lab/current-user)
- ;     fb-lab/fetch-feeds)
-  [])
+(defn fake-fetch-feed [access-token contact-id yyyy-MM-dd-string]
+ (fb-lab/fetch-feeds (fb-lab/get-user contact-id)))
 
 (defmacro in-social-lab [& body]
   `(fb-lab/in-facebook-lab
     (stubbing [fb-gateway/extended-user-info fake-extended-user-info
                fb-gateway/friends-list fake-friends-list
                fb-messages/fetch-inbox fake-fetch-inbox
-               fb-messages/fetch-feed fake-fetch-feed]
+               fb-stream/recent-activity fake-fetch-feed]
       ~@body)))
 
 (defn create-new-db-user

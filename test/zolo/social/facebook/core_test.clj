@@ -65,22 +65,22 @@
          (c-assert/assert-message m5 (nth fb-messages 4)))))))
 
 
-;; (deftest test-fetch-feeds
-;;   (personas/in-social-lab
-;;    (let [mickey (fb-lab/create-user "Mickey" "Mouse")
-;;          donald (fb-lab/create-user "Donald" "Duck")
-;;          daisy (fb-lab/create-user "Daisy" "Duck")]
+(deftest test-fetch-feeds
+  (personas/in-social-lab
+   (let [mickey (fb-lab/create-user "Mickey" "Mouse")
+         donald (fb-lab/create-user "Donald" "Duck")
+         daisy (fb-lab/create-user "Daisy" "Duck")]
      
-;;      (fb-lab/login-as mickey)
+     (fb-lab/login-as mickey)
      
-;;      (fb-lab/make-friend mickey donald)
-;;      (fb-lab/make-friend mickey daisy)
+     (fb-lab/make-friend mickey donald)
+     (fb-lab/make-friend mickey daisy)
 
-;;      (let [f1 (fb-lab/post-to-wall mickey donald "hey check this link out" "2012-05-01")
-;;            f2 (fb-lab/post-to-wall mickey daisy "happy birthday" "2012-05-02")
-;;            f3 (fb-lab/post-to-wall daisy donald "check this picture" "2012-06-02")]
+     (let [f1 (fb-lab/post-to-wall mickey donald "hey check this link out" "2012-05-01")
+           f2 (fb-lab/post-to-wall mickey daisy "happy birthday" "2012-05-02")
+           f3 (fb-lab/post-to-wall daisy donald "check this picture" "2012-06-02")]
        
-;;        (let [[donald1 donald3] (print-vals (sort-by dom/message-date (social/fetch-feed :provider/facebook (:access-token mickey) (:uid donald) message/MESSAGES-START-TIME-SECONDS)))]
-;;          (c-assert/assert-feed f1 donald1)
-;;          (c-assert/assert-feed f3 donald3))))))
+       (let [[donald1 donald3] (sort-by dom/message-date (social/fetch-feed :provider/facebook (:access-token mickey) (:uid donald) message/MESSAGES-START-TIME-SECONDS))]
+         (c-assert/assert-feed f1 donald1)
+         (c-assert/assert-feed f3 donald3))))))
 
