@@ -1,7 +1,8 @@
 (ns zolo.domain.contact
   (:use zolo.setup.datomic-setup        
         zolo.utils.domain
-        zolodeck.utils.debug)
+        zolodeck.utils.debug
+        [slingshot.slingshot :only [throw+ try+]])
   (:require [zolodeck.utils.string :as zolo-str]
             [zolodeck.utils.maps :as zolo-maps]
             [zolodeck.utils.calendar :as zolo-cal]
@@ -78,7 +79,6 @@
     (-> (assoc user :user/contacts updated-contacts)
         demonic/insert)))
 
-
 (defn update-score [ibc c]
   (-> (assoc c :contact/score (score/calculate ibc c))
       demonic/insert))
@@ -95,4 +95,67 @@
 
 (defn is-contacted-on? [ibc c dt]
   (zolo-cal/same-day-instance? dt (dom/message-date-in-tz (last-send-message ibc c) (zolo-cal/time-zone-offset dt))))
+
+
+(defn contact-score [c]
+  (or (:contact/score c) 0))
+
+(defn contacts-with-score-between [u lower upper]
+  (->> (filter #(and (>= (contact-score %) lower) (<= (contact-score %) upper)) (:user/contacts u))
+       (sort-by :contact/score)
+       reverse))
+
+(defn strong-contacts
+  ([u]
+     (contacts-with-score-between u 301 1000000))
+  ([u number]
+     (take number (strong-contacts u))))
+
+(defn medium-contacts
+  ([u]
+     (contacts-with-score-between u 61 300))
+  ([u number]
+     (take number (medium-contacts u))))
+
+(defn weak-contacts
+  ([u]
+     (contacts-with-score-between u 0 60))
+  ([u number]
+     (take number (weak-contacts u))))
+
+(defn contacts-of-strength [u strength-as-keyword]
+  (condp = strength-as-keyword
+    :strong (strong-contacts u)
+    :medium (medium-contacts u)
+    :weak (weak-contacts u)
+    (throw+ {:type :severe :message (str "Unknown contact strength:" strength-as-keyword)})))
+
+(defn- apply-selectors [selectors user]
+  (if (empty? selectors)
+    (:user/contacts user)
+    (->> selectors
+         distinct
+         (map #(contacts-of-strength user %))
+         (apply concat))))
+
+(defn- apply-tags [tags contacts]
+  contacts)
+
+
+(defn- apply-offset [offset contacts]
+  (if offset
+    (drop offset contacts)
+    contacts))
+
+(defn- apply-limit [limit contacts]
+  (if limit
+    (take limit contacts)
+    contacts))
+
+(defn list-contacts [user options]
+  (let [{:keys [selectors tags offset limit]} options]
+    (->> (apply-selectors selectors user)
+         (apply-tags tags)
+         (apply-offset offset)
+         (apply-limit limit))))
 

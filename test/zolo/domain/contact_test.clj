@@ -135,3 +135,64 @@
        
        (in-demarcation
         (is (= 2 (count (versions db-mickey :user/contacts)))))))))
+
+(defn assert-all-contacts-are [strength-as-keyword contacts]
+  (is (every? #(.contains (:contact/first-name %) (name strength-as-keyword))
+              contacts)
+      (str "Not all contacts are " strength-as-keyword)))
+
+(defn assert-no-contacts-are [strength-as-keyword contacts]
+  (is (not (some #(.contains (:contact/first-name %) (name strength-as-keyword))
+                  contacts))
+      (str "Unexpectedly found contact of strength " strength-as-keyword)))
+
+(demonictest test-contact-list
+  (personas/in-social-lab
+     (let [mickey (fb-lab/create-user "Mickey" "Mouse")
+           db-mickey (user/signup-new-user (create-social-user mickey))
+           strong-friends (fb-lab/create-friends "strong" 10)
+           medium-friends (fb-lab/create-friends "medium" 20)
+           weak-friends (fb-lab/create-friends "weak" 30)
+           all-friends (concat strong-friends medium-friends weak-friends)]
+
+       (doseq [f all-friends]
+         (fb-lab/make-friend mickey f))
+       
+       (fb-lab/login-as mickey)
+       
+       (contact/update-contacts (user/reload db-mickey))
+
+       (stubbing [contact/contact-score (fn [c]
+                                          (let [fname (:contact/first-name c)]
+                                            (cond 
+                                             (.contains fname "strong") 500
+                                             (.contains fname "medium") 200
+                                             (.contains fname "weak") 50
+                                             :else 0)))]
+         
+         (testing "No Selectors should return all contacts"
+           (is (= 60 (count (contact/list-contacts (user/reload db-mickey) {})))))
+
+         (testing "Selectors should return only Selected contacts"
+           (is (= 10 (count (contact/list-contacts (user/reload db-mickey) {:selectors [:strong]}))))
+           (assert-all-contacts-are :strong (contact/list-contacts (user/reload db-mickey) {:selectors [:strong]}))
+           
+           (is (= 20 (count (contact/list-contacts (user/reload db-mickey) {:selectors [:medium]}))))
+           (assert-all-contacts-are :medium (contact/list-contacts (user/reload db-mickey) {:selectors [:medium]}))
+           
+           (is (= 30 (count (contact/list-contacts (user/reload db-mickey) {:selectors [:weak]}))))
+           (assert-all-contacts-are :weak (contact/list-contacts (user/reload db-mickey) {:selectors [:weak]}))
+           
+           (is (= 30 (count (contact/list-contacts (user/reload db-mickey) {:selectors [:strong :medium]}))))
+           (assert-no-contacts-are :weak (contact/list-contacts (user/reload db-mickey) {:selectors [:strong :medium]}))
+
+           (is (= 40 (count (contact/list-contacts (user/reload db-mickey) {:selectors [:strong :weak]}))))
+           (assert-no-contacts-are :medium (contact/list-contacts (user/reload db-mickey) {:selectors [:strong :weak]}))
+
+           (is (= 10 (count (contact/list-contacts (user/reload db-mickey) {:selectors [:strong :strong]})))))
+
+
+         (testing "Pagingation"
+           (is (= 5 (count (contact/list-contacts (user/reload db-mickey) {:selectors [:strong] :limit 5}))))
+           (is (= 10 (count (contact/list-contacts (user/reload db-mickey) {:selectors [:strong] :limit 50}))))           
+           (is (= 5 (count (contact/list-contacts (user/reload db-mickey) {:selectors [] :limit 50 :offset 55})))))))))

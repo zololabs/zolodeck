@@ -14,14 +14,6 @@
             [clj-time.core :as time]
             [clj-time.coerce :as ctc]))
 
-(defn contact-score [c]
-  (or (:contact/score c) 0))
-
-(defn contacts-with-score-between [u lower upper]
-  (->> (filter #(and (>= (contact-score %) lower) (<= (contact-score %) upper)) (:user/contacts u))
-       (sort-by :contact/score)
-       reverse))
-
 (defn not-contacted-for-days [imbc days]
   (let [now (zolo-cal/now-joda)
         selector-fn (fn [c msgs]
@@ -35,29 +27,11 @@
         last-contacted-in (zolo-maps/select-keys-if imbc selector-fn)]
     (keys last-contacted-in)))
 
-(defn strong-contacts
-  ([u]
-     (contacts-with-score-between u 301 1000000))
-  ([u number]
-     (take number (strong-contacts u))))
-
-(defn medium-contacts
-  ([u]
-     (contacts-with-score-between u 61 300))
-  ([u number]
-     (take number (medium-contacts u))))
-
-(defn weak-contacts
-  ([u]
-     (contacts-with-score-between u 0 60))
-  ([u number]
-     (take number (weak-contacts u))))
-
 (defn network-stats [u imbc]
   {:total  (count (:user/contacts u))
-   :strong (count (strong-contacts u))
-   :medium (count (medium-contacts u))
-   :weak   (count (weak-contacts u))
+   :strong (count (contact/strong-contacts u))
+   :medium (count (contact/medium-contacts u))
+   :weak   (count (contact/weak-contacts u))
    :quartered (count (not-contacted-for-days imbc 90))})
 
 (defn forgotten-contacts [ibc number]
@@ -126,10 +100,10 @@
     (domap #(format-suggested-contact client-date ibc %) contacts)))
 
 (defn other-stats [u ibc client-date]
-  (merge {:averagescore (zolo-math/average (map contact-score (:user/contacts u)))
+  (merge {:averagescore (zolo-math/average (map contact/contact-score (:user/contacts u)))
           :messagecount (count (:user/messages u))
-          :strong-contacts (domap #(fe/format-contact ibc %) (strong-contacts u 5))   
-          :weak-contacts (domap #(fe/format-contact ibc %) (weak-contacts u 5))
+          :strong-contacts (domap #(fe/format-contact ibc %) (contact/strong-contacts u 5))   
+          :weak-contacts (domap #(fe/format-contact ibc %) (contact/weak-contacts u 5))
           :connect-soon (connect-soon-contacts u ibc client-date)
           :never-contacted (domap #(fe/format-contact ibc %) (forgotten-contacts ibc 5))
           :all-week-interaction-count (all-interaction-count-in-the-past ibc 7)
