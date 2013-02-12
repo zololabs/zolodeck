@@ -11,7 +11,7 @@
  <groupId>com.datomic</groupId>
  <artifactId>datomic-pro</artifactId>
  <name>datomic-pro</name>
- <version>0.8.3767</version>
+ <version>0.8.3789</version>
  <organization>
   <name>Metadata Partners, LLC</name>
   <url>http://datomic.com</url>
@@ -27,13 +27,14 @@
   </dependency>
   <dependency>
    <groupId>org.clojure</groupId>
-   <artifactId>data.json</artifactId>
-   <version>0.1.2</version>
-  </dependency>
-  <dependency>
-   <groupId>org.clojure</groupId>
    <artifactId>tools.cli</artifactId>
    <version>0.2.2</version>
+   <exclusions>
+    <exclusion>
+     <groupId>org.clojure</groupId>
+     <artifactId>clojure</artifactId>
+    </exclusion>
+   </exclusions>
   </dependency>
   <dependency>
    <groupId>org.fressian</groupId>
