@@ -75,6 +75,7 @@
 
 (defn update-contacts [user]
   (let [fresh-cs (fresh-contacts user)
+        _ (logger/debug "Facebook returned" (count fresh-cs) "contacts for" (:user/first-name user))
         updated-contacts (map #(update-contact user  %) fresh-cs)]
     (-> (assoc user :user/contacts updated-contacts)
         demonic/insert)))

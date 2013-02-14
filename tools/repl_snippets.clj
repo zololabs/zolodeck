@@ -8,3 +8,12 @@
     (zolo.setup.datomic-setup/init-datomic))
 
 (in-demarcation (def siva (nth (u/find-all-users) 1)))
+
+
+(defn loade [eid] (in-demarcation (db/touch (db/entity @zolodeck.demonic.helper/DATOMIC-DB eid))))
+
+
+
+(defn deets [triples]
+        (let [g (group-by last triples)]
+          [(:db/txInstant (loade (ffirst triples))) (ffirst triples) (count (g true)) (count (g false))]))
