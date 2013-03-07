@@ -28,6 +28,37 @@
        (db-assert/assert-datomic-user-count 1)
        (db-assert/assert-datomic-user-identity-count 1)))))
 
+(deftest test-update-creds
+  (demonic-integration-testing "Contact Count should not change when user logs in again"
+    (personas/in-social-lab
+     (let [mickey (fb-lab/create-user "Mickey" "Mouse")
+           donald (fb-lab/create-friend "Donald" "Duck")
+           daisy (fb-lab/create-friend "Daisy" "Duck")
+           minnie (fb-lab/create-friend "Minnie" "Mouse")
+           db-mickey (in-demarcation (user/signup-new-user (create-social-user mickey)))]
+
+       (fb-lab/make-friend mickey donald)
+       (fb-lab/make-friend mickey daisy)
+       (fb-lab/make-friend mickey minnie)
+       
+       (fb-lab/login-as mickey)
+
+       (in-demarcation
+        (contact/update-contacts (user/reload db-mickey))
+        (db-assert/assert-datomic-contact-count 3))
+
+       (in-demarcation
+        (is (= 3 (count (:user/contacts (user/reload db-mickey)))) "No of contacts should not change"))
+
+       (dotimes [n 100]
+         (in-demarcation
+          (user/update-creds (user/reload db-mickey) {:access-token "1000"})
+          (user/update-permissions-granted (user/reload db-mickey) ([true false] (rand-int 2))))
+
+         (in-demarcation
+          (is (= 3 (count (:user/contacts (user/reload db-mickey)))) "No of contacts should not change")
+          (is (= 1 (count (versions (user/reload db-mickey) :user/contacts))))))))))
+
 (deftest test-find-all-users-for-refresh
   (demonic-testing "When 1 of 2 users have granted permissions"
     (fb-lab/in-facebook-lab

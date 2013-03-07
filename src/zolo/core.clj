@@ -44,6 +44,7 @@
   (GET "/users/:guid" [guid] (web/json-response (current-user)))
 
   ;;--- Contact
+  (GET "/contacts" {params :params} (web/json-response (contact-api/list-contacts params)))
   (PUT "/contacts/:guid" {params :params} (web/json-response (contact-api/update-contact params)))
 
   (POST "/messages" {params :params} (web/json-response (user-api/send-message params)))

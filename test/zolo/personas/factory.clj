@@ -1,5 +1,6 @@
 (ns zolo.personas.factory
   (:use zolodeck.utils.debug
+        zolodeck.utils.clojure
         conjure.core)
   (:require [zolodeck.clj-social-lab.facebook.core :as fb-lab]
             [zolo.social.facebook.gateway :as fb-gateway]
@@ -29,6 +30,9 @@
   (-> (fb-lab/current-user)
       fb-lab/fetch-messages))
 
+(defn fake-extended-access-token [& args]
+  (random-str))
+
 (defn fake-fetch-feed [access-token contact-id yyyy-MM-dd-string]
  (fb-lab/fetch-feeds (fb-lab/get-user contact-id)))
 
@@ -37,7 +41,8 @@
     (stubbing [fb-gateway/extended-user-info fake-extended-user-info
                fb-gateway/friends-list fake-friends-list
                fb-messages/fetch-inbox fake-fetch-inbox
-               fb-stream/recent-activity fake-fetch-feed]
+               fb-stream/recent-activity fake-fetch-feed
+               fb-gateway/extended-access-token fake-extended-access-token]
       ~@body)))
 
 (defn create-new-db-user
