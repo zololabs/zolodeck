@@ -20,7 +20,8 @@
             [sandbar.auth :as sandbar]
             [clojure.set :as set]
             [zolo.utils.logger :as logger]
-            [zolo.social.facebook.gateway :as fb-gateway]))
+            [zolo.social.facebook.gateway :as fb-gateway]
+            [zolo.setup.config :as conf]))
 
 (defn current-user []
   (dissoc (sandbar/current-user) :username :roles))
@@ -100,7 +101,7 @@
 (defn update-with-extended-fb-auth-token
   ([user old-at]
      (let [fb-ui (user-identity/fb-user-identity user)
-           extended (fb-gateway/extended-access-token old-at)]
+           extended (fb-gateway/extended-access-token old-at (conf/fb-app-id) (conf/fb-app-secret))]
        (-> fb-ui
            (assoc :identity/auth-token extended)
            demonic/insert)

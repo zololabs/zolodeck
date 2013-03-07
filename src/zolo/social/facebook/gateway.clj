@@ -17,6 +17,9 @@
    :throw-exceptions false
    :body (uri/form-url-encode body-map)})
 
+(defn empty-user-request [access-token]
+  (encoded-request-params {:access_token access-token}))
+
 (defn- user-info-url [user-id]
   (str "https://graph.facebook.com/"  user-id))
 
@@ -31,11 +34,38 @@
        "&client_secret=" app-secret
        "&grant_type=fb_exchange_token&fb_exchange_token=" access-token))
 
+(defn all-test-users-url [app-id app-access-token]
+  (str "https://graph.facebook.com/" app-id "/accounts/test-users?limit=500&access_token=" (uri/url-encode app-access-token)))
+
+(defn app-access-token-url []  
+  "https://graph.facebook.com/oauth/access_token")
+
+(defn all-test-users [app-id app-access-token]
+  (->> (empty-user-request app-access-token)
+       (http/get (all-test-users-url app-id app-access-token))
+       :body
+       json/read-json
+       :data
+       (map maps/keywordize-map)))
+
 (defn create-url [url access-token query-params-map]
   (->> query-params-map
        (merge {:access_token access-token})
        http/generate-query-string
        (str url "?")))
+
+(defn access-token-request [app-id app-secret]
+  (encoded-request-params {:grant_type "client_credentials"
+                           :client_id app-id
+                           :client_secret app-secret}))
+
+(defn app-access-token [app-id app-secret]
+  (print-vals "Getting App Access Token")
+  (->> (access-token-request app-id app-secret) 
+       (http/post (app-access-token-url))
+       :body
+       uri/form-url-decode
+       :access_token))
 
 (defn get-json [url access-token query-params]
   (-> (http/get url
@@ -92,9 +122,9 @@
          (mapcat (fn [{query-name :name results :fql_result_set}]
                    (result-processor (str query-name) results))))))
 
-(defn extended-access-token [access-token]
+(defn extended-access-token [access-token app-id app-secret]
   (-> access-token
-      (extend-access-token-url (conf/fb-app-id) (conf/fb-app-secret))
+      (extend-access-token-url app-id app-secret)
       get-body
       string/parse-query-string
       :access_token))
