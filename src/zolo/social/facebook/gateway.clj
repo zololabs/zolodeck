@@ -123,10 +123,8 @@
                    (result-processor (str query-name) results))))))
 
 (defn extended-access-token [access-token app-id app-secret]
-  (print-vals "old AT : " access-token)
   (-> access-token
       (extend-access-token-url app-id app-secret)
-      print-vals
       get-body
       string/parse-query-string
       :access_token))

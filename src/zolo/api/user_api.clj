@@ -1,6 +1,7 @@
 (ns zolo.api.user-api
   (:use zolodeck.utils.debug
-        zolodeck.utils.clojure)
+        zolodeck.utils.clojure
+        [slingshot.slingshot :only [throw+ try+]])
   (:require [zolo.social.core :as social]
             [zolo.domain.user :as user]
             [zolo.domain.user-identity :as user-identity]
@@ -9,10 +10,11 @@
             [zolo.utils.logger :as logger]))
 
 ;;TODO (siva) this is an experiment ..need to change this though
-(defn format-user [user new?]
-  {:guid (str (:user/guid user))
-   :email (user-identity/fb-email user)
-   :new new?})
+(defn format-user [user]
+  (if user
+    {:guid (str (:user/guid user))
+     :email (user-identity/fb-email user)}
+    (throw+ {:type :not-found :message "No User Found"})))
 
 (defn log-into-fb-chat [user]
   (future
@@ -29,7 +31,7 @@
   (user/update-creds user (social/fetch-creds request-params))
   (user/update-permissions-granted user (:permissions_granted request-params))
   (log-into-fb-chat user)
-  (format-user user false))
+  (format-user user))
 
 
 ;;TODO Need to fix this for REST
@@ -37,10 +39,19 @@
 (defn find-users [request-params]
   (->
    (find-user request-params)
-   (format-user false)))
+   format-user))
+
+;;POST /users
+(defn insert-user [request-params]
+  (-> request-params
+      social/signup-user
+      user/signup-new-user
+      user/update-with-extended-fb-auth-token          
+      log-into-fb-chat
+      format-user))
 
 ;;PUT /users/guid
 (defn update-user [guid request-params]
-  (print-vals "update USER : " guid request-params)
   (if-let [u (user/find-by-guid-string guid)]
-    (update-user-creds u request-params)))
+    (update-user-creds u request-params)
+    (throw+ {:type :not-found :message "No User Found"})))

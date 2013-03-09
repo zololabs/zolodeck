@@ -23,7 +23,9 @@
                                      web/json-response))
 
   ;;TODO Just login the user it is not Updating the User 
-  (PUT "/users/:guid" [guid :as {params :params}] (web/json-response (user-api/update-user guid params))) 
+  (PUT "/users/:guid" [guid :as {params :params}] (web/json-response (user-api/update-user guid params)))
+
+  (POST "/users"  {params :params} (web/json-response (user-api/insert-user params)))
 
   ;;(GET "/users/:guid" [guid] {:status 200 :body (clojure.data.json/json-str {:b 1})})
   )

@@ -9,23 +9,21 @@
             [zolodeck.utils.maps :as zolo-maps]))
 
 (defn login-creds [request-params]
-  (let [creds (get-in request-params [:providerLoginInfo :authResponse])]
-    (select-keys creds [:accessToken :userID])))
+  {:access-token (:access_token request-params)
+   :user-id (:login_provider_uid request-params)})
 
 (defmethod social/provider-uid social/FACEBOOK [request-params]
   (-> request-params
       :login_provider_uid))
 
 (defmethod social/fetch-creds social/FACEBOOK [request-params]
-  {:access-token (:access_token request-params)
-   :user-id (:login_provider_id request-params)})
+  (login-creds request-params))
 
 ; TODO add schema validation check for this API (facebook login)
-(defmethod social/signup-user social/FACEBOOK [request-params cookies]
+(defmethod social/signup-user social/FACEBOOK [request-params]
   (logger/trace "FACEBOOK LOGIN params:" request-params)
-  (logger/trace "FACEBOOK LOGIN cookies:" cookies)
-  (let [{access-token :accessToken user-id :userID} (login-creds request-params)]
-    (users/user-and-user-identity access-token user-id request-params)))
+  (let [{:keys [access-token user-id]} (login-creds request-params)]
+    (print-vals "User Identity :" (users/user-and-user-identity access-token user-id request-params))))
 
 (defmethod social/fetch-contacts :provider/facebook [provider access-token user-id date]
   ;(logger/trace "FetchContacts:" provider)
