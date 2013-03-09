@@ -16,10 +16,13 @@
   "male"   :gender/male})
 
 (defn provider [request-params]
-  (provider-enum (get-in request-params [:provider])))
+  (provider-enum (get-in request-params [:login_provider])))
 
-(defn login-dispatcher [params cookies]
-  (get-in params [:provider]))
+(defn login-dispatcher
+  ([params]
+     (login-dispatcher params {}))
+  ( [params cookies]
+      (get-in (print-vals  params) [:login_provider])))
 
 (defn provider-dispatcher [provider access-token user-id date]
   provider)
@@ -40,6 +43,6 @@
 
 (defmulti fetch-contact-feeds (fn [provider _ _ _] provider))
 
-(defmethod provider-uid nil [request-params cookies]
+(defmethod provider-uid nil [request-params]
   (throw+ {:type :forbidden :message "Provider UID is nil"}))
 

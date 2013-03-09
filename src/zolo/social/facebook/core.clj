@@ -12,17 +12,13 @@
   (let [creds (get-in request-params [:providerLoginInfo :authResponse])]
     (select-keys creds [:accessToken :userID])))
 
-(defmethod social/provider-uid social/FACEBOOK [request-params cookies]
+(defmethod social/provider-uid social/FACEBOOK [request-params]
   (-> request-params
-      login-creds
-      :userID))
+      :login_provider_uid))
 
-(defmethod social/fetch-creds social/FACEBOOK [request-params cookies]
-  (let [creds (login-creds request-params)]
-    (-> creds
-        (assoc :access-token (creds :accessToken))
-        (assoc :user-id (creds :userID))
-        (dissoc :accessToken :userID))))
+(defmethod social/fetch-creds social/FACEBOOK [request-params]
+  {:access-token (:access_token request-params)
+   :user-id (:login_provider_id request-params)})
 
 ; TODO add schema validation check for this API (facebook login)
 (defmethod social/signup-user social/FACEBOOK [request-params cookies]

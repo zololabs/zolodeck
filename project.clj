@@ -3,8 +3,8 @@
 
   :dependencies [[org.clojure/clojure "1.4.0"]
 
-                 [compojure "1.0.2" ]
-                 [ring "1.0.2"]
+                 [compojure "1.1.5" ]
+                 [ring/ring-core "1.2.0-beta1"]
 
                  [fuziontech/ring-json-params "0.2.0"]
                  
