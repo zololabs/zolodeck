@@ -27,7 +27,10 @@
 
   (POST "/users"  {params :params} (web/json-response (user-api/insert-user params)))
 
-  ;;(GET "/users/:guid" [guid] {:status 200 :body (clojure.data.json/json-str {:b 1})})
+  ;;(GET "/users/:guid" [guid] {:status 200 :body
+  ;;(clojure.data.json/json-str {:b 1})})
+
+  (GET "/users/:guid/suggestion_set/:id" [guid id] (web/json-response (user-api/find-suggestion-set guid id)))
   )
 
 (def app

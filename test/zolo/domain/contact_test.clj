@@ -19,7 +19,7 @@
 (defn create-social-user [fb-user]
   (-> fb-user
       (personas/request-params true)
-      (social/signup-user {})))
+      social/signup-user))
 
 (deftest test-update-contacts
   (demonic-integration-testing  "Returning User"

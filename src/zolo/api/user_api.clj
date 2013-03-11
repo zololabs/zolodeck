@@ -55,3 +55,9 @@
   (if-let [u (user/find-by-guid-string guid)]
     (update-user-creds u request-params)
     (throw+ {:type :not-found :message "No User Found"})))
+
+;;Suggestion Set
+(defn find-suggestion-set [guid ss-id]
+  (->> guid
+      user/find-by-guid-string
+      (user/suggestion-set ss-id)))

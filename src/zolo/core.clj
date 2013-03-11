@@ -39,21 +39,21 @@
   (route/resources "/")
 
   ;;---- USER
-  (POST "/users" {params :params cookies :cookies} (web/json-response (user-api/signin-user params cookies)))
-  (PUT "/users/:guid" {params :params cookies :cookies} (web/json-response (user-api/signin-user params cookies)))  
-  (GET "/users/:guid" [guid] (web/json-response (current-user)))
+  ;; (POST "/users" {params :params cookies :cookies} (web/json-response (user-api/signin-user params cookies)))
+  ;; (PUT "/users/:guid" {params :params cookies :cookies} (web/json-response (user-api/signin-user params cookies)))  
+  ;; (GET "/users/:guid" [guid] (web/json-response (current-user)))
 
-  ;;--- Contact
-  (GET "/contacts" {params :params} (web/json-response (contact-api/list-contacts params)))
-  (PUT "/contacts/:guid" {params :params} (web/json-response (contact-api/update-contact params)))
+  ;; ;;--- Contact
+  ;; (GET "/contacts" {params :params} (web/json-response (contact-api/list-contacts params)))
+  ;; (PUT "/contacts/:guid" {params :params} (web/json-response (contact-api/update-contact params)))
 
-  (POST "/messages" {params :params} (web/json-response (user-api/send-message params)))
+  ;; (POST "/messages" {params :params} (web/json-response (user-api/send-message params)))
   
-  ;;---- User Stats
-  (GET "/user-stats" {params :params} (web/json-response (user-api/stats params)))
+  ;; ;;---- User Stats
+  ;; (GET "/user-stats" {params :params} (web/json-response (user-api/stats params)))
 
-  ;;---- Server Status
-  (GET "/server/status" {params :params} (web/json-response (server-api/status params)))
+  ;; ;;---- Server Status
+  ;; (GET "/server/status" {params :params} (web/json-response (server-api/status params)))
   
   ;;---- GENERAL
   (GET "/permission-denied*" []  (web/json-response {:error "Permission Denied"} 403))
