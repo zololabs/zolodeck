@@ -12,13 +12,20 @@
             [zolo.social.core :as social]
             [zolo.test.assertions.datomic :as db-assert]
             [zolo.test.assertions.domain :as d-assert]
-            [zolodeck.clj-social-lab.facebook.core :as fb-lab]))
+            [zolodeck.clj-social-lab.facebook.core :as fb-lab]
+            [zolo.personas.shy :as shy-persona]))
 
-;;TODO Duplicate Function
-(defn create-social-user [fb-user]
-  (-> fb-user
-      (personas/request-params true)
-      social/signup-user))
+(deftest test-update
+  (demonic-testing "User is not found"
+    (is (thrown-with-msg? RuntimeException #"User should not be nil"
+          (user/update nil {:user/first-name "dummy"}))))
+  
+  (demonic-testing "User is present with contacts, messages, user-identities, suggestion-set"
+    
+    (testing "login info should be present")
+    (testing "login tz should be present")
+    (testing "first name and last name ")
+    (testing "user-identities, contacts , messages , suggestion-set")))
 
 (deftest test-signup-new-user
   (demonic-testing "First time user"
@@ -35,7 +42,7 @@
            donald (fb-lab/create-friend "Donald" "Duck")
            daisy (fb-lab/create-friend "Daisy" "Duck")
            minnie (fb-lab/create-friend "Minnie" "Mouse")
-           db-mickey (in-demarcation (user/signup-new-user (create-social-user mickey)))]
+           db-mickey (in-demarcation (user/signup-new-user (personas/create-social-user mickey)))]
 
        (fb-lab/make-friend mickey donald)
        (fb-lab/make-friend mickey daisy)
@@ -68,44 +75,19 @@
          (is (= 1 (count users)))
          (is (= (:user/guid granted-user) (:user/guid (first users)))))))))
 
-(deftest test-suggestion-set
-  (demonic-integration-testing "Contact Count should not change when suggestion set changes"
-    (personas/in-social-lab
-     (let [mickey (fb-lab/create-user "Mickey" "Mouse")
-           donald (fb-lab/create-friend "Donald" "Duck")
-           daisy (fb-lab/create-friend "Daisy" "Duck")
-           minnie (fb-lab/create-friend "Minnie" "Mouse")
-           db-mickey (in-demarcation (user/signup-new-user (create-social-user mickey)))]
+;;;;;;  Writing with some sense
 
-       (fb-lab/make-friend mickey donald)
-       (fb-lab/make-friend mickey daisy)
-       (fb-lab/make-friend mickey minnie)
-       
-       (fb-lab/login-as mickey)
+(deftest test-distill
+  (demonic-testing "Should throw Runtime Exception when Nil is passed"
+    (is (thrown-with-msg? RuntimeException #"User should not be nil" (user/distill nil))))
+  
+  (demonic-testing "Email should be empty if no user-identities are present"
+    (let [du (user/distill {:user/guid "abc"})]
+      (is (= "abc" (:guid du)))
+      (is (empty? (:email du)))))
 
-       (in-demarcation
-        (contact/update-contacts (user/reload db-mickey))
-        (db-assert/assert-datomic-contact-count 3))
-
-       (let [[db-daisy db-donald db-minnie] (in-demarcation
-                                             (sort-by :contact/first-name (:user/contacts (in-demarcation (user/reload db-mickey)))))]
-         (in-demarcation
-          (user/new-suggestion-set (user/reload db-mickey) "2012-05-01" [db-daisy]))
-
-         (in-demarcation
-          (let [suggested-contacts (user/suggestion-set (user/reload db-mickey) "2012-05-01")]
-            (is (= 1 (count suggested-contacts)) "Suggested only one contact ... so suggestion set should be 1")
-            (d-assert/contacts-are-same daisy (first suggested-contacts))))
-
-
-         (in-demarcation
-          (user/new-suggestion-set (user/reload db-mickey) "2012-05-02" [db-minnie]))
-
-         (in-demarcation
-          (is (= 3 (count (:user/contacts (user/reload db-mickey)))) "No of contacts should not change"))
-
-         (in-demarcation
-          (let [suggested-contacts (user/suggestion-set (user/reload db-mickey) "2012-05-02")]
-            (is (= 1 (count suggested-contacts)) "Suggested only one contact ... so suggestion set should be 1")
-            (d-assert/contacts-are-same minnie (first suggested-contacts)))))))))
-
+  (demonic-testing "Should return properly distilled user"
+    (let [shy (shy-persona/create)
+          du (user/distill shy)]
+      (is (= (str (:user/guid shy)) (:guid du)))
+      (is (= (shy-persona/email) (:email du))))))

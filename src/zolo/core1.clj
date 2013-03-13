@@ -7,31 +7,32 @@
   (:require  [clojure.tools.cli :as cli]
              [zolo.utils.logger :as logger]
              [zolo.setup.config :as config]
-             [zolo.storm.facebook :as fb]
+            ;; [zolo.storm.facebook :as fb]
              [zolo.web :as web]
              [compojure.route :as route]
              [compojure.handler :as handler]
              [zolodeck.demonic.core :as demonic]
              [ring.util.response :as response]
-             [zolo.api.user-api :as user-api]))
+             [zolo.api.user-api :as user-api]
+             [zolo.api.suggestion-set-api :as ss-api]))
 
 (defroutes application-routes
   (route/resources "/")
+
+  ;;Users
+  (POST "/users" {params :params} (web/json-response (user-api/new-user params)))
 
   ;;TODO Need to fix this for REST
   (GET "/users" {params :params} (-> (user-api/find-users params)
                                      web/json-response))
 
-  ;;TODO Just login the user it is not Updating the User 
+  ;;TODO Just loging in the user it is not Updating the User 
   (PUT "/users/:guid" [guid :as {params :params}] (web/json-response (user-api/update-user guid params)))
 
-  (POST "/users"  {params :params} (web/json-response (user-api/insert-user params)))
+  ;;TODO move this to its own routes
+  (GET "/users/:user-id/suggestion_sets/:name" [user-id name] (web/json-response (ss-api/find-suggestion-set user-id name)))
 
-  ;;(GET "/users/:guid" [guid] {:status 200 :body
-  ;;(clojure.data.json/json-str {:b 1})})
-
-  (GET "/users/:guid/suggestion_set/:id" [guid id] (web/json-response (user-api/find-suggestion-set guid id)))
-  )
+  (GET "/users/:user-id/suggestion_sets" [user-id :as {params :params}] (web/json-response (ss-api/find-suggestion-sets user-id params))))
 
 (def app
   (web/wrap-request-binding  
@@ -55,8 +56,9 @@
 
 (defn start-storm []
   (zolo.setup.datomic-setup/init-datomic)
-  (logger/with-logging-context {:env (config/environment)}
-    (fb/run-local-forever!)))
+  ;; (logger/with-logging-context {:env (config/environment)}
+  ;;   (fb/run-local-forever!))
+  )
 
 (defn process-args [args]
   (cli/cli args

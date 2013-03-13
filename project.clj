@@ -13,7 +13,6 @@
                  [org.clojure/data.json "0.1.2"]
                  [clj-http "0.5.3" :exclusions [commons-logging]]
 
-                 [joda-time "1.6"]
                  [clj-time "0.4.4"]
                  [slingshot "0.10.3"]
 
@@ -72,11 +71,7 @@
                              [zolodeck/clj-social-lab "1.0.0-SNAPSHOT"]
                              [org.clojars.runa/conjure "2.1.1"]
                              [difform "1.1.2"]]
-              :resource-paths [~(str (System/getProperty "user.home") "/.zolo")]}
-             :provided
-             {:dependencies [[storm "0.8.2-wip20" :exclusions [org.slf4j/log4j-over-sl4fj
-                                                               org.slf4j/slf4j-log4j12
-                                                               com.netflix.curator/curator-framework]]]}}
+              :resource-paths [~(str (System/getProperty "user.home") "/.zolo")]}}
 
   :uberjar-name ~(str "zolodeck-api-"
                       (or (System/getenv "BUILD_NUMBER") "local")

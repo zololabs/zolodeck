@@ -11,11 +11,11 @@
             [zolo.domain.message :as message]))
 
 (defn request-params [fb-user permission-granted?]
-  (print-vals "request params :" (let [fb-creds (print-vals "Fb Creds :" (fb-lab/login-creds fb-user))]
-                                   {:login_provider "FACEBOOK"
-                                    :permissions_granted permission-granted?
-                                    :access_token (get-in fb-creds [:providerLoginInfo :authResponse :accessToken])
-                                    :login_provider_uid (get-in fb-creds [:providerLoginInfo :authResponse :userID])})))
+  (let [fb-creds (fb-lab/login-creds fb-user)]
+    {:login_provider "FACEBOOK"
+     :permissions_granted permission-granted?
+     :access_token (get-in fb-creds [:providerLoginInfo :authResponse :accessToken])
+     :login_provider_uid (get-in fb-creds [:providerLoginInfo :authResponse :userID])}))
 
 (defn fake-extended-user-info [at uid]
   (-> uid
@@ -57,5 +57,8 @@
              user/signup-new-user
              (user/update-permissions-granted permission-granted?))))))
 
-
+(defn create-social-user [fb-user]
+  (-> fb-user
+      (request-params true)
+      social/signup-user))
 

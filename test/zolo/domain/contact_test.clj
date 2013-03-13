@@ -12,14 +12,11 @@
             [zolo.test.assertions.datomic :as db-assert]
             [zolo.test.assertions.domain :as d-assert]
             [zolo.domain.contact :as contact]
+            [zolo.domain.interaction :as interaction]
+            [zolo.domain.message :as message]
             [zolo.setup.datomic-setup :as datomic-setup]
-            [zolodeck.clj-social-lab.facebook.core :as fb-lab]))
-
-;;TODO Duplicate Function
-(defn create-social-user [fb-user]
-  (-> fb-user
-      (personas/request-params true)
-      social/signup-user))
+            [zolodeck.clj-social-lab.facebook.core :as fb-lab]
+            [zolodeck.utils.calendar :as zolo-cal]))
 
 (deftest test-update-contacts
   (demonic-integration-testing  "Returning User"
@@ -28,7 +25,7 @@
            donald (fb-lab/create-friend "Donald" "Duck")
            daisy (fb-lab/create-friend "Daisy" "Duck")
            minnie (fb-lab/create-friend "Minnie" "Mouse")
-           db-mickey (in-demarcation (user/signup-new-user (create-social-user mickey)))]
+           db-mickey (in-demarcation (user/signup-new-user (personas/create-social-user mickey)))]
 
        (fb-lab/make-friend mickey donald)
        (fb-lab/make-friend mickey daisy)
@@ -63,7 +60,7 @@
      (let [mickey (fb-lab/create-user "Mickey" "Mouse")
            donald (fb-lab/create-friend "Donald" "Duck")
            goofy (fb-lab/create-friend "Goofy" "Dog")
-           db-mickey (user/signup-new-user (create-social-user mickey))]
+           db-mickey (user/signup-new-user (personas/create-social-user mickey))]
 
        (fb-lab/make-friend mickey donald)
        (fb-lab/make-friend mickey goofy)
@@ -82,7 +79,7 @@
      (let [mickey (fb-lab/create-user "Mickey" "Mouse")
            donald (fb-lab/create-friend "Donald" "Duck")
            goofy (fb-lab/create-friend "Goofy" "Dog")
-           db-mickey (in-demarcation (user/signup-new-user (create-social-user mickey)))]
+           db-mickey (in-demarcation (user/signup-new-user (personas/create-social-user mickey)))]
 
        (fb-lab/make-friend mickey goofy)
        
@@ -113,7 +110,7 @@
      (let [mickey (fb-lab/create-user "Mickey" "Mouse")
            donald (fb-lab/create-friend "Donald" "Duck")
            minnie (fb-lab/create-friend "Minnie" "Mouse")
-           db-mickey (in-demarcation (user/signup-new-user (create-social-user mickey)))]
+           db-mickey (in-demarcation (user/signup-new-user (personas/create-social-user mickey)))]
 
        (fb-lab/make-friend mickey donald)
        
@@ -149,7 +146,7 @@
 (demonictest test-contact-list
   (personas/in-social-lab
      (let [mickey (fb-lab/create-user "Mickey" "Mouse")
-           db-mickey (user/signup-new-user (create-social-user mickey))
+           db-mickey (user/signup-new-user (personas/create-social-user mickey))
            strong-friends (fb-lab/create-friends "strong" 10)
            medium-friends (fb-lab/create-friends "medium" 20)
            weak-friends (fb-lab/create-friends "weak" 30)
@@ -196,3 +193,28 @@
            (is (= 5 (count (contact/list-contacts (user/reload db-mickey) {:selectors [:strong] :limit 5}))))
            (is (= 10 (count (contact/list-contacts (user/reload db-mickey) {:selectors [:strong] :limit 50}))))           
            (is (= 5 (count (contact/list-contacts (user/reload db-mickey) {:selectors [] :limit 50 :offset 55})))))))))
+
+
+(deftest test-format
+  (demonic-testing "Formated contacts show if contacted today or not"
+    (personas/in-social-lab
+     (let [client-date (java.util.Date.)
+           mickey (fb-lab/create-user "Mickey" "Mouse")
+           donald (fb-lab/create-friend "Donald" "Duck")
+           minnie (fb-lab/create-friend "Minnie" "Mouse")
+           db-mickey (user/signup-new-user (personas/create-social-user mickey))]
+
+       (fb-lab/login-as mickey)
+       
+       (fb-lab/make-friend mickey donald)
+       (fb-lab/make-friend mickey minnie)
+
+       (fb-lab/send-message mickey donald "1" "Hi, what's going on?" (zolo-cal/date-to-simple-string client-date))
+       
+       (contact/update-contacts (user/reload db-mickey))
+       (message/update-inbox-messages (user/reload db-mickey))
+
+       (let [ibc (print-vals "IBC :" (interaction/ibc (user/reload db-mickey)))
+             [db-donald db-minnie] (sort-by :contact/first-name (:user/contacts (in-demarcation (user/reload db-mickey))))]
+         (print-vals (contact/format db-donald ibc client-date))
+         )))))

@@ -19,11 +19,12 @@
 (defmethod social/fetch-creds social/FACEBOOK [request-params]
   (login-creds request-params))
 
-; TODO add schema validation check for this API (facebook login)
+                                        ; TODO add schema validation check for this API (facebook login)
+;;TODO Rename this to Create
 (defmethod social/signup-user social/FACEBOOK [request-params]
   (logger/trace "FACEBOOK LOGIN params:" request-params)
   (let [{:keys [access-token user-id]} (login-creds request-params)]
-    (print-vals "User Identity :" (users/user-and-user-identity access-token user-id request-params))))
+    (users/user-and-user-identity access-token user-id request-params)))
 
 (defmethod social/fetch-contacts :provider/facebook [provider access-token user-id date]
   ;(logger/trace "FetchContacts:" provider)

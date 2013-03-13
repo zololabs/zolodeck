@@ -99,19 +99,6 @@
       :user/login-provider-uid
       find-by-login-provider-uid))
 
-(defn update-with-extended-fb-auth-token
-  ([user old-at]
-     (let [fb-ui (user-identity/fb-user-identity user)
-           extended (fb-gateway/extended-access-token old-at (conf/fb-app-id) (conf/fb-app-secret))]
-       (-> fb-ui
-           (assoc :identity/auth-token extended)
-           demonic/insert)
-       (reload user)))
-  ([user]
-     (let [fb-ui (user-identity/fb-user-identity user)
-           old-at (:identity/auth-token fb-ui)]
-       (update-with-extended-fb-auth-token user old-at))))
-
 (defn update-permissions-granted [user permissions-granted]
   (-> user
       user-identity/fb-user-identity
@@ -125,12 +112,6 @@
 ;; TODO move this into social core
 (defn extend-fb-token [u]
   (update-with-extended-fb-auth-token u))
-
-;; TODO - reload-by-login-provider-uid assumes unique lpuid across all networks
-(defn signup-new-user [social-user]
-  (-> social-user
-      demonic/insert
-      reload-by-login-provider-uid))
 
 (defn new-suggestion-set [u set-name suggested-contacts]
   (-> u
@@ -182,3 +163,22 @@
 
 (defn been-processed? [u]
   (:user/last-updated u))
+
+;; CRUD Functions
+
+(defn update [u new-values]
+  (if-not u (throw (RuntimeException. "User should not be nil")))
+  (-> u
+      (merge new-values)
+      demonic/insert))
+
+;; TODO - reload-by-login-provider-uid assumes unique lpuid across all networks
+(defn create [new-values]
+  (-> new-values
+      demonic/insert
+      reload-by-login-provider-uid))
+
+(defn distill [u]
+  (if-not u (throw (RuntimeException. "User should not be nil")))
+  {:guid (str (:user/guid u))
+   :email (user-identity/fb-email u)})

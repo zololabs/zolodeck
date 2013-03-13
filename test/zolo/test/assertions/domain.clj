@@ -8,6 +8,8 @@
             [zolodeck.utils.calendar :as zolo-cal]
             [zolodeck.demonic.core :as demonic]))
 
+(defn users-are-same [])
+
 (defn social-identities-are-same [fb-contact db-si]
   (assert-map-values fb-contact [:username :link :id :last_name :first_name]
                      db-si [:social/nickname :social/profile-url :social/provider-uid :social/last-name :social/first-name])

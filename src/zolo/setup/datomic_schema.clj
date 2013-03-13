@@ -11,10 +11,11 @@
  (uuid-fact-schema :user/guid false "A GUID for the user" false)
  (string-fact-schema :user/first-name true "A user's first name" false) 
  (string-fact-schema :user/last-name true "A user's last name" false)
- (string-fact-schema :user/login-provider-uid true "A user's login provider uid" false)
+ (string-fact-schema :user/login-provider false "A user's login provider" false)
+ (string-fact-schema :user/login-provider-uid false "A user's login provider uid" false)
+ (long-fact-schema :user/login-tz false "A user's timezone offset when she logged in" false)
  (instant-fact-schema :user/last-updated false "The most recent time for when the user was updated" false)
  (instant-fact-schema :user/refresh-started false "The most recent time for when the user update was attempted" false)
- ;;TODO Add login-provider info
 
  ;Social details
  (refs-fact-schema :user/user-identities false "A user's social detail records" false)   
@@ -26,9 +27,16 @@
  (refs-fact-schema :user/messages false "A contact's messages" false)
  (refs-fact-schema :user/temp-messages false "A contact's temp messages" false)
 
-  ;Suggested Set
- (string-fact-schema :user/suggestion-set-name false "Set of contact guids that represent a recent suggested set" false)
- (refs-fact-schema :user/suggestion-set-contacts false "Set of contact guids that represent a recent suggested set" false))
+ ;Suggested Set
+ ;;TODO make this an component
+ (refs-fact-schema :user/suggestion-sets false "Set of suggestion sets" false)
+)
+
+(schema-set "SUGGESTION SET"
+ (uuid-fact-schema :suggestion-set/guid false "A GUID for suggestion set record" false)
+ (string-fact-schema :suggestion-set/name  false  "A suggestion set name" false)
+ (instant-fact-schema :suggestion-set/client-date  false  "Client Clock" false)
+ (refs-fact-schema :suggestion-set/contacts false "A suggested contacts" false))
 
 (schema-set "USER IDENTITY FACTS"
  (uuid-fact-schema   :identity/guid false "A GUID for the user identity record" false)

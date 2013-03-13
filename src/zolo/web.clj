@@ -29,7 +29,13 @@
                        (.print out (str "\"" (zolo-cal/date-to-string d (zolo-cal/simple-date-format "yyyy-MM-dd")) "\"")))})
 
 ;; (extend zolodeck.demonic.loadable.Loadable json/Write-JSON
-;;         {:write-json (fn [x out escape-unicode?] (.print out (json/json-str (.m x))))})
+;;         {:write-json (fn [x out escape-unicode?] (.print out
+;;         (json/json-str(.m x))))})
+
+(defn status-404-if-nil [o]
+  (if-not o
+    (throw+ {:type :not-found :message "Not Found"})
+    o))
 
 (defn json-response [data & [status]]
   {:status (or status 200)
@@ -40,7 +46,8 @@
    :body (json/json-str data)})
 
 (defn error-response [error-object]
-  (json-response {:error (:message error-object)} ((:type error-object) http-status/STATUS-CODES)))
+  (json-response {:error (:message error-object)}
+                 (http-status/STATUS-CODES (:type error-object))))
 
 (defn wrap-error-handling [handler]
   (fn [request]

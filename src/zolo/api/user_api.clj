@@ -2,25 +2,11 @@
   (:use zolodeck.utils.debug
         zolodeck.utils.clojure
         [slingshot.slingshot :only [throw+ try+]])
-  (:require [zolo.social.core :as social]
-            [zolo.domain.user :as user]
-            [zolo.domain.user-identity :as user-identity]
-            [zolo.social.facebook.chat :as fb-chat]
-            [zolo.social.core :as social-core]
-            [zolo.utils.logger :as logger]))
+  (:require [zolo.domain.user :as user]
+            [zolo.utils.logger :as logger]
+            [zolo.service.user-service :as user-service]))
 
 ;;TODO (siva) this is an experiment ..need to change this though
-(defn format-user [user]
-  (if user
-    {:guid (str (:user/guid user))
-     :email (user-identity/fb-email user)}
-    (throw+ {:type :not-found :message "No User Found"})))
-
-(defn log-into-fb-chat [user]
-  (future
-    (fb-chat/connect-user! user)
-    nil)
-  user)
 
 (defn find-user [request-params]
   (user/find-by-provider-and-provider-uid
@@ -42,22 +28,11 @@
    format-user))
 
 ;;POST /users
-(defn insert-user [request-params]
-  (-> request-params
-      social/signup-user
-      user/signup-new-user
-      user/update-with-extended-fb-auth-token          
-      log-into-fb-chat
-      format-user))
+(defn new-user [request-params]
+  (user-service/new-user request-params))
 
 ;;PUT /users/guid
 (defn update-user [guid request-params]
   (if-let [u (user/find-by-guid-string guid)]
     (update-user-creds u request-params)
     (throw+ {:type :not-found :message "No User Found"})))
-
-;;Suggestion Set
-(defn find-suggestion-set [guid ss-id]
-  (->> guid
-      user/find-by-guid-string
-      (user/suggestion-set ss-id)))

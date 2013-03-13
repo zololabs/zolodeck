@@ -22,7 +22,7 @@
   ([params]
      (login-dispatcher params {}))
   ( [params cookies]
-      (get-in (print-vals  params) [:login_provider])))
+      (get-in params [:login_provider])))
 
 (defn provider-dispatcher [provider access-token user-id date]
   provider)

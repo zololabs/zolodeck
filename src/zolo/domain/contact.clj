@@ -97,7 +97,6 @@
 (defn is-contacted-on? [ibc c dt]
   (zolo-cal/same-day-instance? dt (dom/message-date-in-tz (last-send-message ibc c) (zolo-cal/time-zone-offset dt))))
 
-
 (defn contact-score [c]
   (or (:contact/score c) 0))
 
@@ -160,3 +159,13 @@
          (apply-offset offset)
          (apply-limit limit))))
 
+(defn format [c ibc client-date]
+  (print-vals "IBC " ibc)
+  (let [interactions (ibc c)
+        si (first (:contact/social-identities c))]
+    {:first-name (:contact/first-name c)
+     :last-name (:contact/last-name c)
+     :guid (str (:contact/guid c))
+     :muted (:contact/muted c)
+     :picture-url (:social/photo-url si)
+     :contacted-today (is-contacted-on? ibc c client-date)}))

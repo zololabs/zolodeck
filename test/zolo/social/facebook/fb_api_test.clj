@@ -81,8 +81,8 @@
      (fb-lab/post-to-wall mickey daisy "happy birthday" "2012-05-02")
      (fb-lab/post-to-wall daisy donald "check this picture" "2012-06-02")     
 
-     (let [jack-feed (print-vals "J:" (fb-stream/recent-activity (jack-access-token) JACK-FB-ID START-TIMESTAMP))
-           mickey-feed (print-vals "M:" (fb-lab/fetch-feeds donald))]
+     (let [jack-feed (fb-stream/recent-activity (jack-access-token) JACK-FB-ID START-TIMESTAMP)
+           mickey-feed (fb-lab/fetch-feeds donald)]
        (doseq [mf mickey-feed]
          (doseq [jfk (keys (first jack-feed))]
            (is (some #{jfk} (keys mf)))))

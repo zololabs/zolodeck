@@ -17,18 +17,13 @@
             [zolo.setup.datomic-setup :as datomic-setup]
             [zolodeck.clj-social-lab.facebook.core :as fb-lab]))
 
-(defn create-social-user [fb-user]
-  (-> fb-user
-      (personas/request-params true)
-      social/signup-user))
-
 (deftest test-update-inbox-messages
   (demonic-integration-testing  "First time user"
     (personas/in-social-lab
      (let [mickey (fb-lab/create-user "Mickey" "Mouse")
            donald (fb-lab/create-friend "Donald" "Duck")
            daisy (fb-lab/create-friend "Daisy" "Duck")
-           db-mickey (in-demarcation (user/signup-new-user (create-social-user mickey)))]
+           db-mickey (in-demarcation (user/signup-new-user (personas/create-social-user mickey)))]
 
        (fb-lab/make-friend mickey donald)
        (fb-lab/make-friend mickey daisy)
@@ -65,7 +60,7 @@
      (let [mickey (fb-lab/create-user "Mickey" "Mouse")
            donald (fb-lab/create-friend "Donald" "Duck")
            daisy (fb-lab/create-friend "Daisy" "Duck")
-           db-mickey (in-demarcation (user/signup-new-user (create-social-user mickey)))]
+           db-mickey (in-demarcation (user/signup-new-user (personas/create-social-user mickey)))]
 
        (fb-lab/make-friend mickey donald)
        (fb-lab/make-friend mickey daisy)

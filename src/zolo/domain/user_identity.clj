@@ -1,6 +1,7 @@
 (ns zolo.domain.user-identity
   (:use zolodeck.utils.debug
-        [zolodeck.demonic.core :only [run-query load-entity]]))
+        [zolodeck.demonic.core :only [run-query load-entity]])
+  (:require [zolodeck.demonic.core :as demonic]))
 
 (defn is-provider? [provider ui]
   (= provider (:identity/provider ui)))
@@ -25,11 +26,11 @@
 
 (defn fb-permissions-time [u]
   (let [uig (-> u fb-user-identity :identity/guid)]
-    (->> (run-query '[:find ?tx :in $ ?g
-                      :where
-                      [?u :identity/guid ?g]
-                      [?u :identity/permissions-granted true ?tx]]
-                    uig)
+    (->> (demonic/run-query '[:find ?tx :in $ ?g
+                              :where
+                              [?u :identity/guid ?g]
+                              [?u :identity/permissions-granted true ?tx]]
+                            uig)
          ffirst
          load-entity
          :db/txInstant)))
@@ -38,4 +39,12 @@
   (->> u
        fb-user-identity
        :identity/email))
+
+;; CRUD
+
+(defn update [ui new-values]
+  (if-not ui (throw (RuntimeException. "User Identity should not be nil")))
+  (-> ui
+      (merge new-values)
+      demonic/insert))
 
