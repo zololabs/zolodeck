@@ -19,6 +19,7 @@
      (is (= db-user1 (u-store/find-by-provider-and-provider-uid :provider/facebook (:id fb-user1))))
      
      (is (nil? (u-store/find-by-provider-and-provider-uid :provider/twitter (:id fb-user1))))
+     (is (nil? (u-store/find-by-provider-and-provider-uid "junk" (:id fb-user1))))
      (is (nil? (u-store/find-by-provider-and-provider-uid :provider/facebook "1000junk"))))))
 
 (deftest test-save
