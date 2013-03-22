@@ -3,7 +3,7 @@
         zolodeck.utils.string
         zolodeck.utils.debug
         zolodeck.utils.maps)
-  (:require [zolo.core1 :as services]))
+  (:require [zolo.core :as server]))
 
 (def *testing-trace* true)
 
@@ -51,7 +51,7 @@
     (println "\n***** Testing webmethod:" (up-key-name method) 
              "on" resource "with params:" params "expecting response status:" expected-response-code))
   (let [stringified-params (stringify-map params)
-        response (services/app (compojure-request method resource stringified-params))]
+        response (server/app (compojure-request method resource stringified-params))]
     (if (= 302 (:status response))
       ;;(print-auth-failure-message)
       (println "302!!")

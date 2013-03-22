@@ -2,7 +2,7 @@
   (:use zolodeck.utils.maps
         [clojure.test :only [run-tests deftest is are testing]]
         zolodeck.utils.debug)
-  (:require [zolo.core1 :as server]
+  (:require [zolo.core :as server]
             [clojure.data.json :as json]))
 
 (defn compojure-request [method resource jsonified-body-str params]

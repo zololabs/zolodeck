@@ -86,7 +86,7 @@
                    :all (fn [t] true)}
 
   :repl-options {:init-ns zolo.core
-                 :init (do (use 'zolo.core1)
+                 :init (do (use 'zolo.core)
                            (use 'ring.util.serve) 
                            (use 'clojure.pprint)
                            (use 'clojure.test)
@@ -106,7 +106,7 @@
   :deploy-app {:s3-bucket "s3p://zolodeck/releases/"
                :creds :env}
 
-  :main zolo.core1
+  :main zolo.core
 
   :jvm-opts ["-Xmx1g"
              "-server"

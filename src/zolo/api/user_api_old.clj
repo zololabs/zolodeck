@@ -16,7 +16,6 @@
             [zolo.utils.logger :as logger]
             [zolodeck.utils.calendar :as zolo-cal]))
 
-;;TODO (siva) this is an experiment ..need to change this though
 (defn format-user [user new?]
   {:guid (str (:user/guid user))
    :email (user-identity/fb-email user)

@@ -46,18 +46,19 @@
                fb-gateway/extended-access-token fake-extended-access-token]
       ~@body)))
 
-(defn create-new-db-user
-  ([first-name last-name]
-     (create-new-db-user first-name last-name true))
-  ([first-name last-name permission-granted?]
-     (stubbing [fb-gateway/extended-user-info fake-extended-user-info]
-       (let [user (fb-lab/create-user first-name last-name)
-             params (request-params user permission-granted?)]
-         (-> (social/signup-user params)
-             user/signup-new-user
-             (user/update-permissions-granted permission-granted?))))))
+;; (defn create-new-db-user
+;;   ([first-name last-name]
+;;      (create-new-db-user first-name last-name true))
+;;   ([first-name last-name permission-granted?]
+;;      (stubbing [fb-gateway/extended-user-info fake-extended-user-info]
+;;        (let [user (fb-lab/create-user first-name last-name)
+;;              params (request-params user permission-granted?)]
+;;          (-> (social/signup-user params)
+;;              user/signup-new-user
+;;              (user/update-permissions-granted permission-granted?))))))
 
-(defn create-social-user [fb-user]
+(defn create-domain
+  -user [fb-user]
   (-> fb-user
       (request-params true)
       social/signup-user))

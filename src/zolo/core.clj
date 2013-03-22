@@ -3,79 +3,51 @@
   (:use zolodeck.utils.debug
         compojure.core
         ring.adapter.jetty
-        ring.middleware.params
-        ring.middleware.cookies
-        ring.middleware.keyword-params
-        ring.middleware.json-params
-        ring.middleware.nested-params
-        ring.middleware.cookies
-        [sandbar.auth]
-        [sandbar.validation]
-        [sandbar.stateful-session :only [wrap-stateful-session]])
-  (:require [compojure.route :as route]
-            [compojure.handler :as handler]
-            [clojure.tools.cli :as cli]
-            [zolodeck.demonic.core :as demonic]
-            [zolo.web.auth :as auth]
-            [zolo.social.bootstrap]
-            [zolo.social.core :as social]
-            [zolo.api.user-api :as user-api]
-            [zolo.api.contact-api :as contact-api]
-            [zolo.api.server-api :as server-api]
-            [zolo.utils.logger :as logger]
-            [zolo.web :as web]
-            [zolo.setup.config :as config]
-            [zolo.storm.facebook :as fb]))
-
-(def security-policy
-  [#"/permission-denied*" :any
-   #"/server/status" :any
-   #"/users" :any
-   #"/users/*" :user
-   #"/contacts/*" :user
-   #".*" :user])
+        ring.middleware.json-params)
+  (:require  [clojure.tools.cli :as cli]
+             [zolo.utils.logger :as logger]
+             [zolo.setup.config :as config]
+             [zolo.social.bootstrap]
+            ;; [zolo.storm.facebook :as fb]
+             [zolo.web :as web]
+             [compojure.route :as route]
+             [compojure.handler :as handler]
+             [zolodeck.demonic.core :as demonic]
+             [ring.util.response :as response]
+             [zolo.api.user-api :as user-api]
+;;             [zolo.api.suggestion-set-api :as ss-api]
+             ))
 
 (defroutes application-routes
   (route/resources "/")
 
-  ;;---- USER
-  ;; (POST "/users" {params :params cookies :cookies} (web/json-response (user-api/signin-user params cookies)))
-  ;; (PUT "/users/:guid" {params :params cookies :cookies} (web/json-response (user-api/signin-user params cookies)))  
-  ;; (GET "/users/:guid" [guid] (web/json-response (current-user)))
+  ;;Users
+  (POST "/users" {params :params} (web/json-response (user-api/new-user params)))
 
-  ;; ;;--- Contact
-  ;; (GET "/contacts" {params :params} (web/json-response (contact-api/list-contacts params)))
-  ;; (PUT "/contacts/:guid" {params :params} (web/json-response (contact-api/update-contact params)))
+  ;;TODO Need to fix this for REST
+  (GET "/users" {params :params} (-> (user-api/find-users params)
+                                     web/json-response))
 
-  ;; (POST "/messages" {params :params} (web/json-response (user-api/send-message params)))
-  
-  ;; ;;---- User Stats
-  ;; (GET "/user-stats" {params :params} (web/json-response (user-api/stats params)))
+  ;;TODO Just loging in the user it is not Updating the User 
+  ;;(PUT "/users/:guid" [guid :as {params :params}] (web/json-response (user-api/update-user guid params)))
 
-  ;; ;;---- Server Status
-  ;; (GET "/server/status" {params :params} (web/json-response (server-api/status params)))
-  
-  ;;---- GENERAL
-  (GET "/permission-denied*" []  (web/json-response {:error "Permission Denied"} 403))
+  ;;TODO move this to its own routes
+  ;;(GET "/users/:user-id/suggestion_sets/:name" [user-id name] (web/json-response (ss-api/find-suggestion-set user-id name)))
 
-  (route/not-found "Page not found"))
+  ;;(GET "/users/:user-id/suggestion_sets" [user-id :as {params :params}] (web/json-response (ss-api/find-suggestion-sets user-id params)))
+  )
 
 (def app
   (web/wrap-request-binding  
    (web/wrap-options
     (-> application-routes        
-        web/wrap-user-info-logging
+        ;;web/wrap-user-info-logging
         handler/api
         wrap-json-params
-        (with-security security-policy auth/authenticator)
         web/wrap-accept-header-validation
-        wrap-stateful-session
         web/wrap-error-handling
         demonic/wrap-demarcation
-        web/wrap-request-logging
-        wrap-cookies        
-        ))))
-
+        web/wrap-request-logging))))
 
 (defn start-api
   ([]
@@ -87,8 +59,9 @@
 
 (defn start-storm []
   (zolo.setup.datomic-setup/init-datomic)
-  (logger/with-logging-context {:env (config/environment)}
-    (fb/run-local-forever!)))
+  ;; (logger/with-logging-context {:env (config/environment)}
+  ;;   (fb/run-local-forever!))
+  )
 
 (defn process-args [args]
   (cli/cli args
@@ -107,4 +80,3 @@
         :storm (start-storm)
         :api (start-api (:port options))
         :default (throw "Invalid Service :" (:s options)))))
-

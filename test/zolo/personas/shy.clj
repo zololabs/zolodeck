@@ -15,12 +15,13 @@
    (let [shy (fb-lab/create-user "Shy" "Hal")
          jack (fb-lab/create-friend "Jack" "Daniels")
          jill (fb-lab/create-friend  "Jill" "Ferry")
-         db-shy (user/signup-new-user (personas/create-social-user shy))]
+         d-shy (personas/create-domain-user shy)]
      
        (fb-lab/make-friend shy jack)
        (fb-lab/make-friend shy jill)
        
        (fb-lab/login-as shy)
 
-       (contact/update-contacts (user/reload db-shy))
-       (user/reload db-shy))))
+       d-shy
+       ;;(contact/update-contacts d-shy)
+       )))

@@ -29,7 +29,7 @@
 ;;               :else 10))
 ;;   )
 
-(defn calculate [ibc c]
-  (* 10 (count (ibc c))))
+;; (defn calculate [ibc c]
+;;   (* 10 (count (ibc c))))
 
 

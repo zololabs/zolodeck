@@ -18,7 +18,7 @@
 (defn assert-datomic-id-not-present [entity]
   (is (not (has-datomic-id? entity))))
 
-(defn datomic-entity-count [a n]
+(defn- datomic-entity-count [a n]
   (count (demonic/run-query '[:find ?e :in $ ?a :where [?e ?a _]] a)))
 
 (defn assert-datomic-user-count [n]
@@ -36,3 +36,4 @@
 (defn assert-datomic-message-count [n]
   (is (= n (datomic-entity-count :message/guid n))))
 
+()

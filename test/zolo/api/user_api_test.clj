@@ -26,3 +26,7 @@
   ;;       assert-user-not-present-in-datomic))
 
   )
+
+
+(deftest test-new-user
+  (demonic-testing "New User Signup"))

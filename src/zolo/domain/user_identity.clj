@@ -40,11 +40,4 @@
        fb-user-identity
        :identity/email))
 
-;; CRUD
-
-(defn update [ui new-values]
-  (if-not ui (throw (RuntimeException. "User Identity should not be nil")))
-  (-> ui
-      (merge new-values)
-      demonic/insert))
 
