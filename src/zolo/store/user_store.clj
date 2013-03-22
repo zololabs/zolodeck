@@ -9,7 +9,11 @@
   (logger/debug (str "Finding user for provider : " provider " and provider-uid : " provider-uid))
   (when provider-uid
     (-> (demonic/run-query
-         '[:find ?i :in $ ?provider-uid :where [?i :identity/provider-uid ?provider-uid]] provider-uid)
+         '[:find ?i :in $ ?provider ?provider-uid
+           :where
+           [?i :identity/provider-uid ?provider-uid]
+           [?i :identity/provider ?provider]
+           ] provider provider-uid)
         ffirst
         demonic-helper/load-from-db
         :user/_user-identities

@@ -4,8 +4,22 @@
         zolodeck.demonic.test)
   (:require [zolo.store.user-store :as u-store]
             [zolo.test.assertions.datomic :as db-assert]
-            [zolo.personas.shy :as shy-persona]))
+            [zolo.personas.factory :as personas]
+            [zolo.personas.shy :as shy-persona]
+            [zolodeck.clj-social-lab.facebook.core :as fb-lab]))
 
+(demonictest test-find-by-provider-info
+  (personas/in-social-lab
+   (let [fb-user1 (fb-lab/create-user "first1" "last1")
+         fb-user2 (fb-lab/create-user "first2" "last2")
+         db-user1 (personas/create-db-user fb-user1)
+         db-user2 (personas/create-db-user fb-user2)]
+     
+     (is (= db-user2 (u-store/find-by-provider-and-provider-uid :provider/facebook (:id fb-user2))))
+     (is (= db-user1 (u-store/find-by-provider-and-provider-uid :provider/facebook (:id fb-user1))))
+     
+     (is (nil? (u-store/find-by-provider-and-provider-uid :provider/twitter (:id fb-user1))))
+     (is (nil? (u-store/find-by-provider-and-provider-uid :provider/facebook "1000junk"))))))
 
 (deftest test-save
   (demonic-testing "new user saved"

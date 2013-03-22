@@ -3,18 +3,25 @@
         zolodeck.utils.debug
         zolodeck.demonic.test)
   (require [zolo.service.user-service :as u-service]
+           [zolo.store.user-store :as u-store]
            [zolo.personas.factory :as personas]
            [zolo.test.assertions.datomic :as db-assert]
            [zolo.test.assertions.domain :as d-assert]
            [zolodeck.clj-social-lab.facebook.core :as fb-lab]))
 
-;; (deftest test-get-user
+(deftest test-get-user
+  (demonic-testing "when user is not present it should return nil"
+    (personas/in-social-lab
+     (let [mickey (fb-lab/create-user "Mickey" "Mouse")]
+       (is (nil? (u-service/get-user (personas/request-params mickey true)))))))
 
-;;   (testing "when user is not present it should return nil"
-;;     (is ))
+  (demonic-testing "when user is present it should return distilled user"
+    (personas/in-social-lab
+     (let [mickey (fb-lab/create-user "Mickey" "Mouse")
+           d-mickey1 (u-service/new-user (personas/request-params mickey true))
+           d-mickey2 (u-service/get-user (personas/request-params mickey true))]
 
-
-;;   (testing "when user is present it should return distilled user"))
+       (is (= d-mickey1 d-mickey2))))))
 
 
 (deftest test-new-user

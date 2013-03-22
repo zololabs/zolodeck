@@ -8,6 +8,7 @@
             [zolo.social.facebook.stream :as fb-stream]
             [zolo.social.core :as social]
             [zolo.domain.user :as user]
+            [zolo.store.user-store :as u-store]
             [zolo.domain.message :as message]))
 
 (defn request-params [fb-user permission-granted?]
@@ -57,9 +58,12 @@
 ;;              user/signup-new-user
 ;;              (user/update-permissions-granted permission-granted?))))))
 
-(defn create-domain
-  -user [fb-user]
+(defn create-domain-user [fb-user]
   (-> fb-user
       (request-params true)
       social/signup-user))
 
+(defn create-db-user [fb-user]
+  (-> fb-user
+      create-domain-user
+      u-store/save))
