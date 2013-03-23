@@ -1,24 +1,10 @@
 (ns zolo.domain.user
   (:use zolo.setup.datomic-setup
-        [slingshot.slingshot :only [throw+ try+]]
         zolodeck.utils.debug
         zolodeck.utils.clojure)
-  (:require [zolo.utils.domain :as domain]
-            [zolo.utils.readers :as readers]
-            [zolo.domain.accessors :as dom]
-            [zolo.domain.social-identity :as social-identity]
-            [zolo.domain.user-identity :as user-identity]
-            [zolo.domain.interaction :as interaction]
-            [zolodeck.utils.string :as zolo-str]
-            [zolodeck.utils.calendar :as zolo-cal]
+  (:require [zolo.domain.user-identity :as user-identity]
             [zolodeck.utils.maps :as zolo-maps]
-            [zolo.domain.contact :as contact]
-            [zolo.domain.message :as message]
-            [sandbar.auth :as sandbar]
-            [clojure.set :as set]
-            [zolo.utils.logger :as logger]
-            [zolo.social.facebook.gateway :as fb-gateway]
-            [zolo.setup.config :as conf]))
+            [zolo.utils.logger :as logger]))
 
 (defn current-user []
   ;;(dissoc (sandbar/current-user) :username :roles)
