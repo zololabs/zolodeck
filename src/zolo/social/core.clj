@@ -11,6 +11,9 @@
   LINKEDIN :provider/linkedin
   TWITTER :provider/twitter})
 
+(defn valid-provider? [provider]
+  (some #{provider} (vals provider-enum)))
+
 (def gender-enum {
   "female" :gender/female
   "male"   :gender/male})

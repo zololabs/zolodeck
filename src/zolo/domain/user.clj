@@ -84,12 +84,6 @@
 
 
 
-;; (defn update-permissions-granted [user permissions-granted]
-;;   (-> user
-;;       user-identity/fb-user-identity
-;;       (assoc :identity/permissions-granted permissions-granted)
-;;       demonic/insert)
-;;   (reload user))
 
 ;; ;; (defn update-creds [user creds]
 ;; ;;   (update-with-extended-fb-auth-token user (:access-token creds)))
@@ -160,6 +154,12 @@
 (defn update-with-extended-fb-auth-token [u token]
   (let [fb-ui (user-identity/fb-user-identity u)
         updated (merge fb-ui {:identity/auth-token token})]
+    (if-not fb-ui u
+            (zolo-maps/update-in-when u [:user/user-identities] user-identity/is-fb? updated))))
+
+(defn update-permissions-granted [u permissions-granted]
+  (let [fb-ui (user-identity/fb-user-identity u)
+        updated (merge fb-ui {:identity/permissions-granted permissions-granted})]
     (if-not fb-ui u
       (zolo-maps/update-in-when u [:user/user-identities] user-identity/is-fb? updated))))
 

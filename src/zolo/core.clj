@@ -29,7 +29,8 @@
                                      web/json-response))
 
   ;;TODO Just loging in the user it is not Updating the User 
-  ;;(PUT "/users/:guid" [guid :as {params :params}] (web/json-response (user-api/update-user guid params)))
+  (PUT "/users/:guid" [guid :as {params :params}] (-> (user-api/update-user guid params)
+                                                      web/json-response ))
 
   ;;TODO move this to its own routes
   ;;(GET "/users/:user-id/suggestion_sets/:name" [user-id name] (web/json-response (ss-api/find-suggestion-set user-id name)))

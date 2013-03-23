@@ -19,8 +19,27 @@
      (is (= db-user1 (u-store/find-by-provider-and-provider-uid :provider/facebook (:id fb-user1))))
      
      (is (nil? (u-store/find-by-provider-and-provider-uid :provider/twitter (:id fb-user1))))
+     (is (nil? (u-store/find-by-provider-and-provider-uid  nil (:id fb-user1))))
+     (is (nil? (u-store/find-by-provider-and-provider-uid :junk (:id fb-user1))))
      (is (nil? (u-store/find-by-provider-and-provider-uid "junk" (:id fb-user1))))
      (is (nil? (u-store/find-by-provider-and-provider-uid :provider/facebook "1000junk"))))))
+
+(demonictest test-find-by-guid
+  (personas/in-social-lab
+   (let [fb-user1 (fb-lab/create-user "first1" "last1")
+         fb-user2 (fb-lab/create-user "first2" "last2")
+         db-user1 (personas/create-db-user fb-user1)
+         db-user2 (personas/create-db-user fb-user2)]
+     
+     (is (= db-user2 (u-store/find-by-guid (:user/guid db-user2))))
+     (is (= db-user2 (u-store/find-by-guid (str (:user/guid db-user2)))))
+
+     (is (= db-user1 (u-store/find-by-guid (:user/guid db-user1))))
+     
+     (is (nil? (u-store/find-by-guid (zolodeck.utils.clojure/random-guid-str))))
+     (is (nil? (u-store/find-by-guid nil)))
+
+     (is (thrown?  IllegalArgumentException (u-store/find-by-guid "100JUNK"))))))
 
 (deftest test-save
   (demonic-testing "new user saved"
