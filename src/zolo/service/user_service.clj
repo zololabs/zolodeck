@@ -40,7 +40,7 @@
   (-> (find-user request-params)
       user/distill))
 
-(defn get-user [guid]
+(defn get-user-by-guid [guid]
   (-> (u-store/find-by-guid guid)
       user/distill))
 

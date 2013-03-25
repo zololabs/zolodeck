@@ -37,7 +37,7 @@
 
 ;; GET /users/guid
 (defn find-user [guid]
-  (if-let [distilled-u (u-service/get-user guid)]
+  (if-let [distilled-u (u-service/get-user-by-guid guid)]
     {:status (STATUS-CODES :ok)
      :body distilled-u}
     (user-not-found)))

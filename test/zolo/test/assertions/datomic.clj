@@ -36,4 +36,3 @@
 (defn assert-datomic-message-count [n]
   (is (= n (datomic-entity-count :message/guid n))))
 
-()

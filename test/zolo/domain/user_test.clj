@@ -99,11 +99,11 @@
   
   (demonic-testing "Email should be empty if no user-identities are present"
     (let [du (user/distill {:user/guid "abc"})]
-      (is (= "abc" (:guid du)))
-      (is (empty? (:email du)))))
+      (is (= "abc" (:user/guid du)))
+      (is (empty? (:user/email du)))))
   
   (demonic-testing "Should return properly distilled user"
     (let [shy (shy-persona/create)
           du (user/distill shy)]
-      (is (= (str (:user/guid shy)) (:guid du)))
-      (is (= (shy-persona/email) (:email du))))))
+      (is (= (str (:user/guid shy)) (:user/guid du)))
+      (is (= (shy-persona/email) (:user/email du))))))

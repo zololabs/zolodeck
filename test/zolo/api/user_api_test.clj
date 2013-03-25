@@ -3,30 +3,21 @@
         zolodeck.demonic.test
         zolodeck.demonic.core
         zolodeck.utils.debug
-        zolo.scenario
-        zolo.test.web-utils
         zolo.test.core-utils
         zolo.web.status-codes)
   (:require [zolo.domain.user :as user]
-            [zolo.api.user-api :as user-api]))
-
-(deftest test-upsert-user
-  ;; (demonic-testing "New User"
-  ;;   (-> (new-scenario)
-  ;;       login-as-valid-facebook-user
-  ;;       post-new-user
-  ;;       was-request-successful?
-  ;;       assert-user-present-in-datomic))
-  ;;TODO Test is commented out
-  ;; (demonic-testing "New user with invalid facebook login"
-  ;;   (-> (new-scenario)
-  ;;       assert-user-not-present-in-datomic
-  ;;       post-new-user
-  ;;       (was-response-status? (:forbidden STATUS-CODES))
-  ;;       assert-user-not-present-in-datomic))
-
-  )
-
+            [zolo.test.web-utils :as w-utils]
+            [zolo.api.user-api :as user-api]
+            [zolo.personas.factory :as personas]
+            [zolodeck.clj-social-lab.facebook.core :as fb-lab]
+            [zolodeck.utils.maps :as zmaps]
+            [clojure.data.json :as json]
+            [zolo.core :as server]))
 
 (deftest test-new-user
-  (demonic-testing "New User Signup"))
+  (demonic-testing "New User Signup - good request"
+    (personas/in-social-lab
+     (let [mickey (fb-lab/create-user "Mickey" "Mouse")
+           resp (w-utils/web-request :post "/users" (personas/request-params mickey true))]
+       (is (= 201 (:status resp)))
+       (is (= "Mickey.Mouse@gmail.com" (get-in resp [:body :email])))))))
