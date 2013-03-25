@@ -1,7 +1,7 @@
 (defproject com.currylogic/zolodeck-api "0.1.0-SNAPSHOT"
   :description "Zolodeck API"
 
-  :dependencies [[org.clojure/clojure "1.4.0"]
+  :dependencies [[org.clojure/clojure "1.5.1"]
 
                  [compojure "1.1.5" ]
                  [ring/ring-core "1.2.0-beta1"]
