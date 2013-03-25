@@ -9,7 +9,8 @@
             [zolo.social.facebook.chat :as fb-chat]
             [zolo.utils.logger :as logger]
             [zolo.social.facebook.gateway :as fb-gateway]
-            [zolo.setup.config :as conf]))
+            [zolo.setup.config :as conf]
+            [zolo.service.core :as service]))
 
 (defn- log-into-fb-chat [user]
   (future
@@ -27,9 +28,16 @@
    (social/provider request-params)
    (social/provider-uid request-params)))
 
+(def val-request
+  {:login_provider [:required]
+   :login_provider_uid [:required]
+   :access_token [:required]
+   :permissions_granted [:required]})
+
 ;; Services
 (defn new-user [request-params]
   (-> request-params
+      (service/validate-request! val-request)
       social/signup-user
       update-with-extended-fb-auth-token          
       log-into-fb-chat

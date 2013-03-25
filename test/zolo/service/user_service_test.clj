@@ -2,6 +2,7 @@
   (:use [clojure.test :only [deftest is are testing]]
         zolodeck.utils.debug
         zolodeck.utils.clojure
+        zolo.test.assertions.core
         zolodeck.demonic.test)
   (require [zolo.service.user-service :as u-service]
            [zolo.domain.user-identity :as user-identity]
@@ -61,7 +62,7 @@
 
 
 (deftest test-new-user
-  (demonic-testing "new user sign up "
+  (demonic-testing "new user sign up - good request"
     (personas/in-social-lab
      (let [mickey (fb-lab/create-user "Mickey" "Mouse")]
 
@@ -74,4 +75,13 @@
          (is (= "Mickey.Mouse@gmail.com" (:user/email distilled-mickey)))
 
          (db-assert/assert-datomic-user-count 1)
-         (db-assert/assert-datomic-user-identity-count 1))))))
+         (db-assert/assert-datomic-user-identity-count 1)))))
+
+  (demonic-testing "new user sign up - bad request"
+
+    (thrown+? {:type :bad-request :error ["[:login_provider_uid] is required"
+                                          "[:access_token] is required"]}
+              (u-service/new-user (personas/request-params {} true)))
+
+    (db-assert/assert-datomic-user-count 0)
+    (db-assert/assert-datomic-user-identity-count 0)))

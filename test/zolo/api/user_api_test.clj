@@ -20,4 +20,11 @@
      (let [mickey (fb-lab/create-user "Mickey" "Mouse")
            resp (w-utils/web-request :post "/users" (personas/request-params mickey true))]
        (is (= 201 (:status resp)))
-       (is (= "Mickey.Mouse@gmail.com" (get-in resp [:body :email])))))))
+       (is (= "Mickey.Mouse@gmail.com" (get-in resp [:body :email]))))))
+
+  (demonic-testing "New User Signup - bad request"
+    (personas/in-social-lab
+     (let [mickey (fb-lab/create-user "Mickey" "Mouse")
+           resp (w-utils/web-request :post "/users" (personas/request-params {} true))]
+       (is (= 400 (:status resp)))))))
+
