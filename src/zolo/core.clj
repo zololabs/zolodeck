@@ -22,15 +22,15 @@
   (route/resources "/")
 
   ;;Users
-  (POST "/users" {params :params} (web/json-response (user-api/new-user params)))
+  (POST "/users" {params :params} (-> params user-api/new-user))
 
   ;;TODO Need to fix this for REST
-  (GET "/users" {params :params} (-> (user-api/find-users params)
-                                     web/json-response))
+  (GET "/users" {params :params} (-> params user-api/find-users ))
 
   ;;TODO Just loging in the user it is not Updating the User 
-  (PUT "/users/:guid" [guid :as {params :params}] (-> (user-api/update-user guid params)
-                                                      web/json-response ))
+  (PUT "/users/:guid" [guid :as {params :params}] (-> (user-api/update-user guid params)))
+
+  (GET "/users/:guid" [guid] (-> guid user-api/find-user ))
 
   ;;TODO move this to its own routes
   ;;(GET "/users/:user-id/suggestion_sets/:name" [user-id name] (web/json-response (ss-api/find-suggestion-set user-id name)))
@@ -48,7 +48,8 @@
         web/wrap-accept-header-validation
         web/wrap-error-handling
         demonic/wrap-demarcation
-        web/wrap-request-logging))))
+        web/wrap-request-logging
+        web/wrap-jsonify))))
 
 (defn start-api
   ([]

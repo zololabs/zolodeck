@@ -1,11 +1,12 @@
 (ns zolo.web.status-codes)
 
 (def STATUS-CODES
-     {:ok 200
-      :found 302
-      :bad-request 400
-      :forbidden 403
-      :not-found 404})
+  {:ok 200
+   :created 201
+   :found 302
+   :bad-request 400
+   :forbidden 403
+   :not-found 404})
 
 
 

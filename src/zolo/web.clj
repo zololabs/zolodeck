@@ -45,9 +45,23 @@
              "Cache-Control:" "max-age=0, no-cache,  must-revalidate"}
    :body (json/json-str data)})
 
+(defn jsonify [response-map]
+  (-> {:headers (merge {"Content-Type" "application/json; charset=utf-8"
+                        "Access-Control-Allow-Origin" (request-origin)
+                        "Access-Control-Allow-Credentials" "true"}
+                       (:headers response-map))}
+      (assoc :body (json/json-str (:body response-map)))
+      (assoc :status (:status response-map))))
+
 (defn error-response [error-object]
   (json-response {:error (:message error-object)}
                  (http-status/STATUS-CODES (:type error-object))))
+
+(defn wrap-jsonify [handler]
+  (fn [request]
+    (-> request
+        handler
+        jsonify)))
 
 (defn wrap-error-handling [handler]
   (fn [request]

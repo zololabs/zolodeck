@@ -36,8 +36,12 @@
       u-store/save
       user/distill))
 
-(defn get-user [request-params]
+(defn get-users [request-params]
   (-> (find-user request-params)
+      user/distill))
+
+(defn get-user [guid]
+  (-> (u-store/find-by-guid guid)
       user/distill))
 
 ;; (defn update-user [guid request-params]

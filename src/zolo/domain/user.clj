@@ -151,5 +151,5 @@
 
 (defn distill [u]
   (if u 
-    {:guid (str (:user/guid u))
-     :email (user-identity/fb-email u)}))
+    {:user/guid (str (:user/guid u))
+     :user/email (user-identity/fb-email u)}))
