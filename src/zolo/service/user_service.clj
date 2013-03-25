@@ -52,15 +52,6 @@
   (-> (u-store/find-by-guid guid)
       user/distill))
 
-;; (defn update-user [guid request-params]
-;;   (if-let [u (u-store/find-by-guid guid)]
-;;     (-> u
-;;         update-with-extended-fb-auth-token
-;;         (user/update-permissions-granted (:permissions_granted request-params))
-;;         log-into-fb-chat
-;;         u-store/save
-;;         user/distill)))
-
 (defn update-user [guid request-params]
   (-not-nil-> (u-store/find-by-guid guid)
               update-with-extended-fb-auth-token
