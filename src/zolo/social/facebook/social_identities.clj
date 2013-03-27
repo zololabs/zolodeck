@@ -1,4 +1,4 @@
-(ns zolo.social.facebook.contacts
+(ns zolo.social.facebook.social-identities
   (:use zolodeck.utils.debug)
   (:require [zolodeck.utils.string :as string]
             [zolo.utils.domain :as domain]
@@ -6,7 +6,7 @@
             [zolo.utils.countries :as countries]
             [zolo.utils.logger :as logger]))
 
-(defn contact-social-identity [friend]
+(defn social-identity-object [friend]
   (let [[language country-code] (string/split "_" (:locale friend))
         [month day year] (string/split "/" (:birthday friend))]
     (domain/force-schema-types
@@ -24,7 +24,3 @@
       :social/photo-url (get-in friend [:picture :data :url])
       })))
 
-(defn contact-object [friend]
-  {:contact/first-name (:first_name friend)
-   :contact/last-name (:last_name friend)
-   :contact/social-identities [(contact-social-identity friend)]})

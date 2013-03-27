@@ -18,41 +18,55 @@
             [zolodeck.clj-social-lab.facebook.core :as fb-lab]
             [zolodeck.utils.calendar :as zolo-cal]))
 
-;; (deftest test-update-contacts
-;;   (demonic-integration-testing  "Returning User"
-;;     (personas/in-social-lab
-;;      (let [mickey (fb-lab/create-user "Mickey" "Mouse")
-;;            donald (fb-lab/create-friend "Donald" "Duck")
-;;            daisy (fb-lab/create-friend "Daisy" "Duck")
-;;            minnie (fb-lab/create-friend "Minnie" "Mouse")
-;;            db-mickey (in-demarcation (user/signup-new-user (personas/create-social-user mickey)))]
+(defn- fetch-social-identities [fb-user]
+  (social/fetch-social-identities :provider/facebook "at" (:id fb-user) "date"))
 
-;;        (fb-lab/make-friend mickey donald)
-;;        (fb-lab/make-friend mickey daisy)
+(deftest test-updated-contacts
+  (personas/in-social-lab
+   (let [mickey (fb-lab/create-user "Mickey" "Mouse")
+         jack (fb-lab/create-friend "Jack" "Daniels")
+         jill (fb-lab/create-friend  "Jill" "Ferry")
+         mary (fb-lab/create-friend  "Mary" "Jane")
+         d-mickey (personas/create-domain-user mickey)]
+
+     (fb-lab/make-friend mickey jack)
+     (fb-lab/make-friend mickey jill)
+
+     (let [d-m-contacts (contact/updated-contacts (:user/contacts d-mickey)
+                                                  (fetch-social-identities mickey))]
+
+       (testing "Contacts are nil should create new contacts with new SIs"
+         (is (= 2 (count d-m-contacts)))
+         (d-assert/contacts-list-are-same [jack jill]
+                                          (sort-by contact/first-name d-m-contacts)))
        
-;;        (fb-lab/login-as mickey)
+       
+       (testing "sis is nil or empty should return no unchanged contacts"
 
-;;        (in-demarcation
-;;         (db-assert/assert-datomic-contact-count 0)
-;;         (db-assert/assert-datomic-social-count 0))
+         (let [d2-m-contacts (contact/updated-contacts d-m-contacts
+                                                       [])]
+           (is (= d-m-contacts d2-m-contacts))))
+       
+       (testing "Contact not present with given si should return append a new contact"
 
-;;        (in-demarcation
-;;         (contact/update-contacts (user/reload db-mickey))
-;;         (db-assert/assert-datomic-contact-count 2)
-;;         (db-assert/assert-datomic-social-count 2))
+          (fb-lab/make-friend mickey mary)
+          (let [d3-m-contacts (contact/updated-contacts d-m-contacts
+                                                        (fetch-social-identities mickey))]
+            
+            (is (= 3 (count d3-m-contacts)))
+            (d-assert/contacts-list-are-same [jack jill mary]
+                                             (sort-by contact/first-name d3-m-contacts)))
+          (fb-lab/unfriend mickey mary))
 
-;;        (in-demarcation
-;;         (fb-lab/make-friend mickey minnie)
-;;         (contact/update-contacts (user/reload db-mickey))
-        
-;;         (db-assert/assert-datomic-contact-count 3)
-;;         (db-assert/assert-datomic-social-count 3))
+       (testing "Contact present with given si should return update contact's si"
 
-;;        (let [[db-daisy db-donald db-minnie] (sort-by :contact/first-name (:user/contacts (in-demarcation (user/reload db-mickey))))]
-;;          (d-assert/contacts-are-same daisy db-daisy)
-;;          (d-assert/contacts-are-same donald db-donald)
-;;          (d-assert/contacts-are-same minnie db-minnie))))))
-
+         (let [updated-jill (fb-lab/update-friend (:id jill)
+                                                  {:last_name "Jackson" :name "Jill Jackson"})
+               d4-m-contacts (contact/updated-contacts d-m-contacts
+                                                       (fetch-social-identities mickey))]
+            (is (= 2 (count d4-m-contacts)))
+            (d-assert/contacts-list-are-same [jack updated-jill]
+                                             (sort-by contact/first-name d4-m-contacts))))))))
 
 ;; (deftest test-mute-contact
 ;;   (demonic-testing "Muting a contact"

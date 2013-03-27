@@ -12,8 +12,14 @@
 ;; (defn last-name [social-identities]
 ;;   (:social/last-name (first social-identities)))
 
-;; (defn social-identity-info [sd]
-;;   [(:social/provider sd) (:social/provider-uid sd)])
+(defn social-identity-info [sd]
+  [(:social/provider sd) (:social/provider-uid sd)])
+
+(defn has-id? [si si-id]
+  (= (social-identity-info si) si-id))
+
+(defn social-identity [sis si-id]
+  (first (filter #(has-id? % si-id) sis)))
 
 ;; (defn is-provider? [si provider]
 ;;   (= provider (:social/provider si)))

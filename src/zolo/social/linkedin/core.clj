@@ -22,7 +22,7 @@
     (print-vals "LI-AT:" li-at)
     (users/user-and-social-identity li-at)))
 
-(defmethod social/fetch-contacts :provider/linkedin [provider access-token user-id]
+(defmethod social/fetch-social-identities :provider/linkedin [provider access-token user-id]
   (let [{oauth-token :oauth_token oauth-token-secret :oauth_token_secret} (read-string access-token)
         contacts (gateway/contacts-list oauth-token oauth-token-secret)]
     (doall (map contacts/contact-object contacts))))
