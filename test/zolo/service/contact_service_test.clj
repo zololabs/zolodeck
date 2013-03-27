@@ -8,6 +8,7 @@
         conjure.core)
   (:require [zolo.personas.factory :as personas]
             [zolo.domain.user :as user]
+            [zolo.domain.contact :as contact]
             [zolo.social.core :as social]
             [zolo.test.assertions.datomic :as db-assert]
             [zolo.test.assertions.domain :as d-assert]
@@ -63,7 +64,7 @@
        
        (let [[db-daisy db-donald db-minnie] (->> (c-service/update-contacts-for-user db-mickey-key)
                                                  :user/contacts
-                                                 (sort-by :contact/first-name))]
+                                                 (sort-by contact/first-name))]
          (db-assert/assert-datomic-contact-count 3)
          (db-assert/assert-datomic-social-count 3)
          

@@ -21,9 +21,10 @@
   (mapcat fresh-social-identities-for-user-identity (:user/user-identities u)))
 
 (defn- update-contacts [user]
-  (let [fresh-sis (fresh-social-identities user)
-        updated-contacts (map #(contact/update-contact user  %) fresh-sis)]
-    (assoc user :user/contacts updated-contacts)))
+  (->> user
+       fresh-social-identities
+       (contact/updated-contacts (:user/contacts user))
+       (assoc user :user/contacts)))
 
 ;; Services
 (defn update-contacts-for-user [user-guid]
