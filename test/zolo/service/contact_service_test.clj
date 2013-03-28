@@ -15,7 +15,6 @@
             [zolo.service.contact-service :as c-service]
             [zolo.domain.interaction :as interaction]
             [zolo.domain.message :as message]
-            [zolo.setup.datomic-setup :as datomic-setup]
             [zolodeck.clj-social-lab.facebook.core :as fb-lab]
             [zolodeck.utils.calendar :as zolo-cal]))
 

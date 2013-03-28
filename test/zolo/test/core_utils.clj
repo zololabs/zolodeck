@@ -2,13 +2,14 @@
   (:use [clojure.test :only [run-tests deftest is are testing]]
         zolodeck.utils.debug)
   (:require [zolodeck.utils.clojure :as clojure]
-            [zolo.setup.config :as conf])
+            [zolo.setup.config :as conf]
+            [zolo.setup.datomic-setup :as datomic-setup])
   (:import [java.sql Time Date Timestamp]))
 
 (def ^:dynamic *file-path-prefix* nil)
 
-(zolo.setup.config/setup-config)
-(zolo.setup.datomic-setup/init-datomic)
+(conf/setup-config)
+(datomic-setup/init-datomic)
 
 (defmacro is-not [body]
   `(is (not ~body)))
