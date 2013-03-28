@@ -33,6 +33,12 @@
 (defn new-user-freshness-millis []
   (get-in CONFIG-MAP [:configs ENV :new-user-freshness-millis]))
 
+(defn context-io-key []
+  (get-in CONFIG-MAP [:configs ENV :context-io-key]))
+
+(defn context-io-secret []
+  (get-in CONFIG-MAP [:configs ENV :context-io-secret]))
+
 (defn li-api-key []
   (get-in CONFIG-MAP [:configs ENV :li-api-key]))
 
