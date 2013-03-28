@@ -38,7 +38,7 @@
 
 (defmulti fetch-creds login-dispatcher)
 
-(defmulti fetch-contacts provider-dispatcher)
+(defmulti fetch-social-identities provider-dispatcher)
 
 (defmulti fetch-messages provider-dispatcher)
 

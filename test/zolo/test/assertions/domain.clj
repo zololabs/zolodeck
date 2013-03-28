@@ -28,10 +28,14 @@
   (is (= (social/gender-enum (:gender fb-contact)) (:social/gender db-si))))
 
 (defn contacts-are-same [fb-contact db-contact]
-  (assert-map-values fb-contact [:first_name :last_name]
-                     db-contact [:contact/first-name :contact/last-name])
+  ;;TODO Need to filter to get fb-si instead of first
+  (let [db-fb-si (first (:contact/social-identities db-contact))]
+    (is (not (nil? db-fb-si)) (str "Social Identity for " (:first_name fb-contact) " should not be  nil!!!"))
+    (when db-fb-si
+      (social-identities-are-same fb-contact db-fb-si))))
 
-  (social-identities-are-same fb-contact (first (:contact/social-identities db-contact))))
+(defn contacts-list-are-same [fb-contacts db-contacts]
+  (doall (map #(contacts-are-same %1 %2) fb-contacts db-contacts)))
 
 (defn contact-is-muted [db-contact]
   (is (:contact/muted db-contact) (str (:contact/first-name db-contact) " is not muted!")))

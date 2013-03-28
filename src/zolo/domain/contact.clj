@@ -9,27 +9,79 @@
             [zolo.utils.logger :as logger]
             [zolo.utils.domain :as utils-domain]
             [zolo.social.core :as social]
-            [zolo.domain.social-identity :as social-identity]
+            [zolo.domain.social-identity :as si]
             [zolo.domain.accessors :as dom]
             [zolodeck.demonic.core :as demonic]
             [zolo.domain.score :as score]
             [clojure.set :as set]))
 
-;; (defn contact-lookup-table [c]
+;; (defn- contact-lookup-table [c]
 ;;   (->> (:contact/social-identities c)
-;;       (map (fn [s] {(social-identity/social-identity-info s) c}))
+;;       (map (fn [s] {(si/social-identity-info s) c}))
 ;;       (apply merge)))
 
-;; (defn contacts-lookup-table [contacts]
+;; (defn- contacts-lookup-table [contacts]
 ;;   (or (->> (map contact-lookup-table contacts)
 ;;            (apply merge))
 ;;       {}))
 
-;; (defn find-contact-from-lookup [user social-identities]
+;; (defn- find-contact-from-lookup [user social-identities]
 ;;   (let [contacts-lookup (contacts-lookup-table (:user/contacts user))]
 ;;     (->> social-identities
-;;          (map social-identity/social-identity-info)
+;;          (map si/social-identity-info)
 ;;          (some #(contacts-lookup %)))))
+
+(defn- base-contact [si]
+  {:contact/social-identities [si]})
+
+(defn- contact-has-si? [c si]
+  (some #(= (si/social-identity-info %)
+            (si/social-identity-info si))
+        (:contact/social-identities c)))
+
+(defn- find-contact-with-si [cs si]
+  (-> (filter #(contact-has-si? % si) cs)
+      first))
+
+(defn- update-si-in-contact [c fresh-si]
+  (let [updated-si (-> (:contact/social-identities c)
+                       (si/social-identity (si/social-identity-info fresh-si))
+                       (merge fresh-si))]
+    (zolo-maps/update-in-when c
+                              [:contact/social-identities]
+                              #(si/has-id? % (si/social-identity-info fresh-si))
+                              updated-si)))
+
+(defn- update-contacts-with-si [cs fresh-si]
+  (if-let [c (find-contact-with-si cs fresh-si)]
+    (map (fn [c] (if (contact-has-si? c fresh-si)
+                  (update-si-in-contact c fresh-si)
+                  c))
+         cs)
+    (->> fresh-si
+         base-contact
+         (conj cs))))
+
+(defn- value-from-si [c key]
+  (-> c
+      :contact/social-identities
+      first
+      key))
+
+;;Public
+(defn first-name [c]
+  (value-from-si c :social/first-name))
+
+(defn last-name [c]
+  (value-from-si c :social/last-name))
+
+(defn updated-contacts [cs sis]
+  (if (empty? sis)
+    cs
+    (-> cs
+        (update-contacts-with-si (first sis))
+        (updated-contacts (rest sis)))))
+
 
 ;; (defn provider-info-by-provider [u]
 ;;   (->> u
@@ -38,11 +90,6 @@
 ;;        (map #(select-keys % [:social/provider :social/provider-uid]))
 ;;        (group-by :social/provider)))
 
-;; (defn fresh-contacts-for-user-identity [user-identity]
-;;   (let [{provider :identity/provider
-;;          access-token :identity/auth-token
-;;          provider-uid :identity/provider-uid} user-identity]
-;;     (social/fetch-contacts provider access-token provider-uid "2012-10-22")))
 
 ;; ;;TODO Duplication find-by-guid
 ;; (defn find-by-guid [guid]
@@ -58,8 +105,7 @@
 ;; (defn reload [c]
 ;;   (find-by-guid (:contact/guid c)))
 
-;; (defn fresh-contacts [u]
-;;   (mapcat fresh-contacts-for-user-identity (:user/user-identities u)))
+
 
 ;; (defn update-contact [user fresh-contact]
 ;;   (let [contact (->> (:contact/social-identities fresh-contact)
@@ -69,16 +115,9 @@
 ;;              (utils-domain/update-fresh-entities-with-db-id
 ;;                (:contact/social-identities contact)
 ;;                (:contact/social-identities fresh-contact)
-;;                social-identity/social-identity-info
+;;                si/social-identity-info
 ;;                :social/guid))
 ;;       fresh-contact)))
-
-;; (defn update-contacts [user]
-;;   (let [fresh-cs (fresh-contacts user)
-;;         _ (logger/debug "Facebook returned" (count fresh-cs) "contacts for" (:user/first-name user))
-;;         updated-contacts (map #(update-contact user  %) fresh-cs)]
-;;     (-> (assoc user :user/contacts updated-contacts)
-;;         demonic/insert)))
 
 ;; (defn update-score [ibc c]
 ;;   (-> (assoc c :contact/score (score/calculate ibc c))

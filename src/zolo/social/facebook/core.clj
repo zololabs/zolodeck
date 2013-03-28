@@ -3,7 +3,7 @@
   (:require [zolo.social.core :as social]
             [zolo.social.facebook.gateway :as gateway]
             [zolo.social.facebook.users :as users]            
-            [zolo.social.facebook.contacts :as contacts]
+            [zolo.social.facebook.social-identities :as sis]
             [zolo.social.facebook.messages :as messages]
             [zolo.utils.logger :as logger]
             [zolodeck.utils.maps :as zolo-maps]))
@@ -26,10 +26,10 @@
   (let [{:keys [access-token user-id]} (login-creds request-params)]
     (users/user-and-user-identity access-token user-id request-params)))
 
-(defmethod social/fetch-contacts :provider/facebook [provider access-token user-id date]
+(defmethod social/fetch-social-identities :provider/facebook [provider access-token user-id date]
   ;(logger/trace "FetchContacts:" provider)
   (let [friends (gateway/friends-list access-token user-id)]
-    (doall (map contacts/contact-object friends))))
+    (doall (map sis/social-identity-object friends))))
 
 (defmethod social/fetch-messages :provider/facebook [provider access-token user-id date]
   ;(logger/trace "FetchMessages:" provider)
