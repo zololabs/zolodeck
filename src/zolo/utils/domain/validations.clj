@@ -75,7 +75,7 @@
                 (validate-attributes flattened-validation-map flattened-map))]
     (if (empty? errors)
       [true []]
-      [false errors]))) 
+      [false (sort errors)]))) 
 
 (defn valid? [validation-map m]
   (cond 

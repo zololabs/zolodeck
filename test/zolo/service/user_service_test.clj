@@ -79,8 +79,8 @@
 
   (demonic-testing "new user sign up - bad request"
 
-    (thrown+? {:type :bad-request :error ["[:login_provider_uid] is required"
-                                          "[:access_token] is required"]}
+    (thrown+? {:type :bad-request :error ["[:access_token] is required"
+                                          "[:login_provider_uid] is required"]}
               (u-service/new-user (personas/request-params {} true)))
 
     (db-assert/assert-datomic-user-count 0)
