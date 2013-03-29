@@ -43,7 +43,6 @@
 (defn contact-is-not-muted [db-contact]
   (is (not (:contact/muted db-contact)) (str (:contact/first-name db-contact) " is muted!")))
 
-
 (defn messages-are-same [fb-message db-message]
   (let [fb-message-keys [:author_id :body :message_id :thread_id :to]
         db-message-keys [:message/from :message/text :message/message-id :message/thread-id :message/to]]
@@ -53,3 +52,6 @@
     (if (empty? (:attachment fb-message))
       (is (nil? (:message/attachments db-message)))
       (is (same-value? (:attachment fb-message) (:message/attachments db-message))))))
+
+(defn messages-list-are-same [fb-messages db-messages]
+  (doall (map #(messages-are-same %1 %2) fb-messages db-messages)))

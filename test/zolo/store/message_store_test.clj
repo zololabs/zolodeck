@@ -1,0 +1,60 @@
+(ns zolo.store.message-store-test
+  (:use clojure.test
+        zolodeck.utils.debug
+        zolodeck.demonic.test)
+  (:require [zolo.store.message-store :as m-store]
+            [zolo.test.assertions.datomic :as db-assert]
+            [zolo.test.assertions.domain :as d-assert]
+            [zolo.personas.factory :as personas]
+            [zolo.personas.shy :as shy-persona]
+            [zolo.domain.message :as message]
+            [zolodeck.clj-social-lab.facebook.core :as fb-lab]
+            [zolo.social.core :as social]))
+
+(demonictest test-append-messages
+  (personas/in-social-lab
+   (let [mickey (fb-lab/create-user "Mickey" "Mouse")
+         donald (fb-lab/create-friend "Donald" "Duck")
+         daisy (fb-lab/create-friend "Daisy" "Duck")
+         db-mickey (personas/create-db-user mickey)]
+
+     (fb-lab/make-friend mickey donald)
+     (fb-lab/make-friend mickey daisy)
+
+     (let [m1 (fb-lab/send-message mickey donald "1" "Hi, what's going on?" "2012-05-01")
+           m2 (fb-lab/send-message donald mickey "1" "Nothing, just work..." "2012-05-02")
+           m3 (fb-lab/send-message mickey donald "1" "OK, should I get groceries?" "2012-05-03")]
+       
+       (fb-lab/login-as mickey)
+
+       (db-assert/assert-datomic-message-count 0)
+
+       (let [messages (social/fetch-messages :provider/facebook "at" "pid" "last-updated-seconds")
+             u-db-mickey (m-store/append-messages db-mickey messages)]
+
+         (testing "When no messages are present"
+           (db-assert/assert-datomic-message-count 3)
+
+           (d-assert/messages-list-are-same [m1 m2 m3] (->> u-db-mickey
+                                                            :user/messages
+                                                            (sort-by message/message-date))))
+
+         (testing "When previous messages are present it should not override"
+
+           (fb-lab/remove-all-messages mickey)
+           
+           (let [m4 (fb-lab/send-message mickey daisy "2" "Hi, how's  it going?" "2012-06-01")
+                 m5 (fb-lab/send-message daisy mickey "2" "Good, I finished writing the tests" "2012-06-02")]
+         
+             (db-assert/assert-datomic-message-count 3)
+
+             (let [messages (social/fetch-messages :provider/facebook "at" "pid" "last-updated-seconds")
+                   u-db-mickey (m-store/append-messages u-db-mickey messages)]
+
+               (db-assert/assert-datomic-message-count 5)
+               (d-assert/messages-list-are-same [m1 m2 m3 m4 m5] (->> u-db-mickey
+                                                                      :user/messages
+                                                                      (sort-by message/message-date)))))))))))
+
+
+

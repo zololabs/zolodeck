@@ -6,6 +6,7 @@ namespace :utils do
   task :m2clean do
     info "Deleting Zolodeck Libs from local m2"
     sh " rm -rf ~/.m2/repository/zolodeck/"
+    sh " rm -rf ~/.m2/repository/zololabs/"
     sh "lein deps"
   end
 

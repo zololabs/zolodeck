@@ -28,6 +28,10 @@
          ffirst
          demonic/load-entity)))
 
+;;TODO need test
+(defn reload [u]
+  (find-by-guid (:user/guid u)))
+
 (defn save [new-values]
   (-> new-values
       demonic/insert-and-reload))

@@ -1,0 +1,46 @@
+(ns zolo.service.message-service-test
+  (:use zolodeck.utils.debug
+        clojure.test
+        zolodeck.demonic.test)
+  (:require [zolo.personas.factory :as personas]
+            [zolo.test.assertions.datomic :as db-assert]
+            [zolo.test.assertions.domain :as d-assert]
+            [zolo.service.contact-service :as c-service]
+            [zolo.service.message-service :as m-service]
+            [zolo.domain.message :as message]
+            [zolo.store.user-store :as u-store]
+            [zolodeck.clj-social-lab.facebook.core :as fb-lab]))
+
+(deftest test-update-inbox-messages
+  (demonic-testing  "First time user"
+    (personas/in-social-lab
+     (let [mickey (fb-lab/create-user "Mickey" "Mouse")
+           donald (fb-lab/create-friend "Donald" "Duck")
+           daisy (fb-lab/create-friend "Daisy" "Duck")
+           db-mickey (personas/create-db-user mickey)]
+
+       (fb-lab/make-friend mickey donald)
+       (fb-lab/make-friend mickey daisy)
+
+       (let [m1 (fb-lab/send-message mickey donald "1" "Hi, what's going on?" "2012-05-01")
+             m2 (fb-lab/send-message donald mickey "1" "Nothing, just work..." "2012-05-02")
+             m3 (fb-lab/send-message mickey donald "1" "OK, should I get groceries?" "2012-05-03")
+             
+             m4 (fb-lab/send-message mickey daisy "2" "Hi, how's  it going?" "2012-06-01")
+             m5 (fb-lab/send-message daisy mickey "2" "Good, I finished writing the tests" "2012-06-02")]
+         
+         (fb-lab/login-as mickey)
+
+         (db-assert/assert-datomic-message-count 0)
+
+         (let [refreshed-mickey (-> db-mickey
+                                    :user/guid
+                                    c-service/update-contacts-for-user
+                                    :user/guid
+                                    m-service/update-inbox-messages)]
+
+           (db-assert/assert-datomic-message-count 5)
+
+           (d-assert/messages-list-are-same [m1 m2 m3 m4 m5] (->> refreshed-mickey
+                                                                  :user/messages
+                                                                  (sort-by message/message-date)))))))))

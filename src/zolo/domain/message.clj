@@ -14,7 +14,27 @@
             [zolodeck.demonic.core :as demonic]
             [zolo.utils.logger :as logger]))
 
-;; (def MESSAGES-START-TIME-SECONDS (-> #inst "2000-10-22" .getTime zolo-cal/to-seconds))
+(def MESSAGES-START-TIME-SECONDS (-> #inst "2000-10-22" .getTime zolo-cal/to-seconds))
+
+;;TODO Write Test
+(defn is-temp-message? [m]
+  (:temp-message/guid m))
+
+;;TODO test
+(defn message-date [m]
+  (if (is-temp-message? m)
+    (:temp-message/date m)
+    (:message/date m)))
+
+;;TODO Write Test
+(defn get-last-message-date [u]
+  (or (->> u
+           :user/messages
+           (remove is-temp-message?)
+           (sort-by :message/date)
+           last
+           :message/date)
+      MESSAGES-START-TIME-SECONDS))
 
 ;; (defn feeds-start-time-seconds []
 ;;   (-> (zolo-cal/now-joda)
