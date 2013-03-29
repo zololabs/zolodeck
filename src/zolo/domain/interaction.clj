@@ -1,15 +1,15 @@
 (ns zolo.domain.interaction
   (:use zolodeck.utils.debug
         zolodeck.utils.clojure)
-  (:require [zolo.domain.accessors :as dom]
-            [zolodeck.utils.maps :as zolo-maps]
+  (:require [zolodeck.utils.maps :as zolo-maps]
             [zolodeck.utils.calendar :as zolo-cal]
-            [zolo.utils.logger :as logger]))
+            [zolo.utils.logger :as logger]
+            [zolo.domain.message :as message]))
 
 ;;TODO Test this whole namespace
 
 (defn within-interaction-time? [previous-msg next-msg]
-  (let [gap-in-mins (zolo-cal/minutes-between (dom/message-date previous-msg) (dom/message-date next-msg))]
+  (let [gap-in-mins (zolo-cal/minutes-between (message/message-date previous-msg) (message/message-date next-msg))]
     (<= gap-in-mins 120)))
 
 (defn- is-part-of? [interaction msg]

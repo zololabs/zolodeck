@@ -34,8 +34,8 @@
               update-contacts
               u-store/save))
 
-(defn update-scores [user-guid]
-  (when-let [u (u-store/find-by-guid user-guid)]
-    (let [ibc (-> u dom/inbox-messages-by-contacts interaction/interactions-by-contacts)]
-      (doeach #(contact/update-score ibc %) (:user/contacts u)))
-    (u-store/reload u)))
+;; (defn update-scores [user-guid]
+;;   (when-let [u (u-store/find-by-guid user-guid)]
+;;     (let [ibc (-> u dom/inbox-messages-by-contacts interaction/interactions-by-contacts)]
+;;       (doeach #(contact/update-score ibc %) (:user/contacts u)))
+;;     (u-store/reload u)))
