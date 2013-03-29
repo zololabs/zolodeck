@@ -55,3 +55,11 @@
 
 (defn messages-list-are-same [fb-messages db-messages]
   (doall (map #(messages-are-same %1 %2) fb-messages db-messages)))
+
+(defn temp-messages-are-same [t-message db-t-message]
+
+  (let [keys [:temp-message/provider :temp-message/from :temp-message/text :temp-message/date :temp-message/mode]]
+    (assert-map-values t-message keys db-t-message keys))
+
+  (is (= #{(:temp-message/to t-message)}
+         (:temp-message/to db-t-message))))

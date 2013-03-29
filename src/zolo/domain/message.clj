@@ -36,6 +36,18 @@
            :message/date)
       MESSAGES-START-TIME-SECONDS))
 
+;;TODO Write Test
+(defn create-temp-message [from-user provider to-uid text thread-id]
+  {:temp-message/provider provider
+   :temp-message/from (->>  from-user
+                            :user/user-identities
+                            (user-identity/provider-uid provider))
+   :temp-message/to to-uid
+   :temp-message/text text
+   ; :temp-message/thread-id thread-id
+   :temp-message/mode "INBOX"
+   :temp-message/date (zolo-cal/now-instant)})
+
 ;; (defn feeds-start-time-seconds []
 ;;   (-> (zolo-cal/now-joda)
 ;;       (zolo-cal/minus 1 :week)

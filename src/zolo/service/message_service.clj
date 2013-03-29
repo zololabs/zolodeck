@@ -18,7 +18,7 @@
          provider-uid :identity/provider-uid} user-identity]
     (social/fetch-messages provider access-token provider-uid last-updated-seconds)))
 
-(defn- get-messages-for-user [u]
+(defn- get-inbox-messages-for-user [u]
   (let [last-updated-seconds (message/get-last-message-date u)]
     (->> u
          :user/user-identities
@@ -26,8 +26,8 @@
 
  ;; Services
 (defn update-inbox-messages [guid]
-  (let [u (-not-nil-> (u-store/find-by-guid guid)
-                      m-store/delete-temp-messages)]
+  (when-let [u (u-store/find-by-guid guid)]
     (->> u
-         get-messages-for-user
+         m-store/delete-temp-messages
+         get-inbox-messages-for-user
          (m-store/append-messages u))))

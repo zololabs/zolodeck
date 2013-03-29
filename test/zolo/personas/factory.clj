@@ -67,3 +67,7 @@
   (-> fb-user
       create-domain-user
       u-store/save))
+
+
+(defn create-temp-message [u to-user-provider-id text]
+  (message/create-temp-message u :provider/facebook  to-user-provider-id text "thread-id"))

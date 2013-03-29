@@ -57,4 +57,43 @@
                                                                       (sort-by message/message-date)))))))))))
 
 
+(demonictest test-append-temp-message
+  (personas/in-social-lab
+   (let [mickey (fb-lab/create-user "Mickey" "Mouse")
+         db-mickey (personas/create-db-user mickey)]
+
+     (db-assert/assert-datomic-temp-message-count 0)
+
+     (let [tm1 (personas/create-temp-message db-mickey "to-uid1" "Hello")
+           u-db-mickey (m-store/append-temp-message db-mickey tm1)]
+
+       (db-assert/assert-datomic-temp-message-count 1)
+       (d-assert/temp-messages-are-same tm1 (-> u-db-mickey :user/temp-messages first))
+
+       (let [tm2 (personas/create-temp-message db-mickey "to-uid2" "How are you?")
+             u-db-mickey (m-store/append-temp-message db-mickey tm2)]
+
+         (db-assert/assert-datomic-temp-message-count 2))))))
+
+(demonictest test-delete-temp-message
+  (personas/in-social-lab
+   (let [mickey (fb-lab/create-user "Mickey" "Mouse")
+         db-mickey (personas/create-db-user mickey)]
+
+     (db-assert/assert-datomic-temp-message-count 0)
+
+     (let [tm1 (personas/create-temp-message db-mickey "to-uid1" "Hello")
+           u-db-mickey (m-store/append-temp-message db-mickey tm1)]
+
+       (is (not (nil? (:user/temp-messages u-db-mickey))))
+       (db-assert/assert-datomic-temp-message-count 1)
+
+       (let [u-db-mickey (m-store/delete-temp-messages u-db-mickey)]
+         (is (nil? (:user/temp-messages u-db-mickey))))
+
+       (db-assert/assert-datomic-temp-message-count 0)))))
+
+
+
+
 

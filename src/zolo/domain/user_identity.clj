@@ -3,8 +3,15 @@
         [zolodeck.demonic.core :only [run-query load-entity]])
   (:require [zolodeck.demonic.core :as demonic]))
 
-(defn is-provider? [provider ui]
+;;TODO Tests for this whole namespace
+
+(defn- is-provider? [provider ui]
   (= provider (:identity/provider ui)))
+
+(defn provider-uid [provider uis]
+  (-> (filter #(is-provider? provider %) uis)
+      first
+      :identity/provider-uid))
 
 (defn is-fb? [ui]
   (is-provider? :provider/facebook ui))
@@ -39,5 +46,7 @@
   (->> u
        fb-user-identity
        :identity/email))
+
+
 
 
