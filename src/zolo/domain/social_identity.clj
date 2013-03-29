@@ -4,13 +4,7 @@
             [zolo.utils.domain :as domain]
             [zolodeck.demonic.core :as demonic]))
 
-;; ;;TODO (Need to get first from social detail which has populated)
-;; (defn first-name [social-identities]
-;;   (:social/first-name (first social-identities)))
-
-;; ;;TODO (Need to get last from social detail which has populated)
-;; (defn last-name [social-identities]
-;;   (:social/last-name (first social-identities)))
+;;TODO test this name space
 
 (defn social-identity-info [sd]
   [(:social/provider sd) (:social/provider-uid sd)])
