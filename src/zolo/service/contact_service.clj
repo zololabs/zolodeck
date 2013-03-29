@@ -5,6 +5,7 @@
   (:require [zolo.social.core :as social]
             [zolo.domain.user :as user]
             [zolo.domain.contact :as contact]
+            [zolo.domain.message :as message]
             [zolo.domain.interaction :as interaction]
             [zolo.store.user-store :as u-store]
             [zolo.utils.logger :as logger]
@@ -34,8 +35,8 @@
               update-contacts
               u-store/save))
 
-;; (defn update-scores [user-guid]
-;;   (when-let [u (u-store/find-by-guid user-guid)]
-;;     (let [ibc (-> u dom/inbox-messages-by-contacts interaction/interactions-by-contacts)]
-;;       (doeach #(contact/update-score ibc %) (:user/contacts u)))
-;;     (u-store/reload u)))
+(defn update-scores [user-guid]
+  (when-let [u (u-store/find-by-guid user-guid)]
+    (let [ibc (-> u message/inbox-messages-by-contacts interaction/interactions-by-contacts)]
+      (doeach #(contact/update-score ibc %) (:user/contacts u)))
+    (u-store/reload u)))

@@ -8,7 +8,7 @@
 
 ;;TODO Test this whole namespace
 
-(defn within-interaction-time? [previous-msg next-msg]
+(defn- within-interaction-time? [previous-msg next-msg]
   (let [gap-in-mins (zolo-cal/minutes-between (message/message-date previous-msg) (message/message-date next-msg))]
     (<= gap-in-mins 120)))
 

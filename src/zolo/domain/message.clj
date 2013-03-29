@@ -48,6 +48,64 @@
    :temp-message/mode "INBOX"
    :temp-message/date (zolo-cal/now-instant)})
 
+
+;;TODO test
+(defn message-provider [m]
+  (if (is-temp-message? m)
+    (:temp-message/provider m)
+    (:message/provider m)))
+
+(defn message-from [m]
+  (if (is-temp-message? m)
+    (:temp-message/from m)
+    (:message/from m)))
+
+(defn message-to [m]
+  (if (is-temp-message? m)
+    (:temp-message/to m)
+    (:message/to m)))
+
+(defn- update-buckets-for [buckets m contact-ids]
+  (let [updater (fn [b contact-id]
+                  (update-in b [[(message-provider m) contact-id]] conj m))]
+    (reduce updater buckets contact-ids)))
+
+(defn- bucket-message [buckets m]
+  (update-buckets-for buckets m (conj (message-to m) (message-from m))))
+
+;;TODO This method is in a wrong place
+(defn- contact-identifier [c]
+  [(:social/provider c) (:social/provider-uid c)])
+
+(defn- bucket-si [c buckets si]
+  (assoc-in buckets [(contact-identifier si)] c))
+
+(defn- bucket-contact [buckets c]
+  (->> c
+       :contact/social-identities
+       (reduce (partial bucket-si c) buckets)))
+
+(defn- contacts-by-social-identifier [u]
+  (->> u
+       :user/contacts
+       (reduce bucket-contact {})))
+
+;;TODO Test
+(defn messages-by-contacts [u message-filter-fn]
+  (let [contacts-lookup (contacts-by-social-identifier u)
+        all-messages (concat (:user/messages u) (:user/temp-messages u))
+        inbox-messages (filter message-filter-fn all-messages)
+        mbc (reduce bucket-message {} inbox-messages)]
+    (reduce #(assoc-in %1 [(contacts-lookup %2)] (sort-by message-date (mbc %2))) {} (keys contacts-lookup))))
+
+;;TODO Dont need this anymore as there will be only one type of message?!?
+(defn is-inbox-message? [m]
+  (or (= "INBOX" (:message/mode m))
+      (is-temp-message? m)))
+
+(defn inbox-messages-by-contacts [u]
+  (messages-by-contacts u is-inbox-message?))
+
 ;; (defn feeds-start-time-seconds []
 ;;   (-> (zolo-cal/now-joda)
 ;;       (zolo-cal/minus 1 :week)
