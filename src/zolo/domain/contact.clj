@@ -119,9 +119,10 @@
 ;;                :social/guid))
 ;;       fresh-contact)))
 
-;; (defn update-score [ibc c]
-;;   (-> (assoc c :contact/score (score/calculate ibc c))
-;;       demonic/insert))
+;;TODO test
+(defn update-score [ibc c]
+  (-> (assoc c :contact/score (score/calculate ibc c))
+      demonic/insert))
 
 ;; (defn set-muted [c muted?]
 ;;   (-> (assoc c :contact/muted muted?)

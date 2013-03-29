@@ -20,7 +20,7 @@
         parsed-cookie (token/parse-oauth-cookie auth-cookie-string)
         li-at (token/access-token (:access_token parsed-cookie))]
     (print-vals "LI-AT:" li-at)
-    (users/user-and-social-identity li-at)))
+    (users/user-and-user-identity li-at)))
 
 (defmethod social/fetch-social-identities :provider/linkedin [provider access-token user-id]
   (let [{oauth-token :oauth_token oauth-token-secret :oauth_token_secret} (read-string access-token)
