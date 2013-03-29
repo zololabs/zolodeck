@@ -94,10 +94,6 @@
 
 (schema-set "CONTACT ENTITY FACTS"
  (uuid-fact-schema   :contact/guid false "A GUID for a contact" false false false false)
- ;;TODO Need to decide whether we need these or not           
- (string-fact-schema :contact/first-name true "A contact's first name" false false false false) 
- (string-fact-schema :contact/last-name true "A contact's last name" false false false false)
-
  ;Social details
  (refs-fact-schema :contact/social-identities false "A contact's social detail records" false false false false)
 
