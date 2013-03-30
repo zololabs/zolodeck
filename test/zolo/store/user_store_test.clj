@@ -53,3 +53,41 @@
       ;;(is (= shy db-shy))
       )))
 
+(demonictest test-reload
+  (personas/in-social-lab
+   (let [fb-user (fb-lab/create-user "first" "last")
+         db-user (personas/create-db-user fb-user)]
+
+     (is (nil? (:user/refresh-started db-user)))
+
+     (u-store/stamp-refresh-start db-user)
+
+     (is (nil? (:user/refresh-started db-user)))
+     (is (not (nil? (:user/refresh-started (u-store/reload db-user)))))
+
+     (testing "when user passed is nil it should throw exception"
+       (is (thrown?  IllegalArgumentException (u-store/reload nil))))
+
+     (testing "when user passed does not have guid it should throw exception"
+       (is (thrown?  IllegalArgumentException (u-store/reload (dissoc db-user :user/guid))))))))
+
+
+(demonictest test-stamp
+  (personas/in-social-lab
+   (let [fb-user (fb-lab/create-user "first" "last")
+         db-user (personas/create-db-user fb-user)]
+
+     (is (nil? (:user/refresh-started db-user)))
+     (is (nil? (:user/last-updated db-user)))
+
+     (let [u-user (u-store/stamp-refresh-start db-user)]
+       (is (nil? (:user/last-updated u-user)))
+       (is (not (nil? (:user/refresh-started u-user)))))
+
+     (let [u-user (u-store/stamp-updated-time db-user)]
+       (is (not (nil? (:user/last-updated u-user))))
+       (is (not (nil? (:user/refresh-started u-user))))))
+
+   (testing "when nil is passed it should throw exception"
+     (is (thrown?  IllegalArgumentException (u-store/stamp-refresh-start nil)))
+     (is (thrown?  IllegalArgumentException (u-store/stamp-updated-time nil))))))

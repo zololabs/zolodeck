@@ -10,7 +10,9 @@
             [zolo.utils.logger :as logger]
             [zolo.social.facebook.gateway :as fb-gateway]
             [zolo.setup.config :as conf]
-            [zolo.service.core :as service]))
+            [zolo.service.core :as service]
+            [zolo.service.contact-service :as c-service]
+            [zolo.service.message-service :as m-service]))
 
 (defn- log-into-fb-chat [user]
   (future
@@ -23,6 +25,11 @@
         e-at (fb-gateway/extended-access-token (:identity/auth-token fb-ui) (conf/fb-app-id) (conf/fb-app-secret))]
     (user/update-with-extended-fb-auth-token user e-at)))
 
+(defn extend-fb-token [u]
+  (-> u
+      update-with-extended-fb-auth-token
+      u-store/save))
+
 (defn- find-user [request-params]
   (u-store/find-by-provider-and-provider-uid
    (social/provider request-params)
@@ -32,7 +39,8 @@
   {:login_provider [:required]
    :login_provider_uid [:required]
    :access_token [:required]
-   :permissions_granted [:required]})
+   :permissions_granted [:required]
+   :guid [:optional]})
 
 ;; Services
 (defn new-user [request-params]
@@ -59,3 +67,32 @@
               log-into-fb-chat
               u-store/save
               user/distill))
+
+;;TODO Need test and clean up
+(defn refresh-user-data [u]
+  (let [first-name (:user/first-name u)]
+    (logger/trace first-name "RefreshUserData... starting now!")
+    (let [updated-u (-> u
+                        u-store/reload
+                        u-store/stamp-refresh-start
+                        extend-fb-token
+                        :user/guid
+                        c-service/update-contacts-for-user)]
+      (logger/info first-name "Loaded contacts " (count (:user/contacts updated-u)))
+      
+      (m-service/update-inbox-messages (:user/guid updated-u))
+      (logger/info first-name "Inbox messages done for " (count (:user/contacts (u-store/reload u))) " contacts")    
+      ;; (message/update-feed-messages-for-all-contacts (u-store/reload u))
+      ;; (logger/info first-name "Feed messages done for " (count (:user/contacts (u-store/reload u))) " contacts")
+      (logger/info first-name "Refresh data done")
+      nil)))
+
+;;TODO Need test and clean up
+(defn refresh-user-scores [u]
+  (let [first-name (:user/first-name u)]
+    (logger/trace first-name "Scoring " (count (:user/contacts (u-store/reload u))) " contacts")
+    (c-service/update-scores (:user/guid u))
+    (logger/info first-name "scoring done")  
+    (u-store/stamp-updated-time (u-store/reload u))
+    (logger/info first-name "Refresh Score done")
+    nil))

@@ -8,7 +8,7 @@
              [zolo.utils.logger :as logger]
              [zolo.setup.config :as config]
              [zolo.social.bootstrap]
-            ;; [zolo.storm.facebook :as fb]
+             [zolo.storm.facebook :as fb]
              [zolo.web :as web]
              [compojure.route :as route]
              [compojure.handler :as handler]
@@ -61,9 +61,8 @@
 
 (defn start-storm []
   (zolo.setup.datomic-setup/init-datomic)
-  ;; (logger/with-logging-context {:env (config/environment)}
-  ;;   (fb/run-local-forever!))
-  )
+  (logger/with-logging-context {:env (config/environment)}
+    (fb/run-local-forever!)))
 
 (defn process-args [args]
   (cli/cli args

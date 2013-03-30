@@ -14,6 +14,7 @@
 (defn request-params [fb-user permission-granted?]
   (let [fb-creds (fb-lab/login-creds fb-user)]
     {:login_provider "FACEBOOK"
+     :guid nil
      :permissions_granted permission-granted?
      :access_token (get-in fb-creds [:providerLoginInfo :authResponse :accessToken])
      :login_provider_uid (get-in fb-creds [:providerLoginInfo :authResponse :userID])}))

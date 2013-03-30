@@ -14,12 +14,7 @@
 ;;   (-> (demonic/run-query '[:find ?u :where [?u :user/guid]])
 ;;       count))
 
-;; (defn creation-time [u]
-;;   (->> (:user/guid u)
-;;        (run-query '[:find ?tx :in $ ?g :where [?u :user/guid ?g ?tx]])
-;;        ffirst
-;;        load-entity
-;;        :db/txInstant))
+
 
 ;; (defn find-all-users []
 ;;   (->> (demonic/run-query '[:find ?u :where [?u :user/guid]])
@@ -27,10 +22,6 @@
 ;;        (map demonic/load-entity)
 ;;        doall))
 
-;; (defn- user-for-refresh [u]
-;;   (-> (select-keys u [:user/guid :user/last-updated :user/refresh-started :user/fb-permissions-time])
-;;       (assoc :user-temp/fb-permissions-time (user-identity/fb-permissions-time u))
-;;       (assoc :user-temp/creation-time (creation-time u))))
 
 ;; ;; TODO use datalog to only find users with permissions granted
 ;; (defn find-all-users-for-refreshes []
@@ -103,28 +94,6 @@
 ;;       (assoc :user/refresh-started (zolo-cal/now-instant))
 ;;       demonic/insert))
 
-;; (defn refresh-user-data [u]
-;;   (let [first-name (:user/first-name u)]
-;;     (logger/trace first-name "RefreshUserData... starting now!")
-;;     (stamp-refresh-start (reload u))
-;;     (extend-fb-token (reload u))
-;;     (contact/update-contacts (reload u))
-;;     (logger/info first-name "Loaded contacts " (count (:user/contacts (reload u))))
-;;     (message/update-inbox-messages (reload u))
-;;     (logger/info first-name "Inbox messages done for " (count (:user/contacts (reload u))) " contacts")    
-;;     (message/update-feed-messages-for-all-contacts (reload u))
-;;     (logger/info first-name "Feed messages done for " (count (:user/contacts (reload u))) " contacts")
-;;     (logger/info first-name "Refresh data done")
-;;     nil))
-
-;; (defn refresh-user-scores [u]
-;;   (let [first-name (:user/first-name u)]
-;;     (logger/trace first-name "Scoring " (count (:user/contacts (reload u))) " contacts")
-;;     (update-scores (reload u))
-;;     (logger/info first-name "scoring done")  
-;;     (stamp-updated-time (reload u))
-;;     (logger/info first-name "Refresh Score done")
-;;     nil))
 
 ;; (defn been-processed? [u]
 ;;   (:user/last-updated u))

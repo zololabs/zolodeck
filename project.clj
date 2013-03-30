@@ -16,9 +16,6 @@
                  [clj-time "0.4.4"]
                  [slingshot "0.10.3"]
 
-                 ;; [org.clojars.nakkaya.javax.mail/imap "1.4.3"]
-                 ;; [org.clojars.nakkaya.javax.mail/mail "1.4.3"]
-
                  [org.clojars.amit/zolo_fb_chat "0.0.1"]
                  
                  [org.clojure/core.match "0.2.0-alpha11"]
@@ -65,13 +62,17 @@
             [lein-ring "0.6.2"]
             [lein-cloverage "1.0.2"]]
 
-  :profiles {:dev
-             {:dependencies [[clj-stacktrace "0.2.4"]
-                             [ring-serve "0.1.2"]
-                             [zolodeck/clj-social-lab "1.0.0-SNAPSHOT"]
-                             [org.clojars.runa/conjure "2.1.1"]
-                             [difform "1.1.2"]]
-              :resource-paths [~(str (System/getProperty "user.home") "/.zolo")]}}
+  :profiles {:dev {:dependencies [[clj-stacktrace "0.2.4"]
+                                  [ring-serve "0.1.2"]
+                                  [zolodeck/clj-social-lab "1.0.0-SNAPSHOT"]
+                                  [org.clojars.runa/conjure "2.1.1"]
+                                  [difform "1.1.2"]]
+                   :resource-paths [~(str (System/getProperty "user.home") "/.zolo")]}
+
+             :provided {:dependencies [[storm/storm-lib "0.9.0-wip16"]]}
+     
+             :storm {:source-paths ["storm-src"]
+                     :dependencies [[storm/storm-lib "0.9.0-wip16"]]}}
 
   :uberjar-name ~(str "zolodeck-api-"
                       (or (System/getenv "BUILD_NUMBER") "local")

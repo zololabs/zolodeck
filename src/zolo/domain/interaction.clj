@@ -22,11 +22,12 @@
     (conj-at-end (conj-at-end msg (last interactions)) (butlast interactions))
     (conj-at-end [msg] interactions)))
 
-(defn messages->interactions [msgs]
+(defn- messages->interactions [msgs]
   (reduce bucket-by-time [] msgs))
 
 (defn interactions-by-contacts [imbc]
-  (zolo-maps/transform-vals-with imbc (fn [c msgs] (messages->interactions msgs))))
+  (zolo-maps/transform-vals-with imbc (fn [c msgs]
+                                        (messages->interactions msgs))))
 
 ;; (defn ibc [user]
 ;;   (-> user
