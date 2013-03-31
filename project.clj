@@ -69,11 +69,17 @@
                                   [difform "1.1.2"]]
                    :resource-paths [~(str (System/getProperty "user.home") "/.zolo")]}
 
-             :provided {:dependencies [[storm/storm-lib "0.9.0-wip16"]]}
-     
-             :storm {:source-paths ["storm-src"]
-                     :dependencies [[storm/storm-lib "0.9.0-wip16"]]}}
+             :storm-lib {:dependencies [[storm/storm-lib "0.9.0-wip16"]]}
 
+             :storm [:dev
+                     {:source-paths ["src" "storm-src"]
+                      :main zolo.storm.core
+                      :uberjar-name ~(str "zolodeck-storm-"
+                                          (or (System/getenv "BUILD_NUMBER") "local")
+                                          "-"
+                                          (or (System/getenv "BUILD_ID") "")
+                                          "-standalone.jar")}]}
+  
   :uberjar-name ~(str "zolodeck-api-"
                       (or (System/getenv "BUILD_NUMBER") "local")
                       "-"

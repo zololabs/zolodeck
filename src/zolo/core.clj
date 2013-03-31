@@ -8,7 +8,6 @@
              [zolo.utils.logger :as logger]
              [zolo.setup.config :as config]
              [zolo.social.bootstrap]
-             [zolo.storm.facebook :as fb]
              [zolo.web :as web]
              [compojure.route :as route]
              [compojure.handler :as handler]
@@ -59,14 +58,9 @@
      (run-jetty (var app) {:port port
                            :join? false})))  
 
-(defn start-storm []
-  (zolo.setup.datomic-setup/init-datomic)
-  (logger/with-logging-context {:env (config/environment)}
-    (fb/run-local-forever!)))
-
 (defn process-args [args]
   (cli/cli args
-           ["-s"  "--service" "storm/api" :default "api" :parse-fn #(keyword (.toLowerCase %))]
+           ["-s"  "--service" "api" :default "api" :parse-fn #(keyword (.toLowerCase %))]
            ["-p" "--port" "Listen on this port" :default 4000  :parse-fn #(Integer. %)] 
            ["-h" "--help" "Show help" :default false :flag true]))
 
@@ -78,6 +72,5 @@
       (println banner)
       (System/exit 0))
     (condp = (:service (print-vals "Options :" options))
-        :storm (start-storm)
         :api (start-api (:port options))
         :default (throw "Invalid Service :" (:s options)))))

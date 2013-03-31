@@ -13,6 +13,8 @@
             [zolo.utils.logger :as logger]
             [zolodeck.utils.clojure :as clj]
             [clojure.tools.cli :as cli]
+            [zolo.store.user-store :as u-store]
+            [zolo.service.user-service :as u-service]
             [zolo.social.bootstrap])
   (:import [backtype.storm StormSubmitter LocalCluster]
            [storm.trident TridentTopology]
@@ -22,7 +24,7 @@
 (defn refresh-guids-to-process []
   ;;(logger/info "Finding Refresh GUIDS to process...")
   (demonic/in-demarcation
-   (->> (user/find-all-users-for-refreshes)
+   (->> (u-store/find-all-users-for-refreshes)
         (remove recently-created-or-updated)
         (domap #(str (:user/guid %))))))
 
@@ -57,17 +59,17 @@
      (nextTuple []
                 (when-let [n (next-refresh-guid guids)]
                   (demonic/in-demarcation
-                   (let [u (user/find-by-guid-string n)]
+                   (let [u (u-store/find-by-guid n)]
                      (when (user-identity/fb-permissions-granted? u)
-                       (user/stamp-refresh-start u)
+                       (u-store/stamp-refresh-start u)
                        (logger/info "RefreshUserSpout emitting GUID:" n " for " (:user/first-name u) " " (:user/last-name u))
                        (emit-spout! collector [n]))))))
      (ack [id]))))
 
 (defn emit-new-or-perm-user [guid new-or-perm collector]
   (demonic/in-demarcation
-   (let [u (user/find-by-guid-string guid)]
-     (user/stamp-refresh-start u)
+   (let [u (u-store/find-by-guid guid)]
+     (u-store/stamp-refresh-start u)
      (logger/trace "NewPermSpout emitting " new-or-perm " user guid" guid " for " (:user/first-name u) " " (:user/last-name u))))
   (emit-spout! collector [guid]))
 
@@ -99,15 +101,15 @@
     (datomic/init-connection)
     (demonic/in-demarcation
      (let [guid (.getStringByField tuple "user-guid")
-           u (user/find-by-guid-string guid)]
+           u (u-store/find-by-guid guid)]
        (logger/info "Processing user:" (:user/first-name u))
        (demonic/in-demarcation
-        (user/refresh-user-data u))
+        (u-service/refresh-user-data u))
        (demonic/in-demarcation
-        (user/refresh-user-scores u))
+        (u-service/refresh-user-scores u))
        (demonic/in-demarcation
-        (logger/info "Completed bolt for " (:user/first-name u) " with " (count (:user/contacts (user/reload u))) " contacts"))
-       (if (> (- (count (:user/contacts (user/reload u))) (count (:user/contacts u))) 10)
+        (logger/info "Completed bolt for " (:user/first-name u) " with " (count (:user/contacts (u-store/reload u))) " contacts"))
+       (if (> (- (count (:user/contacts (u-store/reload u))) (count (:user/contacts u))) 10)
          (throw (RuntimeException. (str "Zombie warning for " (:user/first-name u)))))))
     (catch Exception e
       (logger/error e "Exception in bolt! Occured while processing tuple:" tuple))))
@@ -129,27 +131,27 @@
 ;;         (.each (fields "contact-guid") (UpdateMessages.) (fields "ignored")))
 ;;     (.build t)))
 
-(defn run-local! [millis]
-  (future
-    (config/setup-config)
-    (datomic/init-connection)
-    (let [cluster (LocalCluster.)]
-      (logger/trace "Submitting topology...")
-      (.submitTopology cluster "facebook" {TOPOLOGY-DEBUG true} (fb-topology))
-      (pause "Running topology for millis:"millis)
-      (logger/trace "Shutting down cluster!")
-      ;;(.shutdown cluster)
-      )))
+;; (defn run-local! [millis]
+;;   (future
+;;     (config/setup-config)
+;;     (datomic/init-connection)
+;;     (let [cluster (LocalCluster.)]
+;;       (logger/trace "Submitting topology...")
+;;       (.submitTopology cluster "facebook" {TOPOLOGY-DEBUG true} (fb-topology))
+;;       (pause "Running topology for millis:"millis)
+;;       (logger/trace "Shutting down cluster!")
+;;       ;;(.shutdown cluster)
+;;       )))
 
 (defn run-local-forever! []
   (let [cluster (LocalCluster.)]
     (logger/trace "Submitting topology...")
     (.submitTopology cluster "facebook" {TOPOLOGY-DEBUG true} (fb-topology))))
 
-(defn process-args [args]
-  (cli/cli args
-           ["-e"  "--env" "development/staging/production" :default "development" :parse-fn #(.toLowerCase %)]
-           ["-h" "--help" "Show help" :default false :flag true]))
+;; (defn process-args [args]
+;;   (cli/cli args
+;;            ["-e"  "--env" "development/staging/production" :default "development" :parse-fn #(.toLowerCase %)]
+;;            ["-h" "--help" "Show help" :default false :flag true]))
 
 ;;TODO Make this the entry point for running both in local and remote mode
 
