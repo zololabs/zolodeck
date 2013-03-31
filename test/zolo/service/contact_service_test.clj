@@ -22,22 +22,21 @@
 
 (deftest test-update-contacts-for-user
   (demonic-testing "when user is not present, it should return nil"
-    (is (nil? (c-service/update-contacts-for-user (zolodeck.utils.clojure/random-guid-str)))))
+    (is (nil? (c-service/update-contacts-for-user nil))))
 
   (demonic-testing  "User is present in the system and has NO contacts"
     (personas/in-social-lab
-     (let [db-mickey-key (-> (fb-lab/create-user "Mickey" "Mouse")
-                             personas/create-db-user
-                             :user/guid)]
+     (let [db-mickey (-> (fb-lab/create-user "Mickey" "Mouse")
+                         personas/create-db-user)]
        
        (db-assert/assert-datomic-contact-count 0)
        (db-assert/assert-datomic-social-count 0)
        
-       (c-service/update-contacts-for-user db-mickey-key)
+       (c-service/update-contacts-for-user db-mickey)
        (db-assert/assert-datomic-contact-count 0)
        (db-assert/assert-datomic-social-count 0)
        
-       (is (= 0  (->> (c-service/update-contacts-for-user db-mickey-key)
+       (is (= 0  (->> (c-service/update-contacts-for-user db-mickey)
                        :user/contacts
                        count))))))
   
@@ -47,9 +46,8 @@
            donald (fb-lab/create-friend "Donald" "Duck")
            daisy (fb-lab/create-friend "Daisy" "Duck")
            minnie (fb-lab/create-friend "Minnie" "Mouse")
-           db-mickey-key (-> mickey
-                             personas/create-db-user
-                             :user/guid)]
+           db-mickey (-> mickey
+                         personas/create-db-user)]
 
        (fb-lab/make-friend mickey donald)
        (fb-lab/make-friend mickey daisy)       
@@ -57,21 +55,21 @@
        (db-assert/assert-datomic-contact-count 0)
        (db-assert/assert-datomic-social-count 0)
        
-       (c-service/update-contacts-for-user db-mickey-key)
-       (db-assert/assert-datomic-contact-count 2)
-       (db-assert/assert-datomic-social-count 2)
-       
-       (fb-lab/make-friend mickey minnie)
-       
-       (let [[db-daisy db-donald db-minnie] (->> (c-service/update-contacts-for-user db-mickey-key)
-                                                 :user/contacts
-                                                 (sort-by contact/first-name))]
-         (db-assert/assert-datomic-contact-count 3)
-         (db-assert/assert-datomic-social-count 3)
+       (let [u-db-mickey (c-service/update-contacts-for-user db-mickey)]
+         (db-assert/assert-datomic-contact-count 2)
+         (db-assert/assert-datomic-social-count 2)
          
-         (d-assert/contacts-are-same daisy db-daisy)
-         (d-assert/contacts-are-same donald db-donald)
-         (d-assert/contacts-are-same minnie db-minnie))))))
+         (fb-lab/make-friend mickey minnie)
+         
+         (let [[db-daisy db-donald db-minnie] (->> (c-service/update-contacts-for-user u-db-mickey)
+                                                   :user/contacts
+                                                   (sort-by contact/first-name))]
+           (db-assert/assert-datomic-contact-count 3)
+           (db-assert/assert-datomic-social-count 3)
+           
+           (d-assert/contacts-are-same daisy db-daisy)
+           (d-assert/contacts-are-same donald db-donald)
+           (d-assert/contacts-are-same minnie db-minnie)))))))
 
 
 (deftest test-update-scores
@@ -98,11 +96,8 @@
        (db-assert/assert-datomic-message-count 0)
 
        (let [refreshed-mickey (-> db-mickey
-                                  :user/guid
                                   c-service/update-contacts-for-user
-                                  :user/guid
                                   m-service/update-inbox-messages
-                                  :user/guid
                                   c-service/update-scores)]
 
          (db-assert/assert-datomic-message-count 5)

@@ -14,7 +14,7 @@
 
 (demonictest test-update-inbox-messages
   (testing "when user is not present, it should return nil"
-    (is (nil? (m-service/update-inbox-messages (zolodeck.utils.clojure/random-guid-str)))))
+    (is (nil? (m-service/update-inbox-messages nil))))
     
   (personas/in-social-lab
    (let [mickey (fb-lab/create-user "Mickey" "Mouse")
@@ -35,10 +35,7 @@
 
        (testing  "User with no previous messages"
          (let [refreshed-mickey (-> db-mickey
-                                    :user/guid
                                     c-service/update-contacts-for-user
-                                    :user/guid
-                                    print-vals
                                     m-service/update-inbox-messages)]
 
            (db-assert/assert-datomic-message-count 3)
@@ -57,9 +54,7 @@
              (db-assert/assert-datomic-message-count 3)
 
              (let [refreshed-mickey (-> db-mickey
-                                        :user/guid
                                         c-service/update-contacts-for-user
-                                        :user/guid
                                         m-service/update-inbox-messages)]
 
                (db-assert/assert-datomic-message-count 5)
@@ -85,9 +80,7 @@
 
        (testing  "User with no previous messages"
          (let [refreshed-mickey (-> u-db-mickey
-                                    :user/guid
                                     c-service/update-contacts-for-user
-                                    :user/guid
                                     m-service/update-inbox-messages)]
 
            (db-assert/assert-datomic-temp-message-count 0))))))))

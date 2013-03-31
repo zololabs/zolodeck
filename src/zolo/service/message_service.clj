@@ -25,8 +25,8 @@
          (mapcat #(get-messages-for-user-identity % last-updated-seconds)))))
 
  ;; Services
-(defn update-inbox-messages [guid]
-  (when-let [u (u-store/find-by-guid guid)]
+(defn update-inbox-messages [u]
+  (when u
     (->> u
          m-store/delete-temp-messages
          get-inbox-messages-for-user

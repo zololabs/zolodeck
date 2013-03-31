@@ -30,13 +30,15 @@
        (assoc user :user/contacts)))
 
 ;; Services
-(defn update-contacts-for-user [user-guid]
-  (-not-nil-> (u-store/find-by-guid user-guid)
+(defn update-contacts-for-user [u]
+  (-not-nil-> u
               update-contacts
               u-store/save))
 
-(defn update-scores [user-guid]
-  (when-let [u (u-store/find-by-guid user-guid)]
-    (let [ibc (-> u message/inbox-messages-by-contacts interaction/interactions-by-contacts)]
-      (doeach #(contact/update-score ibc %) (:user/contacts u)))
-    (u-store/reload u)))
+(defn update-scores [u]
+  (when u
+    (let [ibc (-> u
+                  message/inbox-messages-by-contacts
+                  interaction/interactions-by-contacts)]
+      (doeach #(contact/update-score ibc %) (:user/contacts u))
+      (u-store/reload u))))
