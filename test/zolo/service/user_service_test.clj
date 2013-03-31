@@ -89,7 +89,7 @@
     (db-assert/assert-datomic-user-identity-count 0)))
 
 
-(demonictest test-refresh-user-data-and-scores
+(demonictest ^:storm test-refresh-user-data-and-scores
   (personas/in-social-lab
    (let [mickey (fb-lab/create-user "Mickey" "Mouse")
          donald (fb-lab/create-friend "Donald" "Duck")

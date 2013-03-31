@@ -69,10 +69,9 @@
                                   [difform "1.1.2"]]
                    :resource-paths [~(str (System/getProperty "user.home") "/.zolo")]}
 
-             :storm-lib {:dependencies [[storm/storm-lib "0.9.0-wip16"]]}
-
              :storm [:dev
-                     {:source-paths ["src" "storm-src"]
+                     {:dependencies [[storm/storm-lib "0.9.0-wip16"]]
+                      :source-paths ["src" "storm-src"]
                       :main zolo.storm.core
                       :uberjar-name ~(str "zolodeck-storm-"
                                           (or (System/getenv "BUILD_NUMBER") "local")
@@ -90,6 +89,7 @@
 
   :test-selectors {:default (fn [t] (not (:integration t)))
                    :integration :integration
+                   :storm :storm
                    :all (fn [t] true)}
 
   :repl-options {:init-ns zolo.core
