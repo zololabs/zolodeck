@@ -68,7 +68,7 @@
               u-store/save
               user/distill))
 
-;;TODO Need test and clean up
+;;TODO clean up
 (defn refresh-user-data [u]
   (let [first-name (:user/first-name u)]
     (logger/trace first-name "RefreshUserData... starting now!")
@@ -76,23 +76,22 @@
                         u-store/reload
                         u-store/stamp-refresh-start
                         extend-fb-token
-                        :user/guid
                         c-service/update-contacts-for-user)]
       (logger/info first-name "Loaded contacts " (count (:user/contacts updated-u)))
       
-      (m-service/update-inbox-messages (:user/guid updated-u))
-      (logger/info first-name "Inbox messages done for " (count (:user/contacts (u-store/reload u))) " contacts")    
-      ;; (message/update-feed-messages-for-all-contacts (u-store/reload u))
-      ;; (logger/info first-name "Feed messages done for " (count (:user/contacts (u-store/reload u))) " contacts")
-      (logger/info first-name "Refresh data done")
-      nil)))
+      (let [updated-u (m-service/update-inbox-messages updated-u)]
+        (logger/info first-name "Inbox messages done for " (count (:user/contacts updated-u)) " contacts")    
+        ;; (message/update-feed-messages-for-all-contacts (u-store/reload u))
+        ;; (logger/info first-name "Feed messages done for " (count (:user/contacts (u-store/reload u))) " contacts")
+        (logger/info first-name "Refresh data done")
+        updated-u))))
 
-;;TODO Need test and clean up
+;;TODO clean up
 (defn refresh-user-scores [u]
   (let [first-name (:user/first-name u)]
-    (logger/trace first-name "Scoring " (count (:user/contacts (u-store/reload u))) " contacts")
-    (c-service/update-scores (:user/guid u))
-    (logger/info first-name "scoring done")  
-    (u-store/stamp-updated-time (u-store/reload u))
-    (logger/info first-name "Refresh Score done")
-    nil))
+    (logger/trace first-name "Scoring " (count (:user/contacts u)) " contacts")
+    (let [updated-u (c-service/update-scores u)]
+      (logger/info first-name "scoring done")  
+      (let [updated-u (u-store/stamp-updated-time updated-u)]
+        (logger/info first-name "Refresh Score done")
+        updated-u))))
