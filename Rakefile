@@ -44,5 +44,13 @@ namespace :test do
     sh "lein test :all"
     Rake::Task["api:config:generate"].invoke
   end
+
+  desc "Runs API all tests using storm Lib"
+  task :storm do
+    info "Running API Unit and Integration Tests using Storm Profile"
+    Rake::Task["api:config:generate"].invoke("test")
+    sh "lein with-profile storm,storm-lib test :all"
+    Rake::Task["api:config:generate"].invoke
+  end
 end
 
