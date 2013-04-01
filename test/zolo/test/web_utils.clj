@@ -1,7 +1,7 @@
 (ns zolo.test.web-utils
-  (:use zolodeck.utils.maps
+  (:use zolo.utils.maps
         [clojure.test :only [run-tests deftest is are testing]]
-        zolodeck.utils.debug)
+        zolo.utils.debug)
   (:require [zolo.core :as server]
             [clojure.data.json :as json]))
 

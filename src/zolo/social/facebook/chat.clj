@@ -1,5 +1,5 @@
 (ns zolo.social.facebook.chat
-  (:use zolodeck.utils.debug)
+  (:use zolo.utils.debug)
   (:require [zolo.setup.config :as conf]
             [zolo.domain.user-identity :as user-identity]
             [zolo.utils.logger :as logger])

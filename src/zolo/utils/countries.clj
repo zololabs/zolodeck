@@ -1,7 +1,7 @@
 (ns zolo.utils.countries
   (:use world.country.list
-        zolodeck.utils.clojure)
-  (:require [zolodeck.utils.maps :as maps]))
+        zolo.utils.clojure)
+  (:require [zolo.utils.maps :as maps]))
 
 (defrunonce init []
   (let [en (parse-countries :en)

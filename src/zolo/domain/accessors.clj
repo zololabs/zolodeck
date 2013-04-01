@@ -1,10 +1,10 @@
 (ns zolo.domain.accessors
-  (:use zolodeck.utils.debug
-        zolodeck.utils.clojure)
+  (:use zolo.utils.debug
+        zolo.utils.clojure)
   (:require [zolodeck.demonic.core :as demonic]
             [zolodeck.demonic.helper :as dhelp]
-            [zolodeck.utils.maps :as zolo-maps]
-            [zolodeck.utils.calendar :as zolo-cal]))
+            [zolo.utils.maps :as zolo-maps]
+            [zolo.utils.calendar :as zolo-cal]))
 
 ;; (defn- contact-identifier [c]
 ;;   [(:social/provider c) (:social/provider-uid c)])

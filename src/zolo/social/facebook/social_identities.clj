@@ -1,6 +1,6 @@
 (ns zolo.social.facebook.social-identities
-  (:use zolodeck.utils.debug)
-  (:require [zolodeck.utils.string :as string]
+  (:use zolo.utils.debug)
+  (:require [zolo.utils.string :as string]
             [zolo.utils.domain :as domain]
             [zolo.social.core :as social]
             [zolo.utils.countries :as countries]

@@ -1,5 +1,5 @@
 (ns zolo.service.core
-  (:use zolodeck.utils.debug
+  (:use zolo.utils.debug
         [slingshot.slingshot :only [throw+]])
   (:require [zolo.utils.domain.validations :as validations]))
 

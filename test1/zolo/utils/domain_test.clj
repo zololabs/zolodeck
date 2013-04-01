@@ -1,6 +1,6 @@
 (ns zolo.utils.domain-test
-  (:use zolodeck.utils.debug
-        zolodeck.utils.test
+  (:use zolo.utils.debug
+        zolo.utils.test
         [clojure.test :only [run-tests deftest is are testing]]
         zolo.utils.domain))
 

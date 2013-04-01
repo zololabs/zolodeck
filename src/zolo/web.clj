@@ -1,13 +1,13 @@
 (ns zolo.web
   (:use [slingshot.slingshot :only [throw+ try+]]
-        zolodeck.utils.debug
+        zolo.utils.debug
         clojure.stacktrace)
   (:require [clojure.data.json :as json]
             [zolo.web.status-codes :as http-status]
             [zolo.domain.user :as user]
             [zolo.utils.logger :as logger]
             [zolo.setup.config :as config]
-            [zolodeck.utils.calendar :as zolo-cal]))
+            [zolo.utils.calendar :as zolo-cal]))
 
 (def ^:dynamic *ZOLO-REQUEST*)
 

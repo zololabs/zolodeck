@@ -1,6 +1,6 @@
 (ns zolo.api.suggestion-set-api-test
   (:use [clojure.test :only [run-tests deftest is are testing]]
-        zolodeck.utils.debug))
+        zolo.utils.debug))
 
 ;; (deftest test-create-activity-with-categories
 ;;   (refresh-db)

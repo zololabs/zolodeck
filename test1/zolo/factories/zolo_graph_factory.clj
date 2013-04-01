@@ -1,6 +1,6 @@
 (ns zolo.factories.zolo-graph-factory
-  (:use zolodeck.utils.clojure
-        zolodeck.utils.debug)
+  (:use zolo.utils.clojure
+        zolo.utils.debug)
   (:require [zolo.domain.zolo-graph :as zg]
             [zolo.domain.zolo-graph.validation :as zg-validation]))
 

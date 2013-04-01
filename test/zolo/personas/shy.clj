@@ -1,5 +1,5 @@
 (ns zolo.personas.shy
-  (:use zolodeck.utils.debug
+  (:use zolo.utils.debug
         conjure.core
         zolodeck.demonic.core)
   (:require [zolo.marconi.facebook.core :as fb-lab]

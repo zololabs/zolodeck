@@ -1,5 +1,5 @@
 (ns zolo.social.linkedin.users
-  (:use zolodeck.utils.debug)
+  (:use zolo.utils.debug)
   (:require [zolo.utils.domain :as domain]
             [zolo.social.linkedin.gateway :as gateway]            
             [zolo.utils.countries :as countries]))

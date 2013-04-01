@@ -1,5 +1,5 @@
 (ns zolo.domain.zolo-graph.validation-test
-  (:use zolodeck.utils.debug
+  (:use zolo.utils.debug
         [zolo.domain.zolo-graph.validation :as zg-validation]
         [clojure.test :only [run-tests deftest is are testing]])
   (:require [zolo.factories.zolo-graph-factory :as zgf]))

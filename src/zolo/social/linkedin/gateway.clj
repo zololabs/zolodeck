@@ -1,5 +1,5 @@
 (ns zolo.social.linkedin.gateway
-  (:use zolodeck.utils.debug)
+  (:use zolo.utils.debug)
   (:require [zolo.setup.config :as conf]
             [clojure.walk :as walk]
             [clojure.data.json :as json])

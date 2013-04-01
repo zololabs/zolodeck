@@ -1,6 +1,6 @@
 (ns zolo.domain.social-identity
-  (:use zolodeck.utils.debug)
-  (:require [zolodeck.utils.maps :as zolo-maps]
+  (:use zolo.utils.debug)
+  (:require [zolo.utils.maps :as zolo-maps]
             [zolo.utils.domain :as domain]
             [zolodeck.demonic.core :as demonic]))
 

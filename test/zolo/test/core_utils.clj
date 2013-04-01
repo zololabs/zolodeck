@@ -1,7 +1,7 @@
 (ns zolo.test.core-utils
   (:use [clojure.test :only [run-tests deftest is are testing]]
-        zolodeck.utils.debug)
-  (:require [zolodeck.utils.clojure :as clojure]
+        zolo.utils.debug)
+  (:require [zolo.utils.clojure :as clojure]
             [zolo.setup.config :as conf]
             [zolo.setup.datomic-setup :as datomic-setup])
   (:import [java.sql Time Date Timestamp]))

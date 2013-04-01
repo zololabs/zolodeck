@@ -2,7 +2,7 @@
   (:use zolodeck.demonic.test
         zolodeck.demonic.core
         zolo.test.core-utils
-        zolodeck.utils.debug
+        zolo.utils.debug
         [clojure.test :only [run-tests deftest is are testing]]
         conjure.core)
   (:require [zolo.domain.user :as user]
@@ -12,7 +12,7 @@
             [zolo.test.assertions.datomic :as db-assert]
             [zolo.test.assertions.domain :as d-assert]
             [zolo.marconi.facebook.core :as fb-lab]
-            [zolodeck.utils.calendar :as zolo-cal]))
+            [zolo.utils.calendar :as zolo-cal]))
 
 (deftest test-suggestion-set-name
   (testing "when bad data is passed it should throw exception"

@@ -1,10 +1,10 @@
 (ns zolo.social.facebook.gateway
-  (:use zolodeck.utils.debug
+  (:use zolo.utils.debug
         [slingshot.slingshot :only [throw+ try+]])
   (:require [clj-http.client :as http]
             [clojure.data.json :as json]
-            [zolodeck.utils.maps :as maps]
-            [zolodeck.utils.string :as string]
+            [zolo.utils.maps :as maps]
+            [zolo.utils.string :as string]
             [uri.core :as uri]
             [zolo.setup.config :as conf]
             [zolo.utils.logger :as logger]))

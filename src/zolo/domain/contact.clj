@@ -1,11 +1,11 @@
 (ns zolo.domain.contact
   (:use zolo.setup.datomic-setup        
         zolo.utils.domain
-        zolodeck.utils.debug
+        zolo.utils.debug
         [slingshot.slingshot :only [throw+ try+]])
-  (:require [zolodeck.utils.string :as zolo-str]
-            [zolodeck.utils.maps :as zolo-maps]
-            [zolodeck.utils.calendar :as zolo-cal]
+  (:require [zolo.utils.string :as zolo-str]
+            [zolo.utils.maps :as zolo-maps]
+            [zolo.utils.calendar :as zolo-cal]
             [zolo.utils.logger :as logger]
             [zolo.utils.domain :as utils-domain]
             [zolo.social.core :as social]

@@ -2,8 +2,8 @@
   (:use [clojure.test :only [run-tests deftest is are testing]]
         zolodeck.demonic.test
         zolodeck.demonic.core
-        zolodeck.utils.debug
-        zolodeck.utils.clojure
+        zolo.utils.debug
+        zolo.utils.clojure
         zolo.test.core-utils
         zolo.web.status-codes)
   (:require [zolo.domain.user :as user]
@@ -11,7 +11,7 @@
             [zolo.api.user-api :as user-api]
             [zolo.personas.factory :as personas]
             [zolo.marconi.facebook.core :as fb-lab]
-            [zolodeck.utils.maps :as zmaps]
+            [zolo.utils.maps :as zmaps]
             [clojure.data.json :as json]
             [zolo.service.user-service :as u-service]
             [zolo.core :as server]))

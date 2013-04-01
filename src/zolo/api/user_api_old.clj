@@ -1,6 +1,6 @@
 ;; (ns zolo.api.user-api-old
-;;   (:use zolodeck.utils.debug
-;;         zolodeck.utils.clojure)
+;;   (:use zolo.utils.debug
+;;         zolo.utils.clojure)
 ;;   (:require [zolo.social.core :as social]
 ;;             [sandbar.auth :as sandbar]
 ;;             [zolo.domain.user :as user]
@@ -14,7 +14,7 @@
 ;;             [zolo.social.facebook.chat :as fb-chat]
 ;;             [zolo.social.core :as social-core]
 ;;             [zolo.utils.logger :as logger]
-;;             [zolodeck.utils.calendar :as zolo-cal]))
+;;             [zolo.utils.calendar :as zolo-cal]))
 
 ;; (defn format-user [user new?]
 ;;   {:guid (str (:user/guid user))

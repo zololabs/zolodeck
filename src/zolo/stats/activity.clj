@@ -1,6 +1,6 @@
 (ns zolo.stats.activity
-  (:use zolodeck.utils.debug
-        zolodeck.utils.clojure)
+  (:use zolo.utils.debug
+        zolo.utils.clojure)
   (:require [zolo.domain.user :as user]
             [zolo.domain.contact :as contact]
             [zolo.domain.accessors :as dom]
@@ -8,9 +8,9 @@
             [zolo.stats.interaction-distribution :as int-d]
             [zolo.domain.message :as message]
             [zolo.domain.score :as score]
-            [zolodeck.utils.maps :as zolo-maps]
-            [zolodeck.utils.calendar :as zolo-cal]
-            [zolodeck.utils.math :as zolo-math]
+            [zolo.utils.maps :as zolo-maps]
+            [zolo.utils.calendar :as zolo-cal]
+            [zolo.utils.math :as zolo-math]
             [clj-time.core :as time]
             [clj-time.coerce :as ctc]))
 

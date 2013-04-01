@@ -1,5 +1,5 @@
 (ns zolo.utils.fe
-  (:use zolodeck.utils.debug)
+  (:use zolo.utils.debug)
   (:require [zolo.domain.accessors :as dom]
             [clj-time.core :as time])
   (:import org.joda.time.DateTime))

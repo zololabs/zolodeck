@@ -1,5 +1,5 @@
 (ns zolo.utils.test-utils
-  (:use [zolodeck.utils.debug])
+  (:use [zolo.utils.debug])
   (:require [zolo.marconi.facebook.api :as api]
             [zolo.setup.config :as conf]))
 

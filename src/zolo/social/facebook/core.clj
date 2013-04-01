@@ -1,12 +1,12 @@
 (ns zolo.social.facebook.core
-  (:use zolodeck.utils.debug)
+  (:use zolo.utils.debug)
   (:require [zolo.social.core :as social]
             [zolo.social.facebook.gateway :as gateway]
             [zolo.social.facebook.users :as users]            
             [zolo.social.facebook.social-identities :as sis]
             [zolo.social.facebook.messages :as messages]
             [zolo.utils.logger :as logger]
-            [zolodeck.utils.maps :as zolo-maps]))
+            [zolo.utils.maps :as zolo-maps]))
 
 (defn login-creds [request-params]
   {:access-token (:access_token request-params)

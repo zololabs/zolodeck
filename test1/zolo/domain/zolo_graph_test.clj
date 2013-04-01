@@ -1,5 +1,5 @@
 (ns zolo.domain.zolo-graph-test
-  (:use zolodeck.utils.debug
+  (:use zolo.utils.debug
         zolodeck.demonic.test
         [zolo.domain.zolo-graph :as zg]
         [clojure.test :only [run-tests deftest is are testing]]

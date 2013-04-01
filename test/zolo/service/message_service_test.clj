@@ -1,5 +1,5 @@
 (ns zolo.service.message-service-test
-  (:use zolodeck.utils.debug
+  (:use zolo.utils.debug
         clojure.test
         zolodeck.demonic.test)
   (:require [zolo.personas.factory :as personas]

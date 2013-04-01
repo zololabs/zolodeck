@@ -1,5 +1,5 @@
 (ns zolo.social.linkedin.core
-  (:use zolodeck.utils.debug)
+  (:use zolo.utils.debug)
   (:require [zolo.social.linkedin.users :as users]
             [zolo.social.linkedin.contacts :as contacts]
             [zolo.social.linkedin.gateway :as gateway]

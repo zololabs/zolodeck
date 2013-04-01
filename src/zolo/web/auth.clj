@@ -1,9 +1,9 @@
 (ns zolo.web.auth
-  (:use zolodeck.utils.debug)
+  (:use zolo.utils.debug)
   (:require [zolo.setup.config :as conf]
             [zolo.web.fb-auth :as fb-auth]
             [zolo.domain.user :as user]
-            [zolodeck.utils.string :as zolo-str]
+            [zolo.utils.string :as zolo-str]
             [zolo.utils.logger :as logger]))
 
 ;; (defn fb-user [fb-cookie]

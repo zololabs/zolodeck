@@ -1,9 +1,9 @@
 (ns zolo.stats.interaction-distribution
-  (:use zolodeck.utils.debug
-        zolodeck.utils.clojure)
+  (:use zolo.utils.debug
+        zolo.utils.clojure)
   (:require [zolo.domain.accessors :as dom]
-            [zolodeck.utils.calendar :as zolo-cal]
-            [zolodeck.utils.maps :as zolo-maps]
+            [zolo.utils.calendar :as zolo-cal]
+            [zolo.utils.maps :as zolo-maps]
             [clj-time.core :as time]
             [clj-time.coerce :as time-coerce]))
 

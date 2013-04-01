@@ -1,5 +1,5 @@
 (ns zolo.test.assertions
-  (:use zolodeck.utils.debug
+  (:use zolo.utils.debug
         [clojure.test :only [is are]])
   (:require [zolo.domain.zolo-graph :as zg]
             [zolo.domain.zolo-graph.validation :as zg-validation]))

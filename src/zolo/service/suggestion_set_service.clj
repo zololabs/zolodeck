@@ -1,6 +1,6 @@
 (ns zolo.service.suggestion-set-service
-  (:use zolodeck.utils.debug
-        zolodeck.utils.clojure
+  (:use zolo.utils.debug
+        zolo.utils.clojure
         [slingshot.slingshot :only [throw+ try+]])
   (:require [zolo.social.core :as social]
             [zolo.domain.user :as user]
@@ -10,7 +10,7 @@
             [zolo.setup.config :as conf]
             [zolo.domain.suggestion-set :as ss]
             [zolo.service.core :as service]
-            [zolodeck.utils.calendar :as zolo-cal]))
+            [zolo.utils.calendar :as zolo-cal]))
 
 (defn- suggestion-set [cs]
   {:name (ss/suggestion-set-name (zolo-cal/now-instant))

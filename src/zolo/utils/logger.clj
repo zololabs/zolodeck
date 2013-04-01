@@ -1,7 +1,7 @@
 (ns zolo.utils.logger
   (:require [clojure.tools.logging :as logger]
-            [zolodeck.utils.string :as string-utils])
-  (:use zolodeck.utils.debug
+            [zolo.utils.string :as string-utils])
+  (:use zolo.utils.debug
         clojure.pprint)
   (:import [org.slf4j MDC]))
 

@@ -1,15 +1,15 @@
 (ns zolo.social.facebook.messages
   (:use [slingshot.slingshot :only [throw+ try+]]
         zolo.social.facebook.gateway
-        zolodeck.utils.debug
-        zolodeck.utils.calendar
-        zolodeck.utils.clojure)
+        zolo.utils.debug
+        zolo.utils.calendar
+        zolo.utils.clojure)
   (:require [clojure.data.json :as json]
             [zolo.utils.domain :as domain]
-            [zolodeck.utils.maps :as maps]
+            [zolo.utils.maps :as maps]
             [zolo.utils.logger :as logger]
             [zolo.social.facebook.stream :as stream]
-            [zolodeck.utils.calendar :as zolo-cal]
+            [zolo.utils.calendar :as zolo-cal]
             [clj-time.coerce :as ctc]))
 
 (def MODE-INBOX "INBOX")

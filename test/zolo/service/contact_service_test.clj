@@ -3,7 +3,7 @@
         zolodeck.demonic.test
         zolodeck.demonic.core
         zolo.test.core-utils
-        zolodeck.utils.debug
+        zolo.utils.debug
         [clojure.test :only [run-tests deftest is are testing]]
         conjure.core)
   (:require [zolo.personas.factory :as personas]
@@ -18,7 +18,7 @@
             [zolo.domain.message :as message]
             [zolo.store.user-store :as u-store]
             [zolo.marconi.facebook.core :as fb-lab]
-            [zolodeck.utils.calendar :as zolo-cal]))
+            [zolo.utils.calendar :as zolo-cal]))
 
 (deftest test-update-contacts-for-user
   (demonic-testing "when user is not present, it should return nil"

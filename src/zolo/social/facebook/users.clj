@@ -1,9 +1,9 @@
 (ns zolo.social.facebook.users
-  (:use zolodeck.utils.debug)
+  (:use zolo.utils.debug)
   (:require [zolo.social.core :as social]
             [zolo.utils.domain :as domain]
             [zolo.social.facebook.gateway :as gateway]            
-            [zolodeck.utils.string :as string]))
+            [zolo.utils.string :as string]))
 
 (defn basic-info [extended-user-info]
   (domain/force-schema-types

@@ -1,12 +1,12 @@
 (ns zolo.store.user-store
-  (:use zolodeck.utils.debug
-        zolodeck.utils.clojure
+  (:use zolo.utils.debug
+        zolo.utils.clojure
         [zolodeck.demonic.core :only [insert run-query load-entity] :as demonic]
         [zolodeck.demonic.helper :only [load-from-db] :as demonic-helper]
         [zolodeck.demonic.loadable :only [entity->loadable] :as loadable])
   (:require [zolo.utils.logger :as logger]
             [zolo.social.core :as social]
-            [zolodeck.utils.calendar :as zolo-cal]
+            [zolo.utils.calendar :as zolo-cal]
             [zolo.domain.user-identity :as user-identity]))
 
 (defn creation-time [u]

@@ -1,9 +1,9 @@
 (ns zolo.domain.message
-  (:use zolodeck.utils.debug
-        zolodeck.utils.clojure)
+  (:use zolo.utils.debug
+        zolo.utils.clojure)
   (:require [clojure.set :as set]
-            [zolodeck.utils.maps :as zolo-maps]
-            [zolodeck.utils.calendar :as zolo-cal]
+            [zolo.utils.maps :as zolo-maps]
+            [zolo.utils.calendar :as zolo-cal]
             [zolo.utils.domain :as utils-domain]
             [zolo.domain.accessors :as dom]
             [zolo.domain.contact :as contact]            

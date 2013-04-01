@@ -1,6 +1,6 @@
 (ns zolo.store.message-store
-  (:use zolodeck.utils.debug
-        zolodeck.utils.clojure)
+  (:use zolo.utils.debug
+        zolo.utils.clojure)
   (:require [zolo.utils.logger :as logger]
             [zolo.social.core :as social]
             [zolodeck.demonic.core :as demonic]

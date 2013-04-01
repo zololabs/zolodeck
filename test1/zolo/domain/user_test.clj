@@ -6,7 +6,7 @@
         zolodeck.demonic.test
         zolo.test.core-utils
         zolo.test.assertions
-        zolodeck.utils.debug
+        zolo.utils.debug
         [clojure.test :only [run-tests deftest is are testing]]
         conjure.core)
   (:require [zolo.factories.zolo-graph-factory :as zgf]
