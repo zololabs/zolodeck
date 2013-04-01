@@ -11,7 +11,6 @@
             [zolo.api.user-api :as user-api]
             [zolo.personas.factory :as personas]
             [zolo.marconi.facebook.core :as fb-lab]
-            [zolo.utils.maps :as zmaps]
             [clojure.data.json :as json]
             [zolo.service.user-service :as u-service]
             [zolo.core :as server]))

@@ -7,12 +7,7 @@
   (:require [zolo.utils.logger :as logger]
             [zolo.service.suggestion-set-service :as ss-service]))
 
-;; (defn- client-date-inst [client-date-rfc]
-;;   (let [fmt (:rfc822 clj-time.format/formatters)
-;;         lt (ctf/parse-local fmt client-date-rfc)]
-;;     (.toDate (time/date-time (time/year lt) (time/month lt) (time/day lt)))))
-
-;;GET /users/:guid/suggestion_set
+;;GET /users/:guid/suggestion_sets
 (defn find-suggestion-sets [user-guid params]
   (if-let [ss (ss-service/find-suggestion-set-for-today user-guid)]
     {:status (STATUS-CODES :ok)
