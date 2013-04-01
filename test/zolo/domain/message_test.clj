@@ -14,6 +14,7 @@
             [zolo.test.assertions.datomic :as db-assert]
             [zolo.test.assertions.domain :as d-assert]
             [zolo.domain.contact :as contact]
+            [zolo.marconi.core :as marconi]
             [zolo.marconi.facebook.core :as fb-lab]))
 
 ;; (deftest test-update-inbox-messages

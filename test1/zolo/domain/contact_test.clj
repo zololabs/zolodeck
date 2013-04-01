@@ -8,6 +8,7 @@
             [zolo.domain.contact :as contact]
             [zolo.facebook.gateway :as fb-gateway]
             [zolo.marconi.facebook.factory :as fb-factory]
+            [zolo.marconi.core :as marconi]
             [zolo.marconi.facebook.core :as fb]
             [zolo.personas.vincent :as vincent]
             [zolo.personas.loner :as loner]
@@ -101,7 +102,7 @@
 
       (testing "with two different users"
         (demonic-testing "it should return the correct contact"
-          (fb/in-facebook-lab
+          (marconi/in-lab
            (let [user1 (personas/create-fb-user "User" "1")
                  user2 (personas/create-fb-user "User" "2")
                  friend (personas/create-fb-user "Friend" "Original")

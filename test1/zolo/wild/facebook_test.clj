@@ -8,6 +8,7 @@
             [zolo.domain.contact :as contact]
             [zolo.facebook.gateway :as fb-gateway]
             [zolo.marconi.facebook.factory :as fb-factory]
+            [zolo.marconi.core :as marconi]
             [zolo.marconi.facebook.core :as fb]
             [zolo.personas.vincent :as vincent]
             [zolo.personas.loner :as loner]
@@ -15,7 +16,7 @@
             [zolo.test.assertions :as assertions]))
 
 (demonictest test-birthday-is-nil
-  (fb/in-facebook-lab
+  (marconi/in-lab
    (let [u (personas/create-fb-user "User" "Main")
          c (-> (personas/create-fb-user "No" "Birthday")
                :id
@@ -37,7 +38,7 @@
          (is (= #inst "1900-01-01T00:00:00.000-00:00" (:contact/fb-birthday c-from-db))))))))
 
 (demonictest test-birthday-does-not-have-year
-  (fb/in-facebook-lab
+  (marconi/in-lab
    (let [u (personas/create-fb-user "User" "Main")
          c (-> (personas/create-fb-user "No" "Year")
                :id

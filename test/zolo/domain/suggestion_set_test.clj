@@ -11,6 +11,7 @@
             [zolo.personas.factory :as personas]
             [zolo.test.assertions.datomic :as db-assert]
             [zolo.test.assertions.domain :as d-assert]
+            [zolo.marconi.core :as marconi]
             [zolo.marconi.facebook.core :as fb-lab]
             [zolo.utils.calendar :as zolo-cal]))
 

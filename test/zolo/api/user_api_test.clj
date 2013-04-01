@@ -10,6 +10,7 @@
             [zolo.test.web-utils :as w-utils]
             [zolo.api.user-api :as user-api]
             [zolo.personas.factory :as personas]
+            [zolo.marconi.core :as marconi]
             [zolo.marconi.facebook.core :as fb-lab]
             [clojure.data.json :as json]
             [zolo.service.user-service :as u-service]
