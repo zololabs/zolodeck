@@ -105,8 +105,10 @@
        (logger/info "Processing user:" (:user/first-name u))
        (demonic/in-demarcation
         (u-service/refresh-user-data u))
+       ;;TODO Need to reload
+       ;;TODO Why this has to be 2 different demarcation?
        (demonic/in-demarcation
-        (u-service/refresh-user-scores u))
+        (u-service/refresh-user-scores (u-store/reload u)))
        (demonic/in-demarcation
         (logger/info "Completed bolt for " (:user/first-name u) " with " (count (:user/contacts (u-store/reload u))) " contacts"))
        (if (> (- (count (:user/contacts (u-store/reload u))) (count (:user/contacts u))) 10)

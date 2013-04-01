@@ -41,7 +41,8 @@
    :access_token [:required :string]
    :permissions_granted [:required]
    :login_tz [:required :integer]
-   :guid [:optional :string]})
+   :guid [:optional :string]
+   :updated [:optional]})
 
 ;; Services
 (defn new-user [request-params]
