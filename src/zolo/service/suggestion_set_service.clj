@@ -1,7 +1,6 @@
 (ns zolo.service.suggestion-set-service
   (:use zolo.utils.debug
         zolo.utils.clojure
-        conjure.core
         [slingshot.slingshot :only [throw+ try+]])
   (:require [zolo.social.core :as social]
             [zolo.domain.user :as user]
