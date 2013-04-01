@@ -6,7 +6,7 @@
   (:require [zolo.social.core :as social]
             [zolo.social.facebook.messages :as fb-messages]
             [zolo.utils.calendar :as zolo-cal]
-            [zolodeck.demonic.core :as demonic]))
+            [zolo.demonic.core :as demonic]))
 
 (defn user-identities-are-same [fb-user db-ui]
   (assert-map-values fb-user [:uid :first_name :last_name :email :locale :pic_big :pic_small :profile_url :username]

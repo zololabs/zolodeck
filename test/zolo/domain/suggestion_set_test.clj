@@ -1,6 +1,6 @@
 (ns zolo.domain.suggestion-set-test
-  (:use zolodeck.demonic.test
-        zolodeck.demonic.core
+  (:use zolo.demonic.test
+        zolo.demonic.core
         zolo.test.core-utils
         zolo.utils.debug
         [clojure.test :only [run-tests deftest is are testing]]

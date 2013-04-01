@@ -11,7 +11,7 @@
             [zolo.social.core :as social]
             [zolo.domain.social-identity :as si]
             [zolo.domain.accessors :as dom]
-            [zolodeck.demonic.core :as demonic]
+            [zolo.demonic.core :as demonic]
             [zolo.domain.score :as score]
             [clojure.set :as set]))
 

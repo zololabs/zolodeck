@@ -1,7 +1,7 @@
 (ns zolo.setup.datomic-setup
   (:use [zolo.setup.config :as conf]
-        [zolodeck.demonic.core :as demonic]
-        [zolodeck.demonic.helper :as demonic-helper]
+        [zolo.demonic.core :as demonic]
+        [zolo.demonic.helper :as demonic-helper]
         [zolo.setup.datomic-schema :only [SCHEMA-TX] :as datomic-setup]
         zolo.utils.clojure))
 

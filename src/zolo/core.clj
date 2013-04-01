@@ -11,7 +11,7 @@
              [zolo.web :as web]
              [compojure.route :as route]
              [compojure.handler :as handler]
-             [zolodeck.demonic.core :as demonic]
+             [zolo.demonic.core :as demonic]
              [ring.util.response :as response]
              [zolo.api.user-api :as user-api]
              [zolo.api.suggestion-set-api :as ss-api]))

@@ -1,7 +1,7 @@
 (ns zolo.domain.user-test
   (:use [zolo.domain.user :as user]
-        zolodeck.demonic.test
-        zolodeck.demonic.core
+        zolo.demonic.test
+        zolo.demonic.core
         zolo.test.core-utils
         zolo.test.assertions.core
         zolo.utils.debug
@@ -15,7 +15,7 @@
             [zolo.test.assertions.datomic :as db-assert]
             [zolo.test.assertions.domain :as d-assert]
             [zolo.marconi.facebook.core :as fb-lab]
-            [zolodeck.utils.calendar :as zolo-cal]))
+            [zolo.utils.calendar :as zolo-cal]))
 
 ;; (deftest test-update
 ;;   (demonic-testing "User is not found"

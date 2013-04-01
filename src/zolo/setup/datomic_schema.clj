@@ -1,5 +1,5 @@
 (ns zolo.setup.datomic-schema
-  (:use zolodeck.demonic.schema
+  (:use zolo.demonic.schema
         [datomic.api :only [tempid] :as db]))
 
 (def SCHEMA-TX (atom []))

@@ -1,7 +1,7 @@
 (ns zolo.domain.user-identity-test
   (:use zolo.utils.debug
-        zolodeck.demonic.test
-        zolodeck.demonic.core
+        zolo.demonic.test
+        zolo.demonic.core
         [clojure.test :only [run-tests deftest is are testing]]
         conjure.core)
   (:require [zolo.domain.user-identity :as user-identity]

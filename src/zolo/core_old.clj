@@ -15,7 +15,7 @@
 ;;   (:require [compojure.route :as route]
 ;;             [compojure.handler :as handler]
 ;;             [clojure.tools.cli :as cli]
-;;             [zolodeck.demonic.core :as demonic]
+;;             [zolo.demonic.core :as demonic]
 ;;             [zolo.web.auth :as auth]
 ;;             [zolo.social.bootstrap]
 ;;             [zolo.social.core :as social]

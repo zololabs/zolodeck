@@ -1,5 +1,5 @@
 (ns zolo.domain.contact-test
-  (:use zolodeck.demonic.test
+  (:use zolo.demonic.test
         zolo.test.core-utils
         zolo.utils.debug
         [clojure.test :only [run-tests deftest is are testing]]

@@ -10,7 +10,7 @@
             [zolo.utils.logger :as logger]
             [zolo.service.core :as service]
             [zolo.store.message-store :as m-store]
-            [zolodeck.demonic.core :as demonic]))
+            [zolo.demonic.core :as demonic]))
 
 (defn- get-messages-for-user-identity [user-identity last-updated-seconds]
   (let [{provider :identity/provider

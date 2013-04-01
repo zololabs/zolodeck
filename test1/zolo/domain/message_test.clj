@@ -1,5 +1,5 @@
 (ns zolo.domain.message-test
-  (:use zolodeck.demonic.test
+  (:use zolo.demonic.test
         zolo.test.core-utils
         zolo.utils.debug
         zolo.utils.test

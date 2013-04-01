@@ -7,7 +7,7 @@
             [zolo.domain.message :as message]
             [zolo.domain.interaction :as interaction]
             [zolo.stats.activity :as activity]
-            [zolodeck.demonic.core :as demonic]
+            [zolo.demonic.core :as demonic]
             [zolo.utils.calendar :as zolo-cal]))
 
 (defn- suggestion-set-contacts [u]

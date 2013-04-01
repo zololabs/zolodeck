@@ -3,7 +3,7 @@
         zolo.utils.clojure)
   (:require [zolo.utils.logger :as logger]
             [zolo.social.core :as social]
-            [zolodeck.demonic.core :as demonic]
+            [zolo.demonic.core :as demonic]
             [zolo.store.user-store :as u-store]))
 
 (defn delete-temp-messages [u]

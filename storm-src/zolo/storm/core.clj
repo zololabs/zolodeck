@@ -6,7 +6,7 @@
              [zolo.setup.config :as config]
              [zolo.social.bootstrap]
              [zolo.storm.facebook :as fb]
-             [zolodeck.demonic.core :as demonic]))
+             [zolo.demonic.core :as demonic]))
 
 (defn start-storm []
   (zolo.setup.datomic-setup/init-datomic)

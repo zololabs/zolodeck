@@ -2,7 +2,7 @@
   (:use zolo.utils.debug)
   (:require [zolo.utils.maps :as zolo-maps]
             [zolo.utils.domain :as domain]
-            [zolodeck.demonic.core :as demonic]))
+            [zolo.demonic.core :as demonic]))
 
 ;;TODO test this name space
 

@@ -10,8 +10,8 @@
             [zolo.domain.social-identity :as social-identity]
             [zolo.domain.user-identity :as user-identity]
             [zolo.social.core :as social]            
-            [zolodeck.demonic.schema :as schema]
-            [zolodeck.demonic.core :as demonic]
+            [zolo.demonic.schema :as schema]
+            [zolo.demonic.core :as demonic]
             [zolo.utils.logger :as logger]))
 
 (def MESSAGES-START-TIME-SECONDS (-> #inst "2000-10-22" .getTime zolo-cal/to-seconds))

@@ -28,7 +28,7 @@
         {:write-json (fn [d out escape-unicode?]
                        (.print out (str "\"" (zolo-cal/date-to-string d (zolo-cal/simple-date-format "yyyy-MM-dd")) "\"")))})
 
-;; (extend zolodeck.demonic.loadable.Loadable json/Write-JSON
+;; (extend zolo.demonic.loadable.Loadable json/Write-JSON
 ;;         {:write-json (fn [x out escape-unicode?] (.print out
 ;;         (json/json-str(.m x))))})
 

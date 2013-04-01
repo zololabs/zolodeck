@@ -1,7 +1,7 @@
 (ns zolo.service.message-service-test
   (:use zolo.utils.debug
         clojure.test
-        zolodeck.demonic.test)
+        zolo.demonic.test)
   (:require [zolo.personas.factory :as personas]
             [zolo.test.assertions.datomic :as db-assert]
             [zolo.test.assertions.domain :as d-assert]

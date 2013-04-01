@@ -4,8 +4,8 @@
             [zolo.domain.user :as user]
             [zolo.utils.logger :as logger]
             [zolo.utils.clojure :as clj]
-            [zolodeck.demonic.core :as demonic]
-            [zolodeck.demonic.helper :as dh]
+            [zolo.demonic.core :as demonic]
+            [zolo.demonic.helper :as dh]
             [clj-time.core :as time]
             [clj-time.coerce :as time-coerce]
             [zolo.utils.calendar :as zolo-cal])

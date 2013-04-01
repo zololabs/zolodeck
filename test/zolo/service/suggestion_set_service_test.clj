@@ -1,7 +1,7 @@
 (ns zolo.service.suggestion-set-service-test
   (:use [zolo.domain.user :as user]
-        zolodeck.demonic.test
-        zolodeck.demonic.core
+        zolo.demonic.test
+        zolo.demonic.core
         zolo.test.core-utils
         zolo.utils.debug
         [clojure.test :only [run-tests deftest is are testing]]

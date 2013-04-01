@@ -3,7 +3,7 @@
         zolo.utils.debug
         zolo.utils.clojure
         zolo.test.assertions.core
-        zolodeck.demonic.test)
+        zolo.demonic.test)
   (require [zolo.service.user-service :as u-service]
            [zolo.domain.user-identity :as user-identity]
            [zolo.store.user-store :as u-store]

@@ -1,7 +1,7 @@
 (ns zolo.domain.user-identity
   (:use zolo.utils.debug
-        [zolodeck.demonic.core :only [run-query load-entity]])
-  (:require [zolodeck.demonic.core :as demonic]))
+        [zolo.demonic.core :only [run-query load-entity]])
+  (:require [zolo.demonic.core :as demonic]))
 
 ;;TODO Tests for this whole namespace
 

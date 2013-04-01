@@ -1,7 +1,7 @@
 (ns zolo.personas.shy
   (:use zolo.utils.debug
         conjure.core
-        zolodeck.demonic.core)
+        zolo.demonic.core)
   (:require [zolo.marconi.facebook.core :as fb-lab]
             [zolo.domain.contact :as contact]
             [zolo.personas.factory :as personas]

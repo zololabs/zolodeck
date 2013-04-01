@@ -2,12 +2,6 @@ Dir['tasks/*.rake'].each { |file| load(file) }
 
 namespace :utils do
 
-  desc "Clean up Zolodeck jars from local maven repo"
-  task :m2clean do
-    info "Forcing Snapshot Reload"
-    sh "lein -U deps"
-  end
-
   desc "Install Lein Plugins needed for this project"
   task :lein_plugins do
     sh "lein plugin install lein-difftest 1.3.7"

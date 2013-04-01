@@ -1,9 +1,9 @@
 (ns zolo.store.user-store
   (:use zolo.utils.debug
         zolo.utils.clojure
-        [zolodeck.demonic.core :only [insert run-query load-entity] :as demonic]
-        [zolodeck.demonic.helper :only [load-from-db] :as demonic-helper]
-        [zolodeck.demonic.loadable :only [entity->loadable] :as loadable])
+        [zolo.demonic.core :only [insert run-query load-entity] :as demonic]
+        [zolo.demonic.helper :only [load-from-db] :as demonic-helper]
+        [zolo.demonic.loadable :only [entity->loadable] :as loadable])
   (:require [zolo.utils.logger :as logger]
             [zolo.social.core :as social]
             [zolo.utils.calendar :as zolo-cal]

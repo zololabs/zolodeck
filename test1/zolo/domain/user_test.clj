@@ -3,7 +3,7 @@
         [zolo.facebook.gateway :as fb-gateway]
         [zolo.marconi.facebook.factory :as fb-factory]
         [zolo.marconi.facebook.core :as fb]
-        zolodeck.demonic.test
+        zolo.demonic.test
         zolo.test.core-utils
         zolo.test.assertions
         zolo.utils.debug

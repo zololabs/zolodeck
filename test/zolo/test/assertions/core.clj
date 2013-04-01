@@ -6,7 +6,7 @@
   (:require [zolo.social.core :as social]
             [zolo.social.facebook.messages :as fb-messages]
             [zolo.utils.calendar :as zolo-cal]
-            [zolodeck.demonic.core :as demonic]))
+            [zolo.demonic.core :as demonic]))
 
 (defn same-value? [v1 v2]
   (cond

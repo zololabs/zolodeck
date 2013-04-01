@@ -1,6 +1,6 @@
 (ns zolo.personas.vincent
   (:use zolo.utils.debug
-        zolodeck.demonic.test
+        zolo.demonic.test
         [clojure.test :only [run-tests deftest is are testing]]
         conjure.core)
   (:require [zolo.marconi.facebook.factory :as fb-factory]

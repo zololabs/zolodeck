@@ -1,13 +1,13 @@
 (ns zolo.api.user-api-test
   (:use [clojure.test :only [run-tests deftest is are testing]]
-        zolodeck.demonic.test
+        zolo.demonic.test
         zolo.scenario
         zolo.test.core-utils
         zolo.test.web-utils
         zolo.utils.test-utils
         zolo.utils.debug
         zolo.utils.test
-        zolodeck.demonic.core
+        zolo.demonic.core
         zolo.web.status-codes)
   (:require [zolo.setup.config :as conf]
             [zolo.setup.datomic-schema :as schema]

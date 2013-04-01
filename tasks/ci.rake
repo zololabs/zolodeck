@@ -8,7 +8,7 @@ namespace :ci do
       sh "cd ..; git clone git@github.com:zololabs/zolo-repo.git"
     end
 
-    Rake::Task["utils:m2clean"].invoke
+    sh "lein -U deps"
     Rake::Task["api:config:generate"].invoke("test")
   end
 

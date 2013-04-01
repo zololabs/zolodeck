@@ -1,7 +1,7 @@
 (ns zolo.store.user-store-test
   (:use clojure.test
         zolo.utils.debug
-        zolodeck.demonic.test)
+        zolo.demonic.test)
   (:require [zolo.store.user-store :as u-store]
             [zolo.test.assertions.datomic :as db-assert]
             [zolo.personas.factory :as personas]

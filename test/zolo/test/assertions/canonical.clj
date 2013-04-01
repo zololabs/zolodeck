@@ -6,7 +6,7 @@
   (:require [zolo.social.core :as social]
             [zolo.social.facebook.messages :as fb-messages]
             [zolo.utils.calendar :as zolo-cal]
-            [zolodeck.demonic.core :as demonic]
+            [zolo.demonic.core :as demonic]
             [clj-time.coerce :as ctc]))
 
 (defn assert-basic-user-info [fb-user canonical-user]

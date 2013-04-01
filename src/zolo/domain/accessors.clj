@@ -1,8 +1,8 @@
 (ns zolo.domain.accessors
   (:use zolo.utils.debug
         zolo.utils.clojure)
-  (:require [zolodeck.demonic.core :as demonic]
-            [zolodeck.demonic.helper :as dhelp]
+  (:require [zolo.demonic.core :as demonic]
+            [zolo.demonic.helper :as dhelp]
             [zolo.utils.maps :as zolo-maps]
             [zolo.utils.calendar :as zolo-cal]))
 

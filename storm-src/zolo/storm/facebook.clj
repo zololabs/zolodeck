@@ -7,7 +7,7 @@
         zolo.storm.utils)
   (:require [zolo.setup.datomic-setup :as datomic]
             [zolo.setup.config :as config]
-            [zolodeck.demonic.core :as demonic]
+            [zolo.demonic.core :as demonic]
             [zolo.domain.user :as user]
             [zolo.domain.user-identity :as user-identity]            
             [zolo.utils.logger :as logger]
