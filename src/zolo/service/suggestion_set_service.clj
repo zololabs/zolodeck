@@ -8,12 +8,18 @@
             [zolo.domain.user-identity :as user-identity]
             [zolo.utils.logger :as logger]
             [zolo.setup.config :as conf]
-            [zolo.service.core :as service]))
+            [zolo.domain.suggestion-set :as ss]
+            [zolo.service.core :as service]
+            [zolodeck.utils.calendar :as zolo-cal]))
+
+(defn- suggestion-set [cs]
+  {:name (ss/suggestion-set-name (zolo-cal/now-instant))
+   :contacts cs})
 
 (defn find-suggestion-set-for-today [user-guid]
-  (-not-nil->> (u-store/find-by-guid user-guid)
-               :user/contacts
-               (assoc {} :contacts))
+  (-not-nil-> (u-store/find-by-guid user-guid)
+              :user/contacts
+              suggestion-set)
   ;; (-not-nil-> (u-store/find-by-guid user-id)
   ;;             interaction/ibc
   ;;             (suggestion-set/find-first-by-client-date)

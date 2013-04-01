@@ -11,7 +11,9 @@
             [zolo.test.assertions.domain :as d-assert]
             [zolodeck.clj-social-lab.facebook.core :as fb-lab]
             [zolo.service.suggestion-set-service :as ss-service]
-            [zolo.personas.shy :as shy-persona]))
+            [zolo.domain.suggestion-set :as ss]
+            [zolo.personas.shy :as shy-persona]
+            [zolodeck.utils.calendar :as zolo-cal]))
 
 (deftest test-find-suggestion-set-for-today
 
@@ -24,7 +26,7 @@
 
       (is (not (nil? ss-set)))
 
-      ;;TODO Check SS Name
+      (is (= (ss/suggestion-set-name (zolo-cal/now-instant)) (:name ss-set)))
 
       ;;TODO Check Contact Information
       (is (= 2 (count (:contacts ss-set))))

@@ -75,6 +75,9 @@
 (defn last-name [c]
   (value-from-si c :social/last-name))
 
+(defn picture-url [c]
+  (value-from-si c :social/photo-url))
+
 (defn updated-contacts [cs sis]
   (if (empty? sis)
     cs
@@ -104,20 +107,6 @@
 
 ;; (defn reload [c]
 ;;   (find-by-guid (:contact/guid c)))
-
-
-
-;; (defn update-contact [user fresh-contact]
-;;   (let [contact (->> (:contact/social-identities fresh-contact)
-;;                      (find-contact-from-lookup user))]
-;;     (if contact
-;;       (assoc contact :contact/social-identities
-;;              (utils-domain/update-fresh-entities-with-db-id
-;;                (:contact/social-identities contact)
-;;                (:contact/social-identities fresh-contact)
-;;                si/social-identity-info
-;;                :social/guid))
-;;       fresh-contact)))
 
 ;;TODO test
 (defn update-score [ibc c]
@@ -209,3 +198,16 @@
 ;;      :muted (:contact/muted c)
 ;;      :picture-url (:social/photo-url si)
 ;;      :contacted-today (is-contacted-on? ibc c client-date)}))
+
+
+;;TODO test this
+(defn distill [c]
+  (when c
+    {:first-name (first-name c)
+     :last-name (last-name c)
+     :guid (:contact/guid c)
+     ;;:muted (:contact/muted c)
+     :picture-url (picture-url c)
+     ;;     :contacted-today (is-contacted-on? ibc c client-date)
+     ;; :interactions (daily-counts interactions);
+     }))

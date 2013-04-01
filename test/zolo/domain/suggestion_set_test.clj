@@ -19,7 +19,10 @@
     (is (thrown? RuntimeException (ss/suggestion-set-name nil)))
     (is (thrown? RuntimeException (ss/suggestion-set-name "JUNK"))))
   
-  (testing "when an instant is passed it should return name"))
+  (testing "when an instant is passed it should return name"
+    (is (= "ss-2012-12-21" (ss/suggestion-set-name (zolo-cal/date-string->instant "yyyy-MM-dd" "2012-12-21"))))))
+
+
 ;; (deftest test-suggestion-set
 ;;   (demonic-integration-testing "Should create new suggestion set"
 ;;     (personas/in-social-lab
