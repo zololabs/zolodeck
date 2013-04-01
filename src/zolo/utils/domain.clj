@@ -1,6 +1,6 @@
 (ns zolo.utils.domain
-  (:use [zolodeck.utils.debug])
-  (:require [zolodeck.utils.maps :as zolo-maps]
+  (:use [zolo.utils.debug])
+  (:require [zolo.utils.maps :as zolo-maps]
             [zolodeck.demonic.schema :as schema]))
 
 (defn force-schema-attrib [attrib value]

@@ -1,7 +1,7 @@
 (ns zolo.service.user-service-test
   (:use [clojure.test :only [deftest is are testing]]
-        zolodeck.utils.debug
-        zolodeck.utils.clojure
+        zolo.utils.debug
+        zolo.utils.clojure
         zolo.test.assertions.core
         zolodeck.demonic.test)
   (require [zolo.service.user-service :as u-service]
@@ -43,7 +43,7 @@
 
 (deftest test-update-user
   (demonic-testing "when user is not present, it should return nil"
-    (is (nil? (u-service/update-user (zolodeck.utils.clojure/random-guid-str) {}))))
+    (is (nil? (u-service/update-user (zolo.utils.clojure/random-guid-str) {}))))
 
   (demonic-testing "when user is present, it should return updated distilled user"
     (personas/in-social-lab

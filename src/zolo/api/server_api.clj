@@ -1,8 +1,8 @@
 (ns zolo.api.server-api
-  (:use zolodeck.utils.debug)
+  (:use zolo.utils.debug)
   (:require
    [zolo.domain.user :as user]
-   [zolodeck.utils.calendar :as zolo-cal]
+   [zolo.utils.calendar :as zolo-cal]
    [zolodeck.demonic.core :as demonic]
    [zolo.utils.logger :as logger]))
 

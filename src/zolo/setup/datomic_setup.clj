@@ -3,7 +3,7 @@
         [zolodeck.demonic.core :as demonic]
         [zolodeck.demonic.helper :as demonic-helper]
         [zolo.setup.datomic-schema :only [SCHEMA-TX] :as datomic-setup]
-        zolodeck.utils.clojure))
+        zolo.utils.clojure))
 
 (defrunonce init-datomic []
   (->> @datomic-setup/SCHEMA-TX

@@ -1,6 +1,6 @@
 (ns zolo.setup.config
-  (:use zolodeck.utils.clojure
-        zolodeck.utils.debug)
+  (:use zolo.utils.clojure
+        zolo.utils.debug)
   (:require [clojure.java.io :as java-io]
             [zolo.utils.logger :as logger]))
 

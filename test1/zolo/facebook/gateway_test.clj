@@ -3,7 +3,7 @@
         zolo.scenario
         zolo.test.core-utils
         zolo.test.web-utils
-        zolodeck.utils.debug
+        zolo.utils.debug
         zolo.utils.test-utils
         zolo.web.status-codes)
   (:require [zolo.setup.config :as conf]

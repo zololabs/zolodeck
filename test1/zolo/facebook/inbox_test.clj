@@ -3,8 +3,8 @@
         zolo.scenario
         zolo.test.core-utils
         zolo.test.web-utils
-        zolodeck.utils.debug
-        zolodeck.utils.test
+        zolo.utils.debug
+        zolo.utils.test
         zolo.utils.test-utils
         zolo.web.status-codes
         zolo.marconi.facebook.core)

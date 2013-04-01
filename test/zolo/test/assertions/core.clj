@@ -1,11 +1,11 @@
 (ns zolo.test.assertions.core
-  (:use zolodeck.utils.debug
-        zolodeck.utils.clojure
+  (:use zolo.utils.debug
+        zolo.utils.clojure
         [slingshot.slingshot :only [try+]]
         [clojure.test :only [is are]])
   (:require [zolo.social.core :as social]
             [zolo.social.facebook.messages :as fb-messages]
-            [zolodeck.utils.calendar :as zolo-cal]
+            [zolo.utils.calendar :as zolo-cal]
             [zolodeck.demonic.core :as demonic]))
 
 (defn same-value? [v1 v2]

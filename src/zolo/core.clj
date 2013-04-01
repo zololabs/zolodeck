@@ -1,6 +1,6 @@
 (ns zolo.core
   (:gen-class)
-  (:use zolodeck.utils.debug
+  (:use zolo.utils.debug
         compojure.core
         ring.adapter.jetty
         ring.middleware.json-params)

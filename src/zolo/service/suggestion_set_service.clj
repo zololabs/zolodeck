@@ -1,6 +1,6 @@
 (ns zolo.service.suggestion-set-service
-  (:use zolodeck.utils.debug
-        zolodeck.utils.clojure
+  (:use zolo.utils.debug
+        zolo.utils.clojure
         conjure.core
         [slingshot.slingshot :only [throw+ try+]])
   (:require [zolo.social.core :as social]
@@ -14,7 +14,7 @@
             [zolo.domain.contact :as contact]
             [zolo.service.core :as service]
             [zolo.store.suggestion-set-store :as ss-store]
-            [zolodeck.utils.calendar :as zolo-cal]))
+            [zolo.utils.calendar :as zolo-cal]))
 
 (defn- create-suggestion-set [u ss-name]
   (it-> (ss/new-suggestion-set u ss-name)

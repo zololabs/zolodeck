@@ -1,6 +1,6 @@
 (ns zolo.social.facebook.core-test
   (:use [clojure.test :only [run-tests deftest is are testing]]
-        zolodeck.utils.debug
+        zolo.utils.debug
         zolo.scenarios.user
         conjure.core)
   (:require [zolo.social.facebook.core :as fb-core]

@@ -4,7 +4,7 @@
         zolodeck.demonic.core
         zolo.test.core-utils
         zolo.test.assertions.core
-        zolodeck.utils.debug
+        zolo.utils.debug
         [clojure.test :only [run-tests deftest is are testing]]
         conjure.core)
   (:require [zolo.personas.factory :as personas]

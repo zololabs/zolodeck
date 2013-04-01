@@ -1,5 +1,5 @@
 (ns zolo.domain.social-identity-test
-  (:use zolodeck.utils.debug
+  (:use zolo.utils.debug
         zolodeck.demonic.test
         zolodeck.demonic.core
         [clojure.test :only [run-tests deftest is are testing]]

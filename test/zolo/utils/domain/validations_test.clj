@@ -1,8 +1,8 @@
 (ns zolo.utils.domain.validations-test
   (:use [zolo.utils.domain.validations]
-        zolodeck.utils.debug
+        zolo.utils.debug
         [clojure.test :only [run-tests deftest is are testing]])
-  (:require [zolodeck.utils.clojure :as zolo-clojure]))
+  (:require [zolo.utils.clojure :as zolo-clojure]))
 
 (deftest test-validate-attribute
   (are [expected attribute validators m] (= expected (validate-attribute attribute validators (flatten-keys m)))

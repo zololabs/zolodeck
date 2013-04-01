@@ -1,7 +1,7 @@
 (ns zolo.domain.score-test
   (:use zolodeck.demonic.test
         zolo.test.core-utils
-        zolodeck.utils.debug
+        zolo.utils.debug
         [clojure.test :only [run-tests deftest is are testing]]
         conjure.core)
   (:require [zolo.domain.user :as user]
@@ -12,7 +12,7 @@
             [zolo.personas.shy :as shy]
             [zolo.personas.core :as personas]
             [zolo.test.assertions :as assertions]
-            [zolodeck.utils.clojure :as zolo-clj]))
+            [zolo.utils.clojure :as zolo-clj]))
 
 (deftest test-calculate
   (testing "should return 0 when contact is nil"

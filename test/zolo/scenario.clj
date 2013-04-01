@@ -1,6 +1,6 @@
 (ns zolo.scenario
   (:use  [clojure.test :only [is are]]
-         zolodeck.utils.debug
+         zolo.utils.debug
          conjure.core
          zolo.test.web-utils
          zolo.test.core-utils

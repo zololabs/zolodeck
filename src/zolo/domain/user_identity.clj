@@ -1,5 +1,5 @@
 (ns zolo.domain.user-identity
-  (:use zolodeck.utils.debug
+  (:use zolo.utils.debug
         [zolodeck.demonic.core :only [run-query load-entity]])
   (:require [zolodeck.demonic.core :as demonic]))
 

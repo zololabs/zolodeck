@@ -1,7 +1,7 @@
 (ns zolo.storm.facebook
   (:gen-class)
-  (:use zolodeck.utils.debug
-        zolodeck.utils.clojure
+  (:use zolo.utils.debug
+        zolo.utils.clojure
         backtype.storm.clojure
         backtype.storm.config
         zolo.storm.utils)
@@ -11,7 +11,7 @@
             [zolo.domain.user :as user]
             [zolo.domain.user-identity :as user-identity]            
             [zolo.utils.logger :as logger]
-            [zolodeck.utils.clojure :as clj]
+            [zolo.utils.clojure :as clj]
             [clojure.tools.cli :as cli]
             [zolo.store.user-store :as u-store]
             [zolo.service.user-service :as u-service]

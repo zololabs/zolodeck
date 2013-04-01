@@ -1,5 +1,5 @@
 (ns zolo.social.core
-  (:use zolodeck.utils.debug
+  (:use zolo.utils.debug
         [slingshot.slingshot :only [throw+ try+]]))
 
 (def FACEBOOK "FACEBOOK")

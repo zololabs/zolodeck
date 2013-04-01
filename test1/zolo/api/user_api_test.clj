@@ -5,8 +5,8 @@
         zolo.test.core-utils
         zolo.test.web-utils
         zolo.utils.test-utils
-        zolodeck.utils.debug
-        zolodeck.utils.test
+        zolo.utils.debug
+        zolo.utils.test
         zolodeck.demonic.core
         zolo.web.status-codes)
   (:require [zolo.setup.config :as conf]

@@ -1,6 +1,6 @@
 (ns zolo.utils.domain.validations
-  (:use zolodeck.utils.debug)
-  (:require [zolodeck.utils.clojure :as zolo-clj]))
+  (:use zolo.utils.debug)
+  (:require [zolo.utils.clojure :as zolo-clj]))
 
 (defn optional-validator-present? [validators]
   (contains? (set validators) :optional))

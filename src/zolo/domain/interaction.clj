@@ -1,8 +1,8 @@
 (ns zolo.domain.interaction
-  (:use zolodeck.utils.debug
-        zolodeck.utils.clojure)
-  (:require [zolodeck.utils.maps :as zolo-maps]
-            [zolodeck.utils.calendar :as zolo-cal]
+  (:use zolo.utils.debug
+        zolo.utils.clojure)
+  (:require [zolo.utils.maps :as zolo-maps]
+            [zolo.utils.calendar :as zolo-cal]
             [zolo.utils.logger :as logger]
             [zolo.domain.message :as message]))
 

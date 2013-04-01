@@ -1,14 +1,14 @@
 (ns zolo.domain.suggestion-set
   (:use [slingshot.slingshot :only [throw+ try+]]
-        zolodeck.utils.debug
-        zolodeck.utils.clojure)
+        zolo.utils.debug
+        zolo.utils.clojure)
   (:require [zolo.utils.logger :as logger]
             [zolo.domain.contact :as contact]
             [zolo.domain.message :as message]
             [zolo.domain.interaction :as interaction]
             [zolo.stats.activity :as activity]
             [zolodeck.demonic.core :as demonic]
-            [zolodeck.utils.calendar :as zolo-cal]))
+            [zolo.utils.calendar :as zolo-cal]))
 
 (defn- suggestion-set-contacts [u]
   ;; (let [imbc (dom/inbox-messages-by-contacts u)

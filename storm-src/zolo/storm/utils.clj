@@ -1,14 +1,14 @@
 (ns zolo.storm.utils
-  (:use zolodeck.utils.debug)
+  (:use zolo.utils.debug)
   (:require [zolo.setup.config :as conf]
             [zolo.domain.user :as user]
             [zolo.utils.logger :as logger]
-            [zolodeck.utils.clojure :as clj]
+            [zolo.utils.clojure :as clj]
             [zolodeck.demonic.core :as demonic]
             [zolodeck.demonic.helper :as dh]
             [clj-time.core :as time]
             [clj-time.coerce :as time-coerce]
-            [zolodeck.utils.calendar :as zolo-cal])
+            [zolo.utils.calendar :as zolo-cal])
   (:import [backtype.storm.tuple Values Fields]))
 
 (defn new-user-freshness-period []

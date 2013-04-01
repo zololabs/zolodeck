@@ -1,6 +1,6 @@
 (ns zolo.api.core
-  (:use zolodeck.utils.debug
-        zolodeck.utils.clojure
+  (:use zolo.utils.debug
+        zolo.utils.clojure
         zolo.web.status-codes
         [slingshot.slingshot :only [throw+ try+]])
   (:require [zolo.utils.logger :as logger]))

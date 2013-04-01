@@ -1,5 +1,5 @@
 (ns zolo.storm.fns.print-vals
-  (:use zolodeck.utils.debug
+  (:use zolo.utils.debug
         zolo.storm.utils))
 
 (gen-class

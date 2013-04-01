@@ -1,6 +1,6 @@
 (ns zolo.store.user-store-test
   (:use clojure.test
-        zolodeck.utils.debug
+        zolo.utils.debug
         zolodeck.demonic.test)
   (:require [zolo.store.user-store :as u-store]
             [zolo.test.assertions.datomic :as db-assert]
@@ -35,7 +35,7 @@
 
      (is (= db-user1 (u-store/find-by-guid (:user/guid db-user1))))
      
-     (is (nil? (u-store/find-by-guid (zolodeck.utils.clojure/random-guid-str))))
+     (is (nil? (u-store/find-by-guid (zolo.utils.clojure/random-guid-str))))
      (is (nil? (u-store/find-by-guid nil)))
 
      (is (thrown?  IllegalArgumentException (u-store/find-by-guid "100JUNK"))))))

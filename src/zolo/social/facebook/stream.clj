@@ -1,10 +1,10 @@
 (ns zolo.social.facebook.stream
-  (:use zolodeck.utils.debug
-        zolodeck.utils.clojure
-        zolodeck.utils.string)
+  (:use zolo.utils.debug
+        zolo.utils.clojure
+        zolo.utils.string)
   (:require [zolo.social.facebook.gateway :as gateway]
             [clj-time.coerce :as ctc]
-            [zolodeck.utils.calendar :as zolo-cal]
+            [zolo.utils.calendar :as zolo-cal]
             [clj-http.client :as http]
             [clojure.data.json :as json]))
 

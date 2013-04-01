@@ -1,6 +1,6 @@
 (ns zolo.personas.factory
-  (:use zolodeck.utils.debug
-        zolodeck.utils.clojure
+  (:use zolo.utils.debug
+        zolo.utils.clojure
         conjure.core)
   (:require [zolo.marconi.facebook.core :as fb-lab]
             [zolo.social.facebook.gateway :as fb-gateway]

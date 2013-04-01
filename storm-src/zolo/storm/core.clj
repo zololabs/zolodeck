@@ -1,6 +1,6 @@
 (ns zolo.storm.core
   (:gen-class)
-  (:use zolodeck.utils.debug)
+  (:use zolo.utils.debug)
   (:require  [clojure.tools.cli :as cli]
              [zolo.utils.logger :as logger]
              [zolo.setup.config :as config]

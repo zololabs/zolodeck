@@ -3,7 +3,7 @@
         zolodeck.demonic.test
         zolodeck.demonic.core
         zolo.test.core-utils
-        zolodeck.utils.debug
+        zolo.utils.debug
         [clojure.test :only [run-tests deftest is are testing]]
         conjure.core)
   (:require [zolo.personas.factory :as personas]
@@ -14,7 +14,7 @@
             [zolo.domain.suggestion-set :as ss]
             [zolo.domain.contact :as contact]
             [zolo.personas.shy :as shy-persona]
-            [zolodeck.utils.calendar :as zolo-cal]))
+            [zolo.utils.calendar :as zolo-cal]))
 
 (deftest test-find-suggestion-set-for-today
 

@@ -1,10 +1,10 @@
 (ns zolo.domain.user
   (:use zolo.setup.datomic-setup
-        zolodeck.utils.debug
-        zolodeck.utils.clojure)
+        zolo.utils.debug
+        zolo.utils.clojure)
   (:require [zolo.domain.user-identity :as user-identity]
-            [zolodeck.utils.maps :as zolo-maps]
-            [zolodeck.utils.calendar :as zolo-cal]
+            [zolo.utils.maps :as zolo-maps]
+            [zolo.utils.calendar :as zolo-cal]
             [zolo.utils.logger :as logger]))
 
 (defn current-user []

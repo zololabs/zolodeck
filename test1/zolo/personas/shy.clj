@@ -1,5 +1,5 @@
 (ns zolo.personas.shy
-  (:use zolodeck.utils.debug
+  (:use zolo.utils.debug
         conjure.core)
   (:require [zolo.marconi.facebook.factory :as fb-factory]
             [zolo.facebook.gateway :as fb-gateway]

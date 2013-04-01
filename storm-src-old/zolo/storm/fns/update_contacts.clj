@@ -1,5 +1,5 @@
 (ns zolo.storm.fns.update-contacts
-  (:use zolodeck.utils.debug
+  (:use zolo.utils.debug
         zolo.storm.utils)
   (:require [zolo.utils.logger :as logger]
             [zolo.domain.user :as user]

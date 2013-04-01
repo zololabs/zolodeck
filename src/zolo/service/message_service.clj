@@ -1,6 +1,6 @@
 (ns zolo.service.message-service
-  (:use zolodeck.utils.debug
-        zolodeck.utils.clojure
+  (:use zolo.utils.debug
+        zolo.utils.clojure
         [slingshot.slingshot :only [throw+ try+]])
   (:require [zolo.social.core :as social]
             [zolo.domain.user :as user]

@@ -1,8 +1,8 @@
 (ns zolo.social.linkedin.token
-  (:use zolodeck.utils.debug)
+  (:use zolo.utils.debug)
   (:require [zolo.social.linkedin.gateway :as gateway]
             [clojure.data.json :as json]
-            [zolodeck.utils.string :as string]
+            [zolo.utils.string :as string]
             [zolo.setup.config :as conf]))
 
 (def EXCHANGE_URL "https://api.linkedin.com/uas/oauth/accessToken")

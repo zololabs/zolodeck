@@ -1,11 +1,11 @@
 (ns zolo.test.assertions.domain
-  (:use zolodeck.utils.debug
-        zolodeck.utils.clojure
+  (:use zolo.utils.debug
+        zolo.utils.clojure
         zolo.test.assertions.core
         [clojure.test :only [is are]])
   (:require [zolo.social.core :as social]
             [zolo.social.facebook.messages :as fb-messages]
-            [zolodeck.utils.calendar :as zolo-cal]
+            [zolo.utils.calendar :as zolo-cal]
             [zolodeck.demonic.core :as demonic]))
 
 (defn user-identities-are-same [fb-user db-ui]

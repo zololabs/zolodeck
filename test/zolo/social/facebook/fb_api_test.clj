@@ -1,13 +1,13 @@
 (ns zolo.social.facebook.fb-api-test
     (:use [clojure.test :only [run-tests deftest is are testing]]
-        zolodeck.utils.debug
+        zolo.utils.debug
         zolo.test.assertions.core
         conjure.core)
     (:require [zolo.marconi.facebook.core :as fb-lab]
               [zolo.social.facebook.gateway :as fb-gateway]
               [zolo.social.facebook.messages :as fb-messages]
               [zolo.social.facebook.stream :as fb-stream]              
-              [zolodeck.utils.calendar :as zolo-cal]
+              [zolo.utils.calendar :as zolo-cal]
               [zolo.setup.config :as conf]))
 
 (def JACK-FB-ID "100005253966931")

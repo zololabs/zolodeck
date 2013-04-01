@@ -1,7 +1,7 @@
 (ns zolo.domain.contact-test
   (:use zolodeck.demonic.test
         zolo.test.core-utils
-        zolodeck.utils.debug
+        zolo.utils.debug
         [clojure.test :only [run-tests deftest is are testing]]
         conjure.core)
   (:require [zolo.domain.user :as user]

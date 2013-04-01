@@ -1,5 +1,5 @@
 (ns zolo.test.web-utils
-  (:use zolodeck.utils.maps
+  (:use zolo.utils.maps
         [clojure.test :only [run-tests deftest is are testing]])
   (:require [zolo.core :as server]))
 
