@@ -35,7 +35,7 @@
 
                  [com.datomic/datomic "0.8.3789"]
                  [com.netflix.curator/curator-framework "1.0.1"]
-                 [zolodeck/demonic "0.1.0-SNAPSHOT" :exclusions [com.datomic/datomic-free]]
+                 [zololabs/demonic "0.1.0-SNAPSHOT" :exclusions [com.datomic/datomic-free]]
 
                  [zololabs/zolo-utils "0.1.0-SNAPSHOT"]
                  [world-country-list "1.0.0-SNAPSHOT"]
