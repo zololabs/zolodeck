@@ -7,7 +7,8 @@
             [zolo.domain.user :as user]
             [zolo.utils.logger :as logger]
             [zolo.setup.config :as config]
-            [zolo.utils.calendar :as zolo-cal]))
+            [zolo.utils.calendar :as zolo-cal]
+            [zolo.utils.maps :as zolo-maps]))
 
 (def ^:dynamic *ZOLO-REQUEST*)
 
@@ -43,14 +44,14 @@
              "Access-Control-Allow-Origin" (request-origin)
              "Access-Control-Allow-Credentials" "true"
              "Cache-Control:" "max-age=0, no-cache,  must-revalidate"}
-   :body (json/json-str data)})
+   :body (json/json-str (zolo-maps/to-underscore-keys data))})
 
 (defn jsonify [response-map]
   (-> {:headers (merge {"Content-Type" "application/json; charset=utf-8"
                         "Access-Control-Allow-Origin" (request-origin)
                         "Access-Control-Allow-Credentials" "true"}
                        (:headers response-map))}
-      (assoc :body (json/json-str (:body response-map)))
+      (assoc :body (json/json-str (zolo-maps/to-underscore-keys (:body response-map))))
       (assoc :status (:status response-map))))
 
 (defn error-response [error-object]
