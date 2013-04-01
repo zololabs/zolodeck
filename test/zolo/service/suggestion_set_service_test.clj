@@ -9,7 +9,7 @@
   (:require [zolo.personas.factory :as personas]
             [zolo.test.assertions.datomic :as db-assert]
             [zolo.test.assertions.domain :as d-assert]
-            [zolodeck.clj-social-lab.facebook.core :as fb-lab]
+            [zolo.marconi.facebook.core :as fb-lab]
             [zolo.service.suggestion-set-service :as ss-service]
             [zolo.domain.suggestion-set :as ss]
             [zolo.personas.shy :as shy-persona]

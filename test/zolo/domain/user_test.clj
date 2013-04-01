@@ -13,7 +13,7 @@
             [zolo.social.core :as social]
             [zolo.test.assertions.datomic :as db-assert]
             [zolo.test.assertions.domain :as d-assert]
-            [zolodeck.clj-social-lab.facebook.core :as fb-lab]))
+            [zolo.marconi.facebook.core :as fb-lab]))
 
 ;; (deftest test-update
 ;;   (demonic-testing "User is not found"

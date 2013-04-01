@@ -7,7 +7,7 @@
         zolodeck.utils.test
         zolo.utils.test-utils
         zolo.web.status-codes
-        zolodeck.clj-social-lab.facebook.core)
+        zolo.marconi.facebook.core)
   (:require [zolo.facebook.inbox :as inbox]
             [zolo.api.user-api :as user-api]))
 

@@ -3,7 +3,7 @@
         zolodeck.utils.debug
         zolo.test.assertions.core
         conjure.core)
-    (:require [zolodeck.clj-social-lab.facebook.core :as fb-lab]
+    (:require [zolo.marconi.facebook.core :as fb-lab]
               [zolo.social.facebook.gateway :as fb-gateway]
               [zolo.social.facebook.messages :as fb-messages]
               [zolo.social.facebook.stream :as fb-stream]              

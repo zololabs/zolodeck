@@ -9,7 +9,7 @@
             [zolo.domain.accessors :as dom]
             [zolo.social.facebook.gateway :as fb-gateway]
             [zolo.social.facebook.messages :as fb-messages]
-            [zolodeck.clj-social-lab.facebook.core :as fb-lab]
+            [zolo.marconi.facebook.core :as fb-lab]
             [zolo.test.assertions.canonical :as c-assert]
             [zolo.personas.factory :as personas]))
 

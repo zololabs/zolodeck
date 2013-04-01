@@ -17,7 +17,7 @@
             [zolo.domain.interaction :as interaction]
             [zolo.domain.message :as message]
             [zolo.store.user-store :as u-store]
-            [zolodeck.clj-social-lab.facebook.core :as fb-lab]
+            [zolo.marconi.facebook.core :as fb-lab]
             [zolodeck.utils.calendar :as zolo-cal]))
 
 (deftest test-update-contacts-for-user

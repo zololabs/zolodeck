@@ -1,6 +1,6 @@
 (ns zolo.utils.test-utils
   (:use [zolodeck.utils.debug])
-  (:require [zolodeck.clj-social-lab.facebook.api :as api]
+  (:require [zolo.marconi.facebook.api :as api]
             [zolo.setup.config :as conf]))
 
 (def HOBBES-FB-ID "100003928558336")

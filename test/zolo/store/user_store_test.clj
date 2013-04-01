@@ -5,7 +5,7 @@
   (:require [zolo.store.user-store :as u-store]
             [zolo.test.assertions.datomic :as db-assert]
             [zolo.personas.factory :as personas]
-            [zolodeck.clj-social-lab.facebook.core :as fb-lab]))
+            [zolo.marconi.facebook.core :as fb-lab]))
 
 (demonictest test-find-by-provider-info
   (personas/in-social-lab

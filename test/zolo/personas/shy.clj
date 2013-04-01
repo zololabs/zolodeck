@@ -2,7 +2,7 @@
   (:use zolodeck.utils.debug
         conjure.core
         zolodeck.demonic.core)
-  (:require [zolodeck.clj-social-lab.facebook.core :as fb-lab]
+  (:require [zolo.marconi.facebook.core :as fb-lab]
             [zolo.domain.contact :as contact]
             [zolo.personas.factory :as personas]
             [zolo.domain.user :as user]
