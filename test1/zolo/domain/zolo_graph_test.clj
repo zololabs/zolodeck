@@ -5,7 +5,7 @@
         [clojure.test :only [run-tests deftest is are testing]]
         zolo.test.assertions)
   (:require [zolo.factories.zolo-graph-factory :as zgf]
-            [zolodeck.clj-social-lab.facebook.core :as fb]
+            [zolo.marconi.facebook.core :as fb]
             [zolo.personas.vincent :as vincent]
             [zolo.personas.loner :as loner]
             [zolo.personas.core :as personas]

@@ -7,7 +7,7 @@
             [zolo.test.assertions.domain :as d-assert]
             [zolo.personas.factory :as personas]
             [zolo.domain.message :as message]
-            [zolodeck.clj-social-lab.facebook.core :as fb-lab]
+            [zolo.marconi.facebook.core :as fb-lab]
             [zolo.social.core :as social]))
 
 (demonictest test-append-messages

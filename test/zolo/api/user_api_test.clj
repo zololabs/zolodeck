@@ -10,7 +10,7 @@
             [zolo.test.web-utils :as w-utils]
             [zolo.api.user-api :as user-api]
             [zolo.personas.factory :as personas]
-            [zolodeck.clj-social-lab.facebook.core :as fb-lab]
+            [zolo.marconi.facebook.core :as fb-lab]
             [zolodeck.utils.maps :as zmaps]
             [clojure.data.json :as json]
             [zolo.service.user-service :as u-service]

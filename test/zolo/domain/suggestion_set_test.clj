@@ -11,7 +11,7 @@
             [zolo.personas.factory :as personas]
             [zolo.test.assertions.datomic :as db-assert]
             [zolo.test.assertions.domain :as d-assert]
-            [zolodeck.clj-social-lab.facebook.core :as fb-lab]
+            [zolo.marconi.facebook.core :as fb-lab]
             [zolodeck.utils.calendar :as zolo-cal]))
 
 (deftest test-suggestion-set-name

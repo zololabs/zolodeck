@@ -10,7 +10,7 @@
             [zolo.domain.message :as message]
             [zolo.store.user-store :as u-store]
             [zolo.store.message-store :as m-store]
-            [zolodeck.clj-social-lab.facebook.core :as fb-lab]))
+            [zolo.marconi.facebook.core :as fb-lab]))
 
 (demonictest test-update-inbox-messages
   (testing "when user is not present, it should return nil"

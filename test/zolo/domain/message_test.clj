@@ -14,7 +14,7 @@
             [zolo.test.assertions.datomic :as db-assert]
             [zolo.test.assertions.domain :as d-assert]
             [zolo.domain.contact :as contact]
-            [zolodeck.clj-social-lab.facebook.core :as fb-lab]))
+            [zolo.marconi.facebook.core :as fb-lab]))
 
 ;; (deftest test-update-inbox-messages
 ;;   (demonic-integration-testing  "First time user"

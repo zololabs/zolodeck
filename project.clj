@@ -21,7 +21,8 @@
                  [org.clojure/core.match "0.2.0-alpha11"]
 
                  [org.scribe/scribe "1.3.2"] ;;oauth for LinkedIn
-
+                 [zololabs/context-io-clj "0.0.4"]
+                 
                  ;;Logging Related Stuff
                  [org.clojure/tools.logging "0.2.4"]
                  [ch.qos.logback/logback-classic "1.0.7"]
@@ -64,7 +65,7 @@
 
   :profiles {:dev {:dependencies [[clj-stacktrace "0.2.4"]
                                   [ring-serve "0.1.2"]
-                                  [zolodeck/clj-social-lab "1.0.0-SNAPSHOT"]
+                                  [zololabs/marconi "1.0.0-SNAPSHOT"]
                                   [org.clojars.runa/conjure "2.1.1"]
                                   [difform "1.1.2"]]
                    :resource-paths [~(str (System/getProperty "user.home") "/.zolo")]}

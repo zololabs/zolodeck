@@ -1,9 +1,9 @@
 (ns zolo.personas.core
   (:use zolodeck.utils.debug
         conjure.core)
-  (:require [zolodeck.clj-social-lab.facebook.factory :as fb-factory]
+  (:require [zolo.marconi.facebook.factory :as fb-factory]
             [zolo.facebook.gateway :as fb-gateway]
-            [zolodeck.clj-social-lab.facebook.core :as fb]
+            [zolo.marconi.facebook.core :as fb]
             [zolo.facebook.inbox :as fb-inbox]
             [zolo.domain.user :as user]
             [clojure.string :as str]))
