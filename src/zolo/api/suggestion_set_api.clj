@@ -1,29 +1,30 @@
 (ns zolo.api.suggestion-set-api
   (:use zolodeck.utils.debug
         zolodeck.utils.clojure
+        zolo.web.status-codes
+        zolo.api.core
         [slingshot.slingshot :only [throw+ try+]])
-  (:require [zolo.social.core :as social]
-            [zolo.domain.user :as user]
-            [zolo.domain.interaction :as interaction]
-            [zolo.domain.suggestion-set :as suggestion-set]
-            [zolo.domain.accessors :as dom]
-            [zolo.web :as web]
-            [zolo.utils.logger :as logger]
-            [clj-time.format :as ctf]
-            [clj-time.core :as time]))
+  (:require [zolo.utils.logger :as logger]
+            [zolo.service.suggestion-set-service :as ss-service]))
 
 ;; (defn- client-date-inst [client-date-rfc]
 ;;   (let [fmt (:rfc822 clj-time.format/formatters)
 ;;         lt (ctf/parse-local fmt client-date-rfc)]
 ;;     (.toDate (time/date-time (time/year lt) (time/month lt) (time/day lt)))))
 
-;; ;;GET /users/:guid/suggestion_set
-;; (defn find-suggestion-sets [user-id params]
-;;   (let [u (user/find-by-guid-string user-id)
-;;         ibc (interaction/ibc u)]
-;;     (-> (client-date-inst (:client-date params))
-;;         (suggestion-set/find-first-by-client-date)
-;;         (suggestion-set/format ibc))))
+;;GET /users/:guid/suggestion_set
+(defn find-suggestion-sets [user-guid params]
+  (if-let [ss (ss-service/find-suggestion-set-for-today user-guid)]
+    {:status (STATUS-CODES :ok)
+     :body ss}
+    (user-not-found))
+  
+  ;; (let [u (user/find-by-guid-string user-id)
+  ;;       ibc (interaction/ibc u)]
+  ;;   (-> (client-date-inst (:client-date params))
+  ;;       (suggestion-set/find-first-by-client-date)
+  ;;       (suggestion-set/format ibc)))
+  )
 
 ;; ;;GET /users/:guid/suggestion_set/:name
 ;; (defn find-suggestion-set [user-id ss-name]

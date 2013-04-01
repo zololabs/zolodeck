@@ -6,7 +6,6 @@
             [zolo.test.assertions.datomic :as db-assert]
             [zolo.test.assertions.domain :as d-assert]
             [zolo.personas.factory :as personas]
-            [zolo.personas.shy :as shy-persona]
             [zolo.domain.message :as message]
             [zolodeck.clj-social-lab.facebook.core :as fb-lab]
             [zolo.social.core :as social]))

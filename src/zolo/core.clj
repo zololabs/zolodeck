@@ -14,8 +14,7 @@
              [zolodeck.demonic.core :as demonic]
              [ring.util.response :as response]
              [zolo.api.user-api :as user-api]
-;;             [zolo.api.suggestion-set-api :as ss-api]
-             ))
+             [zolo.api.suggestion-set-api :as ss-api]))
 
 (defroutes application-routes
   (route/resources "/")
@@ -27,14 +26,14 @@
   (GET "/users" {params :params} (-> params user-api/find-users ))
 
   ;;TODO Just loging in the user it is not Updating the User 
-  (PUT "/users/:guid" [guid :as {params :params}] (-> (user-api/update-user guid params)))
+  (PUT "/users/:guid" [guid :as {params :params}] (user-api/update-user guid params))
 
   (GET "/users/:guid" [guid] (-> guid user-api/find-user ))
 
   ;;TODO move this to its own routes
   ;;(GET "/users/:user-id/suggestion_sets/:name" [user-id name] (web/json-response (ss-api/find-suggestion-set user-id name)))
 
-  ;;(GET "/users/:user-id/suggestion_sets" [user-id :as {params :params}] (web/json-response (ss-api/find-suggestion-sets user-id params)))
+  (GET "/users/:user-guid/suggestion_sets" [user-guid :as {params :params}] (ss-api/find-suggestion-sets user-guid params))
   )
 
 (def app

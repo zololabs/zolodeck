@@ -5,7 +5,6 @@
         [clojure.test :only [run-tests deftest is are testing]]
         conjure.core)
   (:require [zolo.domain.user-identity :as user-identity]
-            [zolo.personas.shy :as shy-persona]
             [zolo.domain.user :as user]))
 
 ;; (deftest test-update

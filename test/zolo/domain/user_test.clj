@@ -13,8 +13,7 @@
             [zolo.social.core :as social]
             [zolo.test.assertions.datomic :as db-assert]
             [zolo.test.assertions.domain :as d-assert]
-            [zolodeck.clj-social-lab.facebook.core :as fb-lab]
-            [zolo.personas.shy :as shy-persona]))
+            [zolodeck.clj-social-lab.facebook.core :as fb-lab]))
 
 ;; (deftest test-update
 ;;   (demonic-testing "User is not found"
@@ -78,20 +77,24 @@
 
 
 (deftest test-update-with-extended-fb-auth-token
-  (testing "User has no FB ui"
-    (let [shy (-> (shy-persona/create)
-                  (dissoc :user/user-identities))
-          u-shy (user/update-with-extended-fb-auth-token shy "new-token")]
+  (personas/in-social-lab
+   (testing "User has no FB ui"
+     (let [mickey (fb-lab/create-user "Mickey" "Mouse")
+           d-mickey (-> mickey
+                        personas/create-domain-user
+                        (dissoc :user/user-identities))
+           u-mickey (user/update-with-extended-fb-auth-token d-mickey "new-token")]
+       
+       (is (= d-mickey u-mickey))
+       (is (nil? (user-identity/fb-access-token u-mickey)))))
 
-      (is (= shy u-shy))
-      (is (nil? (user-identity/fb-access-token u-shy)))))
+   (testing "User has FB ui"
+     (let [mickey (fb-lab/create-user "Mickey" "Mouse")
+           d-mickey (personas/create-domain-user mickey)
+           u-mickey (user/update-with-extended-fb-auth-token d-mickey "new-token")]
 
-  (testing "User has FB ui"
-    (let [shy (shy-persona/create)
-          u-shy (user/update-with-extended-fb-auth-token shy "new-token")]
-
-      (is (not= shy u-shy))
-      (is (= "new-token" (user-identity/fb-access-token u-shy))))))
+       (is (not= d-mickey u-mickey))
+       (is (= "new-token" (user-identity/fb-access-token u-mickey)))))))
 
 (deftest test-update-tz-offset
   (let [mickey {}]
@@ -120,7 +123,9 @@
     (is (not (:user/updated (user/distill {:user/guid "abc"})))))
   
   (demonic-testing "Should return properly distilled user"
-    (let [shy (shy-persona/create)
-          du (user/distill shy)]
-      (is (= (str (:user/guid shy)) (:user/guid du)))
-      (is (= (shy-persona/email) (:user/email du))))))
+    (personas/in-social-lab
+     (let [mickey (fb-lab/create-user "Mickey" "Mouse")
+           d-mickey (personas/create-domain-user mickey)
+           du (user/distill d-mickey)]
+       (is (= (str (:user/guid d-mickey)) (:user/guid du)))
+       (is (= (user-identity/fb-email d-mickey) (:user/email du)))))))

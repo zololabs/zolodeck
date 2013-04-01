@@ -2,13 +2,10 @@
   (:use zolodeck.utils.debug
         zolodeck.utils.clojure
         zolo.web.status-codes
+        zolo.api.core
         [slingshot.slingshot :only [throw+ try+]])
   (:require [zolo.utils.logger :as logger]
             [zolo.service.user-service :as u-service]))
-
-(defn user-not-found []
-    {:status (:not-found STATUS-CODES)
-     :body {:message "No User found"}})
 
 (defn user-url [u]
   (str "/users/" (:user/guid u)))

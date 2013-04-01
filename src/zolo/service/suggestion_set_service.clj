@@ -1,4 +1,4 @@
-(ns zolo.service.user-service
+(ns zolo.service.suggestion-set-service
   (:use zolodeck.utils.debug
         zolodeck.utils.clojure
         [slingshot.slingshot :only [throw+ try+]])
@@ -10,8 +10,9 @@
             [zolo.setup.config :as conf]
             [zolo.service.core :as service]))
 
-;; (defn find-suggestion-sets [user-id client-date-inst]
-;;   (-not-nil-> (u-store/find-by-guid user-id)
-;;               interaction/ibc
-;;               (suggestion-set/find-first-by-client-date)
-;;               (suggestion-set/format ibc)))
+(defn find-suggestion-set-for-today [user-guid]
+  ;; (-not-nil-> (u-store/find-by-guid user-id)
+  ;;             interaction/ibc
+  ;;             (suggestion-set/find-first-by-client-date)
+  ;;             (suggestion-set/format ibc))
+)

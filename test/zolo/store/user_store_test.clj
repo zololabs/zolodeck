@@ -5,7 +5,6 @@
   (:require [zolo.store.user-store :as u-store]
             [zolo.test.assertions.datomic :as db-assert]
             [zolo.personas.factory :as personas]
-            [zolo.personas.shy :as shy-persona]
             [zolodeck.clj-social-lab.facebook.core :as fb-lab]))
 
 (demonictest test-find-by-provider-info
@@ -43,15 +42,17 @@
 
 (deftest test-save
   (demonic-testing "new user saved"
-    (let [shy (shy-persona/create)
-          db-shy (u-store/save shy)]
+    (personas/in-social-lab
+     (let [fb-user (fb-lab/create-user "first1" "last1")
+           d-user (personas/create-domain-user fb-user)
+           db-user (u-store/save d-user)]
 
-      (db-assert/assert-datomic-user-count 1)
-      (db-assert/assert-datomic-user-identity-count 1)
+       (db-assert/assert-datomic-user-count 1)
+       (db-assert/assert-datomic-user-identity-count 1)
 
-      ;;TODO Make this pass by removing datomic attribs
-      ;;(is (= shy db-shy))
-      )))
+       ;;TODO Make this pass by removing datomic attribs
+       ;;(is (= d-user db-user))
+       ))))
 
 (demonictest test-reload
   (personas/in-social-lab

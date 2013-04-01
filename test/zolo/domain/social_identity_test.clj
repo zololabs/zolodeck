@@ -4,8 +4,7 @@
         zolodeck.demonic.core
         [clojure.test :only [run-tests deftest is are testing]]
         conjure.core)
-  (:require [zolo.domain.social-identity :as si]
-            [zolo.personas.shy :as shy-persona]))
+  (:require [zolo.domain.social-identity :as si]))
 
 ;; (deftest test-update
 ;;   (demonic-testing "Should throw Runtime Exception when nil is passed"
