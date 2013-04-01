@@ -11,6 +11,9 @@
             [zolo.service.core :as service]))
 
 (defn find-suggestion-set-for-today [user-guid]
+  (-not-nil->> (u-store/find-by-guid user-guid)
+               :user/contacts
+               (assoc {} :contacts))
   ;; (-not-nil-> (u-store/find-by-guid user-id)
   ;;             interaction/ibc
   ;;             (suggestion-set/find-first-by-client-date)

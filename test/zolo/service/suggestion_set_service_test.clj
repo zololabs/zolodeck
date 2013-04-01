@@ -10,13 +10,24 @@
             [zolo.test.assertions.datomic :as db-assert]
             [zolo.test.assertions.domain :as d-assert]
             [zolodeck.clj-social-lab.facebook.core :as fb-lab]
-            [zolo.service.suggestion-set-service :as ss-service]))
+            [zolo.service.suggestion-set-service :as ss-service]
+            [zolo.personas.shy :as shy-persona]))
 
 (deftest test-find-suggestion-set-for-today
 
   (demonic-testing "User is not present it should return nil"
     (is (nil? (ss-service/find-suggestion-set-for-today nil))))
 
-  (demonic-testing "Suggestion set is not created for today .. it should create and return")
+  (demonic-testing "Suggestion set is not created for today .. it should create and return"
+    (let [shy (shy-persona/create)
+          ss-set (ss-service/find-suggestion-set-for-today (:user/guid shy))]
+
+      (is (not (nil? ss-set)))
+
+      ;;TODO Check SS Name
+
+      ;;TODO Check Contact Information
+      (is (= 2 (count (:contacts ss-set))))
+      ))
 
   (demonic-testing "Suggestion set is not created for today .. it should NOT create and return"))

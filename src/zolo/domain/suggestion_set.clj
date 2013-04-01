@@ -10,11 +10,11 @@
             [zolodeck.demonic.core :as demonic]
             [zolodeck.utils.calendar :as zolo-cal]))
 
-;; (defn suggestion-set-name [client-date]
-;;   (str "ss-"
-;;        (zolo-cal/year-from-instant client-date) "-"
-;;        (zolo-cal/month-from-instant client-date) "-"
-;;        (zolo-cal/date-from-instant client-date)))
+(defn suggestion-set-name [client-date]
+  (str "ss-"
+       (zolo-cal/year-from-instant client-date) "-"
+       (zolo-cal/month-from-instant client-date) "-"
+       (zolo-cal/date-from-instant client-date)))
 
 ;; (defn suggestion-set-contacts [u]
 ;;   (let [imbc (dom/inbox-messages-by-contacts u)

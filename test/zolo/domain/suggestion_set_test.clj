@@ -11,8 +11,15 @@
             [zolo.personas.factory :as personas]
             [zolo.test.assertions.datomic :as db-assert]
             [zolo.test.assertions.domain :as d-assert]
-            [zolodeck.clj-social-lab.facebook.core :as fb-lab]))
+            [zolodeck.clj-social-lab.facebook.core :as fb-lab]
+            [zolodeck.utils.calendar :as zolo-cal]))
 
+(deftest test-suggestion-set-name
+  (testing "when bad data is passed it should throw exception"
+    (is (thrown? RuntimeException (ss/suggestion-set-name nil)))
+    (is (thrown? RuntimeException (ss/suggestion-set-name "JUNK"))))
+  
+  (testing "when an instant is passed it should return name"))
 ;; (deftest test-suggestion-set
 ;;   (demonic-integration-testing "Should create new suggestion set"
 ;;     (personas/in-social-lab
