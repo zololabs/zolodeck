@@ -1,15 +1,16 @@
 (ns zolo.personas.shy
   (:use zolo.utils.debug
         conjure.core)
-  (:require [zolo.marconi.facebook.factory :as fb-factory]
+  (:require [zolo.marconi.core :as marconi]
+            [zolo.marconi.facebook.factory :as fb-factory]
             [zolo.facebook.gateway :as fb-gateway]
-            [zolo.marconi.facebook.core :as fb]
+            [zolo.marconi.facebook.core :as fb]            
             [zolo.facebook.inbox :as fb-inbox]
             [zolo.domain.user :as user]
             [zolo.personas.core :as personas]))
 
 (defn create []
-  (fb/in-facebook-lab
+  (marconi/in-lab
    (let [shy (personas/create-fb-user "Shy" "Hal")
          jack (personas/create-fb-user "Jack" "Daniels")
          jill (personas/create-fb-user "Jill" "Ferry")]

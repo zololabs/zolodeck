@@ -4,6 +4,7 @@
         zolo.test.assertions.core
         conjure.core)
     (:require [zolo.marconi.facebook.core :as fb-lab]
+              [zolo.marconi.core :as marconi]
               [zolo.social.facebook.gateway :as fb-gateway]
               [zolo.social.facebook.messages :as fb-messages]
               [zolo.social.facebook.stream :as fb-stream]              
@@ -21,14 +22,14 @@
     (fb-gateway/extended-access-token access-token (conf/fb-app-id) (conf/fb-app-secret))))
 
 (deftest ^:integration test-extended-user-info
-  (fb-lab/in-facebook-lab
+  (marconi/in-lab
    (let [mary-dummy (fb-lab/create-user "Mary" "Poppins")
          jack-info (fb-gateway/extended-user-info (jack-access-token) JACK-FB-ID)
          mary-info (fb-lab/extended-user-info mary-dummy)]
      (is (same-value? (keys jack-info) (keys mary-info))))))
 
 (deftest ^:integration test-friends-list
-  (fb-lab/in-facebook-lab
+  (marconi/in-lab
    (let [mary (fb-lab/create-user "Mary" "Poppins")
          lamb (fb-lab/create-user "Little" "Lamb")
          goat (fb-lab/create-user "Goat" "Ey")]
@@ -42,7 +43,7 @@
                           (keys (get-in mf [:picture :data])))))))))
 
 (deftest ^:integration test-fetch-inbox
-  (fb-lab/in-facebook-lab
+  (marconi/in-lab
       (let [mickey (fb-lab/create-user "Mickey" "Mouse")
             donald (fb-lab/create-user "Donald" "Duck")
             daisy (fb-lab/create-user "Daisy" "Duck")]
@@ -67,7 +68,7 @@
                              (remove #{:attachment} (keys mm)))))))))
 
 (deftest ^:integration test-recent-activity
-  (fb-lab/in-facebook-lab
+  (marconi/in-lab
    (let [mickey (fb-lab/create-user "Mickey" "Mouse")
          donald (fb-lab/create-user "Donald" "Duck")
          daisy (fb-lab/create-user "Daisy" "Duck")]

@@ -10,6 +10,7 @@
             [zolo.domain.message :as message]
             [zolo.facebook.gateway :as fb-gateway]
             [zolo.marconi.facebook.factory :as fb-factory]
+            [zolo.marconi.core :as marconi]
             [zolo.marconi.facebook.core :as fb]
             [zolo.personas.vincent :as vincent]
             [zolo.personas.loner :as loner]
@@ -37,7 +38,7 @@
 (deftest test-update-inbox
   
   (demonic-testing "When Contact is already Present"
-    (fb/in-facebook-lab
+    (marconi/in-lab
      (let [vincent (vincent/create)
            jack (personas/friend-of vincent "jack")
            jill (personas/friend-of vincent "jill")]
@@ -52,7 +53,7 @@
 
 
   (demonic-testing "When Contact is not Present"
-    (fb/in-facebook-lab
+    (marconi/in-lab
      (let [loner (personas/empty-fb-user "Loner" "Hal")
            god (personas/empty-fb-user "Iam" "God")]
 

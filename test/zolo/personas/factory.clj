@@ -3,6 +3,7 @@
         zolo.utils.clojure
         conjure.core)
   (:require [zolo.marconi.facebook.core :as fb-lab]
+            [zolo.marconi.core :as marconi]
             [zolo.social.facebook.gateway :as fb-gateway]
             [zolo.social.facebook.messages :as fb-messages]
             [zolo.social.facebook.stream :as fb-stream]
@@ -44,7 +45,7 @@
  (fb-lab/fetch-feeds (fb-lab/get-user contact-id)))
 
 (defmacro in-social-lab [& body]
-  `(fb-lab/in-facebook-lab
+  `(marconi/in-lab
     (stubbing [fb-gateway/extended-user-info fake-extended-user-info
                fb-gateway/friends-list fake-friends-list
                fb-messages/fetch-inbox fake-fetch-inbox

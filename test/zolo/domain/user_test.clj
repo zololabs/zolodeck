@@ -14,6 +14,7 @@
             [zolo.social.core :as social]
             [zolo.test.assertions.datomic :as db-assert]
             [zolo.test.assertions.domain :as d-assert]
+            [zolo.marconi.core :as marconi]
             [zolo.marconi.facebook.core :as fb-lab]
             [zolo.utils.calendar :as zolo-cal]))
 
@@ -31,7 +32,7 @@
 
 ;; (deftest test-signup-new-user
 ;;   (demonic-testing "First time user"
-;;     (fb-lab/in-facebook-lab
+;;     (marconi/in-lab
 ;;      (let [db-user (personas/create-new-db-user "First" "Time")]
 ;;        (db-assert/assert-datomic-id-present db-user)
 ;;        (db-assert/assert-datomic-user-count 1)
@@ -70,7 +71,7 @@
 
 ;; (deftest test-find-all-users-for-refresh
 ;;   (demonic-testing "When 1 of 2 users have granted permissions"
-;;     (fb-lab/in-facebook-lab
+;;     (marconi/in-lab
 ;;      (let [granted-user (personas/create-new-db-user "Permission" "Granted")
 ;;            not-granted-user (personas/create-new-db-user "Permission" "NOTGranted" false)]
 ;;        (let [users (filter :user-temp/fb-permissions-time (user/find-all-users-for-refreshes))]

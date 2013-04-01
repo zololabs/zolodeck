@@ -14,6 +14,7 @@
             [zolo.domain.contact :as contact]
             [zolo.domain.interaction :as interaction]
             [zolo.domain.message :as message]
+            [zolo.marconi.core :as marconi]
             [zolo.marconi.facebook.core :as fb-lab]
             [zolo.utils.calendar :as zolo-cal]))
 
