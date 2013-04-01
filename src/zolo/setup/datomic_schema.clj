@@ -35,7 +35,6 @@
 (schema-set "SUGGESTION SET"
  (uuid-fact-schema :suggestion-set/guid false "A GUID for suggestion set record" false false false false)
  (string-fact-schema :suggestion-set/name  false  "A suggestion set name" false false false false)
- (instant-fact-schema :suggestion-set/client-date  false  "Client Clock" false false false false)
  (refs-fact-schema :suggestion-set/contacts false "A suggested contacts" false false false false))
 
 (schema-set "USER IDENTITY FACTS"

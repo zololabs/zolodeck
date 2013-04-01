@@ -22,6 +22,21 @@
   (testing "when an instant is passed it should return name"
     (is (= "ss-2012-12-21" (ss/suggestion-set-name (zolo-cal/date-string->instant "yyyy-MM-dd" "2012-12-21"))))))
 
+(deftest test-suggestion-set
+  (personas/in-social-lab
+   (let [mickey (fb-lab/create-user "Mickey" "Mouse")
+         d-mickey (-> (personas/create-domain-user mickey)
+                      (assoc :user/suggestion-sets [{:suggestion-set/name "ss-2012-12-21"
+                                                     :suggestion-set/contacts ["c1" "c2"]}
+                                                    {:suggestion-set/name "ss-2012-11-11"
+                                                     :suggestion-set/contacts ["c3" "c4"]}]))]
+
+     (testing "when suggestion set is not present it should return nil"
+       (is (nil? (ss/suggestion-set d-mickey "notpresent"))))
+     
+     (testing "when suggestion set is present it should return suggestion-set"
+       (is (not (nil? (ss/suggestion-set d-mickey "ss-2012-12-21"))))
+       (is (= ["c1" "c2"] (:suggestion-set/contacts (ss/suggestion-set d-mickey "ss-2012-12-21"))))))))
 
 ;; (deftest test-suggestion-set
 ;;   (demonic-integration-testing "Should create new suggestion set"

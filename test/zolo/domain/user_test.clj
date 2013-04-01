@@ -3,6 +3,7 @@
         zolodeck.demonic.test
         zolodeck.demonic.core
         zolo.test.core-utils
+        zolo.test.assertions.core
         zolodeck.utils.debug
         [clojure.test :only [run-tests deftest is are testing]]
         conjure.core)
@@ -13,7 +14,8 @@
             [zolo.social.core :as social]
             [zolo.test.assertions.datomic :as db-assert]
             [zolo.test.assertions.domain :as d-assert]
-            [zolo.marconi.facebook.core :as fb-lab]))
+            [zolo.marconi.facebook.core :as fb-lab]
+            [zolodeck.utils.calendar :as zolo-cal]))
 
 ;; (deftest test-update
 ;;   (demonic-testing "User is not found"
@@ -104,6 +106,20 @@
     (is (nil? (:user/login-tz (user/update-tz-offset mickey nil))))
 
     (is (= 420 (:user/login-tz (user/update-tz-offset mickey 420))))))
+
+(deftest test-client-date-time
+  (testing "when nil is passed it should throw exception"
+    (is (thrown? RuntimeException (user/client-date-time {} nil))))
+
+  (testing "when no timezone offset is present it should return time in UTC"
+    (let [t (zolo-cal/date-string->instant "yyyy-MM-dd" "2012-12-21")]
+      (assert-same-day? "2012-12-21" (user/client-date-time nil t))`
+      (assert-same-day? "2012-12-21" (user/client-date-time {} t))))
+
+  (testing "when timezone offset is presnt it should return time in timezone with offset"
+    (let [t (zolo-cal/date-string->instant "yyyy-MM-dd" "2012-12-21")]
+      (assert-same-day? "2012-12-21" (user/client-date-time {:user/login-tz -330} t))
+      (assert-same-day? "2012-12-20" (user/client-date-time {:user/login-tz 420} t)))))
 
 (deftest test-distill
   (testing "Should return nil when Nil is passed"

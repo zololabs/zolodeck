@@ -4,6 +4,7 @@
         zolodeck.utils.clojure)
   (:require [zolo.domain.user-identity :as user-identity]
             [zolodeck.utils.maps :as zolo-maps]
+            [zolodeck.utils.calendar :as zolo-cal]
             [zolo.utils.logger :as logger]))
 
 (defn current-user []
@@ -38,6 +39,12 @@
 
 ;; (defn been-processed? [u]
 ;;   (:user/last-updated u))
+
+(defn client-date-time
+  ([u]
+     (client-date-time u (zolo-cal/now-instant)))
+  ([u t]
+     (zolo-cal/in-time-zone t (or (:user/login-tz u) 0))))
 
 (defn update-with-extended-fb-auth-token [u token]
   (let [fb-ui (user-identity/fb-user-identity u)

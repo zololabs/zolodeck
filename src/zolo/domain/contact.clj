@@ -203,11 +203,11 @@
 ;;TODO test this
 (defn distill [c]
   (when c
-    {:first-name (first-name c)
-     :last-name (last-name c)
-     :guid (:contact/guid c)
+    {:contact/first-name (first-name c)
+     :contact/last-name (last-name c)
+     :contact/guid (:contact/guid c)
      ;;:muted (:contact/muted c)
-     :picture-url (picture-url c)
+     :contact/picture-url (picture-url c)
      ;;     :contacted-today (is-contacted-on? ibc c client-date)
      ;; :interactions (daily-counts interactions);
      }))

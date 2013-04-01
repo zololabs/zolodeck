@@ -1,6 +1,7 @@
 (ns zolo.service.suggestion-set-service
   (:use zolodeck.utils.debug
         zolodeck.utils.clojure
+        conjure.core
         [slingshot.slingshot :only [throw+ try+]])
   (:require [zolo.social.core :as social]
             [zolo.domain.user :as user]
@@ -9,19 +10,25 @@
             [zolo.utils.logger :as logger]
             [zolo.setup.config :as conf]
             [zolo.domain.suggestion-set :as ss]
+            [zolo.domain.message :as message]
+            [zolo.domain.contact :as contact]
             [zolo.service.core :as service]
+            [zolo.store.suggestion-set-store :as ss-store]
             [zolodeck.utils.calendar :as zolo-cal]))
 
-(defn- suggestion-set [cs]
-  {:name (ss/suggestion-set-name (zolo-cal/now-instant))
-   :contacts cs})
+(defn- create-suggestion-set [u ss-name]
+  (it-> (ss/new-suggestion-set u ss-name)
+        (ss-store/append-suggestion-set u it)
+        (ss/suggestion-set it ss-name)))
+
+(defn- find-or-create-suggestion-set [u]
+  (let [ss-name (-> u
+                    user/client-date-time
+                    ss/suggestion-set-name)]
+    (-> (or (ss/suggestion-set u ss-name)
+            (create-suggestion-set u ss-name))
+        ss/distill)))
 
 (defn find-suggestion-set-for-today [user-guid]
   (-not-nil-> (u-store/find-by-guid user-guid)
-              :user/contacts
-              suggestion-set)
-  ;; (-not-nil-> (u-store/find-by-guid user-id)
-  ;;             interaction/ibc
-  ;;             (suggestion-set/find-first-by-client-date)
-  ;;             (suggestion-set/format ibc))
-)
+              find-or-create-suggestion-set))
