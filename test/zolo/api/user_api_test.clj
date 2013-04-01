@@ -55,7 +55,7 @@
     (personas/in-social-lab
      (let [mickey (fb-lab/create-user "Mickey" "Mouse")
            d-mickey (u-service/new-user (personas/request-params mickey true))
-           resp (w-utils/web-request :put (str "/users/" (:user/guid d-mickey)) {:permissions_granted false :login_tz "420"})]
+           resp (w-utils/web-request :put (str "/users/" (:user/guid d-mickey)) {:permissions_granted false :login_tz 420})]
 
        (is (= 200 (:status resp)))))))
 

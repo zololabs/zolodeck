@@ -36,12 +36,12 @@
    (social/provider-uid request-params)))
 
 (def val-request
-  {:login_provider [:required]
-   :login_provider_uid [:required]
-   :access_token [:required]
+  {:login_provider [:required :string]
+   :login_provider_uid [:required :string]
+   :access_token [:required :string]
    :permissions_granted [:required]
-   :login_tz [:required :parsable-to-int]
-   :guid [:optional]})
+   :login_tz [:required :integer]
+   :guid [:optional :string]})
 
 ;; Services
 (defn new-user [request-params]
@@ -49,7 +49,7 @@
       (service/validate-request! val-request)
       social/signup-user
       update-with-extended-fb-auth-token
-      (user/update-tz-offset (Integer/parseInt (:login_tz request-params)))
+      (user/update-tz-offset (:login_tz request-params))
       log-into-fb-chat
       u-store/save
       user/distill))
@@ -66,7 +66,7 @@
   (-not-nil-> (u-store/find-by-guid guid)
               update-with-extended-fb-auth-token
               (user/update-permissions-granted (:permissions_granted request-params))
-              (user/update-tz-offset (Integer/parseInt (:login_tz request-params)))
+              (user/update-tz-offset (:login_tz request-params))
               log-into-fb-chat
               u-store/save
               user/distill))

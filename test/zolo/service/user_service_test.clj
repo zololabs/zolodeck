@@ -51,9 +51,9 @@
 
        (fb-lab/login-as mickey)
        
-       (let [mickey-guid (:user/guid (u-service/new-user (personas/request-params mickey false "420")))
+       (let [mickey-guid (:user/guid (u-service/new-user (personas/request-params mickey false 420)))
              db-mickey-1 (u-store/find-by-guid mickey-guid)
-             _ (u-service/update-user mickey-guid (personas/request-params mickey true "800"))
+             _ (u-service/update-user mickey-guid (personas/request-params mickey true 800))
              db-mickey-2 (u-store/find-by-guid mickey-guid)]
 
          (is (not (user-identity/fb-permissions-granted? db-mickey-1)))
@@ -88,15 +88,19 @@
 
   (demonic-testing "new user sign up - bad request"
 
-    (thrown+? {:type :bad-request :error ["[:access_token] is required"
+    (thrown+? {:type :bad-request :error ["[:access_token] is not string"
+                                          "[:access_token] is required"
+                                          "[:login_provider_uid] is not string"
                                           "[:login_provider_uid] is required"
-                                          "[:login_tz] is not parsable to integer"
+                                          "[:login_tz] is not integer"
                                           "[:login_tz] is required"]}
               (u-service/new-user (personas/request-params {} true nil)))
 
-    (thrown+? {:type :bad-request :error ["[:access_token] is required"
+    (thrown+? {:type :bad-request :error ["[:access_token] is not string"
+                                          "[:access_token] is required"
+                                          "[:login_provider_uid] is not string"
                                           "[:login_provider_uid] is required"
-                                          "[:login_tz] is not parsable to integer"]}
+                                          "[:login_tz] is not integer"]}
                   (u-service/new-user (personas/request-params {} true "JUNK-TIME-TZ")))
 
     (db-assert/assert-datomic-user-count 0)

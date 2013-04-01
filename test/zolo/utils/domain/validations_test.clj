@@ -76,7 +76,7 @@
          []                         [:a]      [:required :vector]      {:a [:b]}
          []                         [:a]      [:required :vector]      {:a []}
          ["[:a] is required" 
-           "[:a] is not vector"]     [:a]      [:required :vector]      {:a nil}
+          "[:a] is not vector"]     [:a]      [:required :vector]      {:a nil}
 
          ;;Optional Vector
          []     [:a]      [:optional :vector]      {:a [:b]}

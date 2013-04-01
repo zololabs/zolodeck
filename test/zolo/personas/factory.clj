@@ -13,7 +13,7 @@
 
 (defn request-params
   ([fb-user permission-granted?]
-     (request-params fb-user permission-granted? "420"))
+     (request-params fb-user permission-granted? 420))
   ([fb-user permission-granted? login-tz]
      (let [fb-creds (fb-lab/login-creds fb-user)]
        {:login_provider "FACEBOOK"
