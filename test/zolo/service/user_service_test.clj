@@ -51,13 +51,16 @@
 
        (fb-lab/login-as mickey)
        
-       (let [mickey-guid (:user/guid (u-service/new-user (personas/request-params mickey false)))
+       (let [mickey-guid (:user/guid (u-service/new-user (personas/request-params mickey false "420")))
              db-mickey-1 (u-store/find-by-guid mickey-guid)
-             _ (u-service/update-user mickey-guid (personas/request-params mickey true))
+             _ (u-service/update-user mickey-guid (personas/request-params mickey true "800"))
              db-mickey-2 (u-store/find-by-guid mickey-guid)]
 
          (is (not (user-identity/fb-permissions-granted? db-mickey-1)))
          (is (user-identity/fb-permissions-granted? db-mickey-2))
+
+         (is (= 420 (:user/login-tz db-mickey-1)))
+         (is (= 800 (:user/login-tz db-mickey-2)))
 
          (db-assert/assert-datomic-user-count 1)
          (db-assert/assert-datomic-user-identity-count 1))))))
@@ -73,17 +76,28 @@
        (db-assert/assert-datomic-user-count 0)
        (db-assert/assert-datomic-user-identity-count 0)
        
-       (let [distilled-mickey (u-service/new-user (personas/request-params mickey true))]
+       (let [distilled-mickey (u-service/new-user (personas/request-params mickey true))
+             d-mickey (u-store/reload distilled-mickey)]
          (is (= "Mickey.Mouse@gmail.com" (:user/email distilled-mickey)))
 
+         (is (= 420 (:user/login-tz distilled-mickey)))
+
+         (is (-> d-mickey user-identity/fb-user-identity :identity/permissions-granted))
          (db-assert/assert-datomic-user-count 1)
          (db-assert/assert-datomic-user-identity-count 1)))))
 
   (demonic-testing "new user sign up - bad request"
 
     (thrown+? {:type :bad-request :error ["[:access_token] is required"
-                                          "[:login_provider_uid] is required"]}
-              (u-service/new-user (personas/request-params {} true)))
+                                          "[:login_provider_uid] is required"
+                                          "[:login_tz] is not parsable to integer"
+                                          "[:login_tz] is required"]}
+              (u-service/new-user (personas/request-params {} true nil)))
+
+    (thrown+? {:type :bad-request :error ["[:access_token] is required"
+                                          "[:login_provider_uid] is required"
+                                          "[:login_tz] is not parsable to integer"]}
+                  (u-service/new-user (personas/request-params {} true "JUNK-TIME-TZ")))
 
     (db-assert/assert-datomic-user-count 0)
     (db-assert/assert-datomic-user-identity-count 0)))

@@ -78,7 +78,7 @@
 
 
 (deftest test-update-with-extended-fb-auth-token
-  (demonic-testing "User has no FB ui"
+  (testing "User has no FB ui"
     (let [shy (-> (shy-persona/create)
                   (dissoc :user/user-identities))
           u-shy (user/update-with-extended-fb-auth-token shy "new-token")]
@@ -86,21 +86,38 @@
       (is (= shy u-shy))
       (is (nil? (user-identity/fb-access-token u-shy)))))
 
-  (demonic-testing "User has FB ui"
+  (testing "User has FB ui"
     (let [shy (shy-persona/create)
           u-shy (user/update-with-extended-fb-auth-token shy "new-token")]
 
       (is (not= shy u-shy))
       (is (= "new-token" (user-identity/fb-access-token u-shy))))))
 
+(deftest test-update-tz-offset
+  (let [mickey {}]
+    
+    (is (nil? (:user/login-tz mickey)))
+
+    (is (nil? (:user/login-tz (user/update-tz-offset mickey nil))))
+
+    (is (= 420 (:user/login-tz (user/update-tz-offset mickey 420))))))
+
 (deftest test-distill
-  (demonic-testing "Should return nil when Nil is passed"
+  (testing "Should return nil when Nil is passed"
     (is (nil? (user/distill nil))))
   
-  (demonic-testing "Email should be empty if no user-identities are present"
+  (testing "Email should be empty if no user-identities are present"
     (let [du (user/distill {:user/guid "abc"})]
       (is (= "abc" (:user/guid du)))
       (is (empty? (:user/email du)))))
+
+  (testing "Login tz should be returned properly"
+    (is (= 420 (:user/login-tz (user/distill {:user/login-tz 420}))))
+    (is (nil? (:user/login-tz (user/distill {:user/guid "abc"})))))
+
+  (testing "Updated flag should be returned properly"
+    (is (:user/updated (user/distill {:user/last-updated "sometime"})))
+    (is (not (:user/updated (user/distill {:user/guid "abc"})))))
   
   (demonic-testing "Should return properly distilled user"
     (let [shy (shy-persona/create)

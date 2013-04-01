@@ -25,6 +25,18 @@
 (def val-string (validator-fn- string? "is not string"))
 (def val-integer (validator-fn- integer? "is not integer"))
 
+;;TODO improve this function
+(defn val-parsable-to-int [m attribute validators]
+  (when-not (and 
+             (optional-validator-present? validators)
+             (nil? (m attribute)))
+    (try
+      (when-not (integer? (m attribute))
+        (Integer/parseInt (m attribute))
+        nil)
+      (catch Exception e
+        (str attribute " is not parsable to integer")))))
+
 (def VALIDATOR-KEY-TO-VALIDATOR-FN
      {:required val-required
       :optional val-optional
@@ -34,6 +46,7 @@
       :integer val-integer
       :vector val-vector
       :collection val-collection
+      :parsable-to-int val-parsable-to-int
       :empty-not-allowed val-empty-not-allowed})
 
 (defn flatten-keys* [a ks m]

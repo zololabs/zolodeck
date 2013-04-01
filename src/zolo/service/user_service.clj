@@ -40,6 +40,7 @@
    :login_provider_uid [:required]
    :access_token [:required]
    :permissions_granted [:required]
+   :login_tz [:required :parsable-to-int]
    :guid [:optional]})
 
 ;; Services
@@ -47,7 +48,8 @@
   (-> request-params
       (service/validate-request! val-request)
       social/signup-user
-      update-with-extended-fb-auth-token          
+      update-with-extended-fb-auth-token
+      (user/update-tz-offset (Integer/parseInt (:login_tz request-params)))
       log-into-fb-chat
       u-store/save
       user/distill))
@@ -64,6 +66,7 @@
   (-not-nil-> (u-store/find-by-guid guid)
               update-with-extended-fb-auth-token
               (user/update-permissions-granted (:permissions_granted request-params))
+              (user/update-tz-offset (Integer/parseInt (:login_tz request-params)))
               log-into-fb-chat
               u-store/save
               user/distill))

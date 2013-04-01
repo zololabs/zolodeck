@@ -57,6 +57,12 @@
          ["[:a] is not integer"]  [:a]     [:integer]    {:a "one"}
          ["[:a] is not integer"]  [:a]     [:integer]    {:a 1.1}
 
+         ;;Parsable to Integer
+         []                                      [:a]      [:parsable-to-int]    {:a 1}
+         []                                      [:a]      [:parsable-to-int]    {:a "1"}
+         ["[:a] is not parsable to integer"]     [:a]      [:parsable-to-int]    {:a 1.1}
+         ["[:a] is not parsable to integer"]     [:a]      [:parsable-to-int]    {:a "one"}
+
          ;;Vector
          []     [:a]      [:vector]      {:a []}
          []     [:a]      [:vector]      {:a [:b]}

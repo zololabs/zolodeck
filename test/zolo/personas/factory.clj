@@ -11,13 +11,17 @@
             [zolo.store.user-store :as u-store]
             [zolo.domain.message :as message]))
 
-(defn request-params [fb-user permission-granted?]
-  (let [fb-creds (fb-lab/login-creds fb-user)]
-    {:login_provider "FACEBOOK"
-     :guid nil
-     :permissions_granted permission-granted?
-     :access_token (get-in fb-creds [:providerLoginInfo :authResponse :accessToken])
-     :login_provider_uid (get-in fb-creds [:providerLoginInfo :authResponse :userID])}))
+(defn request-params
+  ([fb-user permission-granted?]
+     (request-params fb-user permission-granted? "420"))
+  ([fb-user permission-granted? login-tz]
+     (let [fb-creds (fb-lab/login-creds fb-user)]
+       {:login_provider "FACEBOOK"
+        :guid nil
+        :login_tz login-tz
+        :permissions_granted permission-granted?
+        :access_token (get-in fb-creds [:providerLoginInfo :authResponse :accessToken])
+        :login_provider_uid (get-in fb-creds [:providerLoginInfo :authResponse :userID])})))
 
 (defn fake-extended-user-info [at uid]
   (-> uid
