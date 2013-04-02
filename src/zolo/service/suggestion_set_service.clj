@@ -10,10 +10,16 @@
             [zolo.setup.config :as conf]
             [zolo.domain.suggestion-set :as ss]
             [zolo.domain.message :as message]
+            [zolo.domain.interaction :as interaction]
             [zolo.domain.contact :as contact]
             [zolo.service.core :as service]
             [zolo.store.suggestion-set-store :as ss-store]
             [zolo.utils.calendar :as zolo-cal]))
+
+(defn- suggestion-set-name [u]
+  (-> u
+      user/client-date-time
+      ss/suggestion-set-name))
 
 (defn- create-suggestion-set [u ss-name]
   (it-> (ss/new-suggestion-set u ss-name)
@@ -21,12 +27,11 @@
         (ss/suggestion-set it ss-name)))
 
 (defn- find-or-create-suggestion-set [u]
-  (let [ss-name (-> u
-                    user/client-date-time
-                    ss/suggestion-set-name)]
+  (let [ibc (interaction/ibc u)
+        ss-name (suggestion-set-name u)]
     (-> (or (ss/suggestion-set u ss-name)
             (create-suggestion-set u ss-name))
-        ss/distill)))
+        (ss/distill ibc))))
 
 (defn find-suggestion-set-for-today [user-guid]
   (-not-nil-> (u-store/find-by-guid user-guid)

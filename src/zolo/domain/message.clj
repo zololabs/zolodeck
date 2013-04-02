@@ -62,6 +62,12 @@
     (:temp-message/to m)
     (:message/to m)))
 
+;;TODO test
+(defn message-date [m]
+  (if (is-temp-message? m)
+    (:temp-message/date m)
+    (:message/date m)))
+
 (defn- update-buckets-for [buckets m contact-ids]
   (let [updater (fn [b contact-id]
                   (update-in b [[(message-provider m) contact-id]] conj m))]

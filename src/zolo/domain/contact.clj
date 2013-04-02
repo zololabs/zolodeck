@@ -12,7 +12,11 @@
             [zolo.demonic.core :as demonic]
             [zolo.domain.social-identity :as si]
             [zolo.domain.score :as score]
-            [clojure.set :as set]))
+            [zolo.domain.interaction :as interaction]
+            [zolo.domain.message :as message]
+            [clojure.set :as set]
+            [clj-time.core :as time])
+  (:import org.joda.time.DateTime))
 
 ;; (defn- contact-lookup-table [c]
 ;;   (->> (:contact/social-identities c)
@@ -83,6 +87,21 @@
     (-> cs
         (update-contacts-with-si (first sis))
         (updated-contacts (rest sis)))))
+
+;;TODO test 
+(defn days-not-contacted [c ibc]
+  (let [interactions (ibc c)]
+    (if (empty? interactions)
+      -1
+      (let [ts (->> (interaction/messages-from-interactions interactions)                    
+                    (keep message/message-date)
+                    last
+                    .getTime
+                    DateTime.)
+            n (time/now)
+            i (time/interval ts n)]
+        (time/in-days i)))))
+
 
 
 ;; (defn provider-info-by-provider [u]

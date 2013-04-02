@@ -19,6 +19,17 @@
        (zolo-cal/month-from-instant client-date) "-"
        (zolo-cal/date-from-instant client-date)))
 
+(defn- reason-for-suggesting [c ibc]
+  (let [days-not-contacted (contact/days-not-contacted c ibc)]
+    (if (= -1 days-not-contacted)
+      "You never interacted"
+      (str "Your last interaction was " days-not-contacted "  days ago"))))
+
+(defn- contact-info [c ibc]
+  (-> c
+      contact/distill
+      (assoc :contact/reason-to-connect (reason-for-suggesting c ibc))))
+
 ;;TODO Test this
 (defn new-suggestion-set [u ss-name]
   {:suggestion-set/name ss-name
@@ -30,6 +41,7 @@
        (filter #(= ss-name (:suggestion-set/name %)))
        first))
 
-(defn distill [ss]
+;;TODO test
+(defn distill [ss ibc]
   {:suggestion-set/name (:suggestion-set/name ss)
-   :suggestion-set/contacts (domap contact/distill (:suggestion-set/contacts ss))})
+   :suggestion-set/contacts (domap #(contact-info % ibc) (:suggestion-set/contacts ss))})

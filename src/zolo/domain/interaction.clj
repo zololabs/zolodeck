@@ -29,7 +29,12 @@
   (zolo-maps/transform-vals-with imbc (fn [c msgs]
                                         (messages->interactions msgs))))
 
-;; (defn ibc [user]
-;;   (-> user
-;;       dom/inbox-messages-by-contacts
-;;       interactions-by-contacts))
+(defn messages-from-interactions [interactions]
+  (-> interactions
+      flatten
+      squeeze))
+
+(defn ibc [user]
+  (-> user
+      message/inbox-messages-by-contacts
+      interactions-by-contacts))

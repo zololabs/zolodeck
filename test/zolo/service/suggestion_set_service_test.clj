@@ -22,7 +22,7 @@
     (is (nil? (ss-service/find-suggestion-set-for-today nil))))
 
   (demonic-testing "Suggestion set is not created for today .. it should create and return"
-    (stubbing [zolo-cal/now-instant (zolo-cal/date-string->instant "yyyy-MM-dd" "2012-12-21")]
+    (run-as-of "2012-12-21"
 
       (db-assert/assert-datomic-suggestion-set-count 0)
       
@@ -41,7 +41,7 @@
                (set (map :contact/guid (:suggestion-set/contacts ss-set))))))))
 
   (demonic-testing "Suggestion set is already created for today .. it should NOT create and return"
-    (stubbing [zolo-cal/now-instant (zolo-cal/date-string->instant "yyyy-MM-dd" "2012-12-21")]
+    (run-as-of "2012-12-21"
 
       (db-assert/assert-datomic-suggestion-set-count 0)
       

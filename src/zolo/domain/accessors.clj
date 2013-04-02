@@ -140,11 +140,6 @@
 ;;        (sort-by interaction-date)
 ;;        squeeze))
 
-;; (defn messages-from-interactions [interactions]
-;;   (-> interactions
-;;       flatten
-;;       squeeze))
-
 ;; (defn messages-for-contact [imbc contact]
 ;;   (->> (imbc contact)
 ;;        cleanup-messages))
