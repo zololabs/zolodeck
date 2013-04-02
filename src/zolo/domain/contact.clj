@@ -9,9 +9,8 @@
             [zolo.utils.logger :as logger]
             [zolo.utils.domain :as utils-domain]
             [zolo.social.core :as social]
-            [zolo.domain.social-identity :as si]
-            [zolo.domain.accessors :as dom]
             [zolo.demonic.core :as demonic]
+            [zolo.domain.social-identity :as si]
             [zolo.domain.score :as score]
             [clojure.set :as set]))
 

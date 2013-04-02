@@ -5,10 +5,7 @@
             [zolo.utils.maps :as zolo-maps]
             [zolo.utils.calendar :as zolo-cal]
             [zolo.utils.domain :as utils-domain]
-            [zolo.domain.accessors :as dom]
-            [zolo.domain.contact :as contact]            
-            [zolo.domain.social-identity :as social-identity]
-            [zolo.domain.user-identity :as user-identity]
+            [zolo.domain.user-identity :as ui]
             [zolo.social.core :as social]            
             [zolo.demonic.schema :as schema]
             [zolo.demonic.core :as demonic]
@@ -41,7 +38,7 @@
   {:temp-message/provider provider
    :temp-message/from (->>  from-user
                             :user/user-identities
-                            (user-identity/provider-uid provider))
+                            (ui/provider-uid provider))
    :temp-message/to to-uid
    :temp-message/text text
    ; :temp-message/thread-id thread-id
