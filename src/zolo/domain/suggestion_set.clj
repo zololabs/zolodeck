@@ -4,9 +4,6 @@
         zolo.utils.clojure)
   (:require [zolo.utils.logger :as logger]
             [zolo.domain.contact :as contact]
-            [zolo.domain.message :as message]
-            [zolo.domain.interaction :as interaction]
-            [zolo.stats.activity :as activity]
             [zolo.demonic.core :as demonic]
             [zolo.utils.calendar :as zolo-cal]))
 
