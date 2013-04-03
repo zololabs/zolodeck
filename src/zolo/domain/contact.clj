@@ -215,8 +215,6 @@
 ;;      :picture-url (:social/photo-url si)
 ;;      :contacted-today (is-contacted-on? ibc c client-date)}))
 
-
-;;TODO test this
 (defn distill [c]
   (when c
     {:contact/first-name (first-name c)

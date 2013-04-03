@@ -23,7 +23,7 @@
   (let [days-not-contacted (contact/days-not-contacted c ibc)]
     (if (= -1 days-not-contacted)
       "You never interacted"
-      (str "Your last interaction was " days-not-contacted "  days ago"))))
+      (str "Your last interaction was " days-not-contacted " days ago"))))
 
 (defn- contact-info [c ibc]
   (-> c
@@ -41,7 +41,9 @@
        (filter #(= ss-name (:suggestion-set/name %)))
        first))
 
-;;TODO test
 (defn distill [ss ibc]
-  {:suggestion-set/name (:suggestion-set/name ss)
-   :suggestion-set/contacts (domap #(contact-info % ibc) (:suggestion-set/contacts ss))})
+  (when ss
+    {:suggestion-set/name (:suggestion-set/name ss)
+     :suggestion-set/contacts (if (nil? ibc)
+                                []
+                                (domap #(contact-info % ibc) (:suggestion-set/contacts ss)))}))

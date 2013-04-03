@@ -97,6 +97,20 @@
            31   "2012-06-10"
            41   "2012-06-20"))))
 
+(deftest test-distill
+  (testing "When nil is passed it should return nil"
+    (is (nil? (contact/distill nil))))
+
+  (testing "When proper contact is passed"
+    (let [shy (shy-persona/create-domain)]
+
+      (let [[jack jill] (sort-by contact/first-name (:user/contacts shy))
+            distilled-jack (contact/distill jack)]
+        (is (= "Jack" (:contact/first-name distilled-jack)))
+        (is (= "Daniels" (:contact/last-name distilled-jack)))
+        (is (= (:contact/guid jack) (:contact/guid distilled-jack)))
+        (is (= (contact/picture-url jack) (:contact/picture-url distilled-jack)))))))
+
 ;; (deftest test-mute-contact
 ;;   (demonic-testing "Muting a contact"
 ;;     (personas/in-social-lab
