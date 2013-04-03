@@ -6,8 +6,6 @@
             [zolo.utils.logger :as logger]
             [zolo.domain.message :as message]))
 
-;;TODO Test this whole namespace
-
 (defn- within-interaction-time? [previous-msg next-msg]
   (let [gap-in-mins (zolo-cal/minutes-between (message/message-date previous-msg) (message/message-date next-msg))]
     (<= gap-in-mins 120)))
@@ -22,6 +20,7 @@
     (conj-at-end (conj-at-end msg (last interactions)) (butlast interactions))
     (conj-at-end [msg] interactions)))
 
+;;TODO Test this
 (defn- messages->interactions [msgs]
   (reduce bucket-by-time [] msgs))
 

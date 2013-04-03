@@ -93,7 +93,6 @@
        :user/contacts
        (reduce bucket-contact {})))
 
-;;TODO Test
 (defn messages-by-contacts [u message-filter-fn]
   (let [contacts-lookup (contacts-by-social-identifier u)
         all-messages (concat (:user/messages u) (:user/temp-messages u))

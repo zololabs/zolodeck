@@ -1,4 +1,4 @@
-(ns zolo.domain.message-test
+(ns zolo.domain.interaction-test
   (:use [zolo.domain.user :as user]
         zolo.demonic.test
         zolo.demonic.core
@@ -9,6 +9,7 @@
   (:require [zolo.personas.factory :as personas]
             [zolo.domain.user :as user]
             [zolo.domain.message :as message]
+            [zolo.domain.interaction :as interaction]
             [zolo.domain.accessors :as dom]
             [zolo.social.core :as social]
             [zolo.test.assertions.datomic :as db-assert]
@@ -19,51 +20,39 @@
             [zolo.personas.shy :as shy-persona]
             [zolo.personas.vincent :as vincent-persona]))
 
-(deftest test-is-inbox-message
-  (testing "When nil is passed return false"
-    (is (not (message/is-inbox-message? nil))))
-
-  (testing "When not inbox message it should return false"
-    (is (not (message/is-inbox-message? {:message/mode "FEED"})))
-    (is (not (message/is-inbox-message? {:message/mode "JUNK"}))))
-
-  (testing "When inbox message it should return true"
-    (is (message/is-inbox-message? {:message/mode "INBOX"})))
-
-  (testing "When temp message it should return true"
-    (is (message/is-inbox-message? {:temp-message/guid "abc"}))))
-
-(deftest test-inbox-messages-by-contacts
+(deftest test-interactions-by-contacts
   (testing "when no messages are present"
     (let [shy (shy-persona/create-domain)
-          imbc (message/inbox-messages-by-contacts shy)]
+          imbc (message/inbox-messages-by-contacts shy)
+          ibc (interaction/interactions-by-contacts imbc)]
 
-      (is (not (nil? imbc)))
+      (is (not (nil? ibc)))
 
-      (is (= 2 (count imbc)))
+      (is (= 2 (count ibc)))
 
-      (is (= (set (:user/contacts shy)) (set (keys imbc))))
+      (is (= (set (:user/contacts shy)) (set (keys ibc))))
 
       (let [[jack jill] (sort-by contact/first-name (:user/contacts shy))]
-        (is (empty? (imbc jack)))
-        (is (empty? (imbc jill))))))
+        (is (empty? (ibc jack)))
+        (is (empty? (ibc jill))))))
 
   (testing "when messages are present"
     (let [vincent (vincent-persona/create-domain)
-          imbc (message/inbox-messages-by-contacts vincent)]
+          imbc (message/inbox-messages-by-contacts vincent)
+          ibc (interaction/interactions-by-contacts imbc)]
       
-      (is (not (nil? imbc)))
+      (is (not (nil? ibc)))
 
-      (is (= 2 (count imbc)))
+      (is (= 2 (count ibc)))
 
-      (is (= (set (:user/contacts vincent)) (set (keys imbc))))
+      (is (= (set (:user/contacts vincent)) (set (keys ibc))))
 
       (let [[jack jill] (sort-by contact/first-name (:user/contacts vincent))]
-        (is-not (empty? (imbc jack)))
-        (is (= 3 (count (imbc jack))))
+        (is-not (empty? (ibc jack)))
+        (is (= 2 (count (ibc jack))))
         
-        (is-not (empty? (imbc jill)))
-        (is (= 2 (count (imbc jill))))))))
+        (is-not (empty? (ibc jill)))
+        (is (= 1 (count (ibc jill))))))))
 
 ;; (deftest test-update-inbox-messages
 ;;   (demonic-integration-testing  "First time user"

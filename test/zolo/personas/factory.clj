@@ -1,6 +1,7 @@
 (ns zolo.personas.factory
   (:use zolo.utils.debug
         zolo.utils.clojure
+        zolo.demonic.test
         conjure.core)
   (:require [zolo.marconi.facebook.core :as fb-lab]
             [zolo.marconi.core :as marconi]
@@ -10,6 +11,7 @@
             [zolo.social.core :as social]
             [zolo.domain.user :as user]
             [zolo.store.user-store :as u-store]
+            [zolo.service.user-service :as u-service]
             [zolo.domain.message :as message]))
 
 (defn request-params
@@ -74,6 +76,8 @@
       create-domain-user
       u-store/save))
 
-
 (defn create-temp-message [u to-user-provider-id text]
   (message/create-temp-message u :provider/facebook  to-user-provider-id text "thread-id"))
+
+(defn domain-persona [f]
+  (with-demonic-demarcation true ((f))))

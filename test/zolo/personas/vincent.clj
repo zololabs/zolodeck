@@ -1,4 +1,4 @@
-(ns zolo.personas.shy
+(ns zolo.personas.vincent
   (:use zolo.utils.debug
         conjure.core
         zolo.demonic.core)
@@ -14,9 +14,13 @@
                          :last-name "Fong"
                          :friends [
                                    {:first-name "Jack"
-                                    :last-name "Daniels"}
+                                    :last-name "Daniels"
+                                    :no-of-messages 3
+                                    :no-of-interactions 2}
                                    {:first-name "Jill"
-                                    :last-name "Ferry"}]}))
+                                    :last-name "Ferry"
+                                    :no-of-messages 2
+                                    :no-of-interactions 1}]}))
 
 (defn create-domain []
   (personas/domain-persona create))
