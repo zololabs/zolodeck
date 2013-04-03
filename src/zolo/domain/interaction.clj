@@ -20,7 +20,6 @@
     (conj-at-end (conj-at-end msg (last interactions)) (butlast interactions))
     (conj-at-end [msg] interactions)))
 
-;;TODO Test this
 (defn- messages->interactions [msgs]
   (reduce bucket-by-time [] msgs))
 

@@ -16,7 +16,9 @@
             [zolo.domain.message :as message]
             [zolo.marconi.core :as marconi]
             [zolo.marconi.facebook.core :as fb-lab]
-            [zolo.utils.calendar :as zolo-cal]))
+            [zolo.utils.calendar :as zolo-cal]
+            [zolo.personas.shy :as shy-persona]
+            [zolo.personas.generator :as pgen]))
 
 (defn- fetch-social-identities [fb-user]
   (social/fetch-social-identities :provider/facebook "at" (:id fb-user) "date"))
@@ -69,11 +71,31 @@
                                              (sort-by contact/first-name d4-m-contacts))))))))
 
 (deftest test-days-not-contacted
-  (testing "when never contacted it should return -1")
+  (testing "when never contacted it should return -1"
+    (let [shy (shy-persona/create-domain)
+          ibc (interaction/ibc shy)]
 
-  (testing "when contacted today it should return 0")
+      (let [[jack jill] (sort-by contact/first-name (:user/contacts shy))]
+        (is (= -1 (contact/days-not-contacted jack ibc)))
+        (is (= -1 (contact/days-not-contacted jill ibc))))))
 
-  (testing "when contacted some day ago it should return proper dates"))
+  (testing "when contacted today it should return 0"
+    (run-as-of "2012-05-10"
+      (let [u (pgen/generate-domain {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]})
+            ibc (interaction/ibc u)]
+
+        (is (= 0 (contact/days-not-contacted (first (:user/contacts u)) ibc))))))
+
+  (testing "when contacted some day ago it should return proper dates"
+    (let [u (pgen/generate-domain {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]})
+          ibc (interaction/ibc u)]
+
+      (are [expected as-of-date] (= expected (run-as-of as-of-date
+                                               (contact/days-not-contacted (first (:user/contacts u)) ibc)))
+           0   "2012-05-10"
+           10   "2012-05-20"
+           31   "2012-06-10"
+           41   "2012-06-20"))))
 
 ;; (deftest test-mute-contact
 ;;   (demonic-testing "Muting a contact"

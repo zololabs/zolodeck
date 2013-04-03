@@ -54,6 +54,38 @@
         (is-not (empty? (ibc jill)))
         (is (= 1 (count (ibc jill))))))))
 
+(deftest test-ibc
+  (testing "when no messages are present"
+    (let [shy (shy-persona/create-domain)
+          ibc (interaction/ibc shy)]
+
+      (is (not (nil? ibc)))
+
+      (is (= 2 (count ibc)))
+
+      (is (= (set (:user/contacts shy)) (set (keys ibc))))
+
+      (let [[jack jill] (sort-by contact/first-name (:user/contacts shy))]
+        (is (empty? (ibc jack)))
+        (is (empty? (ibc jill))))))
+
+  (testing "when messages are present"
+    (let [vincent (vincent-persona/create-domain)
+          ibc (interaction/ibc vincent)]
+      
+      (is (not (nil? ibc)))
+
+      (is (= 2 (count ibc)))
+
+      (is (= (set (:user/contacts vincent)) (set (keys ibc))))
+
+      (let [[jack jill] (sort-by contact/first-name (:user/contacts vincent))]
+        (is-not (empty? (ibc jack)))
+        (is (= 2 (count (ibc jack))))
+        
+        (is-not (empty? (ibc jill)))
+        (is (= 1 (count (ibc jill))))))))
+
 ;; (deftest test-update-inbox-messages
 ;;   (demonic-integration-testing  "First time user"
 ;;     (personas/in-social-lab

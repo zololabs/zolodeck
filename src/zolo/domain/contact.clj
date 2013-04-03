@@ -88,9 +88,8 @@
         (update-contacts-with-si (first sis))
         (updated-contacts (rest sis)))))
 
-;;TODO test 
 (defn days-not-contacted [c ibc]
-  (let [interactions (ibc c)]
+  (let [interactions  (ibc c)]
     (if (empty? interactions)
       -1
       (let [ts (->> (interaction/messages-from-interactions interactions)                    
@@ -101,7 +100,6 @@
             n (time/now)
             i (time/interval ts n)]
         (time/in-days i)))))
-
 
 
 ;; (defn provider-info-by-provider [u]

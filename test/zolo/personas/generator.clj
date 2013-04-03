@@ -28,7 +28,7 @@
               [u friend]
               [friend u])]
     (concat user-friend
-            [thread-id (str "Message ... Thread-id :" thread-id " - Msg-id :" msg-id) (str "2012-05-" (+ 9 thread-id))])))
+            [thread-id (str "Message ... User : " (:first_name friend) " - Thread-id :" thread-id " - Msg-id :" msg-id) (str "2012-05-" (+ 9 thread-id))])))
 
 (defn- dummy-messages [u friend thread-id no-of-msgs]
   (map #(dummy-message u friend thread-id %)
@@ -44,12 +44,23 @@
   (doseq [msg-info (generate-messages u friend no-of-i no-of-m)]
     (apply fb-lab/send-message msg-info)))
 
-(defn domain-persona [f]
-  (with-demonic-demarcation true ((f))))
+(def default-spec {:first-name "first"
+                   :last-name "last"
+                   :friends []})
+
+(defn create-friend-spec
+  ([f-name l-name no-of-i no-of-m]
+     {:first-name f-name
+      :last-name l-name
+      :no-of-messages no-of-m
+      :no-of-interactions no-of-i})
+  ([f-name l-name]
+     (create-friend-spec f-name l-name 0 0)))
 
 (defn generate [specs]
   (personas/in-social-lab
-   (let [u (fb-lab/create-user (:first-name specs) (:last-name specs))
+   (let [specs (merge default-spec specs)
+         u (fb-lab/create-user (:first-name specs) (:last-name specs))
          fs (map  (fn [f-spec]
                     [f-spec (fb-lab/create-user (:first-name f-spec) (:last-name f-spec))])
                   (:friends specs))
@@ -71,3 +82,6 @@
      (-> db-u
          u-service/refresh-user-data
          u-service/refresh-user-scores))))
+
+(defn generate-domain [specs]
+  (personas/domain-persona #(generate specs)))
