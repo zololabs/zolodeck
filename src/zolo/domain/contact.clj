@@ -125,6 +125,7 @@
 ;;   (find-by-guid (:contact/guid c)))
 
 ;;TODO test
+;;TODO need to move to store
 (defn update-score [ibc c]
   (-> (assoc c :contact/score (score/calculate ibc c))
       demonic/insert))
