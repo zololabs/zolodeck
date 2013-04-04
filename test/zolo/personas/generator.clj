@@ -57,6 +57,9 @@
   ([f-name l-name]
      (create-friend-spec f-name l-name 0 0)))
 
+(defn create-friend-specs [n]
+  (map #(create-friend-spec (str "f-first-" %) (str "f-last-" %)) (range 0 n)))
+
 (defn generate [specs]
   (personas/in-social-lab
    (let [specs (merge default-spec specs)

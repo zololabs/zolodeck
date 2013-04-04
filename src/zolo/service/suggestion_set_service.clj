@@ -14,7 +14,8 @@
             [zolo.domain.contact :as contact]
             [zolo.service.core :as service]
             [zolo.store.suggestion-set-store :as ss-store]
-            [zolo.utils.calendar :as zolo-cal]))
+            [zolo.utils.calendar :as zolo-cal]
+            [zolo.domain.suggestion-set.strategy.random :as ss-s-random]))
 
 (defn- suggestion-set-name [u]
   (-> u
@@ -22,7 +23,7 @@
       ss/suggestion-set-name))
 
 (defn- create-suggestion-set [u ss-name]
-  (it-> (ss/new-suggestion-set u ss-name)
+  (it-> (ss/new-suggestion-set u ss-name ss-s-random/compute)
         (ss-store/append-suggestion-set u it)
         (ss/suggestion-set it ss-name)))
 

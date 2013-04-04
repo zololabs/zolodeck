@@ -5,13 +5,8 @@
   (:require [zolo.utils.logger :as logger]
             [zolo.domain.contact :as contact]
             [zolo.demonic.core :as demonic]
-            [zolo.utils.calendar :as zolo-cal]))
-
-(defn- suggestion-set-contacts [u]
-  ;; (let [imbc (dom/inbox-messages-by-contacts u)
-  ;;       ibc (interaction/interactions-by-contacts imbc)]
-  ;;   (activity/forgetting-contacts ibc 5))
-  (:user/contacts u))
+            [zolo.utils.calendar :as zolo-cal]
+            [zolo.domain.suggestion-set.strategy.random :as ss-s-random]))
 
 (defn suggestion-set-name [client-date]
   (str "ss-"
@@ -30,10 +25,9 @@
       contact/distill
       (assoc :contact/reason-to-connect (reason-for-suggesting c ibc))))
 
-;;TODO Test this
-(defn new-suggestion-set [u ss-name]
+(defn new-suggestion-set [u ss-name strategy-fn]
   {:suggestion-set/name ss-name
-   :suggestion-set/contacts (suggestion-set-contacts u)})
+   :suggestion-set/contacts (strategy-fn u)})
 
 (defn suggestion-set [u ss-name]
   (->> u

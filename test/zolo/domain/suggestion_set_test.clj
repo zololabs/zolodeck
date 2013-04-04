@@ -94,39 +94,17 @@
             (is (= (contact/distill jack) (dissoc jack-from-ss :contact/reason-to-connect)))
             (is (= "Your last interaction was 31 days ago" (:contact/reason-to-connect jack-from-ss)))))))))
 
-;; (deftest test-suggestion-set
-;;   (demonic-integration-testing "Should create new suggestion set"
-;;     (personas/in-social-lab
-;;      (let [mickey (fb-lab/create-user "Mickey" "Mouse")
-;;            donald (fb-lab/create-friend "Donald" "Duck")
-;;            daisy (fb-lab/create-friend "Daisy" "Duck")
-;;            minnie (fb-lab/create-friend "Minnie" "Mouse")
-;;            db-mickey (in-demarcation (user/signup-new-user (personas/create-social-user mickey)))]
+(deftest test-new-suggestion-set
+  (testing "When nil user is passed"
+    (let [ss (ss/new-suggestion-set nil "ss-2012-12-01" :random)]
+      (is (= "ss-2012-12-01" (:suggestion-set/name ss)))
+      (is (empty? (:suggestion-set/contacts ss)))))
 
-;;        (fb-lab/make-friend mickey donald)
-;;        (fb-lab/make-friend mickey daisy)
-;;        (fb-lab/make-friend mickey minnie)
-       
-;;        (fb-lab/login-as mickey)
-
-;;        (in-demarcation
-;;         (contact/update-contacts (user/reload db-mickey)))
-
-;;        (let [[db-daisy db-donald db-minnie] (in-demarcation
-;;                                              (sort-by :contact/first-name (:user/contacts (in-demarcation (user/reload db-mickey)))))]
-         
-
-;;          (in-demarcation
-;;           (stubbing [ss/suggestion-set-contacts [db-daisy]]
-;;             (ss/new-suggestion-set (user/reload db-mickey) "ss-2012-05-01")))
-         
-;;          (in-demarcation
-;;           (let [suggestion-set (ss/suggestion-set (user/reload db-mickey) "ss-2012-05-01")
-;;                 suggested-contacts (:suggestion-set/contacts suggestion-set)]
-;;             (is (not (nil? suggestion-set)))
-;;             (is (= "ss-2012-05-01" (:suggestion-set/name suggestion-set)))
-;;             (is (= 1 (count suggested-contacts)) "Suggested only one contact ... so suggestion set should be 1")
-;;             (d-assert/contacts-are-same daisy (first suggested-contacts))))
-
-;;          (in-demarcation
-;;           (is (nil? (user/suggestion-set (user/reload db-mickey) "2012-05-02"))  "Suggestion Set should be nil")))))))
+  (testing "when correct strategy is passed it should call the strategy"
+    (let [startegy-fn (fn [u] (:user/contacts u))]
+      (let [u (pgen/generate-domain {:friends (pgen/create-friend-specs 2)})
+            ss (ss/new-suggestion-set u "ss-2012-12-01" startegy-fn)]
+        (is (= "ss-2012-12-01" (:suggestion-set/name ss)))
+        (is (= 2 (count (:suggestion-set/contacts ss))))
+        (is (= (sort-by contact/first-name (:user/contacts u))
+               (sort-by contact/first-name (:suggestion-set/contacts ss))))))))
