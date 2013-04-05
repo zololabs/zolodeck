@@ -216,13 +216,13 @@
 ;;      :picture-url (:social/photo-url si)
 ;;      :contacted-today (is-contacted-on? ibc c client-date)}))
 
-(defn distill [c]
+(defn distill [c ibc]
   (when c
-    {:contact/first-name (first-name c)
-     :contact/last-name (last-name c)
-     :contact/guid (:contact/guid c)
-     ;;:muted (:contact/muted c)
-     :contact/picture-url (picture-url c)
-     ;;     :contacted-today (is-contacted-on? ibc c client-date)
-     ;; :interactions (daily-counts interactions);
-     }))
+    (let [interactions (ibc c)]
+      {:contact/first-name (first-name c)
+       :contact/last-name (last-name c)
+       :contact/guid (:contact/guid c)
+       ;;:muted (:contact/muted c)
+       :contact/picture-url (picture-url c)
+       ;;     :contacted-today (is-contacted-on? ibc c client-date)
+       :contact/interaction-daily-counts (interaction/daily-counts interactions)}))) 

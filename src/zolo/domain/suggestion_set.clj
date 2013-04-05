@@ -22,7 +22,7 @@
 
 (defn- contact-info [c ibc]
   (-> c
-      contact/distill
+      (contact/distill ibc)
       (assoc :contact/reason-to-connect (reason-for-suggesting c ibc))))
 
 (defn new-suggestion-set [u ss-name strategy-fn]

@@ -171,6 +171,14 @@
       (is (thrown-with-msg? RuntimeException #"User TZ is not set"
             (interaction/daily-counts interactions)))))
 
+  (testing "When interaction happened should return empty"
+    (run-as-of "2012-05-13"
+      (d-core/run-in-gmt-tz
+       (let [u (pgen/generate-domain {:friends [(pgen/create-friend-spec "Jack" "Daniels" 0 0)]})
+             ibc (interaction/ibc u)
+             interactions (interaction/interactions-from-ibc ibc)]
+         (is (empty? (interaction/daily-counts interactions)))))))
+
   (testing "When many interactions are happening it should also respect tz-offset"
     (run-as-of "2012-05-13"
       (let [u (pgen/generate-domain {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)

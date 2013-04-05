@@ -9,6 +9,7 @@
   (:require [zolo.personas.factory :as personas]
             [zolo.domain.user :as user]
             [zolo.social.core :as social]
+            [zolo.domain.core :as d-core]
             [zolo.test.assertions.datomic :as db-assert]
             [zolo.test.assertions.domain :as d-assert]
             [zolo.domain.contact :as contact]
@@ -99,17 +100,35 @@
 
 (deftest test-distill
   (testing "When nil is passed it should return nil"
-    (is (nil? (contact/distill nil))))
+    (let [u (pgen/generate-domain {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]})
+         ibc (interaction/ibc u)]
+      (is (nil? (contact/distill nil ibc)))))
 
-  (testing "When proper contact is passed"
-    (let [shy (shy-persona/create-domain)]
+  (testing "When proper contact without interactions is passed"
+    (let [shy (shy-persona/create-domain)
+          ibc (interaction/ibc shy)]
 
       (let [[jack jill] (sort-by contact/first-name (:user/contacts shy))
-            distilled-jack (contact/distill jack)]
+            distilled-jack (contact/distill jack ibc)]
         (is (= "Jack" (:contact/first-name distilled-jack)))
         (is (= "Daniels" (:contact/last-name distilled-jack)))
         (is (= (:contact/guid jack) (:contact/guid distilled-jack)))
-        (is (= (contact/picture-url jack) (:contact/picture-url distilled-jack)))))))
+        (is (= (contact/picture-url jack) (:contact/picture-url distilled-jack)))
+        (is (empty? (:contact/interaction-daily-counts distilled-jack))))))
+
+  (testing "When proper contact with interactions is passed"
+    (run-as-of "2012-05-10"
+      (d-core/run-in-gmt-tz
+       (let [u (pgen/generate-domain {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]})
+             ibc (interaction/ibc u)]
+         
+         (let [jack (first (:user/contacts u))
+               distilled-jack (contact/distill jack ibc)]
+           (is (= "Jack" (:contact/first-name distilled-jack)))
+           (is (= "Daniels" (:contact/last-name distilled-jack)))
+           (is (= (:contact/guid jack) (:contact/guid distilled-jack)))
+           (is (= (contact/picture-url jack) (:contact/picture-url distilled-jack)))
+           (is (= [["2012-05-10" 1]] (:contact/interaction-daily-counts distilled-jack)))))))))
 
 ;; (deftest test-mute-contact
 ;;   (demonic-testing "Muting a contact"
