@@ -10,8 +10,8 @@
             [zolo.service.user-service :as u-service]))
 
 (defn create []
-  (pgen/generate {:first-name "Vincent"
-                  :last-name "Fong"
+  (pgen/generate {:first-name "Shy"
+                  :last-name "Hallow"
                   :friends [
                             (pgen/create-friend-spec "Jack" "Daniels")
                             (pgen/create-friend-spec "Jill" "Ferry")]}))
