@@ -41,7 +41,6 @@
   (zolo-maps/transform-vals-with imbc (fn [c msgs]
                                         (messages->interactions msgs))))
 
-;;TODO Test
 (defn interactions-from-ibc [ibc]
   (->> ibc
        vals

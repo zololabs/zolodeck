@@ -124,6 +124,45 @@
           "2012-5-10"     0
           "2012-5-10"  -420)))))
 
+(deftest test-interactions-from-ibc
+  (testing "When timezone offset is not set it should throw exception "
+    (let [vincent (vincent-persona/create-domain)
+          ibc (interaction/ibc vincent)]
+      (is (thrown-with-msg? RuntimeException #"User TZ is not set"
+            (interaction/interactions-from-ibc ibc)))))
+
+  (testing "When timezone offset is passed and "
+    (testing "When no message is present it should return empty"
+      (d-core/run-in-gmt-tz
+       (let [u (pgen/generate-domain {:friends [(pgen/create-friend-spec "Jack" "Daniels" 0 0)]})
+             ibc (interaction/ibc u)]
+         (is (empty? (interaction/interactions-from-ibc ibc))))))
+    
+    (testing "When only one interaction is present"
+      (d-core/run-in-gmt-tz
+       (let [u (pgen/generate-domain {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]})
+             ibc (interaction/ibc u)
+             interactions (interaction/interactions-from-ibc ibc)]
+         (is (= 1 (count interactions)))
+         (c-assert/assert-same-day? "2012-5-10" (interaction/interaction-date (first interactions))))))
+
+    (testing "When many interactions are present it should sort them by date"
+      (d-core/run-in-gmt-tz
+       (let [u (pgen/generate-domain {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)
+                                                (pgen/create-friend-spec "Jill" "Ferry" 2 3)]})
+             ibc (interaction/ibc u)
+             interactions (interaction/interactions-from-ibc ibc)]
+         (is (= 3 (count interactions)))
+         
+         (are [expected index]
+           (c-assert/is-same-day? expected
+                                  (-> interactions
+                                      (nth index)
+                                      interaction/interaction-date))
+           "2012-5-10"   0
+           "2012-5-10"   1
+           "2012-5-11"   2))))))
+
 ;; (deftest test-update-inbox-messages
 ;;   (demonic-integration-testing  "First time user"
 ;;     (personas/in-social-lab
