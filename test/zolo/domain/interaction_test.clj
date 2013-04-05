@@ -8,17 +8,22 @@
         conjure.core)
   (:require [zolo.personas.factory :as personas]
             [zolo.domain.user :as user]
+            [zolo.domain.core :as d-core]
             [zolo.domain.message :as message]
             [zolo.domain.interaction :as interaction]
             [zolo.domain.accessors :as dom]
             [zolo.social.core :as social]
             [zolo.test.assertions.datomic :as db-assert]
             [zolo.test.assertions.domain :as d-assert]
+            [zolo.test.assertions.core :as c-assert]
             [zolo.domain.contact :as contact]
             [zolo.marconi.core :as marconi]
             [zolo.marconi.facebook.core :as fb-lab]
             [zolo.personas.shy :as shy-persona]
-            [zolo.personas.vincent :as vincent-persona]))
+            [zolo.personas.vincent :as vincent-persona]
+            [zolo.personas.generator :as pgen]
+            [zolo.utils.calendar :as zcal]
+            [clj-time.coerce :as tcoerce]))
 
 (deftest test-interactions-by-contacts
   (testing "when no messages are present"
@@ -85,6 +90,39 @@
         
         (is-not (empty? (ibc jill)))
         (is (= 1 (count (ibc jill))))))))
+
+(deftest test-interaction-date
+  (testing "When timezone offset is not set it should throw exception "
+    (let [vincent (vincent-persona/create-domain)
+          ibc (interaction/ibc vincent)
+          i (d-core/run-in-gmt-tz (-> ibc interaction/interactions-from-ibc first))]
+      (is (thrown-with-msg? RuntimeException #"User TZ is not set" (interaction/interaction-date i)))))
+
+  (testing "When timezone offset is passed and "
+    (testing "When no message is present it should return empty"
+      (d-core/run-in-gmt-tz
+       (is (nil? (interaction/interaction-date [])))))
+    
+    (testing "When only one message is present it should return the first message date"
+      (d-core/run-in-gmt-tz
+       (let [u (pgen/generate-domain {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]})
+             ibc (interaction/ibc u)
+             i (-> ibc interaction/interactions-from-ibc first)]
+         (c-assert/assert-same-day? "2012-5-10" (interaction/interaction-date i)))))
+
+    (testing "Date should be changed if tz is passed"
+      (let [u (pgen/generate-domain {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]})
+            ibc (interaction/ibc u)]
+        (are [expected tz-offset]
+          (c-assert/is-same-day? expected
+                                 (d-core/run-in-tz-offset tz-offset
+                                                          (-> ibc
+                                                              interaction/interactions-from-ibc
+                                                              first
+                                                              interaction/interaction-date)))
+          "2012-5-9"    420
+          "2012-5-10"     0
+          "2012-5-10"  -420)))))
 
 ;; (deftest test-update-inbox-messages
 ;;   (demonic-integration-testing  "First time user"

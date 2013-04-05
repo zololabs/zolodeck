@@ -78,6 +78,12 @@
 ;;          (is (= 1 (count users)))
 ;;          (is (= (:user/guid granted-user) (:user/guid (first users)))))))))
 
+(deftest test-tz-offset-minutes
+  (testing "When the var is not bound it should throw exception"
+    (is (thrown-with-msg? RuntimeException #"User TZ is not set" (user/tz-offset-minutes))))
+  (testing "When the var is bound it should return correct value"
+    (binding [user/*tz-offset-minutes* 320]
+      (is (= 320 (user/tz-offset-minutes))))))
 
 (deftest test-update-with-extended-fb-auth-token
   (personas/in-social-lab

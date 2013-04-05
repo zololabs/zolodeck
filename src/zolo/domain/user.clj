@@ -7,6 +7,8 @@
             [zolo.utils.calendar :as zolo-cal]
             [zolo.utils.logger :as logger]))
 
+(def ^:dynamic *tz-offset-minutes* nil)
+
 (defn current-user []
   ;;(dissoc (sandbar/current-user) :username :roles)
   )
@@ -39,6 +41,10 @@
 
 ;; (defn been-processed? [u]
 ;;   (:user/last-updated u))
+
+(defn tz-offset-minutes []
+  (or *tz-offset-minutes*
+      (throw (RuntimeException. "User TZ is not set"))))
 
 (defn client-date-time
   ([u]
