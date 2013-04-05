@@ -119,10 +119,11 @@
   (testing "When proper contact with interactions is passed"
     (run-as-of "2012-05-10"
       (d-core/run-in-gmt-tz
-       (let [u (pgen/generate-domain {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]})
+       (let [u (pgen/generate-domain {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)
+                                                (pgen/create-friend-spec "Jill" "Ferry" 3 3)]})
              ibc (interaction/ibc u)]
          
-         (let [jack (first (:user/contacts u))
+         (let [[jack jill] (sort-by contact/first-name (:user/contacts u))
                distilled-jack (contact/distill jack ibc)]
            (is (= "Jack" (:contact/first-name distilled-jack)))
            (is (= "Daniels" (:contact/last-name distilled-jack)))
