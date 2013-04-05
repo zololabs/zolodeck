@@ -69,7 +69,8 @@
 (defn create-domain-user [fb-user]
   (-> fb-user
       (request-params true)
-      social/signup-user))
+      social/signup-user
+      (assoc :user/login-tz 0)))
 
 (defn create-db-user [fb-user]
   (-> fb-user

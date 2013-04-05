@@ -14,6 +14,7 @@
             [zolo.domain.suggestion-set :as ss]
             [zolo.domain.contact :as contact]
             [zolo.personas.shy :as shy-persona]
+            [zolo.personas.vincent :as vincent-persona]
             [zolo.utils.calendar :as zolo-cal]))
 
 (deftest test-find-suggestion-set-for-today
@@ -51,6 +52,20 @@
         (is (= ss-set
                (ss-service/find-suggestion-set-for-today (:user/guid shy))
                (ss-service/find-suggestion-set-for-today (:user/guid shy))))
+
+        (db-assert/assert-datomic-suggestion-set-count 1)
+        (db-assert/assert-datomic-contact-count 2)
+
+        (is (not (nil? ss-set))))))
+
+
+  (demonic-testing "Suggestion set for a user with interactions"
+    (run-as-of "2012-12-21"
+
+      (db-assert/assert-datomic-suggestion-set-count 0)
+      
+      (let [vincent (vincent-persona/create)
+            ss-set (ss-service/find-suggestion-set-for-today (:user/guid vincent))]
 
         (db-assert/assert-datomic-suggestion-set-count 1)
         (db-assert/assert-datomic-contact-count 2)
