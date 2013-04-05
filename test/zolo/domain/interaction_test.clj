@@ -163,6 +163,38 @@
            "2012-5-10"   1
            "2012-5-11"   2))))))
 
+(deftest test-daily-counts
+  (testing "When timezone offset is not set it should throw exception "
+    (let [vincent (vincent-persona/create-domain)
+          ibc (interaction/ibc vincent)
+          interactions (d-core/run-in-gmt-tz (interaction/interactions-from-ibc ibc))]
+      (is (thrown-with-msg? RuntimeException #"User TZ is not set"
+            (interaction/daily-counts interactions)))))
+
+  (testing "When many interactions are happening it should also respect tz-offset"
+    (run-as-of "2012-05-13"
+      (let [u (pgen/generate-domain {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)
+                                               (pgen/create-friend-spec "Jill" "Ferry" 2 5)
+                                               (pgen/create-friend-spec "Mary" "Fern"  3 12)
+                                               (pgen/create-friend-spec "Dont" "Care"  0 0)]})
+            ibc (interaction/ibc u)
+            interactions (d-core/run-in-gmt-tz (interaction/interactions-from-ibc ibc))]
+        
+        (are [expected tz-offset] (=  expected
+                                      (d-core/run-in-tz-offset tz-offset
+                                                               (interaction/daily-counts interactions)))
+             [["2012-05-09" 3] ["2012-05-10" 2] ["2012-05-11" 1] ["2012-05-12" 0] ["2012-05-13" 0]]
+             420
+             
+             [["2012-05-10" 3] ["2012-05-11" 2] ["2012-05-12" 1] ["2012-05-13" 0]]
+             0
+             
+             [["2012-05-10" 3] ["2012-05-11" 2] ["2012-05-12" 1] ["2012-05-13" 0]]
+             -420
+             
+             [["2012-05-11" 3] ["2012-05-12" 2] ["2012-05-13" 1]]
+             -1441)))))
+
 ;; (deftest test-update-inbox-messages
 ;;   (demonic-integration-testing  "First time user"
 ;;     (personas/in-social-lab

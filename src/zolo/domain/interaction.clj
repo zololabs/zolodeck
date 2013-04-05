@@ -30,12 +30,12 @@
         first
         (message/message-date (user/tz-offset-minutes)))))
 
-;; (defn daily-counts [interactions]
-;;   (let [interactions-dates (map #(zolo-cal/start-of-day-inst (dom/interaction-date %)) interactions)
-;;         interactions-freq (frequencies interactions-dates)
-;;         all-dates (-> interactions-dates first zolo-cal/all-dates-through-today)]
-;;     (reduce (fn [ret date]
-;;               (conj ret [(zolo-cal/date-to-simple-string date) (or (interactions-freq date) 0)])) [] all-dates)))
+(defn daily-counts [interactions]
+  (let [interactions-dates (map #(zolo-cal/start-of-day-inst (interaction-date %)) interactions)
+        interactions-freq (frequencies interactions-dates)
+        all-dates (-> interactions-dates first zolo-cal/all-dates-through-today)]
+    (reduce (fn [ret date]
+              (conj ret [(zolo-cal/date-to-simple-string date) (or (interactions-freq date) 0)])) [] all-dates)))
 
 (defn interactions-by-contacts [imbc]
   (zolo-maps/transform-vals-with imbc (fn [c msgs]

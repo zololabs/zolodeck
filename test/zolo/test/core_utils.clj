@@ -28,7 +28,8 @@
   `(stubbing [zolo-cal/now-instant (zolo-cal/date-string->instant "yyyy-MM-dd" ~yyyy-MM-dd-str)
               time/now (-> (zolo-cal/date-string->instant "yyyy-MM-dd" ~yyyy-MM-dd-str)
                            .getTime
-                           DateTime.)]
+                           DateTime.)
+              zolo-cal/now (.getTime (zolo-cal/date-string->instant "yyyy-MM-dd" ~yyyy-MM-dd-str))]
      ~@body))
 
 (defmacro demonic-integration-testing [doc & body]
