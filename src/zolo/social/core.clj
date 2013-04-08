@@ -5,11 +5,14 @@
 (def FACEBOOK "FACEBOOK")
 (def LINKEDIN "LINKEDIN")
 (def TWITTER  "TWITTER")
+(def EMAIL "EMAIL")
 
 (def provider-enum {
   FACEBOOK :provider/facebook
   LINKEDIN :provider/linkedin
-  TWITTER :provider/twitter})
+  TWITTER  :provider/twitter
+  EMAIL    :provider/email
+})
 
 (defn valid-provider? [provider]
   (some #{provider} (vals provider-enum)))
