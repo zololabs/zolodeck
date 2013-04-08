@@ -18,10 +18,14 @@
   (:temp-message/guid m))
 
 ;;TODO test
-(defn message-date [m]
-  (if (is-temp-message? m)
-    (:temp-message/date m)
-    (:message/date m)))
+(defn message-date
+  ([m]
+     (if (is-temp-message? m)
+       (:temp-message/date m)
+       (:message/date m)))
+  ([m tz-offset-minutes]
+     (-> (message-date m)
+         (zolo-cal/in-time-zone tz-offset-minutes))))
 
 ;;TODO Write Test
 (defn get-last-message-date [u]
@@ -62,12 +66,6 @@
     (:temp-message/to m)
     (:message/to m)))
 
-;;TODO test
-(defn message-date [m]
-  (if (is-temp-message? m)
-    (:temp-message/date m)
-    (:message/date m)))
-
 (defn- update-buckets-for [buckets m contact-ids]
   (let [updater (fn [b contact-id]
                   (update-in b [[(message-provider m) contact-id]] conj m))]
@@ -93,7 +91,6 @@
        :user/contacts
        (reduce bucket-contact {})))
 
-;;TODO Test
 (defn messages-by-contacts [u message-filter-fn]
   (let [contacts-lookup (contacts-by-social-identifier u)
         all-messages (concat (:user/messages u) (:user/temp-messages u))

@@ -21,12 +21,14 @@
 
   (doall (map #(is (same-value? (%1 m1) (%2 m2)) (str %1 " does not match " %2)) m1-keys m2-keys)))
 
+(defn is-same-day? [yyyy-MM-dd-str dt]
+  (= yyyy-MM-dd-str
+      (str (.getYear dt) "-"
+           (.getMonthOfYear dt) "-"
+           (.getDayOfMonth dt))))
 
 (defn assert-same-day? [yyyy-MM-dd-str dt]
-  (is (= yyyy-MM-dd-str
-         (str (.getYear dt) "-"
-              (.getMonthOfYear dt) "-"
-              (.getDayOfMonth dt)))))
+  (is (is-same-day? yyyy-MM-dd-str dt)))
 
 (defn is-thrown+ [thunk form]
   (let [ex-info-data (try

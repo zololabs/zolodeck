@@ -15,7 +15,55 @@
             [zolo.test.assertions.domain :as d-assert]
             [zolo.domain.contact :as contact]
             [zolo.marconi.core :as marconi]
-            [zolo.marconi.facebook.core :as fb-lab]))
+            [zolo.marconi.facebook.core :as fb-lab]
+            [zolo.personas.shy :as shy-persona]
+            [zolo.personas.vincent :as vincent-persona]))
+
+(deftest test-is-inbox-message
+  (testing "When nil is passed return false"
+    (is (not (message/is-inbox-message? nil))))
+
+  (testing "When not inbox message it should return false"
+    (is (not (message/is-inbox-message? {:message/mode "FEED"})))
+    (is (not (message/is-inbox-message? {:message/mode "JUNK"}))))
+
+  (testing "When inbox message it should return true"
+    (is (message/is-inbox-message? {:message/mode "INBOX"})))
+
+  (testing "When temp message it should return true"
+    (is (message/is-inbox-message? {:temp-message/guid "abc"}))))
+
+(deftest test-inbox-messages-by-contacts
+  (testing "when no messages are present"
+    (let [shy (shy-persona/create-domain)
+          imbc (message/inbox-messages-by-contacts shy)]
+
+      (is (not (nil? imbc)))
+
+      (is (= 2 (count imbc)))
+
+      (is (= (set (:user/contacts shy)) (set (keys imbc))))
+
+      (let [[jack jill] (sort-by contact/first-name (:user/contacts shy))]
+        (is (empty? (imbc jack)))
+        (is (empty? (imbc jill))))))
+
+  (testing "when messages are present"
+    (let [vincent (vincent-persona/create-domain)
+          imbc (message/inbox-messages-by-contacts vincent)]
+      
+      (is (not (nil? imbc)))
+
+      (is (= 2 (count imbc)))
+
+      (is (= (set (:user/contacts vincent)) (set (keys imbc))))
+
+      (let [[jack jill] (sort-by contact/first-name (:user/contacts vincent))]
+        (is-not (empty? (imbc jack)))
+        (is (= 3 (count (imbc jack))))
+        
+        (is-not (empty? (imbc jill)))
+        (is (= 2 (count (imbc jill))))))))
 
 ;; (deftest test-update-inbox-messages
 ;;   (demonic-integration-testing  "First time user"
@@ -24,7 +72,6 @@
 ;;            donald (fb-lab/create-friend "Donald" "Duck")
 ;;            daisy (fb-lab/create-friend "Daisy" "Duck")
 ;;            db-mickey (in-demarcation (user/signup-new-user (personas/create-social-user mickey)))]
-
 ;;        (fb-lab/make-friend mickey donald)
 ;;        (fb-lab/make-friend mickey daisy)
 

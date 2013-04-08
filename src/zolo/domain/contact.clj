@@ -88,9 +88,8 @@
         (update-contacts-with-si (first sis))
         (updated-contacts (rest sis)))))
 
-;;TODO test 
 (defn days-not-contacted [c ibc]
-  (let [interactions (ibc c)]
+  (let [interactions  (ibc c)]
     (if (empty? interactions)
       -1
       (let [ts (->> (interaction/messages-from-interactions interactions)                    
@@ -101,7 +100,6 @@
             n (time/now)
             i (time/interval ts n)]
         (time/in-days i)))))
-
 
 
 ;; (defn provider-info-by-provider [u]
@@ -127,6 +125,7 @@
 ;;   (find-by-guid (:contact/guid c)))
 
 ;;TODO test
+;;TODO need to move to store
 (defn update-score [ibc c]
   (-> (assoc c :contact/score (score/calculate ibc c))
       demonic/insert))
@@ -217,15 +216,13 @@
 ;;      :picture-url (:social/photo-url si)
 ;;      :contacted-today (is-contacted-on? ibc c client-date)}))
 
-
-;;TODO test this
-(defn distill [c]
+(defn distill [c ibc]
   (when c
-    {:contact/first-name (first-name c)
-     :contact/last-name (last-name c)
-     :contact/guid (:contact/guid c)
-     ;;:muted (:contact/muted c)
-     :contact/picture-url (picture-url c)
-     ;;     :contacted-today (is-contacted-on? ibc c client-date)
-     ;; :interactions (daily-counts interactions);
-     }))
+    (let [interactions (ibc c)]
+      {:contact/first-name (first-name c)
+       :contact/last-name (last-name c)
+       :contact/guid (:contact/guid c)
+       ;;:muted (:contact/muted c)
+       :contact/picture-url (picture-url c)
+       ;;     :contacted-today (is-contacted-on? ibc c client-date)
+       :contact/interaction-daily-counts (interaction/daily-counts interactions)}))) 

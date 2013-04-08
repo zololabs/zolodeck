@@ -5,13 +5,8 @@
   (:require [zolo.utils.logger :as logger]
             [zolo.domain.contact :as contact]
             [zolo.demonic.core :as demonic]
-            [zolo.utils.calendar :as zolo-cal]))
-
-(defn- suggestion-set-contacts [u]
-  ;; (let [imbc (dom/inbox-messages-by-contacts u)
-  ;;       ibc (interaction/interactions-by-contacts imbc)]
-  ;;   (activity/forgetting-contacts ibc 5))
-  (:user/contacts u))
+            [zolo.utils.calendar :as zolo-cal]
+            [zolo.domain.suggestion-set.strategy.random :as ss-s-random]))
 
 (defn suggestion-set-name [client-date]
   (str "ss-"
@@ -23,17 +18,16 @@
   (let [days-not-contacted (contact/days-not-contacted c ibc)]
     (if (= -1 days-not-contacted)
       "You never interacted"
-      (str "Your last interaction was " days-not-contacted "  days ago"))))
+      (str "Your last interaction was " days-not-contacted " days ago"))))
 
 (defn- contact-info [c ibc]
   (-> c
-      contact/distill
+      (contact/distill ibc)
       (assoc :contact/reason-to-connect (reason-for-suggesting c ibc))))
 
-;;TODO Test this
-(defn new-suggestion-set [u ss-name]
+(defn new-suggestion-set [u ss-name strategy-fn]
   {:suggestion-set/name ss-name
-   :suggestion-set/contacts (suggestion-set-contacts u)})
+   :suggestion-set/contacts (strategy-fn u)})
 
 (defn suggestion-set [u ss-name]
   (->> u
@@ -41,7 +35,9 @@
        (filter #(= ss-name (:suggestion-set/name %)))
        first))
 
-;;TODO test
 (defn distill [ss ibc]
-  {:suggestion-set/name (:suggestion-set/name ss)
-   :suggestion-set/contacts (domap #(contact-info % ibc) (:suggestion-set/contacts ss))})
+  (when ss
+    {:suggestion-set/name (:suggestion-set/name ss)
+     :suggestion-set/contacts (if (nil? ibc)
+                                []
+                                (domap #(contact-info % ibc) (:suggestion-set/contacts ss)))}))

@@ -9,6 +9,7 @@
   (:require [zolo.personas.factory :as personas]
             [zolo.domain.user :as user]
             [zolo.social.core :as social]
+            [zolo.domain.core :as d-core]
             [zolo.test.assertions.datomic :as db-assert]
             [zolo.test.assertions.domain :as d-assert]
             [zolo.domain.contact :as contact]
@@ -16,7 +17,9 @@
             [zolo.domain.message :as message]
             [zolo.marconi.core :as marconi]
             [zolo.marconi.facebook.core :as fb-lab]
-            [zolo.utils.calendar :as zolo-cal]))
+            [zolo.utils.calendar :as zolo-cal]
+            [zolo.personas.shy :as shy-persona]
+            [zolo.personas.generator :as pgen]))
 
 (defn- fetch-social-identities [fb-user]
   (social/fetch-social-identities :provider/facebook "at" (:id fb-user) "date"))
@@ -67,6 +70,66 @@
             (is (= 2 (count d4-m-contacts)))
             (d-assert/contacts-list-are-same [jack updated-jill]
                                              (sort-by contact/first-name d4-m-contacts))))))))
+
+(deftest test-days-not-contacted
+  (testing "when never contacted it should return -1"
+    (let [shy (shy-persona/create-domain)
+          ibc (interaction/ibc shy)]
+
+      (let [[jack jill] (sort-by contact/first-name (:user/contacts shy))]
+        (is (= -1 (contact/days-not-contacted jack ibc)))
+        (is (= -1 (contact/days-not-contacted jill ibc))))))
+
+  (testing "when contacted today it should return 0"
+    (run-as-of "2012-05-10"
+      (let [u (pgen/generate-domain {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]})
+            ibc (interaction/ibc u)]
+
+        (is (= 0 (contact/days-not-contacted (first (:user/contacts u)) ibc))))))
+
+  (testing "when contacted some day ago it should return proper dates"
+    (let [u (pgen/generate-domain {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]})
+          ibc (interaction/ibc u)]
+
+      (are [expected as-of-date] (= expected (run-as-of as-of-date
+                                               (contact/days-not-contacted (first (:user/contacts u)) ibc)))
+           0   "2012-05-10"
+           10   "2012-05-20"
+           31   "2012-06-10"
+           41   "2012-06-20"))))
+
+(deftest test-distill
+  (testing "When nil is passed it should return nil"
+    (let [u (pgen/generate-domain {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]})
+         ibc (interaction/ibc u)]
+      (is (nil? (contact/distill nil ibc)))))
+
+  (testing "When proper contact without interactions is passed"
+    (let [shy (shy-persona/create-domain)
+          ibc (interaction/ibc shy)]
+
+      (let [[jack jill] (sort-by contact/first-name (:user/contacts shy))
+            distilled-jack (contact/distill jack ibc)]
+        (is (= "Jack" (:contact/first-name distilled-jack)))
+        (is (= "Daniels" (:contact/last-name distilled-jack)))
+        (is (= (:contact/guid jack) (:contact/guid distilled-jack)))
+        (is (= (contact/picture-url jack) (:contact/picture-url distilled-jack)))
+        (is (empty? (:contact/interaction-daily-counts distilled-jack))))))
+
+  (testing "When proper contact with interactions is passed"
+    (run-as-of "2012-05-10"
+      (d-core/run-in-gmt-tz
+       (let [u (pgen/generate-domain {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)
+                                                (pgen/create-friend-spec "Jill" "Ferry" 3 3)]})
+             ibc (interaction/ibc u)]
+         
+         (let [[jack jill] (sort-by contact/first-name (:user/contacts u))
+               distilled-jack (contact/distill jack ibc)]
+           (is (= "Jack" (:contact/first-name distilled-jack)))
+           (is (= "Daniels" (:contact/last-name distilled-jack)))
+           (is (= (:contact/guid jack) (:contact/guid distilled-jack)))
+           (is (= (contact/picture-url jack) (:contact/picture-url distilled-jack)))
+           (is (= [["2012-05-10" 1]] (:contact/interaction-daily-counts distilled-jack)))))))))
 
 ;; (deftest test-mute-contact
 ;;   (demonic-testing "Muting a contact"

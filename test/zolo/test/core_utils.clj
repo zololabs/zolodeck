@@ -5,8 +5,10 @@
   (:require [zolo.utils.clojure :as clojure]
             [zolo.setup.config :as conf]
             [zolo.setup.datomic-setup :as datomic-setup]
-            [zolo.utils.calendar :as zolo-cal])
-  (:import [java.sql Time Date Timestamp]))
+            [zolo.utils.calendar :as zolo-cal]
+            [clj-time.core :as time])
+  (:import [java.sql Time Date Timestamp]
+           org.joda.time.DateTime))
 
 (def ^:dynamic *file-path-prefix* nil)
 
@@ -23,7 +25,11 @@
   (timestamp-for-test (System/currentTimeMillis)))
 
 (defmacro run-as-of [yyyy-MM-dd-str & body]
-  `(stubbing [zolo-cal/now-instant (zolo-cal/date-string->instant "yyyy-MM-dd" ~yyyy-MM-dd-str)]
+  `(stubbing [zolo-cal/now-instant (zolo-cal/date-string->instant "yyyy-MM-dd" ~yyyy-MM-dd-str)
+              time/now (-> (zolo-cal/date-string->instant "yyyy-MM-dd" ~yyyy-MM-dd-str)
+                           .getTime
+                           DateTime.)
+              zolo-cal/now (.getTime (zolo-cal/date-string->instant "yyyy-MM-dd" ~yyyy-MM-dd-str))]
      ~@body))
 
 (defmacro demonic-integration-testing [doc & body]

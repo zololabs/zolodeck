@@ -29,7 +29,6 @@
 ;;               :else 10))
 ;;   )
 
-;;TODO test
 (defn calculate [ibc c]
   (* 10 (count (ibc c))))
 
