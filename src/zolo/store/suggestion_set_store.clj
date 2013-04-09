@@ -5,7 +5,7 @@
             [zolo.demonic.core :as demonic]
             [zolo.store.user-store :as u-store]))
 
-;;TODO Test this
+;;TODO test 
 (defn append-suggestion-set [u suggestion-set]
   (->> suggestion-set
        (conj (:user/suggestion-sets u))

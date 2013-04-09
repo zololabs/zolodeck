@@ -37,7 +37,6 @@
 ;; (defn been-processed? [u]
 ;;   (:user/last-updated u))
 
-;;TODO test
 (defn provider-id [u provider]
   (condp  = provider 
     :provider/facebook (user-identity/fb-id u)

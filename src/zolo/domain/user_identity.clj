@@ -3,7 +3,7 @@
         [zolo.demonic.core :only [run-query load-entity]])
   (:require [zolo.demonic.core :as demonic]))
 
-;;TODO Tests for this whole namespace
+;;TODO tests for this whole namespace
 
 (defn- is-provider? [provider ui]
   (= provider (:identity/provider ui)))

@@ -13,7 +13,7 @@
 
 (def MESSAGES-START-TIME-SECONDS (-> #inst "2000-10-22" .getTime zolo-cal/to-seconds))
 
-;;TODO Write Test
+;;TODO test
 (defn is-temp-message? [m]
   (:temp-message/guid m))
 
@@ -27,7 +27,7 @@
      (-> (message-date m)
          (zolo-cal/in-time-zone tz-offset-minutes))))
 
-;;TODO Write Test
+;;TODO test
 (defn get-last-message-date [u]
   (or (->> u
            :user/messages
@@ -37,7 +37,7 @@
            :message/date)
       MESSAGES-START-TIME-SECONDS))
 
-;;TODO Write Test
+;;TODO test
 (defn create-temp-message [from-user provider to-uid text thread-id]
   {:temp-message/provider provider
    :temp-message/from (->>  from-user
