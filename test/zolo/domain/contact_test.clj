@@ -78,8 +78,9 @@
 
       (let [[jack] (sort-by contact/first-name (:user/contacts u))]
 
-          (testing "When incorrect provider is passed it should return nil"            
-            (is (nil? (contact/provider-id jack :provider/junk))))
+          (testing "When incorrect provider is passed it should throw exception"            
+            (is (thrown-with-msg? RuntimeException #"Unknown provider specified: :provider/junk"
+                  (contact/provider-id jack :provider/junk))))
 
           (testing "When profile with provider is present it should return correct value"
             (is (not (nil? (contact/provider-id jack :provider/facebook))))

@@ -82,9 +82,9 @@
   (value-from-si c :social/photo-url))
 
 (defn provider-id [c provider]
-  (cond
-   (= provider :provider/facebook) (si/fb-id c)
-   :default nil))
+  (condp  = provider 
+    :provider/facebook (si/fb-id c)
+    (throw (RuntimeException. (str "Unknown provider specified: " provider)))))
 
 (defn updated-contacts [cs sis]
   (if (empty? sis)
