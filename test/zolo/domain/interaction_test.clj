@@ -105,13 +105,13 @@
     
     (testing "When only one message is present it should return the first message date"
       (d-core/run-in-gmt-tz
-       (let [u (pgen/generate-domain {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]})
+       (let [u (pgen/generate-domain {:FACEBOOK {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
              ibc (interaction/ibc u)
              i (-> ibc interaction/interactions-from-ibc first)]
          (c-assert/assert-same-day? "2012-5-10" (interaction/interaction-date i)))))
 
     (testing "Date should be changed if tz is passed"
-      (let [u (pgen/generate-domain {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]})
+      (let [u (pgen/generate-domain {:FACEBOOK {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
             ibc (interaction/ibc u)]
         (are [expected tz-offset]
           (c-assert/is-same-day? expected
@@ -134,13 +134,13 @@
   (testing "When timezone offset is passed and "
     (testing "When no message is present it should return empty"
       (d-core/run-in-gmt-tz
-       (let [u (pgen/generate-domain {:friends [(pgen/create-friend-spec "Jack" "Daniels" 0 0)]})
+       (let [u (pgen/generate-domain {:FACEBOOK {:friends [(pgen/create-friend-spec "Jack" "Daniels" 0 0)]}})
              ibc (interaction/ibc u)]
          (is (empty? (interaction/interactions-from-ibc ibc))))))
     
     (testing "When only one interaction is present"
       (d-core/run-in-gmt-tz
-       (let [u (pgen/generate-domain {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]})
+       (let [u (pgen/generate-domain {:FACEBOOK {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
              ibc (interaction/ibc u)
              interactions (interaction/interactions-from-ibc ibc)]
          (is (= 1 (count interactions)))
@@ -148,8 +148,8 @@
 
     (testing "When many interactions are present it should sort them by date"
       (d-core/run-in-gmt-tz
-       (let [u (pgen/generate-domain {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)
-                                                (pgen/create-friend-spec "Jill" "Ferry" 2 3)]})
+       (let [u (pgen/generate-domain {:FACEBOOK {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)
+                                                           (pgen/create-friend-spec "Jill" "Ferry" 2 3)]}})
              ibc (interaction/ibc u)
              interactions (interaction/interactions-from-ibc ibc)]
          (is (= 3 (count interactions)))
@@ -174,17 +174,17 @@
   (testing "When interaction happened should return empty"
     (run-as-of "2012-05-13"
       (d-core/run-in-gmt-tz
-       (let [u (pgen/generate-domain {:friends [(pgen/create-friend-spec "Jack" "Daniels" 0 0)]})
+       (let [u (pgen/generate-domain {:FACEBOOK {:friends [(pgen/create-friend-spec "Jack" "Daniels" 0 0)]}})
              ibc (interaction/ibc u)
              interactions (interaction/interactions-from-ibc ibc)]
          (is (empty? (interaction/daily-counts interactions)))))))
 
   (testing "When many interactions are happening it should also respect tz-offset"
     (run-as-of "2012-05-13"
-      (let [u (pgen/generate-domain {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)
-                                               (pgen/create-friend-spec "Jill" "Ferry" 2 5)
-                                               (pgen/create-friend-spec "Mary" "Fern"  3 12)
-                                               (pgen/create-friend-spec "Dont" "Care"  0 0)]})
+      (let [u (pgen/generate-domain {:FACEBOOK {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)
+                                                          (pgen/create-friend-spec "Jill" "Ferry" 2 5)
+                                                          (pgen/create-friend-spec "Mary" "Fern"  3 12)
+                                                          (pgen/create-friend-spec "Dont" "Care"  0 0)]}})
             ibc (interaction/ibc u)
             interactions (d-core/run-in-gmt-tz (interaction/interactions-from-ibc ibc))]
         

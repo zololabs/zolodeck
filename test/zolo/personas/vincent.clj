@@ -10,11 +10,11 @@
             [zolo.service.user-service :as u-service]))
 
 (defn create []
-  (pgen/generate {:first-name "Vincent"
-                  :last-name "Fong"
-                  :friends [
-                            (pgen/create-friend-spec "Jack" "Daniels" 2 3)
-                            (pgen/create-friend-spec "Jill" "Ferry" 1 2)]}))
+  (pgen/generate {:FACEBOOK {:first-name "Vincent"
+                             :last-name "Fong"
+                             :friends [
+                                       (pgen/create-friend-spec "Jack" "Daniels" 2 3)
+                                       (pgen/create-friend-spec "Jill" "Ferry" 1 2)]}}))
 
 (defn create-domain []
   (personas/domain-persona create))

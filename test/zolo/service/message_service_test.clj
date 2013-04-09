@@ -92,7 +92,7 @@
 
 (demonictest test-new-message
 
-  (let [u (pgen/generate {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]})]
+  (let [u (pgen/generate {:FACEBOOK {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})]
     
     (let [[jack] (sort-by contact/first-name (:user/contacts u))]
       

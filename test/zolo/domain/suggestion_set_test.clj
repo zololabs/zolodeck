@@ -54,7 +54,7 @@
       (d-core/run-in-gmt-tz
 
        (testing "Contact is empty it should return proper ss name"
-         (let [u (pgen/generate-domain {:friends []})
+         (let [u (pgen/generate-domain {:FACEBOOK {:friends []}})
                ibc (interaction/ibc u)
                ss (create-ss "ss-2012-05-01" (:user/contacts u))
                distilled-ss (ss/distill ss ibc)]
@@ -62,8 +62,8 @@
            (is (= [] (:suggestion-set/contacts distilled-ss)))))
 
        (testing "has many contacts"
-         (let [u (pgen/generate-domain {:friends [(pgen/create-friend-spec "Jack" "Daniels")
-                                                  (pgen/create-friend-spec "Jill" "Ferry")]})
+         (let [u (pgen/generate-domain {:FACEBOOK {:friends [(pgen/create-friend-spec "Jack" "Daniels")
+                                                             (pgen/create-friend-spec "Jill" "Ferry")]}})
                ibc (interaction/ibc u)
                ss (create-ss "ss-2012-05-01" (:user/contacts u))
                distilled-ss (ss/distill ss ibc)]
@@ -72,7 +72,7 @@
            (is (= 2 (count (:suggestion-set/contacts distilled-ss))))))
 
        (testing "Contact has not been contacted at all"
-         (let [u (pgen/generate-domain {:friends [(pgen/create-friend-spec "Jack" "Daniels")]})
+         (let [u (pgen/generate-domain {:FACEBOOK {:friends [(pgen/create-friend-spec "Jack" "Daniels")]}})
                ibc (interaction/ibc u)
                ss (create-ss "ss-2012-05-01" (:user/contacts u))
                distilled-ss (ss/distill ss ibc)]
@@ -86,7 +86,7 @@
 
        (testing "Contact has been contacted last month"
          (run-as-of "2012-06-10"
-           (let [u (pgen/generate-domain {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]})
+           (let [u (pgen/generate-domain {:FACEBOOK {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
                  ibc (interaction/ibc u)
                  ss (create-ss "ss-2012-05-01" (:user/contacts u))
                  distilled-ss (ss/distill ss ibc)]
@@ -106,7 +106,7 @@
 
   (testing "when correct strategy is passed it should call the strategy"
     (let [startegy-fn (fn [u] (:user/contacts u))]
-      (let [u (pgen/generate-domain {:friends (pgen/create-friend-specs 2)})
+      (let [u (pgen/generate-domain {:FACEBOOK {:friends (pgen/create-friend-specs 2)}})
             ss (ss/new-suggestion-set u "ss-2012-12-01" startegy-fn)]
         (is (= "ss-2012-12-01" (:suggestion-set/name ss)))
         (is (= 2 (count (:suggestion-set/contacts ss))))

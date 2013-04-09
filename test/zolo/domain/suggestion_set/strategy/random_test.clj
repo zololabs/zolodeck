@@ -19,13 +19,13 @@
     (is (empty? (ss-s-random/compute nil))))
 
   (testing "When user does not have any contact it should return empty"
-    (let [u (pgen/generate-domain {:friends []})]
+    (let [u (pgen/generate-domain {:FACEBOOK {:friends []}})]
       (is (empty? (ss-s-random/compute u)))))
 
   (testing "When user has less than 5 contacts it should return all of them"
-    (let [u (pgen/generate-domain {:friends (pgen/create-friend-specs 3)})]
+    (let [u (pgen/generate-domain {:FACEBOOK {:friends (pgen/create-friend-specs 3)}})]
       (is (= 3 (count (ss-s-random/compute u))))))
 
   (testing "When user has more than 5 contacts it should return only 5 of them"
-    (let [u (pgen/generate-domain {:friends (pgen/create-friend-specs 12)})]
+    (let [u (pgen/generate-domain {:FACEBOOK {:friends (pgen/create-friend-specs 12)}})]
       (is (= 5 (count (ss-s-random/compute u)))))))

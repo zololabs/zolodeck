@@ -11,6 +11,7 @@
             [zolo.social.facebook.stream :as fb-stream]
             [zolo.social.core :as social]
             [zolo.domain.user :as user]
+            [zolo.utils.maps :as zmaps]
             [zolo.store.user-store :as u-store]
             [zolo.service.user-service :as u-service]
             [zolo.domain.message :as message]))
@@ -44,9 +45,9 @@
   (doseq [msg-info (generate-messages u friend no-of-i no-of-m)]
     (apply fb-lab/send-message msg-info)))
 
-(def default-spec {:first-name "first"
-                   :last-name "last"
-                   :friends []})
+(def DEFAULT-SPECS {:first-name "first"
+                    :last-name "last"
+                    :friends []})
 
 (defn create-friend-spec
   ([f-name l-name no-of-i no-of-m]
@@ -60,9 +61,11 @@
 (defn create-friend-specs [n]
   (map #(create-friend-spec (str "f-first-" %) (str "f-last-" %)) (range 0 n)))
 
+
 (defn generate [specs]
   (personas/in-social-lab
-   (let [specs (merge default-spec specs)
+   (let [specs (:FACEBOOK (zmaps/transform-vals-with specs (fn [k v]
+                                                             (merge DEFAULT-SPECS v))))
          u (fb-lab/create-user (:first-name specs) (:last-name specs))
          fs (map  (fn [f-spec]
                     [f-spec (fb-lab/create-user (:first-name f-spec) (:last-name f-spec))])
