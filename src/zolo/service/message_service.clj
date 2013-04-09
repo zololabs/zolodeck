@@ -39,7 +39,6 @@
          (m-store/append-messages u))))
 
 ;;TODO test
-;;TODO validate the incoming request
 (defn new-message [u c params]
   (service/validate-request! (print-vals params) val-request)
   (let [provider (service/provider-string->provider-enum (:provider params))
