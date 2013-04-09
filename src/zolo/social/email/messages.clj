@@ -30,8 +30,8 @@
 (defn select-valid [all-msgs]
   (remove missing-fields? all-msgs))
 
-(defn get-messages [cio-account-id]
-  (->> cio-account-id
-       gateway/get-messages
-       select-valid
-       (domap cio-message->message)))
+(defn get-messages [cio-account-id date-in-seconds]
+  (it-> cio-account-id
+        (gateway/get-messages it date-in-seconds)
+        (select-valid it)
+        (domap cio-message->message it)))

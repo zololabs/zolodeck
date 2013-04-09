@@ -6,22 +6,23 @@
 
 (def ^:dynamic *creds* (oauth/make-oauth-creds (conf/context-io-key) (conf/context-io-secret)))
 
-(defn get-data- [data-fn account-id limit offset results-key-seq results]
+(defn get-data- [data-fn account-id limit offset other-params results-key-seq results]
   (let [resp (data-fn *creds* :params (print-vals "GetData:" data-fn
-                                                  {:account-id account-id :limit limit :offset offset}))]
+                                                  (merge {:account-id account-id :limit limit :offset offset}
+                                                         other-params)))]
     (if (not= 200 (get-in resp [:status :code]))
       results
       (let [cs (get-in resp results-key-seq)
             num (count cs)]
         (if (zero? num)
           results
-          (recur data-fn account-id limit (+ offset num) results-key-seq (concat results cs)))))))
+          (recur data-fn account-id limit (+ offset num) other-params results-key-seq (concat results cs)))))))
 
 (defn get-accounts []
   (context-io/list-accounts *creds*))
 
-(defn get-contacts [account-id]
-  (get-data- context-io/list-account-contacts account-id 500 0 [:body :matches] []))
+(defn get-contacts [account-id date-in-seconds]
+  (get-data- context-io/list-account-contacts account-id 500 0 {:active_after date-in-seconds} [:body :matches] []))
 
-(defn get-messages [account-id]
-  (get-data- context-io/list-account-messages account-id 1000 0 [:body] []))
+(defn get-messages [account-id date-in-seconds]
+  (get-data- context-io/list-account-messages account-id 1000 0 {:date_after date-in-seconds} [:body] []))

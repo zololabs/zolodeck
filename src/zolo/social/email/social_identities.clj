@@ -12,7 +12,7 @@
     :social/photo-url (:thumbnail c)
     }))
 
-(defn get-social-identities [cio-account-id]
-  (->> cio-account-id
-       gateway/get-contacts
-       (domap cio-contact->social-identity)))
+(defn get-social-identities [cio-account-id date-in-seconds]
+  (it-> cio-account-id
+        (gateway/get-contacts it date-in-seconds)
+        (domap cio-contact->social-identity it)))
