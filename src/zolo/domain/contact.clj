@@ -81,6 +81,11 @@
 (defn picture-url [c]
   (value-from-si c :social/photo-url))
 
+(defn provider-id [c provider]
+  (cond
+   (= provider :provider/facebook) (si/fb-id c)
+   :default nil))
+
 (defn updated-contacts [cs sis]
   (if (empty? sis)
     cs

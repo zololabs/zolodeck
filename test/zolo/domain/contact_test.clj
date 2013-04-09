@@ -14,6 +14,7 @@
             [zolo.test.assertions.domain :as d-assert]
             [zolo.domain.contact :as contact]
             [zolo.domain.interaction :as interaction]
+            [zolo.domain.social-identity :as si]
             [zolo.domain.message :as message]
             [zolo.marconi.core :as marconi]
             [zolo.marconi.facebook.core :as fb-lab]
@@ -70,6 +71,19 @@
             (is (= 2 (count d4-m-contacts)))
             (d-assert/contacts-list-are-same [jack updated-jill]
                                              (sort-by contact/first-name d4-m-contacts))))))))
+
+(deftest test-provider-id
+
+  (let [u (pgen/generate-domain {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]})]
+
+      (let [[jack] (sort-by contact/first-name (:user/contacts u))]
+
+          (testing "When incorrect provider is passed it should return nil"            
+            (is (nil? (contact/provider-id jack :provider/junk))))
+
+          (testing "When profile with provider is present it should return correct value"
+            (is (not (nil? (contact/provider-id jack :provider/facebook))))
+            (is (= (si/fb-id jack) (contact/provider-id jack :provider/facebook)))))))
 
 (deftest test-days-not-contacted
   (testing "when never contacted it should return -1"
