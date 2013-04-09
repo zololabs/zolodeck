@@ -7,6 +7,7 @@
   (:require [zolo.utils.logger :as logger]
             [zolo.service.message-service :as m-service]))
 
+;;TODO test
 ;;POST /users/:guid/contacts/:c-guid/message
 (defn send-message [user-guid c-guid request-params]
   (if-let [new-t-message (m-service/new-message user-guid c-guid request-params)]

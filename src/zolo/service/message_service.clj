@@ -26,8 +26,8 @@
          (mapcat #(get-messages-for-user-identity % last-updated-seconds)))))
 
 (def val-request
-  {:provider [:required :string]
-   :text [:required :string]
+  {:provider [:required :string :empty-not-allowed]
+   :text [:required :string :empty-not-allowed]
    :thread_id [:optional :string]})
 
  ;; Services
@@ -38,14 +38,14 @@
          get-inbox-messages-for-user
          (m-store/append-messages u))))
 
-;;TODO test
 (defn new-message [u c params]
-  (service/validate-request! (print-vals params) val-request)
-  (let [provider (service/provider-string->provider-enum (:provider params))
-        from-uid (user/provider-id u provider)
-        to-uid (contact/provider-id c provider)]
-    ;;(message/create-temp-message from-uid to-uid provider (:thread_id params) (:text params))
-    (fb-chat/send-message (user/current-user) to-uid (:text params))
-    (->> (message/create-temp-message from-uid to-uid provider (:thread_id params) (:text params))
-         (m-store/append-temp-message u))
-    ))
+  (when (and u c)
+    (service/validate-request! params val-request)
+    (let [provider (service/provider-string->provider-enum (:provider params))
+          from-uid (user/provider-id u provider)
+          to-uid (contact/provider-id c provider)]
+      ;;(message/create-temp-message from-uid to-uid provider (:thread_id params) (:text params))
+      (fb-chat/send-message u to-uid (:text params))
+      (->> (message/create-temp-message from-uid to-uid provider (:thread_id params) (:text params))
+           (m-store/append-temp-message u))
+      )))
