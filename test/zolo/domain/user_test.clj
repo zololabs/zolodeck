@@ -96,7 +96,7 @@
            u-mickey (user/update-with-extended-fb-auth-token d-mickey "new-token")]
        
        (is (= d-mickey u-mickey))
-       (is (nil? (user-identity/fb-access-token u-mickey)))))
+       (is (nil? (ui/fb-access-token u-mickey)))))
 
    (testing "User has FB ui"
      (let [mickey (fb-lab/create-user "Mickey" "Mouse")
@@ -104,7 +104,7 @@
            u-mickey (user/update-with-extended-fb-auth-token d-mickey "new-token")]
 
        (is (not= d-mickey u-mickey))
-       (is (= "new-token" (user-identity/fb-access-token u-mickey)))))))
+       (is (= "new-token" (ui/fb-access-token u-mickey)))))))
 
 (deftest test-update-tz-offset
   (let [mickey {}]
@@ -152,7 +152,7 @@
            d-mickey (personas/create-domain-user mickey)
            du (user/distill d-mickey)]
        (is (= (str (:user/guid d-mickey)) (:user/guid du)))
-       (is (= (user-identity/fb-email d-mickey) (:user/email du)))))))
+       (is (= (ui/fb-email d-mickey) (:user/email du)))))))
 
 
 (deftest test-provider-id
