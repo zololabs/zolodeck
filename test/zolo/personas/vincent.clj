@@ -12,8 +12,7 @@
 (defn create []
   (pgen/generate {:FACEBOOK {:first-name "Vincent"
                              :last-name "Fong"
-                             :friends [
-                                       (pgen/create-friend-spec "Jack" "Daniels" 2 3)
+                             :friends [(pgen/create-friend-spec "Jack" "Daniels" 2 3)
                                        (pgen/create-friend-spec "Jill" "Ferry" 1 2)]}}))
 
 (defn create-domain []
