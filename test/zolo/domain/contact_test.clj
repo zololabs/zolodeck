@@ -73,7 +73,6 @@
                                              (sort-by contact/first-name d4-m-contacts))))))))
 
 (deftest test-provider-id
-
   (let [u (pgen/generate-domain {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]})]
 
       (let [[jack] (sort-by contact/first-name (:user/contacts u))]

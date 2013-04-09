@@ -78,7 +78,11 @@
       u-store/save))
 
 (defn create-temp-message [u to-user-provider-id text]
-  (message/create-temp-message u :provider/facebook  to-user-provider-id text "thread-id"))
+  (message/create-temp-message (user/provider-id u :provider/facebook)
+                               to-user-provider-id
+                               :provider/facebook
+                               "thread-id"
+                               text))
 
 (defn domain-persona [f]
   (with-demonic-demarcation true ((f))))

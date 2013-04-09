@@ -9,14 +9,15 @@
         conjure.core)
   (:require [zolo.personas.factory :as personas]
             [zolo.domain.user :as user]
-            [zolo.domain.user-identity :as user-identity]
+            [zolo.domain.user-identity :as ui]
             [zolo.domain.contact :as contact]
             [zolo.social.core :as social]
             [zolo.test.assertions.datomic :as db-assert]
             [zolo.test.assertions.domain :as d-assert]
             [zolo.marconi.core :as marconi]
             [zolo.marconi.facebook.core :as fb-lab]
-            [zolo.utils.calendar :as zolo-cal]))
+            [zolo.utils.calendar :as zolo-cal]
+            [zolo.personas.generator :as pgen]))
 
 ;; (deftest test-update
 ;;   (demonic-testing "User is not found"
@@ -152,3 +153,15 @@
            du (user/distill d-mickey)]
        (is (= (str (:user/guid d-mickey)) (:user/guid du)))
        (is (= (user-identity/fb-email d-mickey) (:user/email du)))))))
+
+
+(deftest test-provider-id
+  (let [u (pgen/generate-domain {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]})]
+
+    (testing "When incorrect provider is passed it should throw exception"            
+      (is (thrown-with-msg? RuntimeException #"Unknown provider specified: :provider/junk"
+            (user/provider-id u :provider/junk))))
+
+    (testing "When profile with provider is present it should return correct value"
+      (is (not (nil? (user/provider-id u :provider/facebook))))
+      (is (= (ui/fb-id u) (user/provider-id u :provider/facebook))))))

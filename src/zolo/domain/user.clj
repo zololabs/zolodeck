@@ -23,11 +23,6 @@
 ;;        (map demonic/load-entity)
 ;;        doall))
 
-;; (defn provider-uid [user provider]
-;;   (condp  = provider 
-;;     :provider/facebook (user-identity/fb-id user)
-;;     (throw+ {:type :bad-data :message (str "Unknown provider specified: " provider)})))
-
 ;; (defn new-suggestion-set [u set-name suggested-contacts]
 ;;   (-> u
 ;;       (assoc :user/suggestion-set-name set-name)
@@ -41,6 +36,12 @@
 
 ;; (defn been-processed? [u]
 ;;   (:user/last-updated u))
+
+;;TODO test
+(defn provider-id [u provider]
+  (condp  = provider 
+    :provider/facebook (user-identity/fb-id u)
+    (throw (RuntimeException. (str "Unknown provider specified: " provider)))))
 
 (defn tz-offset-minutes []
   (or *tz-offset-minutes*
