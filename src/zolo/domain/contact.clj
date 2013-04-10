@@ -5,13 +5,14 @@
         [slingshot.slingshot :only [throw+ try+]])
   (:require [zolo.utils.string :as zolo-str]
             [zolo.utils.maps :as zolo-maps]
-            [zolo.utils.calendar :as zolo-cal]
+            [zolo.utils.calendar :as zcal]
             [zolo.utils.logger :as logger]
             [zolo.utils.domain :as utils-domain]
             [zolo.social.core :as social]
             [zolo.demonic.core :as demonic]
             [zolo.domain.social-identity :as si]
             [zolo.domain.score :as score]
+            [zolo.domain.user :as user]
             [zolo.domain.interaction :as interaction]
             [zolo.domain.message :as message]
             [clojure.set :as set]
@@ -121,6 +122,13 @@
   (-> (assoc c :contact/score (score/calculate ibc c))
       demonic/insert))
 
+(defn is-contacted-today? [c ibc]
+  (let [last-send-message (->> ibc
+                               (interaction/messages-from-ibc-for-contact c)
+                               (message/last-sent-message c))]
+    (zcal/same-day-instance? (zcal/now-joda user/*tz-offset-minutes*)
+                             (message/message-date last-send-message user/*tz-offset-minutes*))))
+
 ;; (defn set-muted [c muted?]
 ;;   (-> (assoc c :contact/muted muted?)
 ;;       demonic/insert))
@@ -132,7 +140,7 @@
 ;;        last))
 
 ;; (defn is-contacted-on? [ibc c dt]
-;;   (zolo-cal/same-day-instance? dt (dom/message-date-in-tz (last-send-message ibc c) (zolo-cal/time-zone-offset dt))))
+;;   (zcal/same-day-instance? dt (dom/message-date-in-tz (last-send-message ibc c) (zcal/time-zone-offset dt))))
 
 ;; (defn contact-score [c]
 ;;   (or (:contact/score c) 0))
@@ -215,5 +223,6 @@
        :contact/guid (:contact/guid c)
        ;;:muted (:contact/muted c)
        :contact/picture-url (picture-url c)
-       ;;     :contacted-today (is-contacted-on? ibc c client-date)
+       ;;TODO test
+       :contacted-today (is-contacted-today? c ibc)
        :contact/interaction-daily-counts (interaction/daily-counts interactions)}))) 
