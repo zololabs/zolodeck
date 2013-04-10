@@ -37,7 +37,7 @@
 
 (defmulti provider-uid login-dispatcher)
 
-(defmulti signup-user login-dispatcher)
+(defmulti fetch-user-identity login-dispatcher)
 
 (defmulti fetch-creds login-dispatcher)
 

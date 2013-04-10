@@ -62,14 +62,14 @@
 ;;      (stubbing [fb-gateway/extended-user-info fake-extended-user-info]
 ;;        (let [user (fb-lab/create-user first-name last-name)
 ;;              params (request-params user permission-granted?)]
-;;          (-> (social/signup-user params)
+;;          (-> (social/fetch-user-identity params)
 ;;              user/signup-new-user
 ;;              (user/update-permissions-granted permission-granted?))))))
 
 (defn create-domain-user [fb-user]
   (-> fb-user
       (request-params true)
-      social/signup-user
+      social/fetch-user-identity
       (assoc :user/login-tz 0)))
 
 (defn create-db-user [fb-user]

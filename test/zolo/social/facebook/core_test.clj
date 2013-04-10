@@ -17,7 +17,7 @@
 ;;   (personas/in-social-lab
 ;;    (let [mickey (fb-lab/create-user "Mickey" "Mouse")
 ;;          params (personas/request-params mickey true)
-;;          canonical-user (social/signup-user params)]
+;;          canonical-user (social/fetch-user-identity params)]
 ;;      (c-assert/assert-basic-user-info mickey canonical-user)
 ;;      (c-assert/assert-user-identity mickey (first (:user/user-identities canonical-user))))))
 

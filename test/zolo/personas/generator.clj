@@ -66,7 +66,7 @@
 (defn generate-facebook [specs]
   (personas/in-social-lab
    (let [specs (:SPECS (zmaps/transform-vals-with specs (fn [k v]
-                                                             (merge DEFAULT-SPECS v))))
+                                                          (merge DEFAULT-SPECS v))))
          u (fb-lab/create-user (:first-name specs) (:last-name specs))
          fs (map  (fn [f-spec]
                     [f-spec (fb-lab/create-user (:first-name f-spec) (:last-name f-spec))])
@@ -90,10 +90,21 @@
          u-service/refresh-user-data
          u-service/refresh-user-scores))))
 
+(defn get-spec-combos [specs]
+  (let [ui-combos (combo/selections (:UI-IDS-ALLOWED specs) (:UI-IDS-COUNT specs))
+        f-count (count (get-in specs [:SPECS :friends]))
+        f-combos (filter #(= f-count (apply + %)) (combo/selections (range (inc f-count)) (:UI-IDS-COUNT specs)))
+        ui-repeated (apply concat (repeat ui-combos))
+        spec-pairs (map list ui-repeated f-combos)
+        spec-combos (map (fn [[ui-combos f-combos]]
+                           (map vector ui-combos f-combos)) spec-pairs)]
+    (print-vals "Number of friends:" (count (get-in specs [:SPECS :friends])))
+    (print-vals "UI-COMBOS:" ui-combos)
+    (print-vals "FRIEND-COMBOS:" f-combos)
+    (print-vals "SPECS-COMBOS:" spec-combos)
+    spec-combos))
+
 (defn generate [specs]
-  ;; (let [combinations (combo/selections (:UI-IDS-ALLOWED specs) (:UI-IDS-COUNT specs))]
-  ;;   (print-vals combinations)
-  ;;   (print-vals "Number of friends:" (count (get-in specs [:SPECS :friends]))))
   (generate-facebook (dissoc specs :UI-IDS-ALLOWED :UI-IDS-COUNT)))
 
 (defn generate-domain [specs]

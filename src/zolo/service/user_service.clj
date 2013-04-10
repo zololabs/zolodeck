@@ -48,7 +48,7 @@
 (defn new-user [request-params]
   (-> request-params
       (service/validate-request! val-request)
-      social/signup-user
+      social/fetch-user-identity
       update-with-extended-fb-auth-token
       (user/update-tz-offset (:login_tz request-params))
       log-into-fb-chat
