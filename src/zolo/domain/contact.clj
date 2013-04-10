@@ -115,20 +115,6 @@
 ;;        (group-by :social/provider)))
 
 
-;; ;;TODO Duplication find-by-guid
-;; (defn find-by-guid [guid]
-;;   (when guid
-;;     (-> (demonic/run-query '[:find ?c :in $ ?guid :where [?c :contact/guid ?guid]] guid)
-;;         ffirst
-;;         demonic/load-entity)))
-
-;; (defn find-by-guid-string [guid-string]
-;;   (when guid-string
-;;     (find-by-guid (java.util.UUID/fromString guid-string))))
-
-;; (defn reload [c]
-;;   (find-by-guid (:contact/guid c)))
-
 ;;TODO test
 ;;TODO need to move to store
 (defn update-score [ibc c]
