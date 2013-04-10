@@ -112,6 +112,23 @@
            31   "2012-06-10"
            41   "2012-06-20"))))
 
+(deftest test-is-contacted-today
+  (d-core/run-in-gmt-tz
+   (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)
+                                                       (pgen/create-friend-spec "Jill" "Ferry" 3 6)]}})
+         ibc (interaction/ibc u)]
+     
+     (let [[jack jill] (sort-by contact/first-name (:user/contacts u))]
+       (testing "When not contacted"
+         (run-as-of "2012-05-09"
+           (is (not (contact/is-contacted-today? jack ibc)))
+           (is (not (contact/is-contacted-today? jill ibc)))))
+
+       (testing "When contacted"
+         (run-as-of "2012-05-12"
+           (is (not (contact/is-contacted-today? jack ibc)))
+           (is (contact/is-contacted-today? jill ibc))))))))
+
 (deftest test-distill
   (testing "When nil is passed it should return nil"
     (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
@@ -119,21 +136,23 @@
       (is (nil? (contact/distill nil ibc)))))
 
   (testing "When proper contact without interactions is passed"
-    (let [shy (shy-persona/create-domain)
-          ibc (interaction/ibc shy)]
+    (d-core/run-in-gmt-tz
+     (let [shy (shy-persona/create-domain)
+           ibc (interaction/ibc shy)]
 
-      (let [[jack jill] (sort-by contact/first-name (:user/contacts shy))
-            distilled-jack (contact/distill jack ibc)]
-        (is (= "Jack" (:contact/first-name distilled-jack)))
-        (is (= "Daniels" (:contact/last-name distilled-jack)))
-        (is (= (:contact/guid jack) (:contact/guid distilled-jack)))
-        (is (= (contact/picture-url jack) (:contact/picture-url distilled-jack)))
-        (is (empty? (:contact/interaction-daily-counts distilled-jack))))))
+       (let [[jack jill] (sort-by contact/first-name (:user/contacts shy))
+             distilled-jack (contact/distill jack ibc)]
+         (is (= "Jack" (:contact/first-name distilled-jack)))
+         (is (= "Daniels" (:contact/last-name distilled-jack)))
+         (is (= (:contact/guid jack) (:contact/guid distilled-jack)))
+         (is (= (contact/picture-url jack) (:contact/picture-url distilled-jack)))
+         (is (not (:contacted-today distilled-jack)))
+         (is (empty? (:contact/interaction-daily-counts distilled-jack)))))))
 
   (testing "When proper contact with interactions is passed"
     (run-as-of "2012-05-10"
       (d-core/run-in-gmt-tz
-       (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)
+       (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 2)
                                                             (pgen/create-friend-spec "Jill" "Ferry" 3 3)]}})
              ibc (interaction/ibc u)]
          
@@ -143,6 +162,7 @@
            (is (= "Daniels" (:contact/last-name distilled-jack)))
            (is (= (:contact/guid jack) (:contact/guid distilled-jack)))
            (is (= (contact/picture-url jack) (:contact/picture-url distilled-jack)))
+           (is (:contacted-today distilled-jack))
            (is (= [["2012-05-10" 1]] (:contact/interaction-daily-counts distilled-jack)))))))))
 
 ;; (deftest test-mute-contact

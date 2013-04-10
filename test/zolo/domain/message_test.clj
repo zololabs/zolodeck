@@ -14,10 +14,13 @@
             [zolo.test.assertions.datomic :as db-assert]
             [zolo.test.assertions.domain :as d-assert]
             [zolo.domain.contact :as contact]
+            [zolo.domain.interaction :as interaction]
+            [zolo.domain.core :as d-core]
             [zolo.marconi.core :as marconi]
             [zolo.marconi.facebook.core :as fb-lab]
             [zolo.personas.shy :as shy-persona]
-            [zolo.personas.vincent :as vincent-persona]))
+            [zolo.personas.vincent :as vincent-persona]
+            [zolo.personas.generator :as pgen]))
 
 (deftest test-is-inbox-message
   (testing "When nil is passed return false"
@@ -64,6 +67,32 @@
         
         (is-not (empty? (imbc jill)))
         (is (= 2 (count (imbc jill))))))))
+
+(deftest test-last-sent-message
+  (testing "When there is no messages it should return nil"
+    (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels")]}})
+          jack (first (:user/contacts u))]
+      (is (nil? (message/last-sent-message jack nil)))
+      (is (nil? (message/last-sent-message jack [])))))
+
+  (testing "When there is no sent messages it should return nil"
+    (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
+          jack (first (:user/contacts u))
+          msgs (-> u interaction/ibc interaction/messages-from-ibc)]
+      (is (nil? (message/last-sent-message jack msgs)))))
+
+  (testing "When only temp message is present it should return the last temp message")
+
+  (testing "When only regular message is present it should return the last regular message"
+    (d-core/run-in-gmt-tz
+      (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 5 15)]}})
+            jack (first (:user/contacts u))
+            msgs (-> u interaction/ibc interaction/messages-from-ibc)
+            l-msg (message/last-sent-message jack msgs)]
+        (is (not (nil? l-msg)))
+        (is (= #inst "2012-05-14T00:00:00.000000000-00:00" (message/message-date l-msg))))))
+
+  (testing "When temp and regular messages are present it should return the last sent message")) 
 
 ;; (deftest test-update-inbox-messages
 ;;   (demonic-integration-testing  "First time user"

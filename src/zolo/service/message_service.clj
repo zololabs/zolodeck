@@ -44,7 +44,8 @@
     (let [provider (service/provider-string->provider-enum (:provider params))
           from-uid (user/provider-id u provider)
           to-uid (contact/provider-id c provider)]
-      ;;(message/create-temp-message from-uid to-uid provider (:thread_id params) (:text params))
+;;      (message/create-temp-message from-uid to-uid provider (:thread_id params) (:text params))
       (fb-chat/send-message u to-uid (:text params))
       (->> (message/create-temp-message from-uid to-uid provider (:thread_id params) (:text params))
-           (m-store/append-temp-message u)))))
+           (m-store/append-temp-message u))
+      )))

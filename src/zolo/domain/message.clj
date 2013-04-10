@@ -24,8 +24,8 @@
        (:temp-message/date m)
        (:message/date m)))
   ([m tz-offset-minutes]
-     (-> (message-date m)
-         (zolo-cal/in-time-zone tz-offset-minutes))))
+     (-not-nil-> (message-date m)
+                 (zolo-cal/in-time-zone tz-offset-minutes))))
 
 ;;TODO test
 (defn get-last-message-date [u]
@@ -86,6 +86,11 @@
         mbc (reduce bucket-message {} inbox-messages)]
     (reduce #(assoc-in %1 [(contacts-lookup %2)] (sort-by message-date (mbc %2))) {} (keys contacts-lookup))))
 
+;;TODO test
+(defn- is-sent-to [c msg]
+  (some #(not (nil? %))
+        (domap #((message-to msg) (:social/provider-uid %)) (:contact/social-identities c))))
+
 ;;TODO Dont need this anymore as there will be only one type of message?!?
 (defn is-inbox-message? [m]
   (or (= "INBOX" (:message/mode m))
@@ -93,6 +98,13 @@
 
 (defn inbox-messages-by-contacts [u]
   (messages-by-contacts u is-inbox-message?))
+
+;;TODO test
+(defn last-sent-message [c msgs]
+  (->> msgs
+       (filter #(is-sent-to c %))
+       (sort-by message-date)
+       last))
 
 ;; (defn feeds-start-time-seconds []
 ;;   (-> (zolo-cal/now-joda)

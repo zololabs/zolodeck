@@ -55,6 +55,17 @@
       flatten
       squeeze))
 
+;;TODO test
+(defn messages-from-ibc [ibc]
+  (-> ibc
+      interactions-from-ibc
+      messages-from-interactions))
+
+;;TODO test
+(defn messages-from-ibc-for-contact [c ibc]
+  (-> (ibc c)
+      messages-from-interactions))
+
 (defn ibc [user]
   (-> user
       message/inbox-messages-by-contacts
