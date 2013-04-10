@@ -19,7 +19,7 @@
        "/messages"))
 
 (demonictest test-new-message
-  (let [u (pgen/generate {:FACEBOOK {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})]
+  (let [u (pgen/generate {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})]
     
     (let [jack (first (:user/contacts u))]
       
