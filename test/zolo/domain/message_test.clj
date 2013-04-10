@@ -70,13 +70,13 @@
 
 (deftest test-last-sent-message
   (testing "When there is no messages it should return nil"
-    (let [u (pgen/generate-domain {:FACEBOOK {:friends [(pgen/create-friend-spec "Jack" "Daniels")]}})
+    (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels")]}})
           jack (first (:user/contacts u))]
       (is (nil? (message/last-sent-message jack nil)))
       (is (nil? (message/last-sent-message jack [])))))
 
   (testing "When there is no sent messages it should return nil"
-    (let [u (pgen/generate-domain {:FACEBOOK {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
+    (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
           jack (first (:user/contacts u))
           msgs (-> u interaction/ibc interaction/messages-from-ibc)]
       (is (nil? (message/last-sent-message jack msgs)))))
@@ -85,7 +85,7 @@
 
   (testing "When only regular message is present it should return the last regular message"
     (d-core/run-in-gmt-tz
-      (let [u (pgen/generate-domain {:FACEBOOK {:friends [(pgen/create-friend-spec "Jack" "Daniels" 5 15)]}})
+      (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 5 15)]}})
             jack (first (:user/contacts u))
             msgs (-> u interaction/ibc interaction/messages-from-ibc)
             l-msg (message/last-sent-message jack msgs)]

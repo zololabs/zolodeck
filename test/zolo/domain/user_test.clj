@@ -156,7 +156,7 @@
 
 
 (deftest test-provider-id
-  (let [u (pgen/generate-domain {:FACEBOOK {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})]
+  (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})]
 
     (testing "When incorrect provider is passed it should throw exception"            
       (is (thrown-with-msg? RuntimeException #"Unknown provider specified: :provider/junk"

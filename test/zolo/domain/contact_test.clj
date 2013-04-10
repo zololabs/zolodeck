@@ -73,7 +73,7 @@
                                              (sort-by contact/first-name d4-m-contacts))))))))
 
 (deftest test-provider-id
-  (let [u (pgen/generate-domain {:FACEBOOK {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})]
+  (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})]
 
       (let [[jack] (sort-by contact/first-name (:user/contacts u))]
 
@@ -96,13 +96,13 @@
 
   (testing "when contacted today it should return 0"
     (run-as-of "2012-05-10"
-      (let [u (pgen/generate-domain {:FACEBOOK { :friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
+      (let [u (pgen/generate-domain {:SPECS { :friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
             ibc (interaction/ibc u)]
 
         (is (= 0 (contact/days-not-contacted (first (:user/contacts u)) ibc))))))
 
   (testing "when contacted some day ago it should return proper dates"
-    (let [u (pgen/generate-domain {:FACEBOOK { :friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
+    (let [u (pgen/generate-domain {:SPECS { :friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
           ibc (interaction/ibc u)]
 
       (are [expected as-of-date] (= expected (run-as-of as-of-date
@@ -114,7 +114,7 @@
 
 (deftest test-is-contacted-today
   (d-core/run-in-gmt-tz
-   (let [u (pgen/generate-domain {:FACEBOOK {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)
+   (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)
                                                        (pgen/create-friend-spec "Jill" "Ferry" 3 6)]}})
          ibc (interaction/ibc u)]
      
@@ -131,7 +131,7 @@
 
 (deftest test-distill
   (testing "When nil is passed it should return nil"
-    (let [u (pgen/generate-domain {:FACEBOOK {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
+    (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
          ibc (interaction/ibc u)]
       (is (nil? (contact/distill nil ibc)))))
 
@@ -152,8 +152,8 @@
   (testing "When proper contact with interactions is passed"
     (run-as-of "2012-05-10"
       (d-core/run-in-gmt-tz
-       (let [u (pgen/generate-domain {:FACEBOOK {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 2)
-                                                            (pgen/create-friend-spec "Jill" "Ferry" 1 3)]}})
+       (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 2)
+                                                            (pgen/create-friend-spec "Jill" "Ferry" 3 3)]}})
              ibc (interaction/ibc u)]
          
          (let [[jack jill] (sort-by contact/first-name (:user/contacts u))
