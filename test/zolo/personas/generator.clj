@@ -3,7 +3,8 @@
         zolo.utils.clojure
         zolo.demonic.test
         conjure.core)
-  (:require [zolo.marconi.facebook.core :as fb-lab]
+  (:require [clojure.math.combinatorics :as combo]
+            [zolo.marconi.facebook.core :as fb-lab]
             [zolo.personas.factory :as personas]
             [zolo.marconi.core :as marconi]
             [zolo.social.facebook.gateway :as fb-gateway]
@@ -62,9 +63,9 @@
   (map #(create-friend-spec (str "f-first-" %) (str "f-last-" %)) (range 0 n)))
 
 
-(defn generate [specs]
+(defn generate-facebook [specs]
   (personas/in-social-lab
-   (let [specs (:FACEBOOK (zmaps/transform-vals-with specs (fn [k v]
+   (let [specs (:SPECS (zmaps/transform-vals-with specs (fn [k v]
                                                              (merge DEFAULT-SPECS v))))
          u (fb-lab/create-user (:first-name specs) (:last-name specs))
          fs (map  (fn [f-spec]
@@ -88,6 +89,12 @@
      (-> db-u
          u-service/refresh-user-data
          u-service/refresh-user-scores))))
+
+(defn generate [specs]
+  ;; (let [combinations (combo/selections (:UI-IDS-ALLOWED specs) (:UI-IDS-COUNT specs))]
+  ;;   (print-vals combinations)
+  ;;   (print-vals "Number of friends:" (count (get-in specs [:SPECS :friends]))))
+  (generate-facebook (dissoc specs :UI-IDS-ALLOWED :UI-IDS-COUNT)))
 
 (defn generate-domain [specs]
   (personas/domain-persona #(generate specs)))

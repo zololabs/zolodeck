@@ -4,7 +4,26 @@
         zolo.demonic.core
         [clojure.test :only [run-tests deftest is are testing]]
         conjure.core)
-  (:require [zolo.domain.social-identity :as si]))
+  (:require [zolo.domain.social-identity :as si]
+            [zolo.personas.generator :as pgen]))
+
+(deftest test-not-a-person
+  (testing "when an SI has a clean email-address"
+    (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Lucky" "Strike" 1 1)
+                                                     (pgen/create-friend-spec "Mighty" "Mouse" 2 5)
+                                                     (pgen/create-friend-spec "Bat" "Man" 3 10)
+                                                     (pgen/create-friend-spec "Bat" "Man" 3 10)
+                                                     (pgen/create-friend-spec "Bat" "Man" 3 10)]}
+                                   :UI-IDS-ALLOWED [:FACEBOOK :EMAIL]
+                                   :UI-IDS-COUNT 3})]
+      (print-vals (-> u :user/contacts first :contact/social-identities first)))
+    (print-vals ">>>>>>>>>>>>>")
+    ;; (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Lucky" "Strike" 1 1)]}})]
+    ;;   (print-vals (-> u :user/contacts first :contact/social-identities first)))
+    )
+
+  (testing "when an SI has a suspect email-address"
+    ))
 
 ;; (deftest test-update
 ;;   (demonic-testing "Should throw Runtime Exception when nil is passed"

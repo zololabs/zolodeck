@@ -67,7 +67,9 @@
                                   [ring-serve "0.1.2"]
                                   [zololabs/marconi "1.0.0-SNAPSHOT"]
                                   [org.clojars.runa/conjure "2.1.1"]
-                                  [difform "1.1.2"]]
+                                  [difform "1.1.2"]
+                                  [org.clojure/data.generators "0.1.0"]
+                                  [org.clojure/math.combinatorics "0.0.4"]]
                    :resource-paths [~(str (System/getProperty "user.home") "/.zolo")]}
 
              :storm [:dev
