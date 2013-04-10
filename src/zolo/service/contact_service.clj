@@ -8,11 +8,12 @@
             [zolo.domain.message :as message]
             [zolo.domain.interaction :as interaction]
             [zolo.store.user-store :as u-store]
+            [zolo.store.contact-store :as c-store]
             [zolo.utils.logger :as logger]
             [zolo.social.facebook.gateway :as fb-gateway]
             [zolo.setup.config :as conf]
             [zolo.service.core :as service]
-            [zolo.domain.accessors :as dom]))
+            [zolo.domain.core :as d-core]))
 
 (defn- fresh-social-identities-for-user-identity [user-identity]
   (let [{provider :identity/provider
@@ -42,3 +43,10 @@
                   interaction/interactions-by-contacts)]
       (doeach #(contact/update-score ibc %) (:user/contacts u))
       (u-store/reload u))))
+
+;;TODO test
+(defn get-contact-by-guid [u guid]
+  (d-core/run-in-tz-offset (:user/login-tz u)
+                           (let [ibc (interaction/ibc u)]
+                             (-> (c-store/find-by-guid guid)
+                                 (contact/distill ibc)))))

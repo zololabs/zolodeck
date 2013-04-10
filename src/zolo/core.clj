@@ -15,6 +15,7 @@
              [ring.util.response :as response]
              [zolo.api.user-api :as user-api]
              [zolo.api.message-api :as m-api]
+             [zolo.api.contact-api :as c-api]
              [zolo.api.suggestion-set-api :as ss-api]))
 
 (defroutes application-routes
@@ -36,6 +37,9 @@
 
   (GET "/users/:user-guid/suggestion_sets" [user-guid :as {params :params}] (ss-api/find-suggestion-sets user-guid params))
 
+  ;;Contacts
+  (GET "/users/:user-guid/contacts/:c-guid" [user-guid c-guid] (c-api/find-contact user-guid c-guid))
+  
   ;;Messages
   (POST "/users/:user-guid/contacts/:c-guid/messages" [user-guid c-guid & params] (m-api/send-message user-guid c-guid params))
   )

@@ -223,6 +223,5 @@
        :contact/guid (:contact/guid c)
        ;;:muted (:contact/muted c)
        :contact/picture-url (picture-url c)
-       ;;TODO test
        :contacted-today (is-contacted-today? c ibc)
        :contact/interaction-daily-counts (interaction/daily-counts interactions)}))) 
