@@ -12,8 +12,8 @@
     (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Lucky" "Strike" 1 1)
                                                      (pgen/create-friend-spec "Mighty" "Mouse" 2 5)
                                                      (pgen/create-friend-spec "Bat" "Man" 3 10)
-                                                     (pgen/create-friend-spec "Bat" "Man" 3 10)
-                                                     (pgen/create-friend-spec "Bat" "Man" 3 10)]}
+                                                     (pgen/create-friend-spec "Super" "Man" 5 20)
+                                                     (pgen/create-friend-spec "R2" "D2" 7 30)]}
                                    :UI-IDS-ALLOWED [:FACEBOOK :EMAIL]
                                    :UI-IDS-COUNT 3})]
       (print-vals (-> u :user/contacts first :contact/social-identities first)))

@@ -9,10 +9,6 @@
 
 (schema-set "USER ENTITY FACTS"
  (uuid-fact-schema :user/guid false "A GUID for the user" false false false false)
- (string-fact-schema :user/first-name true "A user's first name" false false false false) 
- (string-fact-schema :user/last-name true "A user's last name" false false false false)
- (string-fact-schema :user/login-provider false "A user's login provider" false false false false)
- (string-fact-schema :user/login-provider-uid false "A user's login provider uid" false false false false)
  (long-fact-schema :user/login-tz false "A user's timezone offset when she logged in" false false false false)
  (instant-fact-schema :user/last-updated false "The most recent time for when the user was updated" false false false false)
  (instant-fact-schema :user/refresh-started false "The most recent time for when the user update was attempted" false false false false)
@@ -63,6 +59,8 @@
 (schema-set "SOCIAL ENTITY FACTS"
  (uuid-fact-schema   :social/guid          false "A GUID for the social details record" false false false false)
  (string-fact-schema :social/provider-uid  false  "A user's provider UID" false false false false)
+ (string-fact-schema :social/ui-provider-uid false "The UserIdentity this SI is associated with" false false false false)
+ (boolean-fact-schema :social/not-a-person false "Marked true if heuristically determined to not be a person" false false false false)
  (enum-fact-schema   :social/gender        false  "A user's gender" false false false false)
  (string-fact-schema :social/country       false "A user's age" false false false false)
  (string-fact-schema :social/first-name    false  "A user's first name" false false false false)

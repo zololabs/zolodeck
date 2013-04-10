@@ -15,7 +15,7 @@
   )
 
 ;; TODO check for key :oauth_problem in li-at
-(defmethod social/signup-user social/LINKEDIN [request-params cookies]
+(defmethod social/fetch-user-identity social/LINKEDIN [request-params cookies]
   (let [auth-cookie-string (get-in cookies [(conf/li-auth-cookie-name) :value])
         parsed-cookie (token/parse-oauth-cookie auth-cookie-string)
         li-at (token/access-token (:access_token parsed-cookie))]

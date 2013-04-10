@@ -20,6 +20,9 @@
     nil)
   user)
 
+(defn create-new-user [ui]
+  {:user/user-identities [ui]})
+
 (defn- update-with-extended-fb-auth-token [user]
   (let [fb-ui (user-identity/fb-user-identity user)
         e-at (fb-gateway/extended-access-token (:identity/auth-token fb-ui) (conf/fb-app-id) (conf/fb-app-secret))]
@@ -48,7 +51,8 @@
 (defn new-user [request-params]
   (-> request-params
       (service/validate-request! val-request)
-      social/signup-user
+      social/fetch-user-identity
+      create-new-user
       update-with-extended-fb-auth-token
       (user/update-tz-offset (:login_tz request-params))
       log-into-fb-chat

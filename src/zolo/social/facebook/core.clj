@@ -21,7 +21,7 @@
 
 ; TODO add schema validation check for this API (facebook login)
 ;;TODO Rename this to Create
-(defmethod social/signup-user social/FACEBOOK [request-params]
+(defmethod social/fetch-user-identity social/FACEBOOK [request-params]
   (logger/trace "FACEBOOK LOGIN params:" request-params)
   (let [{:keys [access-token user-id]} (login-creds request-params)]
     (users/user-and-user-identity access-token user-id request-params)))
