@@ -66,10 +66,14 @@
 ;;              user/signup-new-user
 ;;              (user/update-permissions-granted permission-granted?))))))
 
-(defn create-domain-user [fb-user]
+(defn fetch-fb-ui [fb-user]
   (it-> fb-user
         (request-params it true)
-        (social/fetch-user-identity it)
+        (social/fetch-user-identity it)))
+
+(defn create-domain-user [fb-user]
+  (it-> fb-user
+        (fetch-fb-ui it)
         (assoc {} :user/user-identities [it])
         (assoc it :user/login-tz 0)))
 
@@ -85,5 +89,8 @@
                                "thread-id"
                                text))
 
-(defn domain-persona [f]
-  (with-demonic-demarcation true ((f))))
+;; (defn domain-persona [f]
+;;   (with-demonic-demarcation true (f)))
+
+(defmacro domain-persona [& body]
+  `(with-demonic-demarcation true ~@body))
