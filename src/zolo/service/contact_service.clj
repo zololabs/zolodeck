@@ -61,10 +61,11 @@
 (defn update-contact [u c params]
   (when (and u c)
     (d-core/run-in-tz-offset (:user/login-tz u)
-                             (let [ibc (interaction/ibc u)]
-                               (it-> (select-keys params [:muted])
-                                     (service/validate-request! it val-request)
-                                     (request-params->contact-attrs it)
-                                     (merge c it)
-                                     (c-store/save it)
-                                     (contact/distill it ibc))))))
+                             (let [updated-c (it-> (select-keys params [:muted])
+                                                   (service/validate-request! it val-request)
+                                                   (request-params->contact-attrs it)
+                                                   (merge c it)
+                                                   (c-store/save it))
+                                   u (u-store/reload u)
+                                   ibc (interaction/ibc u)]
+                               (contact/distill updated-c ibc))))) 

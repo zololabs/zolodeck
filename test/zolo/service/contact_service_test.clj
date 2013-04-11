@@ -133,34 +133,40 @@
          (is (= (:contact/guid jack) (:contact/guid distilled-jack))))))))
 
 (demonictest test-update-contact
-  (let [u (pgen/generate {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
-        jack (first (:user/contacts u))]
+  (d-core/run-in-gmt-tz
+   (run-as-of "2012-05-11"
+     (let [u (pgen/generate {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
+           ibc (interaction/ibc u)
+           jack (first (:user/contacts u))]
 
-    (testing "When user is not present it should return nil"
-      (is (nil? (c-service/update-contact nil jack {:muted true}))))
-    
-    (testing "When contact is not present it should return nil"
-      (is (nil? (c-service/update-contact u nil {:muted true}))))
-    
-    (testing "When invalid contact is send it should throw exception"
-      (is (thrown-with-msg? RuntimeException #"bad-request"
-            (c-service/update-contact u jack {:muted ""})))
-      (is (thrown-with-msg? RuntimeException #"bad-request"
-            (c-service/update-contact u jack {:text "Hey"}))))
-    
-    (testing "When called with proper attributes it should update contact"
-      (db-assert/assert-datomic-contact-count 1)
-      (db-assert/assert-datomic-social-count 1)
+       (testing "When user is not present it should return nil"
+         (is (nil? (c-service/update-contact nil jack {:muted true}))))
+       
+       (testing "When contact is not present it should return nil"
+         (is (nil? (c-service/update-contact u nil {:muted true}))))
+       
+       (testing "When invalid contact is send it should throw exception"
+         (is (thrown-with-msg? RuntimeException #"bad-request"
+               (c-service/update-contact u jack {:muted ""})))
+         (is (thrown-with-msg? RuntimeException #"bad-request"
+               (c-service/update-contact u jack {:text "Hey"}))))
+       
+       (testing "When called with proper attributes it should update contact"
+         (db-assert/assert-datomic-contact-count 1)
+         (db-assert/assert-datomic-social-count 1)
 
-      (is (not (contact/is-muted? jack)))
-      
-      (let [updated-jack (c-service/update-contact u jack {:muted true})]
+         (is (not (contact/is-muted? jack)))
+         
+         (let [updated-jack (c-service/update-contact u jack {:muted true})]
 
-        (db-assert/assert-datomic-contact-count 1)
-        (db-assert/assert-datomic-social-count 1)
-        
-        (is (contact/is-muted? updated-jack))
-        (is (contact/is-muted? (c-store/find-by-guid (:contact/guid jack))))))))
+           (db-assert/assert-datomic-contact-count 1)
+           (db-assert/assert-datomic-social-count 1)
+           
+           (is (contact/is-muted? updated-jack))
+           (is (contact/is-muted? (c-store/find-by-guid (:contact/guid jack))))
+
+           (is (= (dissoc (contact/distill jack ibc) :contact/muted)
+                  (dissoc updated-jack :contact/muted)))))))))
 
 
 
