@@ -91,12 +91,12 @@
 
 
 (demonictest test-new-message
-
   (let [u (pgen/generate {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
         [jack] (sort-by contact/first-name (:user/contacts u))]
 
     (testing "When user is not present it should return nil"
       (is (nil? (m-service/new-message nil jack {:text "hey" :provider "facebook"}))))
+    
     (testing "When contact is not present it should return nil"
       (is (nil? (m-service/new-message u nil {:text "hey" :provider "facebook"}))))
     

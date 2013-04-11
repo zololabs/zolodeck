@@ -57,6 +57,15 @@
          ["[:a] is not integer"]  [:a]     [:integer]    {:a "one"}
          ["[:a] is not integer"]  [:a]     [:integer]    {:a 1.1}
 
+         ;;Boolean
+         []     [:a]      [:boolean]      {:a true}
+         []     [:a]      [:boolean]      {:a false}
+         ["[:a] is not boolean"]  [:a]      [:boolean]      {:a nil}
+         ["[:a] is not boolean"]  [:a]      [:boolean]      {:a ""}
+         ["[:a] is not boolean"]  [:a]      [:boolean]      {:b 1}
+         ["[:a] is not boolean"]  [:a]     [:boolean]    {:a "one"}
+         ["[:a] is not boolean"]  [:a]     [:boolean]    {:a 1.1}
+
          ;;Parsable to Integer
          []                                      [:a]      [:parsable-to-int]    {:a 1}
          []                                      [:a]      [:parsable-to-int]    {:a "1"}

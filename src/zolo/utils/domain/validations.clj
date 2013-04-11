@@ -24,6 +24,7 @@
 (def val-date (validator-fn- zolo-clj/date? "is not java.util.Date"))
 (def val-string (validator-fn- string? "is not string"))
 (def val-integer (validator-fn- integer? "is not integer"))
+(def val-boolean (validator-fn- #(or (true? %) (false? %)) "is not boolean"))
 
 ;;TODO improve this function
 (defn val-parsable-to-int [m attribute validators]
@@ -44,6 +45,7 @@
       :date val-date
       :string val-string
       :integer val-integer
+      :boolean val-boolean
       :vector val-vector
       :collection val-collection
       :parsable-to-int val-parsable-to-int

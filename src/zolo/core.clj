@@ -39,6 +39,8 @@
 
   ;;Contacts
   (GET "/users/:user-guid/contacts/:c-guid" [user-guid c-guid] (c-api/find-contact user-guid c-guid))
+
+  (PUT "/users/:user-guid/contacts/:c-guid" [user-guid c-guid & params] (c-api/update-contact user-guid c-guid params))
   
   ;;Messages
   (POST "/users/:user-guid/contacts/:c-guid/messages" [user-guid c-guid & params] (m-api/send-message user-guid c-guid params))

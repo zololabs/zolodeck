@@ -13,7 +13,8 @@
             [zolo.social.facebook.gateway :as fb-gateway]
             [zolo.setup.config :as conf]
             [zolo.service.core :as service]
-            [zolo.domain.core :as d-core]))
+            [zolo.domain.core :as d-core]
+            [zolo.utils.maps :as zmaps]))
 
 (defn- fresh-social-identities-for-user-identity [user-identity]
   (let [{provider :identity/provider
@@ -29,6 +30,13 @@
        fresh-social-identities
        (contact/updated-contacts (:user/contacts user))
        (assoc user :user/contacts)))
+
+;;TODO Move to core
+(defn- request-params->contact-attrs [params]
+  (zmaps/transform-keys-with params {:muted :contact/muted}))
+
+(def val-request
+  {:muted [:required :boolean]})
 
 ;; Services
 (defn update-contacts-for-user [u]
@@ -49,3 +57,13 @@
                            (if-let [ibc (interaction/ibc u)]
                              (-> (c-store/find-by-guid guid)
                                  (contact/distill ibc)))))
+
+(defn update-contact [u c params]
+  (when (and u c)
+    (d-core/run-in-tz-offset (:user/login-tz u)
+                             (let [ibc (interaction/ibc u)]
+                               (it-> (service/validate-request! params val-request)
+                                     (request-params->contact-attrs it)
+                                     (merge c it)
+                                     (c-store/save it)
+                                     (contact/distill it ibc))))))
