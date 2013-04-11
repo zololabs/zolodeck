@@ -78,7 +78,7 @@
 
 ;;TODO clean up
 (defn refresh-user-data [u]
-  (let [first-name (:user/first-name u)]
+  (let [first-name (user/first-name u)]
     (logger/trace first-name "RefreshUserData... starting now!")
     (let [updated-u (-> u
                         u-store/reload
@@ -96,7 +96,7 @@
 
 ;;TODO clean up
 (defn refresh-user-scores [u]
-  (let [first-name (:user/first-name u)]
+  (let [first-name (user/first-name u)]
     (logger/trace first-name "Scoring " (count (:user/contacts u)) " contacts")
     (let [updated-u (c-service/update-scores u)]
       (logger/info first-name "scoring done")  
