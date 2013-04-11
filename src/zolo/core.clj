@@ -54,10 +54,10 @@
         handler/api
         wrap-json-params
         web/wrap-accept-header-validation
-        web/wrap-error-handling
-        demonic/wrap-demarcation
         web/wrap-request-logging
-        web/wrap-jsonify))))
+        web/wrap-error-handling
+        web/wrap-jsonify
+        demonic/wrap-demarcation))))
 
 (defn start-api
   ([]
