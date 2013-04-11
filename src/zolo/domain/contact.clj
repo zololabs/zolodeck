@@ -129,9 +129,8 @@
     (zcal/same-day-instance? (zcal/now-joda user/*tz-offset-minutes*)
                              (message/message-date last-send-message user/*tz-offset-minutes*))))
 
-;; (defn set-muted [c muted?]
-;;   (-> (assoc c :contact/muted muted?)
-;;       demonic/insert))
+(defn is-muted? [c]
+  (true? (:contact/muted c)))
 
 ;; (defn last-send-message [ibc c]
 ;;   (->> (ibc c)
@@ -204,25 +203,13 @@
 ;;          (apply-offset offset)
 ;;          (apply-limit limit))))
 
-;; (defn format [c ibc client-date]
-;;   (print-vals "IBC " ibc)
-;;   (let [interactions (ibc c)
-;;         si (first (:contact/social-identities c))]
-;;     {:first-name (:contact/first-name c)
-;;      :last-name (:contact/last-name c)
-;;      :guid (str (:contact/guid c))
-;;      :muted (:contact/muted c)
-;;      :picture-url (:social/photo-url si)
-;;      :contacted-today (is-contacted-on? ibc c client-date)}))
-
 (defn distill [c ibc]
   (when c
     (let [interactions (ibc c)]
       {:contact/first-name (first-name c)
        :contact/last-name (last-name c)
        :contact/guid (:contact/guid c)
-       ;;:muted (:contact/muted c)
+       :contact/muted (is-muted? c)
        :contact/picture-url (picture-url c)
-       ;;TODO test
        :contacted-today (is-contacted-today? c ibc)
        :contact/interaction-daily-counts (interaction/daily-counts interactions)}))) 

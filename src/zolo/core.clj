@@ -15,6 +15,7 @@
              [ring.util.response :as response]
              [zolo.api.user-api :as user-api]
              [zolo.api.message-api :as m-api]
+             [zolo.api.contact-api :as c-api]
              [zolo.api.suggestion-set-api :as ss-api]))
 
 (defroutes application-routes
@@ -36,6 +37,11 @@
 
   (GET "/users/:user-guid/suggestion_sets" [user-guid :as {params :params}] (ss-api/find-suggestion-sets user-guid params))
 
+  ;;Contacts
+  (GET "/users/:user-guid/contacts/:c-guid" [user-guid c-guid] (c-api/find-contact user-guid c-guid))
+
+  (PUT "/users/:user-guid/contacts/:c-guid" [user-guid c-guid & params] (c-api/update-contact user-guid c-guid params))
+  
   ;;Messages
   (POST "/users/:user-guid/contacts/:c-guid/messages" [user-guid c-guid & params] (m-api/send-message user-guid c-guid params))
   )
@@ -48,10 +54,10 @@
         handler/api
         wrap-json-params
         web/wrap-accept-header-validation
-        web/wrap-error-handling
-        demonic/wrap-demarcation
         web/wrap-request-logging
-        web/wrap-jsonify))))
+        web/wrap-error-handling
+        web/wrap-jsonify
+        demonic/wrap-demarcation))))
 
 (defn start-api
   ([]

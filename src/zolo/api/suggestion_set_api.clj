@@ -12,7 +12,7 @@
   (if-let [ss (ss-service/find-suggestion-set-for-today user-guid)]
     {:status (STATUS-CODES :ok)
      :body ss}
-    (user-not-found))
+    (resource-not-found))
   
   ;; (let [u (user/find-by-guid-string user-id)
   ;;       ibc (interaction/ibc u)]

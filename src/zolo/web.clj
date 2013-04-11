@@ -38,6 +38,7 @@
     (throw+ {:type :not-found :message "Not Found"})
     o))
 
+;;TODO Two json response functions ...need to clean up
 (defn json-response [data & [status]]
   {:status (or status 200)
    :headers {"Content-Type" "application/json; charset=utf-8"

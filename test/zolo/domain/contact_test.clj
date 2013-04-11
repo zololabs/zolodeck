@@ -115,7 +115,7 @@
 (deftest test-is-contacted-today
   (d-core/run-in-gmt-tz
    (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)
-                                                       (pgen/create-friend-spec "Jill" "Ferry" 3 6)]}})
+                                                    (pgen/create-friend-spec "Jill" "Ferry" 3 6)]}})
          ibc (interaction/ibc u)]
      
      (let [[jack jill] (sort-by contact/first-name (:user/contacts u))]
@@ -128,6 +128,20 @@
          (run-as-of "2012-05-12"
            (is (not (contact/is-contacted-today? jack ibc)))
            (is (contact/is-contacted-today? jill ibc))))))))
+
+(deftest test-is-muted
+  (d-core/run-in-gmt-tz
+   (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
+         jack (first (:user/contacts u))]
+
+     (testing "When :contact/muted is nil it should return false"
+       (is (not (contact/is-muted? jack))))
+
+     (testing "When :contact/muted is false it should return false"
+       (is (not (contact/is-muted? (assoc jack :contact/muted false)))))
+
+     (testing "When :contact/muted is true it should return true"
+       (is (contact/is-muted? (assoc jack :contact/muted true)))))))
 
 (deftest test-distill
   (testing "When nil is passed it should return nil"
@@ -147,6 +161,7 @@
          (is (= (:contact/guid jack) (:contact/guid distilled-jack)))
          (is (= (contact/picture-url jack) (:contact/picture-url distilled-jack)))
          (is (not (:contacted-today distilled-jack)))
+         (is (not (:muted distilled-jack)))
          (is (empty? (:contact/interaction-daily-counts distilled-jack)))))))
 
   (testing "When proper contact with interactions is passed"
@@ -163,6 +178,7 @@
            (is (= (:contact/guid jack) (:contact/guid distilled-jack)))
            (is (= (contact/picture-url jack) (:contact/picture-url distilled-jack)))
            (is (:contacted-today distilled-jack))
+           (is (not (:muted distilled-jack)))
            (is (= [["2012-05-10" 1]] (:contact/interaction-daily-counts distilled-jack)))))))))
 
 ;; (deftest test-mute-contact

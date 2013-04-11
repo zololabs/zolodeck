@@ -69,12 +69,15 @@
 
 (defn get-json [url access-token query-params]
   (-> (http/get url
-                {:query-params (merge {:access_token access-token} query-params)})
+                {:query-params (merge {:access_token access-token} query-params)
+                 :throw-entire-message? true})
       :body
       json/read-json))
 
 (defn- get-body [url]
-  (-> url http/get :body))
+  (-> url
+      (http/get {:throw-entire-message? true})
+      :body))
 
 (defn- get-json-body [url]
   (-> url get-body json/read-json))

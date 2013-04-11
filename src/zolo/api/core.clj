@@ -5,6 +5,6 @@
         [slingshot.slingshot :only [throw+ try+]])
   (:require [zolo.utils.logger :as logger]))
 
-(defn user-not-found []
+(defn resource-not-found []
     {:status (:not-found STATUS-CODES)
      :body {:message "No User found"}})
