@@ -21,6 +21,9 @@
 (defn is-fb? [si]
   (is-provider? si :provider/facebook))
 
+(defn is-email? [si]
+  (is-provider? si :provider/email))
+
 (defn fb-social-identity [c]
   (->> c
        :contact/social-identities
@@ -29,3 +32,7 @@
 
 (defn fb-id [c]
   (-> c fb-social-identity :social/provider-uid))
+
+(defn email-id [si]
+  (if (is-email? si)
+    (:social/provider-uid si)))
