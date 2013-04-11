@@ -3,6 +3,7 @@
         zolo.demonic.test
         zolo.demonic.core
         zolo.test.core-utils
+        zolo.utils.clojure
         zolo.utils.debug
         [clojure.test :only [run-tests deftest is are testing]]
         conjure.core)
@@ -16,9 +17,11 @@
             [zolo.service.message-service :as m-service]
             [zolo.domain.interaction :as interaction]
             [zolo.domain.message :as message]
+            [zolo.domain.core :as d-core]
             [zolo.store.user-store :as u-store]
             [zolo.marconi.facebook.core :as fb-lab]
-            [zolo.utils.calendar :as zolo-cal]))
+            [zolo.utils.calendar :as zolo-cal]
+            [zolo.personas.generator :as pgen]))
 
 (deftest test-update-contacts-for-user
   (demonic-testing "when user is not present, it should return nil"
@@ -109,5 +112,23 @@
            (is (= 20 (:contact/score daisy)))
            (is (= 30 (:contact/score donald)))
            (is (= 0 (:contact/score minnie))))))))))
+
+(demonictest test-get-contact-by-guid
+  (d-core/run-in-gmt-tz
+   (let [u (pgen/generate {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)
+                                             (pgen/create-friend-spec "Jill" "Ferry" 1 1)]}})
+         [jack jill] (sort-by contact/first-name (:user/contacts u))]
+    
+     (testing "when user is not present it should return nil"
+       (is (nil? (c-service/get-contact-by-guid nil (:contact/guid jack)))))
+
+     (testing "when contact is not present it should return nil"
+       (is (nil? (c-service/get-contact-by-guid u (random-guid-str)))))
+
+     (testing "when user and contact is present it should return distilled contact"
+       
+       (let [distilled-jack (c-service/get-contact-by-guid u (:contact/guid jack))]
+         (is (not (nil? distilled-jack)))
+         (is (= (:contact/guid jack) (:contact/guid distilled-jack))))))))
 
 

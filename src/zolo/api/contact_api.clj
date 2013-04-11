@@ -9,7 +9,6 @@
             [zolo.store.user-store :as u-store]))
 
 ;; GET /users/guid
-;;TODO test
 (defn find-contact [u-guid c-guid]
   (if-let [distilled-c (c-service/get-contact-by-guid (u-store/find-by-guid u-guid) c-guid)]
     {:status (STATUS-CODES :ok)

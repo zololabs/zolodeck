@@ -44,9 +44,8 @@
       (doeach #(contact/update-score ibc %) (:user/contacts u))
       (u-store/reload u))))
 
-;;TODO test
 (defn get-contact-by-guid [u guid]
   (d-core/run-in-tz-offset (:user/login-tz u)
-                           (let [ibc (interaction/ibc u)]
+                           (if-let [ibc (interaction/ibc u)]
                              (-> (c-store/find-by-guid guid)
                                  (contact/distill ibc)))))
