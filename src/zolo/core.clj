@@ -16,7 +16,8 @@
              [zolo.api.user-api :as user-api]
              [zolo.api.message-api :as m-api]
              [zolo.api.contact-api :as c-api]
-             [zolo.api.suggestion-set-api :as ss-api]))
+             [zolo.api.suggestion-set-api :as ss-api]
+             [zolo.api.contact-stats-api :as cs-api]))
 
 (defroutes application-routes
   (route/resources "/")
@@ -44,20 +45,23 @@
   
   ;;Messages
   (POST "/users/:user-guid/contacts/:c-guid/messages" [user-guid c-guid & params] (m-api/send-message user-guid c-guid params))
+
+  ;;Stats
+  (GET "/users/:guid/contact_stats" [guid] (cs-api/get-contact-stats guid))
   )
 
 (def app
   (web/wrap-request-binding  
    (web/wrap-options
-    (-> application-routes        
+    (-> application-routes
+        demonic/wrap-demarcation
         ;;web/wrap-user-info-logging
         handler/api
         wrap-json-params
         web/wrap-accept-header-validation
-        web/wrap-request-logging
-        web/wrap-error-handling
         web/wrap-jsonify
-        demonic/wrap-demarcation))))
+        web/wrap-error-handling
+        web/wrap-request-logging))))
 
 (defn start-api
   ([]

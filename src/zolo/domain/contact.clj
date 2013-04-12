@@ -107,6 +107,11 @@
             i (time/interval ts n)]
         (time/in-days i)))))
 
+(defn contacts-not-contacted-for-days [ibc days]
+  (filter #(let [d (days-not-contacted % ibc)]
+             (or (< d 0) (<= days d)))
+          (keys ibc)))
+
 
 ;; (defn provider-info-by-provider [u]
 ;;   (->> u
@@ -132,40 +137,34 @@
 (defn is-muted? [c]
   (true? (:contact/muted c)))
 
-;; (defn last-send-message [ibc c]
-;;   (->> (ibc c)
-;;        dom/messages-from-interactions
-;;        (sort-by dom/message-date)
-;;        last))
-
 ;; (defn is-contacted-on? [ibc c dt]
 ;;   (zcal/same-day-instance? dt (dom/message-date-in-tz (last-send-message ibc c) (zcal/time-zone-offset dt))))
 
-;; (defn contact-score [c]
-;;   (or (:contact/score c) 0))
+(defn contact-score [c]
+  (or (:contact/score c) 0))
 
-;; (defn contacts-with-score-between [u lower upper]
-;;   (->> (filter #(and (>= (contact-score %) lower) (<= (contact-score %) upper)) (:user/contacts u))
-;;        (sort-by :contact/score)
-;;        reverse))
+(defn- contacts-with-score-between [u lower upper]
+  (->> (filter #(and (>= (contact-score %) lower) (<= (contact-score %) upper)) (:user/contacts u))
+       (sort-by :contact/score)
+       reverse))
 
-;; (defn strong-contacts
-;;   ([u]
-;;      (contacts-with-score-between u 301 1000000))
-;;   ([u number]
-;;      (take number (strong-contacts u))))
+(defn strong-contacts
+  ([u]
+     (contacts-with-score-between u 301 1000000))
+  ([u number]
+     (take number (strong-contacts u))))
 
-;; (defn medium-contacts
-;;   ([u]
-;;      (contacts-with-score-between u 61 300))
-;;   ([u number]
-;;      (take number (medium-contacts u))))
+(defn medium-contacts
+  ([u]
+     (contacts-with-score-between u 61 300))
+  ([u number]
+     (take number (medium-contacts u))))
 
-;; (defn weak-contacts
-;;   ([u]
-;;      (contacts-with-score-between u 0 60))
-;;   ([u number]
-;;      (take number (weak-contacts u))))
+(defn weak-contacts
+  ([u]
+     (contacts-with-score-between u 0 60))
+  ([u number]
+     (take number (weak-contacts u))))
 
 ;; (defn contacts-of-strength [u strength-as-keyword]
 ;;   (condp = strength-as-keyword

@@ -2,6 +2,7 @@
   (:use [clojure.test :only [run-tests deftest is are testing]]
         zolo.utils.debug
         conjure.core
+        zolo.test.core-utils
         zolo.utils.clojure
         zolo.demonic.test
         zolo.demonic.core)
@@ -10,14 +11,13 @@
             [zolo.utils.calendar :as zolo-cal]
             [zolo.test.web-utils :as w-utils]))
 
-
 (deftest test-find-suggestion-sets
   (demonic-testing "when user is not present, it should return 404"
     (let [resp (w-utils/web-request :get (str "/users/" (random-guid-str) "/suggestion_sets") {})]
       (is (= 404 (:status resp)))))
 
   (demonic-testing "when user is present, it should return distilled ss"
-    (stubbing [zolo-cal/now-instant (zolo-cal/date-string->instant "yyyy-MM-dd" "2012-12-21")]
+    (run-as-of "2012-12-21"
       
       (let [shy (shy-persona/create)
             resp (w-utils/web-request :get (str "/users/" (:user/guid shy) "/suggestion_sets") {})]

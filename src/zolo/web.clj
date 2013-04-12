@@ -61,8 +61,7 @@
 
 (defn wrap-jsonify [handler]
   (fn [request]
-    (-> request
-        handler
+    (-> (handler request)
         jsonify)))
 
 (defn wrap-error-handling [handler]
@@ -148,6 +147,7 @@
       (logger/with-logging-context (logging-context request)
         (logger/debug "REQUEST : " request)
         (let [response (handler request)]
-          (logger/debug "RESPONSE : " (assoc response :body "FILTERED"))
+          (logger/debug "RESPONSE : " (assoc response :body "FILTERED")
+                        )
           response))
       (handler request))))
