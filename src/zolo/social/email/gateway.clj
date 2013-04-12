@@ -21,6 +21,9 @@
 (defn get-accounts []
   (context-io/list-accounts *creds*))
 
+(defn get-account [account-id]
+  (context-io/get-account *creds* :params {:id account-id}))
+
 (defn get-contacts [account-id date-in-seconds]
   (get-data- context-io/list-account-contacts account-id 500 0 {:active_after date-in-seconds} [:body :matches] []))
 
