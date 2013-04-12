@@ -15,7 +15,9 @@
              [ring.util.response :as response]
              [zolo.api.user-api :as user-api]
              [zolo.api.message-api :as m-api]
-             [zolo.api.suggestion-set-api :as ss-api]))
+             [zolo.api.contact-api :as c-api]
+             [zolo.api.suggestion-set-api :as ss-api]
+             [zolo.api.stats-api :as s-api]))
 
 (defroutes application-routes
   (route/resources "/")
@@ -36,22 +38,32 @@
 
   (GET "/users/:user-guid/suggestion_sets" [user-guid :as {params :params}] (ss-api/find-suggestion-sets user-guid params))
 
+  ;;Contacts
+  (GET "/users/:user-guid/contacts/:c-guid" [user-guid c-guid] (c-api/find-contact user-guid c-guid))
+
+  (PUT "/users/:user-guid/contacts/:c-guid" [user-guid c-guid & params] (c-api/update-contact user-guid c-guid params))
+  
   ;;Messages
   (POST "/users/:user-guid/contacts/:c-guid/messages" [user-guid c-guid & params] (m-api/send-message user-guid c-guid params))
+
+  ;;Stats
+  (GET "/users/:guid/contact_stats" [guid] (s-api/get-contact-stats guid))
+
+  (GET "/users/:guid/interaction_stats" [guid] (s-api/get-interaction-stats guid))
   )
 
 (def app
   (web/wrap-request-binding  
    (web/wrap-options
-    (-> application-routes        
+    (-> application-routes
+        demonic/wrap-demarcation
         ;;web/wrap-user-info-logging
         handler/api
         wrap-json-params
         web/wrap-accept-header-validation
+        web/wrap-jsonify
         web/wrap-error-handling
-        demonic/wrap-demarcation
-        web/wrap-request-logging
-        web/wrap-jsonify))))
+        web/wrap-request-logging))))
 
 (defn start-api
   ([]

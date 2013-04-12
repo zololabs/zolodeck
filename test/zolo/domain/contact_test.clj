@@ -115,7 +115,7 @@
 (deftest test-is-contacted-today
   (d-core/run-in-gmt-tz
    (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)
-                                                       (pgen/create-friend-spec "Jill" "Ferry" 3 6)]}})
+                                                    (pgen/create-friend-spec "Jill" "Ferry" 3 6)]}})
          ibc (interaction/ibc u)]
      
      (let [[jack jill] (sort-by contact/first-name (:user/contacts u))]
@@ -128,6 +128,64 @@
          (run-as-of "2012-05-12"
            (is (not (contact/is-contacted-today? jack ibc)))
            (is (contact/is-contacted-today? jill ibc))))))))
+
+(deftest test-contacts-not-contacted-for-days
+  (d-core/run-in-gmt-tz
+   (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 0 0)
+                                                    (pgen/create-friend-spec "Jill" "Ferry" 3 6)]}})
+         ibc (interaction/ibc u)]
+     
+     (let [[jack jill] (sort-by contact/first-name (:user/contacts u))]
+       (run-as-of "2012-05-22"
+         (is (= 2 (count (contact/contacts-not-contacted-for-days ibc 1))))
+         (is (= #{jack jill} (set (contact/contacts-not-contacted-for-days ibc 1)))))
+
+       (run-as-of "2012-05-12"
+         (is (= 1 (count (contact/contacts-not-contacted-for-days ibc 1))))
+         (is (= #{jack} (set (contact/contacts-not-contacted-for-days ibc 1)))))))))
+
+(deftest test-contact-score
+  (d-core/run-in-gmt-tz
+   (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 3 6)]}})
+         jack (first (:user/contacts u))]
+
+     (testing "When score is not present it should return 0"
+       (is (= 0 (contact/contact-score (dissoc jack :contact/score)))))
+
+     (testing "When score is present it should return score"
+       (is (= 30 (contact/contact-score jack)))))))
+
+(deftest test-is-muted
+  (d-core/run-in-gmt-tz
+   (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
+         jack (first (:user/contacts u))]
+
+     (testing "When :contact/muted is nil it should return false"
+       (is (not (contact/is-muted? jack))))
+
+     (testing "When :contact/muted is false it should return false"
+       (is (not (contact/is-muted? (assoc jack :contact/muted false)))))
+
+     (testing "When :contact/muted is true it should return true"
+       (is (contact/is-muted? (assoc jack :contact/muted true)))))))
+
+(deftest test-contacts-with-score
+  (d-core/run-in-gmt-tz
+   (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Strong" "Contact" 50 50)
+                                                    (pgen/create-friend-spec "Medium" "Contact" 10 10)
+                                                    (pgen/create-friend-spec "Weak1" "Contact1" 5 5)
+                                                    (pgen/create-friend-spec "Weak2" "Contact2" 0 0)]}})
+         [medium strong weak1 weak2] (sort-by contact/first-name (:user/contacts u))]
+
+     (is (= 1 (count (contact/strong-contacts u))))
+     (is (= #{strong} (set (contact/strong-contacts u))))
+
+     (is (= 1 (count (contact/medium-contacts u))))
+     (is (= #{medium} (set (contact/medium-contacts u))))
+
+     (is (= 2 (count (contact/weak-contacts u))))
+     (is (= #{weak1 weak2} (set (contact/weak-contacts u))))
+     )))
 
 (deftest test-distill
   (testing "When nil is passed it should return nil"
@@ -147,6 +205,7 @@
          (is (= (:contact/guid jack) (:contact/guid distilled-jack)))
          (is (= (contact/picture-url jack) (:contact/picture-url distilled-jack)))
          (is (not (:contacted-today distilled-jack)))
+         (is (not (:muted distilled-jack)))
          (is (empty? (:contact/interaction-daily-counts distilled-jack)))))))
 
   (testing "When proper contact with interactions is passed"
@@ -163,6 +222,7 @@
            (is (= (:contact/guid jack) (:contact/guid distilled-jack)))
            (is (= (contact/picture-url jack) (:contact/picture-url distilled-jack)))
            (is (:contacted-today distilled-jack))
+           (is (not (:muted distilled-jack)))
            (is (= [["2012-05-10" 1]] (:contact/interaction-daily-counts distilled-jack)))))))))
 
 ;; (deftest test-mute-contact

@@ -5,7 +5,9 @@
             [zolo.utils.calendar :as zolo-cal]
             [zolo.utils.logger :as logger]
             [zolo.domain.message :as message]
-            [zolo.domain.user :as user]))
+            [zolo.domain.user :as user]
+            [clj-time.core :as time]
+            [clj-time.coerce :as ctc]))
 
 (defn- within-interaction-time? [previous-msg next-msg]
   (let [gap-in-mins (zolo-cal/minutes-between (message/message-date previous-msg) (message/message-date next-msg))]
@@ -54,6 +56,30 @@
   (-> interactions
       flatten
       squeeze))
+
+(defn- message-filter-fn-for-days-within [num-days]
+  (if (neg? num-days)
+    (constantly true)
+    (let [time-diff (time/minus (time/now) (time/days num-days))]
+      #(time/after? (ctc/to-date-time (message/message-date %)) time-diff))))
+
+;;TODO test
+(defn daily-counts-for-network [ibc]
+  (-> ibc
+      interactions-from-ibc
+      daily-counts))
+
+;;TODO test
+(defn all-interactions-in-the-past [ibc num-days]
+  (->> ibc
+       interactions-from-ibc
+       (keep last)
+       (filter (message-filter-fn-for-days-within num-days))))
+
+;;TODO test
+(defn all-interaction-count-in-the-past [ibc num-days]
+  (->> (all-interactions-in-the-past ibc num-days)
+       count))
 
 ;;TODO test
 (defn messages-from-ibc [ibc]

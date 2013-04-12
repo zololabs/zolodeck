@@ -14,6 +14,7 @@
             [zolo.social.core :as social]
             [zolo.domain.user :as user]
             [zolo.utils.maps :as zmaps]
+            [zolo.utils.calendar :as zcal]
             [zolo.store.user-store :as u-store]
             [zolo.service.user-service :as u-service]
             [zolo.domain.message :as message]))
@@ -26,22 +27,24 @@
                                [interaction-id no-of-msgs-per-interaction]))
          (range 1 (+ no-of-interactions 1)))))
 
-(defn- dummy-message [u friend thread-id msg-id]
+(defn- dummy-message [u friend thread-id msg-id m-date]
   (let [user-friend (if (even? msg-id)
               [u friend]
               [friend u])]
     (concat user-friend
-            [thread-id (str "Message ... User : " (:first_name friend) " - Thread-id :" thread-id " - Msg-id :" msg-id) (str "2012-05-" (+ 9 thread-id))])))
+            [thread-id (str "Message ... User : " (:first_name friend) " - Thread-id :" thread-id " - Msg-id :" msg-id) (zcal/date-to-simple-string m-date)])))
 
-(defn- dummy-messages [u friend thread-id no-of-msgs]
-  (map #(dummy-message u friend thread-id %)
+(defn- dummy-messages [u friend thread-id no-of-msgs m-date]
+  (map #(dummy-message u friend thread-id % m-date)
        (range 1 (+ no-of-msgs 1))))
 
 (defn- generate-messages [u friend no-of-i no-of-m]
-  (let [no-of-msgs-per-interaction (no-of-msgs-per-interaction no-of-i no-of-m)]
-    (mapcat (fn [[thread-id no-of-msgs]]
-              (dummy-messages u friend thread-id no-of-msgs))
-            no-of-msgs-per-interaction)))
+  (let [no-of-msgs-per-interaction (no-of-msgs-per-interaction no-of-i no-of-m)
+        date-stream (zcal/inc-date-stream (zcal/date-string->instant "yyyy-MM-dd" "2012-05-10"))]
+    (mapcat (fn [[thread-id no-of-msgs] m-date]
+              (dummy-messages u friend thread-id no-of-msgs m-date))
+            no-of-msgs-per-interaction
+            date-stream)))
 
 (defn- generate-messages-for-friend [u friend no-of-i no-of-m]
   (doseq [msg-info (generate-messages u friend no-of-i no-of-m)]

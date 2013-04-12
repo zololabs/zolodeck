@@ -8,11 +8,13 @@
             [zolo.domain.message :as message]
             [zolo.domain.interaction :as interaction]
             [zolo.store.user-store :as u-store]
+            [zolo.store.contact-store :as c-store]
             [zolo.utils.logger :as logger]
             [zolo.social.facebook.gateway :as fb-gateway]
             [zolo.setup.config :as conf]
             [zolo.service.core :as service]
-            [zolo.domain.accessors :as dom]))
+            [zolo.domain.core :as d-core]
+            [zolo.utils.maps :as zmaps]))
 
 (defn- fresh-social-identities-for-user-identity [user-identity]
   (let [{provider :identity/provider
@@ -29,6 +31,13 @@
        (contact/updated-contacts (:user/contacts user))
        (assoc user :user/contacts)))
 
+;;TODO Move to core
+(defn- request-params->contact-attrs [params]
+  (zmaps/transform-keys-with params {:muted :contact/muted}))
+
+(def val-request
+  {:muted [:required :boolean]})
+
 ;; Services
 (defn update-contacts-for-user [u]
   (-not-nil-> u
@@ -42,3 +51,21 @@
                   interaction/interactions-by-contacts)]
       (doeach #(contact/update-score ibc %) (:user/contacts u))
       (u-store/reload u))))
+
+(defn get-contact-by-guid [u guid]
+  (d-core/run-in-tz-offset (:user/login-tz u)
+                           (if-let [ibc (interaction/ibc u)]
+                             (-> (c-store/find-by-guid guid)
+                                 (contact/distill ibc)))))
+
+(defn update-contact [u c params]
+  (when (and u c)
+    (d-core/run-in-tz-offset (:user/login-tz u)
+                             (let [updated-c (it-> (select-keys params [:muted])
+                                                   (service/validate-request! it val-request)
+                                                   (request-params->contact-attrs it)
+                                                   (merge c it)
+                                                   (c-store/save it))
+                                   u (u-store/reload u)
+                                   ibc (interaction/ibc u)]
+                               (contact/distill updated-c ibc))))) 

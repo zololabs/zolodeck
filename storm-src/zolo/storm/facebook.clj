@@ -62,7 +62,7 @@
                    (let [u (u-store/find-by-guid n)]
                      (when (user-identity/fb-permissions-granted? u)
                        (u-store/stamp-refresh-start u)
-                       (logger/info "RefreshUserSpout emitting GUID:" n " for " (:user/first-name u) " " (:user/last-name u))
+                       (logger/info "RefreshUserSpout emitting GUID:" n " for " (user/first-name u) " " (user/last-name u))
                        (emit-spout! collector [n]))))))
      (ack [id]))))
 
@@ -70,7 +70,7 @@
   (demonic/in-demarcation
    (let [u (u-store/find-by-guid guid)]
      (u-store/stamp-refresh-start u)
-     (logger/trace "NewPermSpout emitting " new-or-perm " user guid" guid " for " (:user/first-name u) " " (:user/last-name u))))
+     (logger/trace "NewPermSpout emitting " new-or-perm " user guid" guid " for " (user/first-name u) " " (user/last-name u))))
   (emit-spout! collector [guid]))
 
 (defspout new-user-tx-spout ["user-guid"]
@@ -102,7 +102,7 @@
     (demonic/in-demarcation
      (let [guid (.getStringByField tuple "user-guid")
            u (u-store/find-by-guid guid)]
-       (logger/info "Processing user:" (:user/first-name u))
+       (logger/info "Processing user:" (user/first-name u))
        (demonic/in-demarcation
         (u-service/refresh-user-data u))
        ;;TODO Need to reload
@@ -110,9 +110,9 @@
        (demonic/in-demarcation
         (u-service/refresh-user-scores (u-store/reload u)))
        (demonic/in-demarcation
-        (logger/info "Completed bolt for " (:user/first-name u) " with " (count (:user/contacts (u-store/reload u))) " contacts"))
+        (logger/info "Completed bolt for " (user/first-name u) " with " (count (:user/contacts (u-store/reload u))) " contacts"))
        (if (> (- (count (:user/contacts (u-store/reload u))) (count (:user/contacts u))) 10)
-         (throw (RuntimeException. (str "Zombie warning for " (:user/first-name u)))))))
+         (throw (RuntimeException. (str "Zombie warning for " (user/first-name u)))))))
     (catch Exception e
       (logger/error e "Exception in bolt! Occured while processing tuple:" tuple))))
 

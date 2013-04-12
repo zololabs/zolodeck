@@ -15,4 +15,4 @@
                                                 (c-store/find-by-guid c-guid)
                                                 request-params)]
     {:status (STATUS-CODES :created)}
-    (user-not-found)))
+    (resource-not-found)))

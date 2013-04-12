@@ -37,6 +37,19 @@
 ;; (defn been-processed? [u]
 ;;   (:user/last-updated u))
 
+(defn- value-from-ui [u key]
+  (-> u
+      :user/user-identities
+      first
+      key))
+
+;;Public
+(defn first-name [u]
+  (value-from-ui u :identity/first-name))
+
+(defn last-name [u]
+  (value-from-ui u :identity/last-name))
+
 (defn provider-id [u provider]
   (condp  = provider 
     :provider/facebook (user-identity/fb-id u)

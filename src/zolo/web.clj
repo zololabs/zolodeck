@@ -38,6 +38,7 @@
     (throw+ {:type :not-found :message "Not Found"})
     o))
 
+;;TODO Two json response functions ...need to clean up
 (defn json-response [data & [status]]
   {:status (or status 200)
    :headers {"Content-Type" "application/json; charset=utf-8"
@@ -60,8 +61,7 @@
 
 (defn wrap-jsonify [handler]
   (fn [request]
-    (-> request
-        handler
+    (-> (handler request)
         jsonify)))
 
 (defn wrap-error-handling [handler]
@@ -147,6 +147,7 @@
       (logger/with-logging-context (logging-context request)
         (logger/debug "REQUEST : " request)
         (let [response (handler request)]
-          (logger/debug "RESPONSE : " (assoc response :body "FILTERED"))
+          (logger/debug "RESPONSE : " (assoc response :body "FILTERED")
+                        )
           response))
       (handler request))))
