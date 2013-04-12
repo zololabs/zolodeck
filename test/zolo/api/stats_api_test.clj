@@ -1,4 +1,4 @@
-(ns zolo.api.contact-stats-api-test
+(ns zolo.api.stats-api-test
   (:use [clojure.test :only [run-tests deftest is are testing]]
         zolo.utils.debug
         conjure.core

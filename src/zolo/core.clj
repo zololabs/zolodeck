@@ -17,7 +17,7 @@
              [zolo.api.message-api :as m-api]
              [zolo.api.contact-api :as c-api]
              [zolo.api.suggestion-set-api :as ss-api]
-             [zolo.api.contact-stats-api :as cs-api]))
+             [zolo.api.stats-api :as s-api]))
 
 (defroutes application-routes
   (route/resources "/")
@@ -47,7 +47,9 @@
   (POST "/users/:user-guid/contacts/:c-guid/messages" [user-guid c-guid & params] (m-api/send-message user-guid c-guid params))
 
   ;;Stats
-  (GET "/users/:guid/contact_stats" [guid] (cs-api/get-contact-stats guid))
+  (GET "/users/:guid/contact_stats" [guid] (s-api/get-contact-stats guid))
+
+  (GET "/users/:guid/interaction_stats" [guid] (s-api/get-interaction-stats guid))
   )
 
 (def app

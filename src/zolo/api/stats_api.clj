@@ -1,4 +1,4 @@
-(ns zolo.api.contact-stats-api
+(ns zolo.api.stats-api
   (:use zolo.utils.debug
         zolo.utils.clojure
         zolo.web.status-codes
@@ -12,4 +12,10 @@
   (if-let [cs (s-service/contact-stats (u-store/find-by-guid guid))]
     {:status (STATUS-CODES :ok)
      :body cs}
+    (resource-not-found)))
+
+(defn get-interaction-stats [guid]
+  (if-let [is (s-service/interaction-stats (u-store/find-by-guid guid))]
+    {:status (STATUS-CODES :ok)
+     :body is}
     (resource-not-found)))
