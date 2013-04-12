@@ -5,6 +5,7 @@
         conjure.core)
   (:require [clojure.math.combinatorics :as combo]
             [zolo.marconi.facebook.core :as fb-lab]
+            [zolo.marconi.context-io.core :as email-lab]
             [zolo.personas.factory :as personas]
             [zolo.marconi.core :as marconi]
             [zolo.social.facebook.gateway :as fb-gateway]
@@ -89,10 +90,22 @@
       (print-vals-> "Refreshed everything:")))
 
 (defn signup-with-facebook-ui [specs]
-  (print-vals "Signup FB: " specs)
+  (print-vals "Signup FB:" specs)
   (let [u (setup-facebook-ui specs)
-        db-u (personas/create-db-user u)]
+        db-u (personas/create-db-user-from-fb-user u)]
     (refresh-everything db-u)))
+
+(defn setup-email-ui [specs]
+  (let [{first-name :first-name last-name :last-name :as specs} (merge DEFAULT-SPECS specs)
+        u (email-lab/create-account first-name last-name (str first-name "@" last-name ".com"))]
+    (print-vals "F-SPECS:" (:friends specs))
+    u))
+
+(def add-additional-email-ui)
+
+(defn signup-with-email-ui [specs]
+  (print-vals "Signup EMAIL:" specs)
+  (let [u (setup-email-ui specs)]))
 
 ;; TODO - this needs to use u-service to add additional user-identities
 (defn add-additional-facebook-ui [db-u specs]
@@ -110,23 +123,27 @@
 (defn signup-with-first-ui [{ui-type :UI-TYPE specs :SPECS}]
   (condp = ui-type
     :FACEBOOK (signup-with-facebook-ui specs)
+    :EMAIL (signup-with-email-ui specs)
     :else (throw-unknown-ui-type ui-type)))
 
 (defn add-other-uis [u spec-combos]
   (reduce (fn [updating-u {ui-type :UI-TYPE specs :SPECS}]
             (condp = ui-type
               :FACEBOOK (add-additional-facebook-ui updating-u specs)
+              :EMAIL (add-additional-email-ui updating-u specs)
               :else (throw-unknown-ui-type ui-type)))
           u spec-combos))
 
 (defn generate-user [spec-combo]
   (personas/in-social-lab
    (let [u (signup-with-first-ui (first spec-combo))
-         u (add-other-uis u (rest spec-combo))]
+         ;u (add-other-uis u (rest spec-combo))
+         ]
      u)))
 
 (defn get-spec-combos [specs]
-  (let [ui-combos (combo/selections (:UI-IDS-ALLOWED specs) (:UI-IDS-COUNT specs))
+  ;; TODO - use combo/selections instead of combo/combinations when you can have more than one FB or EMAIL account
+  (let [ui-combos (combo/combinations (:UI-IDS-ALLOWED specs) (:UI-IDS-COUNT specs))
         f-count (count (get-in specs [:SPECS :friends]))
         f-combos (filter #(= f-count (apply + %)) (combo/selections (range (inc f-count)) (:UI-IDS-COUNT specs)))
         ui-repeated (apply concat (repeat ui-combos))
@@ -152,8 +169,8 @@
   (map #(partition-spec % f-specs) combos))
 
 (defn generate [specs]
-  (print-vals "SPEC-COMBOS:" (get-spec-combos specs))
-  (generate-facebook (dissoc specs :UI-IDS-ALLOWED :UI-IDS-COUNT)))
+  ;(print-vals "SPEC-COMBOS:" (get-spec-combos specs))
+  (signup-with-first-ui (dissoc specs :UI-IDS-ALLOWED :UI-IDS-COUNT)))
 
 (defn generate-domain [specs]
   (personas/domain-persona (generate specs)))

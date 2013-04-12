@@ -3,20 +3,22 @@
         zolo.utils.clojure
         zolo.demonic.test
         conjure.core)
-  (:require [zolo.marconi.facebook.core :as fb-lab]
-            [zolo.marconi.core :as marconi]
+  (:require [zolo.marconi.core :as marconi]
+            [zolo.marconi.facebook.core :as fb-lab]
+            [zolo.marconi.context-io.fake-api :as fake-email]
             [zolo.social.facebook.gateway :as fb-gateway]
             [zolo.social.facebook.messages :as fb-messages]
             [zolo.social.facebook.stream :as fb-stream]
+            [zolo.social.email.gateway :as email-gateway]
             [zolo.social.core :as social]
             [zolo.domain.user :as user]
             [zolo.store.user-store :as u-store]
             [zolo.service.user-service :as u-service]
             [zolo.domain.message :as message]))
 
-(defn request-params
+(defn fb-request-params
   ([fb-user permission-granted?]
-     (request-params fb-user permission-granted? 420))
+     (fb-request-params fb-user permission-granted? 420))
   ([fb-user permission-granted? login-tz]
      (let [fb-creds (fb-lab/login-creds fb-user)]
        {:login_provider "FACEBOOK"
@@ -46,13 +48,22 @@
 (defn fake-fetch-feed [access-token contact-id yyyy-MM-dd-string]
  (fb-lab/fetch-feeds (fb-lab/get-user contact-id)))
 
+(defn fake-fetch-email-contacts [account-id date-in-seconds]
+  (fake-email/fetch-contacts account-id))
+
+(defn fake-fetch-email-messages [account-id date-in-seconds]
+  (fake-email/fetch-messages account-id))
+
 (defmacro in-social-lab [& body]
   `(marconi/in-lab
     (stubbing [fb-gateway/extended-user-info fake-extended-user-info
                fb-gateway/friends-list fake-friends-list
                fb-messages/fetch-inbox fake-fetch-inbox
                fb-stream/recent-activity fake-fetch-feed
-               fb-gateway/extended-access-token fake-extended-access-token]
+               fb-gateway/extended-access-token fake-extended-access-token
+               email-gateway/get-account fake-email/fetch-account
+               email-gateway/get-contacts fake-fetch-email-contacts 
+               email-gateway/get-messages fake-fetch-email-messages]
       ~@body)))
 
 ;; (defn create-new-db-user
@@ -61,25 +72,44 @@
 ;;   ([first-name last-name permission-granted?]
 ;;      (stubbing [fb-gateway/extended-user-info fake-extended-user-info]
 ;;        (let [user (fb-lab/create-user first-name last-name)
-;;              params (request-params user permission-granted?)]
+;;              params (fb-request-params user permission-granted?)]
 ;;          (-> (social/fetch-user-identity params)
 ;;              user/signup-new-user
 ;;              (user/update-permissions-granted permission-granted?))))))
 
 (defn fetch-fb-ui [fb-user]
   (it-> fb-user
-        (request-params it true)
+        (fb-request-params it true)
         (social/fetch-user-identity it)))
 
-(defn create-domain-user [fb-user]
+(defn create-domain-user-from-fb-user [fb-user]
   (it-> fb-user
         (fetch-fb-ui it)
         (assoc {} :user/user-identities [it])
         (assoc it :user/login-tz 0)))
 
-(defn create-db-user [fb-user]
+(defn create-db-user-from-fb-user [fb-user]
   (-> fb-user
-      create-domain-user
+      create-domain-user-from-fb-user
+      u-store/save))
+
+(defn email-request-params [email-user]
+  (select-keys email-user [:account-id]))
+
+(defn fetch-email-ui [email-user]
+  (-> email-user
+      email-request-params
+      social/fetch-user-identity))
+
+(defn create-domain-user-from-email-user [email-user]
+  (it-> email-user
+        (fetch-email-ui it)
+        (assoc {} :user/user-identities [it])
+        (assoc it :user/login-tz 0)))
+
+(defn create-db-user-from-email-user [email-user]
+  (-> email-user
+      create-domain-user-from-email-user
       u-store/save))
 
 (defn create-temp-message [u to-user-provider-id text]

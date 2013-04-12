@@ -18,13 +18,13 @@
   (demonic-testing "when user is not present it should return nil"
     (personas/in-social-lab
      (let [mickey (fb-lab/create-user "Mickey" "Mouse")]
-       (is (nil? (u-service/get-users (personas/request-params mickey true)))))))
+       (is (nil? (u-service/get-users (personas/fb-request-params mickey true)))))))
 
   (demonic-testing "when user is present it should return distilled user"
     (personas/in-social-lab
      (let [mickey (fb-lab/create-user "Mickey" "Mouse")
-           d-mickey1 (u-service/new-user (personas/request-params mickey true))
-           d-mickey2 (u-service/get-users (personas/request-params mickey true))]
+           d-mickey1 (u-service/new-user (personas/fb-request-params mickey true))
+           d-mickey2 (u-service/get-users (personas/fb-request-params mickey true))]
 
        (is (= d-mickey1 d-mickey2))))))
 
@@ -36,7 +36,7 @@
   (demonic-testing "when user is present it should return distilled user"
     (personas/in-social-lab
      (let [mickey (fb-lab/create-user "Mickey" "Mouse")
-           d-mickey1 (u-service/new-user (personas/request-params mickey true))
+           d-mickey1 (u-service/new-user (personas/fb-request-params mickey true))
            d-mickey2 (u-service/get-user-by-guid (:user/guid d-mickey1))]
 
        (is (= d-mickey1 d-mickey2))))))
@@ -51,9 +51,9 @@
 
        (fb-lab/login-as mickey)
        
-       (let [mickey-guid (:user/guid (u-service/new-user (personas/request-params mickey false 420)))
+       (let [mickey-guid (:user/guid (u-service/new-user (personas/fb-request-params mickey false 420)))
              db-mickey-1 (u-store/find-by-guid mickey-guid)
-             _ (u-service/update-user mickey-guid (personas/request-params mickey true 800))
+             _ (u-service/update-user mickey-guid (personas/fb-request-params mickey true 800))
              db-mickey-2 (u-store/find-by-guid mickey-guid)]
 
          (is (not (user-identity/fb-permissions-granted? db-mickey-1)))
@@ -76,7 +76,7 @@
        (db-assert/assert-datomic-user-count 0)
        (db-assert/assert-datomic-user-identity-count 0)
        
-       (let [distilled-mickey (u-service/new-user (personas/request-params mickey true))
+       (let [distilled-mickey (u-service/new-user (personas/fb-request-params mickey true))
              d-mickey (u-store/reload distilled-mickey)]
          (is (= "Mickey.Mouse@gmail.com" (:user/email distilled-mickey)))
 
@@ -94,14 +94,14 @@
                                           "[:login_provider_uid] is required"
                                           "[:login_tz] is not integer"
                                           "[:login_tz] is required"]}
-              (u-service/new-user (personas/request-params {} true nil)))
+              (u-service/new-user (personas/fb-request-params {} true nil)))
 
     (thrown+? {:type :bad-request :error ["[:access_token] is not string"
                                           "[:access_token] is required"
                                           "[:login_provider_uid] is not string"
                                           "[:login_provider_uid] is required"
                                           "[:login_tz] is not integer"]}
-                  (u-service/new-user (personas/request-params {} true "JUNK-TIME-TZ")))
+                  (u-service/new-user (personas/fb-request-params {} true "JUNK-TIME-TZ")))
 
     (db-assert/assert-datomic-user-count 0)
     (db-assert/assert-datomic-user-identity-count 0)))
@@ -113,7 +113,7 @@
          donald (fb-lab/create-friend "Donald" "Duck")
          daisy (fb-lab/create-friend "Daisy" "Duck")
          minnie (fb-lab/create-friend "Minnie" "Mouse")
-         db-mickey (personas/create-db-user mickey)]
+         db-mickey (personas/create-db-user-from-fb-user mickey)]
      
      (fb-lab/make-friend mickey donald)
      (fb-lab/make-friend mickey daisy)

@@ -33,7 +33,7 @@
 (deftest test-suggestion-set
   (personas/in-social-lab
    (let [mickey (fb-lab/create-user "Mickey" "Mouse")
-         d-mickey (-> (personas/create-domain-user mickey)
+         d-mickey (-> (personas/create-domain-user-from-fb-user mickey)
                       (assoc :user/suggestion-sets [(create-ss "ss-2012-12-21" ["c1" "c2"])
                                                     (create-ss "ss-2012-11-11" ["c3" "c4"])]))]
 

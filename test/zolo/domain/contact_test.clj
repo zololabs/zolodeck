@@ -31,7 +31,7 @@
          jack (fb-lab/create-friend "Jack" "Daniels")
          jill (fb-lab/create-friend  "Jill" "Ferry")
          mary (fb-lab/create-friend  "Mary" "Jane")
-         d-mickey (personas/create-domain-user mickey)]
+         d-mickey (personas/create-domain-user-from-fb-user mickey)]
 
      (fb-lab/make-friend mickey jack)
      (fb-lab/make-friend mickey jill)

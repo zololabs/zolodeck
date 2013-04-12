@@ -91,7 +91,7 @@
    (testing "User has no FB ui"
      (let [mickey (fb-lab/create-user "Mickey" "Mouse")
            d-mickey (-> mickey
-                        personas/create-domain-user
+                        personas/create-domain-user-from-fb-user
                         (dissoc :user/user-identities))
            u-mickey (user/update-with-extended-fb-auth-token d-mickey "new-token")]
        
@@ -100,7 +100,7 @@
 
    (testing "User has FB ui"
      (let [mickey (fb-lab/create-user "Mickey" "Mouse")
-           d-mickey (personas/create-domain-user mickey)
+           d-mickey (personas/create-domain-user-from-fb-user mickey)
            u-mickey (user/update-with-extended-fb-auth-token d-mickey "new-token")]
 
        (is (not= d-mickey u-mickey))
@@ -149,7 +149,7 @@
   (demonic-testing "Should return properly distilled user"
     (personas/in-social-lab
      (let [mickey (fb-lab/create-user "Mickey" "Mouse")
-           d-mickey (personas/create-domain-user mickey)
+           d-mickey (personas/create-domain-user-from-fb-user mickey)
            du (user/distill d-mickey)]
        (is (= (str (:user/guid d-mickey)) (:user/guid du)))
        (is (= (ui/fb-email d-mickey) (:user/email du)))))))

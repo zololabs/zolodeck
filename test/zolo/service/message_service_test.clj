@@ -24,7 +24,7 @@
    (let [mickey (fb-lab/create-user "Mickey" "Mouse")
          donald (fb-lab/create-friend "Donald" "Duck")
          daisy (fb-lab/create-friend "Daisy" "Duck")
-         db-mickey (personas/create-db-user mickey)]
+         db-mickey (personas/create-db-user-from-fb-user mickey)]
 
      (fb-lab/make-friend mickey donald)
      (fb-lab/make-friend mickey daisy)
@@ -70,7 +70,7 @@
     (personas/in-social-lab
      (let [mickey (fb-lab/create-user "Mickey" "Mouse")
            donald (fb-lab/create-friend "Donald" "Duck")
-           db-mickey (personas/create-db-user mickey)]
+           db-mickey (personas/create-db-user-from-fb-user mickey)]
        
        (fb-lab/make-friend mickey donald)
        

@@ -11,8 +11,8 @@
   (personas/in-social-lab
    (let [fb-user1 (fb-lab/create-user "first1" "last1")
          fb-user2 (fb-lab/create-user "first2" "last2")
-         db-user1 (personas/create-db-user fb-user1)
-         db-user2 (personas/create-db-user fb-user2)]
+         db-user1 (personas/create-db-user-from-fb-user fb-user1)
+         db-user2 (personas/create-db-user-from-fb-user fb-user2)]
      
      (is (= db-user2 (u-store/find-by-provider-and-provider-uid :provider/facebook (:id fb-user2))))
      (is (= db-user1 (u-store/find-by-provider-and-provider-uid :provider/facebook (:id fb-user1))))
@@ -27,8 +27,8 @@
   (personas/in-social-lab
    (let [fb-user1 (fb-lab/create-user "first1" "last1")
          fb-user2 (fb-lab/create-user "first2" "last2")
-         db-user1 (personas/create-db-user fb-user1)
-         db-user2 (personas/create-db-user fb-user2)]
+         db-user1 (personas/create-db-user-from-fb-user fb-user1)
+         db-user2 (personas/create-db-user-from-fb-user fb-user2)]
      
      (is (= db-user2 (u-store/find-by-guid (:user/guid db-user2))))
      (is (= db-user2 (u-store/find-by-guid (str (:user/guid db-user2)))))
@@ -44,7 +44,7 @@
   (demonic-testing "new user saved"
     (personas/in-social-lab
      (let [fb-user (fb-lab/create-user "first1" "last1")
-           d-user (personas/create-domain-user fb-user)
+           d-user (personas/create-domain-user-from-fb-user fb-user)
            db-user (u-store/save d-user)]
 
        (db-assert/assert-datomic-user-count 1)
@@ -57,7 +57,7 @@
 (demonictest test-reload
   (personas/in-social-lab
    (let [fb-user (fb-lab/create-user "first" "last")
-         db-user (personas/create-db-user fb-user)]
+         db-user (personas/create-db-user-from-fb-user fb-user)]
 
      (is (nil? (:user/refresh-started db-user)))
 
@@ -76,7 +76,7 @@
 (demonictest test-stamp
   (personas/in-social-lab
    (let [fb-user (fb-lab/create-user "first" "last")
-         db-user (personas/create-db-user fb-user)]
+         db-user (personas/create-db-user-from-fb-user fb-user)]
 
      (is (nil? (:user/refresh-started db-user)))
      (is (nil? (:user/last-updated db-user)))

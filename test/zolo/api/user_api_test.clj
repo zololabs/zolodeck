@@ -20,14 +20,14 @@
   (demonic-testing "New User Signup - good request"
     (personas/in-social-lab
      (let [mickey (fb-lab/create-user "Mickey" "Mouse")
-           resp (w-utils/web-request :post "/users" (personas/request-params mickey true))]
+           resp (w-utils/web-request :post "/users" (personas/fb-request-params mickey true))]
        (is (= 201 (:status resp)))
        (is (= "Mickey.Mouse@gmail.com" (get-in resp [:body :email]))))))
 
   (demonic-testing "New User Signup - bad request"
     (personas/in-social-lab
      (let [mickey (fb-lab/create-user "Mickey" "Mouse")
-           resp (w-utils/web-request :post "/users" (personas/request-params {} true))]
+           resp (w-utils/web-request :post "/users" (personas/fb-request-params {} true))]
        (is (= 400 (:status resp)))))))
 
 (deftest test-get-user
@@ -39,7 +39,7 @@
   (demonic-testing "when user is present it should return distilled user"
     (personas/in-social-lab
      (let [mickey (fb-lab/create-user "Mickey" "Mouse")
-           d-mickey (u-service/new-user (personas/request-params mickey true))
+           d-mickey (u-service/new-user (personas/fb-request-params mickey true))
            resp (w-utils/web-request :get (str "/users/" (:user/guid d-mickey)) {})]
 
        (is (= 200 (:status resp)))
@@ -54,7 +54,7 @@
   (demonic-testing "when user is present, it should return updated distilled user"
     (personas/in-social-lab
      (let [mickey (fb-lab/create-user "Mickey" "Mouse")
-           d-mickey (u-service/new-user (personas/request-params mickey true))
+           d-mickey (u-service/new-user (personas/fb-request-params mickey true))
            resp (w-utils/web-request :put (str "/users/" (:user/guid d-mickey)) {:permissions_granted false :login_tz 420})]
 
        (is (= 200 (:status resp)))))))
@@ -64,7 +64,7 @@
   (demonic-testing "when no user is not present in db it should return 404"
     (personas/in-social-lab
      (let [mickey (fb-lab/create-user "Mickey" "Mouse")
-           resp (w-utils/web-request :get "/users" (personas/request-params mickey true))]
+           resp (w-utils/web-request :get "/users" (personas/fb-request-params mickey true))]
 
        (is (= 404 (:status resp))))))
 
@@ -72,16 +72,16 @@
     (personas/in-social-lab
      (let [mickey (fb-lab/create-user "Mickey" "Mouse")
            minie (fb-lab/create-user "Minie" "Mouse")
-           d-mickey (u-service/new-user (personas/request-params mickey true))
-           resp (w-utils/web-request :get "/users" (personas/request-params minie true))]
+           d-mickey (u-service/new-user (personas/fb-request-params mickey true))
+           resp (w-utils/web-request :get "/users" (personas/fb-request-params minie true))]
 
        (is (= 404 (:status resp))))))
     
   (demonic-testing "when user is present it should return distilled user"
     (personas/in-social-lab
      (let [mickey (fb-lab/create-user "Mickey" "Mouse")
-           d-mickey (u-service/new-user (personas/request-params mickey true))
-           resp (w-utils/web-request :get "/users" (personas/request-params mickey true))]
+           d-mickey (u-service/new-user (personas/fb-request-params mickey true))
+           resp (w-utils/web-request :get "/users" (personas/fb-request-params mickey true))]
 
        (is (= 200 (:status resp)))
        (is (= (:user/email d-mickey) (get-in resp [:body :email])))

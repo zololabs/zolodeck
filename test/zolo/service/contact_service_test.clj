@@ -27,7 +27,7 @@
   (demonic-testing  "User is present in the system and has NO contacts"
     (personas/in-social-lab
      (let [db-mickey (-> (fb-lab/create-user "Mickey" "Mouse")
-                         personas/create-db-user)]
+                         personas/create-db-user-from-fb-user)]
        
        (db-assert/assert-datomic-contact-count 0)
        (db-assert/assert-datomic-social-count 0)
@@ -47,7 +47,7 @@
            daisy (fb-lab/create-friend "Daisy" "Duck")
            minnie (fb-lab/create-friend "Minnie" "Mouse")
            db-mickey (-> mickey
-                         personas/create-db-user)]
+                         personas/create-db-user-from-fb-user)]
 
        (fb-lab/make-friend mickey donald)
        (fb-lab/make-friend mickey daisy)       
@@ -79,7 +79,7 @@
          donald (fb-lab/create-friend "Donald" "Duck")
          daisy (fb-lab/create-friend "Daisy" "Duck")
          minnie (fb-lab/create-friend "Minnie" "Mouse")
-         db-mickey (personas/create-db-user mickey)]
+         db-mickey (personas/create-db-user-from-fb-user mickey)]
 
      (fb-lab/make-friend mickey donald)
      (fb-lab/make-friend mickey daisy)
