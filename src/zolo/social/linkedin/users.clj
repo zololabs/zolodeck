@@ -27,7 +27,7 @@
       :social/auth-token auth-token})))
 
 
-(defn user-and-user-identity [auth-token-map]
+(defn user-identity [auth-token-map]
   (let [profile (gateway/profile-info (:oauth_token auth-token-map) (:oauth_token_secret auth-token-map))
         basic (basic-info profile)
         si (social-identity (prn-str auth-token-map) profile)]

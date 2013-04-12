@@ -6,7 +6,7 @@
             [zolo.social.facebook.gateway :as gateway]            
             [zolo.utils.string :as string]))
 
-(defn user-identity [access-token extended-user-info request-params]
+(defn- to-user-identity [access-token extended-user-info request-params]
   (let [[month day year] (string/split "/" (:birthday_date extended-user-info))]
     (domain/force-schema-types
      {:identity/provider :provider/facebook
@@ -30,6 +30,6 @@
       :identity/nickname (:username extended-user-info)
       :identity/permissions-granted (:permissions_granted request-params)})))
 
-(defn user-and-user-identity [access-token user-id request-params]
+(defn user-identity [access-token user-id request-params]
   (it-> (gateway/extended-user-info access-token user-id)
-        (user-identity access-token it request-params)))
+        (to-user-identity access-token it request-params)))
