@@ -29,8 +29,8 @@
 
 (defn- dummy-message [u friend thread-id msg-id m-date]
   (let [user-friend (if (even? msg-id)
-              [u friend]
-              [friend u])]
+                      [u friend]
+                      [friend u])]
     (concat user-friend
             [thread-id (str "Message ... User : " (:first_name friend) " - Thread-id :" thread-id " - Msg-id :" msg-id) (zcal/date-to-simple-string m-date)])))
 
@@ -47,6 +47,10 @@
             date-stream)))
 
 (defn- generate-messages-for-friend [u friend no-of-i no-of-m]
+  (doseq [msg-info (generate-messages u friend no-of-i no-of-m)]
+    (apply fb-lab/send-message msg-info)))
+
+(defn- generate-emails [u friend no-of-i no-of-m]
   (doseq [msg-info (generate-messages u friend no-of-i no-of-m)]
     (apply fb-lab/send-message msg-info)))
 
@@ -98,27 +102,51 @@
         db-u (personas/create-db-user-from-fb-user u)]
     (refresh-everything db-u)))
 
+(defn email-count-distribution [interaction-count message-count]
+  (let [msg-counts (repeat (int (/ message-count interaction-count)) interaction-count)]
+    (conj (butlast msg-counts) (+ (mod message-count interaction-count) (last msg-counts)))))
+
+(defn send-emails-for-interaction [user-email friend-email interaction-email-count interaction-date]
+  (println "Interaction on" interaction-date)
+  (dotimes [x interaction-email-count]
+    (let [f (rand-int 2) t (- 1 f)
+        from (nth [user-email friend-email] f)
+          to (nth [user-email friend-email] t)]
+      (apply email-lab/send-message (flatten [(zcal/date-to-string interaction-date) from to (str "SUB:" (random-guid-str)) (str "BODY:" (random-guid-str))])))))
+
 (defn setup-email-ui [specs]
   (let [{first-name :first-name last-name :last-name :as specs} (merge DEFAULT-SPECS specs)
         u (email-lab/create-account first-name last-name (str first-name "@" last-name ".com"))]
-    (print-vals "F-SPECS:" (:friends specs))
+    (doseq [{no-of-messages :no-of-messages no-of-interactions :no-of-interactions :as friend} (:friends specs)]
+      (let [friend-email (str (:first-name friend) "@" (:last-name friend) ".com")]
+        (doall
+         (map #(send-emails-for-interaction (:email-address u) friend-email  %1 %2)
+              (email-count-distribution no-of-interactions no-of-messages)
+              (zcal/inc-date-stream (zcal/date-string->instant "yyyy-MM-dd" "2012-05-10"))))))
     u))
 
-(def add-additional-email-ui)
+(defn add-ui-and-refresh-everything [db-u ui]
+  (-> db-u
+      (update-in [:user/user-identities] conj ui)
+      u-store/save
+      refresh-everything))
+
+(defn add-additional-email-ui [db-u specs]
+  (let [email-u (setup-email-ui specs)
+        email-ui (personas/fetch-email-ui email-u)]
+    (add-ui-and-refresh-everything email-u email-ui)))
 
 (defn signup-with-email-ui [specs]
   (print-vals "Signup EMAIL:" specs)
-  (let [u (setup-email-ui specs)]))
+  (let [u (setup-email-ui specs)
+        db-u (personas/create-db-user-from-email-user u)]
+    (refresh-everything db-u)))
 
 ;; TODO - this needs to use u-service to add additional user-identities
 (defn add-additional-facebook-ui [db-u specs]
   (let [fb-u (setup-facebook-ui specs)
         fb-ui (personas/fetch-fb-ui fb-u)]
-    (-> db-u
-        (update-in [:user/user-identities] conj fb-ui)
-        u-store/save
-        refresh-everything
-        )))
+    (add-ui-and-refresh-everything db-u fb-ui)))
 
 (defn throw-unknown-ui-type [ui-type]
   (throw (RuntimeException. (str "Unknown UI-TYPE" ui-type))))
@@ -140,8 +168,7 @@
 (defn generate-user [spec-combo]
   (personas/in-social-lab
    (let [u (signup-with-first-ui (first spec-combo))
-         ;u (add-other-uis u (rest spec-combo))
-         ]
+         u (add-other-uis u (rest spec-combo))]
      u)))
 
 (defn get-spec-combos [specs]

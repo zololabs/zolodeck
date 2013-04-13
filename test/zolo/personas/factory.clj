@@ -48,11 +48,16 @@
 (defn fake-fetch-feed [access-token contact-id yyyy-MM-dd-string]
  (fb-lab/fetch-feeds (fb-lab/get-user contact-id)))
 
+(defn fake-email-account [account-id]
+  (fake-email/fetch-account account-id))
+
 (defn fake-fetch-email-contacts [account-id date-in-seconds]
   (fake-email/fetch-contacts account-id))
 
 (defn fake-fetch-email-messages [account-id date-in-seconds]
-  (fake-email/fetch-messages account-id))
+  (let [res (fake-email/fetch-messages account-id)]
+    (print-vals "FAKE-fetch-email-messages returning" (count res) "emails")
+    res))
 
 (defmacro in-social-lab [& body]
   `(marconi/in-lab
@@ -61,7 +66,7 @@
                fb-messages/fetch-inbox fake-fetch-inbox
                fb-stream/recent-activity fake-fetch-feed
                fb-gateway/extended-access-token fake-extended-access-token
-               email-gateway/get-account fake-email/fetch-account
+               email-gateway/get-account fake-email-account
                email-gateway/get-contacts fake-fetch-email-contacts 
                email-gateway/get-messages fake-fetch-email-messages]
       ~@body)))
@@ -94,7 +99,8 @@
       u-store/save))
 
 (defn email-request-params [email-user]
-  (select-keys email-user [:account-id]))
+  {:account-id (:account-id email-user)
+   :login_provider social/EMAIL})
 
 (defn fetch-email-ui [email-user]
   (-> email-user
