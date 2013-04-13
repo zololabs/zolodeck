@@ -1,4 +1,4 @@
-(ns zolo.social.email.core
+(ns zolo.social.email.users
   (:use zolo.utils.debug)
   (:require [zolo.social.email.gateway :as gateway]
             [zolo.utils.domain :as domain]))
