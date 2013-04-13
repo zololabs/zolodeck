@@ -51,6 +51,10 @@
     :provider/facebook (user-identity/fb-id u)
     (throw (RuntimeException. (str "Unknown provider specified: " provider)))))
 
+;;TODO test
+(defn all-permissions-granted? [u]
+  (every? #(:identity/permissions-granted %) (:user/user-identities u)))
+
 (defn tz-offset-minutes []
   (or *tz-offset-minutes*
       (throw (RuntimeException. "User TZ is not set"))))
@@ -67,6 +71,7 @@
     (if-not fb-ui u
             (zolo-maps/update-in-when u [:user/user-identities] user-identity/is-fb? updated))))
 
+;;TODO Assumes Facebook .. Needs to be changed once we add another Login
 (defn update-permissions-granted [u permissions-granted]
   (let [fb-ui (user-identity/fb-user-identity u)
         updated (merge fb-ui {:identity/permissions-granted permissions-granted})]
@@ -81,4 +86,6 @@
     {:user/guid (str (:user/guid u))
      :user/email (user-identity/fb-email u)
      :user/login-tz (:user/login-tz u)
-     :user/updated (not (nil? (:user/last-updated u)))}))
+     :user/updated (not (nil? (:user/last-updated u)))
+     ;;TODO test
+     :user/all-permissions-granted (all-permissions-granted? u)}))
