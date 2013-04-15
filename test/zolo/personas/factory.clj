@@ -38,9 +38,13 @@
       fb-lab/get-user
       fb-lab/fetch-friends))
 
+
+;; TODO - should find user by AT, instead of current-user, esp when there are more than 1 FB accounts per user
 (defn fake-fetch-inbox [at date]
-  (-> (fb-lab/current-user)
-      fb-lab/fetch-messages))
+  (let [res (-> (fb-lab/current-user)
+                (fb-lab/fetch-messages date))]
+    (print-vals "FAKE-fetch-inbox returning" (count res))
+    res))
 
 (defn fake-extended-access-token [& args]
   (random-str))
@@ -116,6 +120,7 @@
 (defn create-db-user-from-email-user [email-user]
   (-> email-user
       create-domain-user-from-email-user
+      (print-vals-> "Saving new user...")
       u-store/save))
 
 (defn create-temp-message [u to-user-provider-id text]
