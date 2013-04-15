@@ -11,7 +11,8 @@
             [zolo.demonic.core :as demonic]
             [zolo.utils.logger :as logger]))
 
-(def MESSAGES-START-TIME-SECONDS (-> #inst "2000-10-22" .getTime zolo-cal/to-seconds))
+(def MESSAGES-START-TIME #inst "2000-10-22")
+(def MESSAGES-START-TIME-SECONDS (-> MESSAGES-START-TIME .getTime zolo-cal/to-seconds))
 
 ;;TODO test
 (defn is-temp-message? [m]
@@ -35,7 +36,7 @@
            (sort-by :message/date)
            last
            :message/date)
-      MESSAGES-START-TIME-SECONDS))
+      MESSAGES-START-TIME))
 
 
 ;;TODO test
