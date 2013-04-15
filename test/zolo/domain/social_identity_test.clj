@@ -30,14 +30,12 @@
                                                            (pgen/create-friend-spec "R2" "D2" 7 30)]}
                                          :UI-IDS-ALLOWED [:EMAIL :FACEBOOK]
                                          :UI-IDS-COUNT 2})]
-      (let [sis (->> u :user/contacts (mapcat :contact/social-identities))
-            esis (filter si/is-email? sis)]
+      (let [sis (->> u :user/contacts (mapcat :contact/social-identities))]
         (is (= 5 (count sis)))
         (doseq [s sis]
-          (cond
-           (si/is-fb? s) (is (si/is-a-person s))
-           (= "donotreply@Man.com" (:social/provider-uid s)) (is (:social/not-a-person s))
-           :is-email-si (si/is-a-person s)))))))
+          (if (= "donotreply@Man.com" (:social/provider-uid s))
+            (is-not (si/is-a-person s))
+            (is (si/is-a-person s))))))))
 
 ;; (deftest test-update
 ;;   (demonic-testing "Should throw Runtime Exception when nil is passed"
