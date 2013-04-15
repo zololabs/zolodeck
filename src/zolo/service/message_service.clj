@@ -11,7 +11,8 @@
             [zolo.social.facebook.chat :as fb-chat]
             [zolo.service.core :as service]
             [zolo.store.message-store :as m-store]
-            [zolo.demonic.core :as demonic]))
+            [zolo.demonic.core :as demonic]
+            [zolo.utils.calendar :as zcal]))
 
 (defn- get-messages-for-user-identity [user-identity last-updated-seconds]
   (let [{provider :identity/provider
@@ -20,7 +21,7 @@
     (social/fetch-messages provider access-token provider-uid last-updated-seconds)))
 
 (defn- get-inbox-messages-for-user [u]
-  (let [last-updated-seconds (message/get-last-message-date u)]
+  (let [last-updated-seconds (zcal/to-seconds (message/get-last-message-date u))]
     (->> u
          :user/user-identities
          (mapcat #(get-messages-for-user-identity % last-updated-seconds)))))
