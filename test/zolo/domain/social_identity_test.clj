@@ -19,8 +19,8 @@
                                          :UI-IDS-COUNT 2})]
       (let [sis (->> u :user/contacts (mapcat :contact/social-identities))]
         (is (= 5 (count sis)))
-        (doseq [esi (filter si/is-email? sis)]
-          (is (si/is-a-person esi))))))
+        (doseq [s sis]
+          (is (si/is-a-person s))))))
 
   (testing "when an SI has a suspect email-addresses"
     (doseq [u (pgen/generate-domain-all {:SPECS {:friends [(pgen/create-friend-spec "Lucky" "Strike" 1 1)
@@ -33,10 +33,11 @@
       (let [sis (->> u :user/contacts (mapcat :contact/social-identities))
             esis (filter si/is-email? sis)]
         (is (= 5 (count sis)))
-        (doseq [esi esis]
-          (if (= "donotreply@Man.com" (:social/provider-uid esi))
-            (is-not (si/is-a-person esi))
-            (is (si/is-a-person esi))))))))
+        (doseq [s sis]
+          (cond
+           (si/is-fb? s) (is (si/is-a-person s))
+           (= "donotreply@Man.com" (:social/provider-uid s)) (is (:social/not-a-person s))
+           :is-email-si (si/is-a-person s)))))))
 
 ;; (deftest test-update
 ;;   (demonic-testing "Should throw Runtime Exception when nil is passed"
