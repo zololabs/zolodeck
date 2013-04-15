@@ -10,30 +10,33 @@
 
 (deftest test-not-a-person
   (testing "when SIs have clean email-addresses"
-    (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Lucky" "Strike" 1 1)
-                                                     (pgen/create-friend-spec "Mighty" "Mouse" 2 5)
-                                                     (pgen/create-friend-spec "Bat" "Man" 3 10)
-                                                     (pgen/create-friend-spec "Hello" "Man" 5 20)
-                                                     (pgen/create-friend-spec "R2" "D2" 7 30)]}
-                                   :UI-IDS-ALLOWED [:EMAIL :FACEBOOK]
-                                   :UI-IDS-COUNT 2})
-          sis (->> u :user/contacts (mapcat :contact/social-identities))]
-      (doseq [esi (filter si/is-email? sis)]
-        (is (si/is-a-person esi)))))
+    (doseq [u (pgen/generate-domain-all {:SPECS {:friends [(pgen/create-friend-spec "Lucky" "Strike" 1 1)
+                                                           (pgen/create-friend-spec "Mighty" "Mouse" 2 5)
+                                                           (pgen/create-friend-spec "Bat" "Man" 3 10)
+                                                           (pgen/create-friend-spec "Hello" "Man" 5 20)
+                                                           (pgen/create-friend-spec "R2" "D2" 7 30)]}
+                                         :UI-IDS-ALLOWED [:EMAIL :FACEBOOK]
+                                         :UI-IDS-COUNT 2})]
+      (let [sis (->> u :user/contacts (mapcat :contact/social-identities))]
+        (is (= 5 (count sis)))
+        (doseq [esi (filter si/is-email? sis)]
+          (is (si/is-a-person esi))))))
 
   (testing "when an SI has a suspect email-addresses"
-    (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Lucky" "Strike" 1 1)
-                                                     (pgen/create-friend-spec "Mighty" "Mouse" 2 5)
-                                                     (pgen/create-friend-spec "Bat" "Man" 3 10)
-                                                     (pgen/create-friend-spec "donotreply" "Man" 5 20)
-                                                     (pgen/create-friend-spec "R2" "D2" 7 30)]}
-                                   :UI-IDS-ALLOWED [:EMAIL :FACEBOOK]
-                                   :UI-IDS-COUNT 2})
-          sis (->> u :user/contacts (mapcat :contact/social-identities))]
-      (doseq [esi (filter si/is-email? sis)]
-        (if (= "donotreply@Man.com" (:social/provider-uid esi))
-          (is-not (si/is-a-person esi))
-          (is (si/is-a-person esi)))))))
+    (doseq [u (pgen/generate-domain-all {:SPECS {:friends [(pgen/create-friend-spec "Lucky" "Strike" 1 1)
+                                                           (pgen/create-friend-spec "Mighty" "Mouse" 2 5)
+                                                           (pgen/create-friend-spec "Bat" "Man" 3 10)
+                                                           (pgen/create-friend-spec "donotreply" "Man" 5 20)
+                                                           (pgen/create-friend-spec "R2" "D2" 7 30)]}
+                                         :UI-IDS-ALLOWED [:EMAIL :FACEBOOK]
+                                         :UI-IDS-COUNT 2})]
+      (let [sis (->> u :user/contacts (mapcat :contact/social-identities))
+            esis (filter si/is-email? sis)]
+        (is (= 5 (count sis)))
+        (doseq [esi esis]
+          (if (= "donotreply@Man.com" (:social/provider-uid esi))
+            (is-not (si/is-a-person esi))
+            (is (si/is-a-person esi))))))))
 
 ;; (deftest test-update
 ;;   (demonic-testing "Should throw Runtime Exception when nil is passed"

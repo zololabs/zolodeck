@@ -104,7 +104,6 @@
     (conj (butlast msg-counts) (+ (mod message-count interaction-count) (last msg-counts)))))
 
 (defn send-emails-for-interaction [user-email friend-email interaction-email-count interaction-date]
-  (println "Email interaction on" interaction-date)
   (dotimes [x interaction-email-count]
     (let [f (rand-int 2) t (- 1 f)
           from (nth [user-email friend-email] f)
@@ -209,7 +208,7 @@
 (defn generate-all [specs]
   (->> specs
       generative-specs
-      (map generate-user)))
+      (domap generate-user)))
 
 (defn generate-domain [specs]
   (personas/domain-persona (generate specs)))

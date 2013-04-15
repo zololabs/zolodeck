@@ -43,7 +43,7 @@
 (defn fake-fetch-inbox [at date]
   (let [res (-> (fb-lab/current-user)
                 (fb-lab/fetch-messages date))]
-    (print-vals "FAKE-fetch-inbox returning" (count res) "messages")
+    (println "FAKE-fetch-inbox returning" (count res) "messages")
     res))
 
 (defn fake-extended-access-token [& args]
@@ -60,7 +60,7 @@
 
 (defn fake-fetch-email-messages [account-id date-in-seconds]
   (let [res (fake-email/fetch-messages account-id)]
-    (print-vals "FAKE-fetch-email-messages returning" (count res) "emails")
+    (print "FAKE-fetch-email-messages returning" (count res) "emails")
     res))
 
 (defmacro in-social-lab [& body]
