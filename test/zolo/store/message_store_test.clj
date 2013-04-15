@@ -28,7 +28,7 @@
 
        (db-assert/assert-datomic-message-count 0)
 
-       (let [messages (social/fetch-messages :provider/facebook "at" "pid" "last-updated-seconds")
+       (let [messages (social/fetch-messages :provider/facebook "at" "pid" message/MESSAGES-START-TIME-SECONDS)
              u-db-mickey (m-store/append-messages db-mickey messages)]
 
          (testing "When no messages are present"
@@ -47,7 +47,7 @@
          
              (db-assert/assert-datomic-message-count 3)
 
-             (let [messages (social/fetch-messages :provider/facebook "at" "pid" "last-updated-seconds")
+             (let [messages (social/fetch-messages :provider/facebook "at" "pid" message/MESSAGES-START-TIME-SECONDS)
                    u-db-mickey (m-store/append-messages u-db-mickey messages)]
 
                (db-assert/assert-datomic-message-count 5)

@@ -16,4 +16,4 @@
                                        (pgen/create-friend-spec "Jill" "Ferry" 1 2)]}}))
 
 (defn create-domain []
-  (personas/domain-persona create))
+  (personas/domain-persona (create)))

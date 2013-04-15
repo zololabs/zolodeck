@@ -154,20 +154,20 @@
     (add-ui-and-refresh-everything db-u fb-ui)))
 
 (defn throw-unknown-ui-type [ui-type]
-  (throw (RuntimeException. (str "Unknown UI-TYPE" ui-type))))
+  (throw (RuntimeException. (str "Unknown UI-TYPE:" ui-type))))
 
 (defn signup-with-first-ui [{ui-type :UI-TYPE specs :SPECS}]
   (condp = ui-type
     :FACEBOOK (signup-with-facebook-ui specs)
     :EMAIL (signup-with-email-ui specs)
-    :else (throw-unknown-ui-type ui-type)))
+    (throw-unknown-ui-type ui-type)))
 
 (defn add-other-uis [u spec-combos]
   (reduce (fn [updating-u {ui-type :UI-TYPE specs :SPECS}]
             (condp = ui-type
               :FACEBOOK (add-additional-facebook-ui updating-u specs)
               :EMAIL (add-additional-email-ui updating-u specs)
-              :else (throw-unknown-ui-type ui-type)))
+              (throw-unknown-ui-type ui-type)))
           u spec-combos))
 
 (defn generate-user [spec-combo]
@@ -207,7 +207,10 @@
 
 (defn generate [specs]
   ;(print-vals "SPEC-COMBOS:" (get-spec-combos specs))
-  (signup-with-first-ui (dissoc specs :UI-IDS-ALLOWED :UI-IDS-COUNT)))
+  (let [specs (merge {:UI-IDS-ALLOWED [:FACEBOOK] :UI-IDS-COUNT 1} specs)
+        specs (get-partitioned-specs (get-spec-combos specs) (get-in specs [:SPECS :friends]))
+        specs (first specs)]
+    (generate-user specs)))
 
 (defn generate-domain [specs]
   (personas/domain-persona (generate specs)))

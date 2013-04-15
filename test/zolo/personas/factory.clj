@@ -41,6 +41,7 @@
 
 ;; TODO - should find user by AT, instead of current-user, esp when there are more than 1 FB accounts per user
 (defn fake-fetch-inbox [at date]
+  (print-vals "FAKE-FETCH-INBOX date is:" (class date))
   (let [res (-> (fb-lab/current-user)
                 (fb-lab/fetch-messages date))]
     (print-vals "FAKE-fetch-inbox returning" (count res))
