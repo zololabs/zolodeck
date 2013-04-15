@@ -48,6 +48,8 @@
    :updated [:optional]})
 
 ;; Services
+;;TODO Need to Check Permissions Granted. Only when Permission is
+;;Granted it should proceed to get more info about the user
 (defn new-user [request-params]
   (-> request-params
       (service/validate-request! val-request)
@@ -67,6 +69,8 @@
   (-> (u-store/find-by-guid guid)
       user/distill))
 
+;;TODO Need to Check Permissions Granted. Only when Permission is
+;;Granted it should proceed to get more info about the user
 (defn update-user [guid request-params]
   (-not-nil-> (u-store/find-by-guid guid)
               update-with-extended-fb-auth-token

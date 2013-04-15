@@ -17,7 +17,8 @@
              [zolo.api.message-api :as m-api]
              [zolo.api.contact-api :as c-api]
              [zolo.api.suggestion-set-api :as ss-api]
-             [zolo.api.stats-api :as s-api]))
+             [zolo.api.stats-api :as s-api]
+             [zolo.api.server-api :as server-api]))
 
 (defroutes application-routes
   (route/resources "/")
@@ -50,7 +51,11 @@
   (GET "/users/:guid/contact_stats" [guid] (s-api/get-contact-stats guid))
 
   (GET "/users/:guid/interaction_stats" [guid] (s-api/get-interaction-stats guid))
-  )
+
+  ;;GENERAL
+  (GET "/server/status" {params :params} (server-api/status params))
+
+  (route/not-found "Page not found"))
 
 (def app
   (web/wrap-request-binding  

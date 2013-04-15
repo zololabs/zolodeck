@@ -16,6 +16,11 @@
        load-entity
        :db/txInstant))
 
+;;TODO test
+(defn count-users []
+  (-> (demonic/run-query '[:find ?u :where [?u :user/guid]])
+      count))
+
 (defn- user-for-refresh [u]
   (-> (select-keys u [:user/guid :user/last-updated :user/refresh-started :user/fb-permissions-time])
       (assoc :user-temp/fb-permissions-time (user-identity/fb-permissions-time u))
