@@ -90,14 +90,11 @@
     u))
 
 (defn refresh-everything [db-u]
-  (print-vals "REFRESHING:" db-u)
   (-> db-u
       u-service/refresh-user-data
-      u-service/refresh-user-scores
-      (print-vals-> "Refreshed everything:")))
+      u-service/refresh-user-scores))
 
 (defn signup-with-facebook-ui [specs]
-  (print-vals "Signup FB:" specs)
   (let [u (setup-facebook-ui specs)
         db-u (personas/create-db-user-from-fb-user u)]
     (refresh-everything db-u)))
@@ -115,10 +112,8 @@
       (apply email-lab/send-message (flatten [(zcal/date-to-string interaction-date) from to (str "SUB:" (random-guid-str)) (str "BODY:" (random-guid-str))])))))
 
 (defn setup-email-ui [specs]
-  (print-vals "Setting up email UI...")
   (let [{first-name :first-name last-name :last-name :as specs} (merge DEFAULT-SPECS specs)
         u (email-lab/create-account first-name last-name (str first-name "@" last-name ".com"))]
-    (print-vals "Starting interaction setup...")
     (doseq [{no-of-messages :no-of-messages no-of-interactions :no-of-interactions :as friend} (:friends specs)]
       (let [friend-email (str (:first-name friend) "@" (:last-name friend) ".com")]
         (doall
@@ -131,19 +126,15 @@
   (-> db-u
       (update-in [:user/user-identities] conj ui)
       u-store/save
-      (print-vals-> "Starting refesh...")
       refresh-everything))
 
 (defn add-additional-email-ui [db-u specs]
-  (print-vals "Additional email...")
   (let [email-u (setup-email-ui specs)
-        _ (print-vals "Setup complet:" email-u)
         email-ui (personas/fetch-email-ui email-u)]
     (add-ui-and-refresh-everything db-u email-ui)))
 
 (defn signup-with-email-ui [specs]
-  (print-vals "Signup EMAIL:" specs)
-  (let [u (print-vals "Email setup complete..." (setup-email-ui specs))
+  (let [u (setup-email-ui specs)
         db-u (personas/create-db-user-from-email-user u)]
     (refresh-everything db-u)))
 
@@ -173,14 +164,13 @@
 (defn generate-user [spec-combo]
   (personas/in-social-lab
    (let [u (signup-with-first-ui (first spec-combo))
-         _ (print-vals "ADDITIONAL UI processing... NOW!")
          u (add-other-uis u (rest spec-combo))]
      u)))
 
 (defn get-spec-combos [specs]
   ;; TODO - use (:UI-IDS-COUNT specs) instead of (count (:UI-IDS-ALLOWED specs))  
   ;; when you can have more than one FB or EMAIL account
-  (let [ui-combos (print-vals "UI-COMBOS:" (combo/selections (:UI-IDS-ALLOWED specs) (count (:UI-IDS-ALLOWED specs))))
+  (let [ui-combos (combo/selections (:UI-IDS-ALLOWED specs) (count (:UI-IDS-ALLOWED specs)))
         f-count (count (get-in specs [:SPECS :friends]))
         f-combos (filter #(= f-count (apply + %)) (combo/selections (range (inc f-count)) (count (:UI-IDS-ALLOWED specs))))
         ui-repeated (apply concat (repeat ui-combos))
@@ -206,7 +196,6 @@
   (map #(partition-spec % f-specs) combos))
 
 (defn generate [specs]
-  ;(print-vals "SPEC-COMBOS:" (get-spec-combos specs))
   (let [specs (merge {:UI-IDS-ALLOWED [:FACEBOOK] :UI-IDS-COUNT 1} specs)
         specs (get-partitioned-specs (get-spec-combos specs) (get-in specs [:SPECS :friends]))
         specs (first specs)]
