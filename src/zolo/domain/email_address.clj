@@ -85,10 +85,10 @@
 
 (defn matches-non-person-signal? [email-address]
   (let [[i d] (split email-address)]
-    (or
-     (some #(re-matches % i) NON-PERSON-ID-REGEXES)
-     (some #(re-matches % d) NON-PERSON-DOMAIN-REGEXES)
-     (some #{email-address} EMAIL-ADDRESS-BLACKLIST))))
+    (boolean (or
+              (some #(re-matches % i) NON-PERSON-ID-REGEXES)
+              (some #(re-matches % d) NON-PERSON-DOMAIN-REGEXES)
+              (some #{email-address} EMAIL-ADDRESS-BLACKLIST)))))
 
 (defn remove-non-persons [email-addresses]
   (remove matches-non-person-signal? email-addresses))

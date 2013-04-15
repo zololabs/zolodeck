@@ -6,6 +6,7 @@
             [zolo.domain.user :as user]
             [zolo.domain.contact :as contact]
             [zolo.domain.message :as message]
+            [zolo.domain.social-identity :as si]            
             [zolo.domain.interaction :as interaction]
             [zolo.store.user-store :as u-store]
             [zolo.store.contact-store :as c-store]
@@ -23,7 +24,9 @@
     (social/fetch-social-identities provider access-token provider-uid "2012-10-22")))
 
 (defn- fresh-social-identities [u]
-  (mapcat fresh-social-identities-for-user-identity (:user/user-identities u)))
+  (->> (:user/user-identities u)
+       (mapcat fresh-social-identities-for-user-identity)
+       (map si/mark-person-status)))
 
 (defn- update-contacts [user]
   (->> user

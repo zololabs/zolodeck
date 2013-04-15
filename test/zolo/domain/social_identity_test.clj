@@ -2,28 +2,38 @@
   (:use zolo.utils.debug
         zolo.demonic.test
         zolo.demonic.core
+        zolo.test.core-utils        
         [clojure.test :only [run-tests deftest is are testing]]
         conjure.core)
   (:require [zolo.domain.social-identity :as si]
             [zolo.personas.generator :as pgen]))
 
 (deftest test-not-a-person
-  (testing "when an SI has a clean email-address"
+  (testing "when SIs have clean email-addresses"
+    (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Lucky" "Strike" 1 1)
+                                                     (pgen/create-friend-spec "Mighty" "Mouse" 2 5)
+                                                     (pgen/create-friend-spec "Bat" "Man" 3 10)
+                                                     (pgen/create-friend-spec "Hello" "Man" 5 20)
+                                                     (pgen/create-friend-spec "R2" "D2" 7 30)]}
+                                   :UI-IDS-ALLOWED [:EMAIL :FACEBOOK]
+                                   :UI-IDS-COUNT 2})
+          sis (->> u :user/contacts (mapcat :contact/social-identities))]
+      (doseq [esi (filter si/is-email? sis)]
+        (is (si/is-a-person esi)))))
+
+  (testing "when an SI has a suspect email-addresses"
     (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Lucky" "Strike" 1 1)
                                                      (pgen/create-friend-spec "Mighty" "Mouse" 2 5)
                                                      (pgen/create-friend-spec "Bat" "Man" 3 10)
                                                      (pgen/create-friend-spec "donotreply" "Man" 5 20)
                                                      (pgen/create-friend-spec "R2" "D2" 7 30)]}
-                                   :UI-IDS-ALLOWED [:FACEBOOK :EMAIL]
-                                   :UI-IDS-COUNT 3})]
-      (print-vals (-> u :user/contacts first :contact/social-identities first)))
-    (print-vals ">>>>>>>>>>>>>")
-    ;; (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Lucky" "Strike" 1 1)]}})]
-    ;;   (print-vals (-> u :user/contacts first :contact/social-identities first)))
-    )
-
-  (testing "when an SI has a suspect email-address"
-    ))
+                                   :UI-IDS-ALLOWED [:EMAIL :FACEBOOK]
+                                   :UI-IDS-COUNT 2})
+          sis (->> u :user/contacts (mapcat :contact/social-identities))]
+      (doseq [esi (filter si/is-email? sis)]
+        (if (= "donotreply@Man.com" (:social/provider-uid esi))
+          (is-not (si/is-a-person esi))
+          (is (si/is-a-person esi)))))))
 
 ;; (deftest test-update
 ;;   (demonic-testing "Should throw Runtime Exception when nil is passed"

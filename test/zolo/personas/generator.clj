@@ -167,7 +167,7 @@
          u (add-other-uis u (rest spec-combo))]
      u)))
 
-(defn get-spec-combos [specs]
+(defn- get-spec-combos [specs]
   ;; TODO - use (:UI-IDS-COUNT specs) instead of (count (:UI-IDS-ALLOWED specs))  
   ;; when you can have more than one FB or EMAIL account
   (let [ui-combos (combo/selections (:UI-IDS-ALLOWED specs) (count (:UI-IDS-ALLOWED specs)))
@@ -179,7 +179,7 @@
                            (map vector ui-combos f-combos)) spec-pairs)]
     spec-combos))
 
-(defn partition-spec
+(defn- partition-spec
   ([combo f-specs]
      (if-not (= (count f-specs) (apply + (map second combo)))
        (throw (RuntimeException. (str "Combo check failed for combo:" combo "f-specs:" f-specs))))
@@ -192,14 +192,28 @@
                 (drop f-count f-specs)
                 (conj results {:UI-TYPE ui-type :SPECS {:friends (take f-count f-specs)}}))))))
 
-(defn get-partitioned-specs [combos f-specs]
+(defn- get-partitioned-specs [combos f-specs]
   (map #(partition-spec % f-specs) combos))
 
+
+(defn generative-specs [specs]
+  (let [specs (merge {:UI-IDS-ALLOWED [:FACEBOOK] :UI-IDS-COUNT 1} specs)]
+    (get-partitioned-specs (get-spec-combos specs) (get-in specs [:SPECS :friends]))))
+
 (defn generate [specs]
-  (let [specs (merge {:UI-IDS-ALLOWED [:FACEBOOK] :UI-IDS-COUNT 1} specs)
-        specs (get-partitioned-specs (get-spec-combos specs) (get-in specs [:SPECS :friends]))
-        specs (first specs)]
-    (generate-user specs)))
+  (-> specs
+      generative-specs
+      first
+      generate-user))
+
+(defn generate-all [specs]
+  (->> specs
+      generative-specs
+      (map generate-user)))
 
 (defn generate-domain [specs]
   (personas/domain-persona (generate specs)))
+
+(defn generate-domain-all [specs]
+  (personas/domain-persona (generate-all specs)))
+

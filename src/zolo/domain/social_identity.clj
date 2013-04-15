@@ -2,6 +2,7 @@
   (:use zolo.utils.debug)
   (:require [zolo.utils.maps :as zolo-maps]
             [zolo.utils.domain :as domain]
+            [zolo.domain.email-address :as addy]
             [zolo.demonic.core :as demonic]))
 
 ;;TODO test this name space
@@ -36,3 +37,11 @@
 (defn email-id [si]
   (if (is-email? si)
     (:social/provider-uid si)))
+
+(defn mark-person-status [si]
+  (if-not (is-email? si)
+    (assoc si :social/not-a-person false)
+    (assoc si :social/not-a-person (addy/matches-non-person-signal? (:social/provider-uid si)))))
+
+(defn is-a-person [si]
+  (not (:social/not-a-person si)))
