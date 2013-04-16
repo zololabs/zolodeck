@@ -82,7 +82,7 @@
        (json-response {:error (.getMessage e)} 500)))))
 
 (defn valid-version? [accept-header-value]
-  (or true (= "application/vnd.zololabs.zolodeck.v1+json" accept-header-value)))
+  (= "application/vnd.zololabs.zolodeck.v1+json" accept-header-value))
 
 (defn run-accept-header-validation [{:keys [headers]}]
   (if-not (valid-version? (headers "accept"))
