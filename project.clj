@@ -8,7 +8,7 @@
 
                  [fuziontech/ring-json-params "0.2.0"]
                  
-                 [sandbar/sandbar "0.4.0-SNAPSHOT"]
+                 [com.cemerick/friend "0.1.5"]
 
                  [org.clojure/data.json "0.1.2"]
                  [clj-http "0.5.3" :exclusions [commons-logging]]
@@ -100,7 +100,7 @@
                            (use 'ring.util.serve) 
                            (use 'clojure.pprint)
                            (use 'clojure.test)
-                           (use 'com.georgejahad.difform)
+                           (use 'com.georgejahad.difform)                           
                            (use 'zolo.utils.readers)
                            (use 'zolo.demonic.core)
                            (use 'zolo.test.core-utils)

@@ -5,6 +5,9 @@
         ring.adapter.jetty
         ring.middleware.json-params)
   (:require  [clojure.tools.cli :as cli]
+             [cemerick.friend :as friend]
+             (cemerick.friend [workflows :as workflows]
+                              [credentials :as creds])
              [zolo.utils.logger :as logger]
              [zolo.setup.config :as config]
              [zolo.social.bootstrap]
@@ -20,47 +23,47 @@
              [zolo.api.stats-api :as s-api]
              [zolo.api.server-api :as server-api]))
 
-(defroutes application-routes
-  (route/resources "/")
-
-  ;;Users
-  (POST "/users" {params :params} (-> params user-api/new-user))
-
+(defroutes find-user-routes
   ;;TODO Need to fix this for REST
-  (GET "/users" {params :params} (-> params user-api/find-users ))
+  (GET "/" {params :params} (-> params user-api/find-users )))
 
+(defroutes all-user-routes
   ;;TODO Just loging in the user it is not Updating the User 
-  (PUT "/users/:guid" [guid :as {params :params}] (user-api/update-user guid params))
-
-  (GET "/users/:guid" [guid] (-> guid user-api/find-user ))
+  (PUT "/" [guid :as {params :params}] (user-api/update-user guid params))
+  (GET "/" [guid] (-> guid user-api/find-user ))
 
   ;;TODO move this to its own routes
-  ;;(GET "/users/:user-id/suggestion_sets/:name" [user-id name] (web/json-response (ss-api/find-suggestion-set user-id name)))
-
-  (GET "/users/:user-guid/suggestion_sets" [user-guid :as {params :params}] (ss-api/find-suggestion-sets user-guid params))
+  (GET "/suggestion_sets" [guid :as {params :params}] (ss-api/find-suggestion-sets guid params))
 
   ;;Contacts
-  (GET "/users/:user-guid/contacts/:c-guid" [user-guid c-guid] (c-api/find-contact user-guid c-guid))
-
-  (PUT "/users/:user-guid/contacts/:c-guid" [user-guid c-guid & params] (c-api/update-contact user-guid c-guid params))
+  (GET "/contacts/:c-guid" [guid c-guid] (c-api/find-contact guid c-guid))
+  (PUT "/contacts/:c-guid" [guid c-guid & params] (c-api/update-contact guid c-guid params))
   
   ;;Messages
-  (POST "/users/:user-guid/contacts/:c-guid/messages" [user-guid c-guid & params] (m-api/send-message user-guid c-guid params))
+  (POST "/contacts/:c-guid/messages" [guid c-guid & params] (m-api/send-message guid c-guid params))
 
   ;;Stats
-  (GET "/users/:guid/contact_stats" [guid] (s-api/get-contact-stats guid))
+  (GET "/contact_stats" [guid] (s-api/get-contact-stats guid))
+  (GET "/interaction_stats" [guid] (s-api/get-interaction-stats guid)))
 
-  (GET "/users/:guid/interaction_stats" [guid] (s-api/get-interaction-stats guid))
+(defroutes APP-ROUTES
+  (route/resources "/")
+
+  (context "/users" request find-user-routes)
+  (context "/users/:guid" request all-user-routes)
+
+  ;;anonymous access
+  (POST "/users" {params :params} (-> params user-api/new-user))
 
   ;;GENERAL
   (GET "/server/status" {params :params} (server-api/status params))
 
   (route/not-found "Page not found"))
 
-(def app
+(def ring-app 
   (web/wrap-request-binding  
    (web/wrap-options
-    (-> application-routes
+    (-> APP-ROUTES
         demonic/wrap-demarcation
         ;;web/wrap-user-info-logging
         handler/api
@@ -68,7 +71,19 @@
         web/wrap-accept-header-validation
         web/wrap-jsonify
         web/wrap-error-handling
-        web/wrap-request-logging))))
+;        (friend/requires-scheme-with-proxy :https)        
+        web/wrap-request-logging
+        ))))
+
+(def app
+  ;; (friend/authenticate ring-app
+  ;;                      {:unauthenticated-handler #(workflows/http-basic-deny "ZOLO Auth" %)
+  ;;                       :workflows [(workflows/http-basic
+  ;;                                    :credential-fn #(do (print-vals "CREDENTIAL-FN: " %)
+  ;;                                                        nil)
+  ;;                                    :realm "Zolodeck")]})
+  (friend/authenticate ring-app {})
+  )
 
 (defn start-api
   ([]
