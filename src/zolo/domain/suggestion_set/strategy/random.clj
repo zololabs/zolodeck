@@ -7,5 +7,6 @@
   (let [ibc (interaction/ibc u)]
     (->> u
          :user/contacts
+         (remove contact/is-muted?)
          (remove #(contact/is-contacted-today? % ibc))
          (take 5))))
