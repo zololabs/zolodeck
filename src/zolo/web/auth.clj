@@ -2,20 +2,33 @@
   (:use zolo.utils.debug)
   (:require [zolo.setup.config :as conf]
             [zolo.web.fb-auth :as fb-auth]
-            [zolo.domain.user :as user]
-            [zolo.utils.string :as zolo-str]
-            [zolo.utils.logger :as logger]))
+            [zolo.store.user-store :as u-store]
+            [clojure.data.json :as json]
+            [clojure.string :as string]
+            [zolo.utils.string :as zstring]
+            [zolo.utils.logger :as logger]
+            [zolo.social.core :as social]
+            [cemerick.friend :as friend]
+            (cemerick.friend [workflows :as workflows]
+                             [credentials :as creds])))
 
-;; (defn fb-user [fb-cookie]
-;;   (let [{fb-id :user_id} (fb-auth/decode-signed-request fb-cookie (conf/fb-app-secret))]
-;;     (logger/debug "Facebook id from facebook signed request: " fb-id)
-;;     (user/find-by-provider-and-provider-uid :provider/facebook fb-id)))
+(defn current-user []
+  friend/*identity*)
 
-;; (defn authenticator [req]
-;;   (let [{{fb :value} (conf/fb-auth-cookie-name) {li :value} (conf/li-auth-cookie-name)} (:cookies req)
-;;         user (fb-user fb)]
-;;     (when user
-;;       (logger/debug "Found current user :" (:user/guid user))
-;;       (merge {:username (:user/guid user)
-;;               :roles #{:user}} user)))
-;;   )
+(defn return-forbidden []
+  {:status 403 :body (json/json-str "Zolo HTTP Authorization Failed.") :headers {}})
+
+(defn authenticate-using-facebook [signed-request]
+  (let [fb-id (-> signed-request
+                  (fb-auth/decode-signed-request (conf/fb-app-secret))
+                  :user_id)]
+    (if-let [user (u-store/find-by-provider-and-provider-uid :provider/facebook fb-id)]
+      (workflows/make-auth (merge user {:identity (:user/guid user)
+                                        :roles #{:zolo.roles/user}})
+                           {::friend/redirect-on-auth? false}))))
+
+(defn authenticate [{{:strs [authorization]} :headers :as request}]
+  (let [[provider access-token] (-> authorization zstring/decode-base64 (string/split #" "))]
+    (if (= provider social/FACEBOOK)
+      (authenticate-using-facebook access-token)
+      (return-forbidden))))

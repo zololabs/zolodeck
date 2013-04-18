@@ -8,6 +8,7 @@
              [cemerick.friend :as friend]
              (cemerick.friend [workflows :as workflows]
                               [credentials :as creds])
+             [zolo.web.auth :as zauth]
              [zolo.utils.logger :as logger]
              [zolo.setup.config :as config]
              [zolo.social.bootstrap]
@@ -50,7 +51,7 @@
   (route/resources "/")
 
   (context "/users" request find-user-routes)
-  (context "/users/:guid" request all-user-routes)
+  (context "/users/:guid" request (friend/authorize #{:zolo.roles/user} all-user-routes))
 
   ;;anonymous access
   (POST "/users" {params :params} (-> params user-api/new-user))
@@ -61,29 +62,23 @@
   (route/not-found "Page not found"))
 
 (def ring-app 
-  (web/wrap-request-binding  
-   (web/wrap-options
-    (-> APP-ROUTES
-        demonic/wrap-demarcation
-        ;;web/wrap-user-info-logging
-        handler/api
-        wrap-json-params
-        web/wrap-accept-header-validation
-        web/wrap-jsonify
-        web/wrap-error-handling
-;        (friend/requires-scheme-with-proxy :https)        
-        web/wrap-request-logging
-        ))))
+  (-> APP-ROUTES
+      ;;web/wrap-user-info-logging
+      handler/api
+      wrap-json-params
+      web/wrap-accept-header-validation
+      web/wrap-jsonify
+      web/wrap-error-handling
+                                        ;        (friend/requires-scheme-with-proxy :https)        
+      web/wrap-request-logging
+      ))
 
 (def app
-  ;; (friend/authenticate ring-app
-  ;;                      {:unauthenticated-handler #(workflows/http-basic-deny "ZOLO Auth" %)
-  ;;                       :workflows [(workflows/http-basic
-  ;;                                    :credential-fn #(do (print-vals "CREDENTIAL-FN: " %)
-  ;;                                                        nil)
-  ;;                                    :realm "Zolodeck")]})
-  (friend/authenticate ring-app {})
-  )
+  (web/wrap-request-binding
+   (web/wrap-options
+    (demonic/wrap-demarcation
+     (friend/authenticate ring-app {:allow-anon? true
+                                    :workflows [zauth/authenticate]})))))
 
 (defn start-api
   ([]
