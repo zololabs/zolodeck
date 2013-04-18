@@ -45,4 +45,16 @@
          (testing "When contacted"
            (run-as-of "2012-05-12"
              (is (= 1 (count (ss-s-random/compute u))))
-             (is (= (:contact/guid jack) (-> (ss-s-random/compute u) first :contact/guid)))))))))) 
+             (is (= (:contact/guid jack) (-> (ss-s-random/compute u) first :contact/guid))))))))
+
+
+   (testing "Muted Contacts should not be part of Suggestion Set"
+     (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels")
+                                                      (pgen/create-friend-spec "Jill" "Ferry")]}})]
+       
+       (let [[jack jill] (sort-by contact/first-name (:user/contacts u))
+             muted-jack (merge jack {:contact/muted true})
+             updated-u (assoc u :user/contacts [muted-jack jill])]
+         
+         (is (= 1 (count (ss-s-random/compute updated-u))))
+         (is (= (:contact/guid jill) (-> (ss-s-random/compute updated-u) first :contact/guid)))))))) 
