@@ -28,7 +28,7 @@
                            {::friend/redirect-on-auth? false}))))
 
 (defn authenticate [{{:strs [authorization]} :headers :as request}]
-  (let [[provider access-token] (-> authorization zstring/decode-base64 (string/split #" "))]
-    (if (= provider social/FACEBOOK)
-      (authenticate-using-facebook access-token)
-      (return-forbidden))))
+  (when authorization
+    (let [[provider access-token] (-> authorization zstring/decode-base64 (string/split #" "))]
+      (if (= provider social/FACEBOOK)
+        (authenticate-using-facebook access-token)))))
