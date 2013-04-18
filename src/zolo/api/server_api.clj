@@ -1,5 +1,6 @@
 (ns zolo.api.server-api
-  (:use zolo.utils.debug)
+  (:use zolo.utils.debug
+        zolo.web.status-codes)
   (:require
    [zolo.store.user-store :as u-store]
    [zolo.utils.calendar :as zcal]
@@ -44,7 +45,8 @@
 
 (defn status [request-params]
   (if (check-datomic)
-    {:no-of-users (u-store/count-users)}
+    {:status (STATUS-CODES :ok)
+     :body {:no-of-users (u-store/count-users)}}
     (throw (RuntimeException. "Didn't write to Datomic in past 7 minutes..."))))
 
 
