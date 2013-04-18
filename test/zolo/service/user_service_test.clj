@@ -80,8 +80,6 @@
              d-mickey (u-store/reload distilled-mickey)]
          (is (= "Mickey.Mouse@gmail.com" (:user/email distilled-mickey)))
 
-         (is (= 420 (:user/login-tz distilled-mickey)))
-
          (is (-> d-mickey user-identity/fb-user-identity :identity/permissions-granted))
          (db-assert/assert-datomic-user-count 1)
          (db-assert/assert-datomic-user-identity-count 1)))))

@@ -85,7 +85,6 @@
   (when u 
     {:user/guid (str (:user/guid u))
      :user/email (user-identity/fb-email u)
-     :user/login-tz (:user/login-tz u)
      :user/updated (not (nil? (:user/last-updated u)))
      ;;TODO test
      :user/all-permissions-granted (all-permissions-granted? u)}))

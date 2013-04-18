@@ -138,10 +138,6 @@
       (is (= "abc" (:user/guid du)))
       (is (empty? (:user/email du)))))
 
-  (testing "Login tz should be returned properly"
-    (is (= 420 (:user/login-tz (user/distill {:user/login-tz 420}))))
-    (is (nil? (:user/login-tz (user/distill {:user/guid "abc"})))))
-
   (testing "Updated flag should be returned properly"
     (is (:user/updated (user/distill {:user/last-updated "sometime"})))
     (is (not (:user/updated (user/distill {:user/guid "abc"})))))
