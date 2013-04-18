@@ -15,7 +15,7 @@
 (defn current-user []
   friend/*identity*)
 
-(defn return-forbidden []
+(defn return-forbidden [request]
   {:status 403 :body (json/json-str "Zolo HTTP Authorization Failed.") :headers {}})
 
 (defn authenticate-using-facebook [signed-request]
@@ -23,8 +23,8 @@
                   (fb-auth/decode-signed-request (conf/fb-app-secret))
                   :user_id)]
     (if-let [user (u-store/find-by-provider-and-provider-uid :provider/facebook fb-id)]
-      (workflows/make-auth (merge user {:identity (:user/guid user)
-                                        :roles #{:zolo.roles/user}})
+      (workflows/make-auth {:identity (:user/guid user)
+                            :roles #{:zolo.roles/user}}
                            {::friend/redirect-on-auth? false}))))
 
 (defn authenticate [{{:strs [authorization]} :headers :as request}]

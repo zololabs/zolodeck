@@ -24,22 +24,26 @@
   (str "/users/" (or (:user/guid u) (random-guid-str))
        "/contacts/" (or (:contact/guid c) (random-guid-str))))
 
-(demonictest test-get-user
+(demonictest test-get-contact
   (d-core/run-in-gmt-tz
    (let [u (pgen/generate {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)
                                              (pgen/create-friend-spec "Jill" "Ferry" 1 1)]}})
          [jack jill] (sort-by contact/first-name (:user/contacts u))]
+
+     (testing "Unauthenticated user should be denied permission"
+       (let [resp (w-utils/web-request :get (contacts-url u jack) {})]
+         (is (= 403 (:status resp)))))
      
      (testing "when user is not present it should return nil"
-       (let [resp (w-utils/web-request :get (contacts-url nil jack) {})]
+       (let [resp (w-utils/authed-request u :get (contacts-url nil jack) {})]
          (is (= 404 (:status resp)))))
 
      (testing "when contact is not present it should return nil"
-       (let [resp (w-utils/web-request :get (contacts-url u nil) {})]
+       (let [resp (w-utils/authed-request u :get (contacts-url u nil) {})]
          (is (= 404 (:status resp)))))
 
      (testing "when user and contact is present it should return distilled contact"
-       (let [resp (w-utils/web-request :get (contacts-url u jack) {})]
+       (let [resp (w-utils/authed-request u :get (contacts-url u jack) {})]
          (is (= 200 (:status resp)))
          (is (= (str (:contact/guid jack)) (get-in resp [:body :guid]))))))))
 
@@ -47,16 +51,20 @@
   (let [u (pgen/generate {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
         jack (first (:user/contacts u))]
 
+    (testing "Unauthenticated user should be denied permission"
+      (let [resp (w-utils/web-request :put (contacts-url u jack) {:muted true})]
+        (is (= 403 (:status resp)))))
+    
     (testing "When user is not present it should return 404"
-      (let [resp (w-utils/web-request :put (contacts-url nil jack) {:muted true})]
+      (let [resp (w-utils/authed-request u  :put (contacts-url nil jack) {:muted true})]
           (is (= 404 (:status resp)))))
     
     (testing "When contact is not present it should return nil"
-      (let [resp (w-utils/web-request :put (contacts-url u nil) {:muted true})]
+      (let [resp (w-utils/authed-request u  :put (contacts-url u nil) {:muted true})]
         (is (= 404 (:status resp)))))
     
     (testing "When invalid contact is send it should throw exception"
-      (let [resp (w-utils/web-request :put (contacts-url u jack) {:muted "JUNK"})]
+      (let [resp (w-utils/authed-request u  :put (contacts-url u jack) {:muted "JUNK"})]
         (is (= 400 (:status resp)))))
     
     (testing "When called with proper attributes it should update contact"
@@ -65,7 +73,7 @@
 
       (is (not (contact/is-muted? jack)))
       
-      (let [resp (w-utils/web-request :put (contacts-url u jack) {:muted true})]
+      (let [resp (w-utils/authed-request u  :put (contacts-url u jack) {:muted true})]
 
         (db-assert/assert-datomic-contact-count 1)
         (db-assert/assert-datomic-social-count 1)

@@ -11,20 +11,25 @@
             [zolo.utils.calendar :as zolo-cal]
             [zolo.test.web-utils :as w-utils]))
 
-(deftest test-find-suggestion-sets
-  (demonic-testing "when user is not present, it should return 404"
-    (let [resp (w-utils/web-request :get (str "/users/" (random-guid-str) "/suggestion_sets") {})]
-      (is (= 404 (:status resp)))))
+(demonictest test-find-suggestion-sets
+  (let [shy (shy-persona/create)]
 
-  (demonic-testing "when user is present, it should return distilled ss"
-    (run-as-of "2012-12-21"
-      
-      (let [shy (shy-persona/create)
-            resp (w-utils/web-request :get (str "/users/" (:user/guid shy) "/suggestion_sets") {})]
+    (testing "Unauthenticated user should be denied permission"
+      (let [resp (w-utils/web-request :get (str "/users/" (:user/guid shy) "/suggestion_sets") {})]
+        (is (= 403 (:status resp)))))
+        
+    (testing "when user is not present, it should return 404"
+      (let [resp (w-utils/authed-request shy :get (str "/users/" (random-guid-str) "/suggestion_sets") {})]
+        (is (= 404 (:status resp)))))
 
-        (is (= 200 (:status resp)))
+    (testing "when user is present, it should return distilled ss"
+      (run-as-of "2012-12-21"
+        
+        (let [resp (w-utils/authed-request shy :get (str "/users/" (:user/guid shy) "/suggestion_sets") {})]
 
-        (is (= "ss-2012-12-21" (get-in resp [:body :name])))
+          (is (= 200 (:status resp)))
 
-        (is (= 2 (count (get-in resp [:body :contacts]))))))))
+          (is (= "ss-2012-12-21" (get-in resp [:body :name])))
+
+          (is (= 2 (count (get-in resp [:body :contacts])))))))))
 

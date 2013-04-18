@@ -24,10 +24,6 @@
              [zolo.api.stats-api :as s-api]
              [zolo.api.server-api :as server-api]))
 
-(defroutes find-user-routes
-  ;;TODO Need to fix this for REST
-  (GET "/" {params :params} (-> params user-api/find-users )))
-
 (defroutes all-user-routes
   ;;TODO Just loging in the user it is not Updating the User 
   (PUT "/" [guid :as {params :params}] (user-api/update-user guid params))
@@ -50,7 +46,8 @@
 (defroutes APP-ROUTES
   (route/resources "/")
 
-  (context "/users" request find-user-routes)
+;;  (context "/users" request (friend/authorize #{:zolo.roles/user} find-user-routes))
+  (GET "/users" {params :params} (friend/authorize #{:zolo.roles/user} (-> params user-api/find-users)))
   (context "/users/:guid" request (friend/authorize #{:zolo.roles/user} all-user-routes))
 
   ;;anonymous access
@@ -78,7 +75,9 @@
    (web/wrap-options
     (demonic/wrap-demarcation
      (friend/authenticate ring-app {:allow-anon? true
-                                    :workflows [zauth/authenticate]})))))
+                                    :workflows [zauth/authenticate]
+                                    :unauthenticated-handler #'zauth/return-forbidden
+                                    :unauthorized-handler #'zauth/return-forbidden})))))
 
 (defn start-api
   ([]
