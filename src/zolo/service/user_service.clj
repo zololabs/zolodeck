@@ -23,10 +23,13 @@
 (defn create-new-user [ui]
   {:user/user-identities [ui]})
 
-(defn- update-with-extended-fb-auth-token [user]
-  (let [fb-ui (user-identity/fb-user-identity user)
-        e-at (fb-gateway/extended-access-token (:identity/auth-token fb-ui) (conf/fb-app-id) (conf/fb-app-secret))]
-    (user/update-with-extended-fb-auth-token user e-at)))
+(defn- update-with-extended-fb-auth-token
+  ([user]
+     (let [fb-ui (user-identity/fb-user-identity user)]
+       (update-with-extended-fb-auth-token user (:identity/auth-token fb-ui))))
+  ([user access-token]
+     (let [e-at (fb-gateway/extended-access-token access-token (conf/fb-app-id) (conf/fb-app-secret))]
+       (user/update-with-extended-fb-auth-token user e-at))))
 
 (defn extend-fb-token [u]
   (-> u
@@ -55,7 +58,7 @@
       (service/validate-request! val-request)
       social/fetch-user-identity
       create-new-user
-      update-with-extended-fb-auth-token
+      (update-with-extended-fb-auth-token (:access_token request-params))
       (user/update-tz-offset (:login_tz request-params))
       log-into-fb-chat
       u-store/save
@@ -73,7 +76,7 @@
 ;;Granted it should proceed to get more info about the user
 (defn update-user [guid request-params]
   (-not-nil-> (u-store/find-by-guid guid)
-              update-with-extended-fb-auth-token
+              (update-with-extended-fb-auth-token (:access_token request-params))
               (user/update-permissions-granted (:permissions_granted request-params))
               (user/update-tz-offset (:login_tz request-params))
               log-into-fb-chat
