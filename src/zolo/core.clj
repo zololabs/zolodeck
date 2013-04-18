@@ -66,7 +66,6 @@
       web/wrap-accept-header-validation
       web/wrap-jsonify
       web/wrap-error-handling
-                                        ;        (friend/requires-scheme-with-proxy :https)        
       web/wrap-request-logging
       ))
 
