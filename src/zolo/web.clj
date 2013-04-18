@@ -81,11 +81,12 @@
        (logger/error e "Exception Occured :")
        (json-response {:error (.getMessage e)} 500)))))
 
-(defn valid-version? [accept-header-value]
-  (= "application/vnd.zololabs.zolodeck.v1+json" accept-header-value))
+(defn valid-version? [uri accept-header-value]
+  (or (= "/server/status" uri)
+      (= "application/vnd.zololabs.zolodeck.v1+json" accept-header-value)))
 
-(defn run-accept-header-validation [{:keys [headers]}]
-  (if-not (valid-version? (headers "accept"))
+(defn run-accept-header-validation [{:keys [uri headers] :as req}]
+  (if-not (valid-version? uri (headers "accept"))
     (throw+ {:type :bad-request
              :message "Invalid API version requested"})))
 
