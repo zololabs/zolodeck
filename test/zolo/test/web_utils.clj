@@ -25,6 +25,8 @@
    :content-type "application/json; charset=UTF-8"})
 
 (defn web-request
+  ([method resource]
+     (web-request method resource "" {}))
   ([method resource body]
      (web-request method resource body {}))
   ([method resource body params]

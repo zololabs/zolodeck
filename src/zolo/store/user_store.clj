@@ -38,7 +38,6 @@
         ffirst
         demonic-helper/load-from-db
         :user/_user-identities
-        first
         loadable/entity->loadable)))
 
 (defn find-by-guid [guid]
