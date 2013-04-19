@@ -19,22 +19,6 @@
             [clj-time.core :as time])
   (:import org.joda.time.DateTime))
 
-;; (defn- contact-lookup-table [c]
-;;   (->> (:contact/social-identities c)
-;;       (map (fn [s] {(si/social-identity-info s) c}))
-;;       (apply merge)))
-
-;; (defn- contacts-lookup-table [contacts]
-;;   (or (->> (map contact-lookup-table contacts)
-;;            (apply merge))
-;;       {}))
-
-;; (defn- find-contact-from-lookup [user social-identities]
-;;   (let [contacts-lookup (contacts-lookup-table (:user/contacts user))]
-;;     (->> social-identities
-;;          (map si/social-identity-info)
-;;          (some #(contacts-lookup %)))))
-
 (defn- base-contact [si]
   {:contact/social-identities [si]})
 
@@ -113,14 +97,6 @@
           (keys ibc)))
 
 
-;; (defn provider-info-by-provider [u]
-;;   (->> u
-;;        :user/contacts
-;;        (mapcat :contact/social-identities)
-;;        (map #(select-keys % [:social/provider :social/provider-uid]))
-;;        (group-by :social/provider)))
-
-
 ;;TODO test
 ;;TODO need to move to store
 (defn update-score [ibc c]
@@ -137,8 +113,6 @@
 (defn is-muted? [c]
   (true? (:contact/muted c)))
 
-;; (defn is-contacted-on? [ibc c dt]
-;;   (zcal/same-day-instance? dt (dom/message-date-in-tz (last-send-message ibc c) (zcal/time-zone-offset dt))))
 
 (defn contact-score [c]
   (or (:contact/score c) 0))
@@ -183,7 +157,6 @@
 
 ;; (defn- apply-tags [tags contacts]
 ;;   contacts)
-
 
 ;; (defn- apply-offset [offset contacts]
 ;;   (if offset

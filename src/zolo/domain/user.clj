@@ -13,26 +13,6 @@
   ;;(dissoc (sandbar/current-user) :username :roles)
   )
 
-;; (defn find-all-users []
-;;   (->> (demonic/run-query '[:find ?u :where [?u :user/guid]])
-;;        (map first)
-;;        (map demonic/load-entity)
-;;        doall))
-
-;; (defn new-suggestion-set [u set-name suggested-contacts]
-;;   (-> u
-;;       (assoc :user/suggestion-set-name set-name)
-;;       (assoc :user/suggestion-set-contacts suggested-contacts)
-;;       demonic/insert)
-;;   suggested-contacts)
-
-;; (defn suggestion-set [u suggestion-set-name]
-;;   (if (= suggestion-set-name (:user/suggestion-set-name u))
-;;     (:user/suggestion-set-contacts u)))
-
-;; (defn been-processed? [u]
-;;   (:user/last-updated u))
-
 (defn- value-from-ui [u key]
   (-> u
       :user/user-identities
