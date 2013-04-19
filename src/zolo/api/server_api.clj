@@ -7,8 +7,6 @@
    [zolo.demonic.core :as demonic]
    [zolo.utils.logger :as logger]))
 
-;;TODO Test this namespace
-
 (def SERVER_GUID #uuid "97a34244-61fe-4a05-8a9e-95013349e298")
 
 (defn- new-server-obj []

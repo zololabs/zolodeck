@@ -29,7 +29,6 @@
   (PUT "/" [guid :as {params :params}] (user-api/update-user guid params))
   (GET "/" [guid] (-> guid user-api/find-user ))
 
-  ;;TODO move this to its own routes
   (GET "/suggestion_sets" [guid :as {params :params}] (ss-api/find-suggestion-sets guid params))
 
   ;;Contacts
