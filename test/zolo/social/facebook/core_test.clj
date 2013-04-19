@@ -6,7 +6,6 @@
   (:require [zolo.social.facebook.core :as fb-core]
             [zolo.social.core :as social]
             [zolo.domain.message :as message]
-            [zolo.domain.accessors :as dom]
             [zolo.social.facebook.gateway :as fb-gateway]
             [zolo.social.facebook.messages :as fb-messages]
             [zolo.marconi.facebook.core :as fb-lab]

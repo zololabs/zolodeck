@@ -9,7 +9,6 @@
   (:require [zolo.personas.factory :as personas]
             [zolo.domain.user :as user]
             [zolo.domain.message :as message]
-            [zolo.domain.accessors :as dom]
             [zolo.social.core :as social]
             [zolo.test.assertions.datomic :as db-assert]
             [zolo.test.assertions.domain :as d-assert]

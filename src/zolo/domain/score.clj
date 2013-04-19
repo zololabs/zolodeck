@@ -1,6 +1,5 @@
 (ns zolo.domain.score
-  (:use zolo.utils.debug)
-  (:require [zolo.domain.accessors :as dom]))
+  (:use zolo.utils.debug))
 
 ;; Factors
 

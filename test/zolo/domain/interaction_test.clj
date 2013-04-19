@@ -11,7 +11,6 @@
             [zolo.domain.core :as d-core]
             [zolo.domain.message :as message]
             [zolo.domain.interaction :as interaction]
-            [zolo.domain.accessors :as dom]
             [zolo.social.core :as social]
             [zolo.test.assertions.datomic :as db-assert]
             [zolo.test.assertions.domain :as d-assert]
