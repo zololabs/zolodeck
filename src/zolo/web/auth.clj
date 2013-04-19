@@ -21,11 +21,16 @@
 (defn authenticate-using-facebook [signed-request]
   (let [fb-id (-> signed-request
                   (fb-auth/decode-signed-request (conf/fb-app-secret))
-                  :user_id)]
-    (if-let [user (u-store/find-by-provider-and-provider-uid :provider/facebook fb-id)]
-      (workflows/make-auth {:identity (:user/guid user)
-                            :roles #{:zolo.roles/user}}
-                           {::friend/redirect-on-auth? false}))))
+                  :user_id)
+        user (u-store/find-by-provider-and-provider-uid :provider/facebook fb-id)]
+    (when fb-id
+      (if user
+        (workflows/make-auth {:identity (:user/guid user)
+                              :roles #{:zolo.roles/user}}
+                             {::friend/redirect-on-auth? false})
+        (workflows/make-auth {:identity "potential-user"
+                              :roles #{:zolo.roles/potential}}
+                             {::friend/redirect-on-auth? false})))))
 
 (defn authenticate [{{:strs [authorization]} :headers :as request}]
   (when authorization

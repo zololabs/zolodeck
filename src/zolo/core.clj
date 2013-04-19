@@ -47,7 +47,9 @@
   (route/resources "/")
 
 ;;  (context "/users" request (friend/authorize #{:zolo.roles/user} find-user-routes))
-  (GET "/users" {params :params} (friend/authorize #{:zolo.roles/user} (-> params user-api/find-users)))
+  (GET "/users" {params :params} (friend/authorize #{:zolo.roles/user
+                                                     :zolo.roles/potential}
+                                                   (-> params user-api/find-users)))
   (context "/users/:guid" request (friend/authorize #{:zolo.roles/user} all-user-routes))
 
   ;;anonymous access

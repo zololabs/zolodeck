@@ -35,9 +35,9 @@
 (demonictest test-get-user
   (let [u (pgen/generate {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})]
 
-    (testing "Unauthenticated user should be denied permission"
+     (testing "Unauthenticated user should be denied permission"
       (let [resp (w-utils/web-request :get (str "/users/" (:user/guid u)) {})]
-        (is (= 403 (:status resp)))))
+       (is (= 403 (:status resp)))))
     
     (testing "when user is not present it should return 404"
       (let [resp (w-utils/authed-request u :get (str "/users/" (random-guid-str)) {})]
@@ -74,6 +74,14 @@
     (testing "Unauthenticated user should be denied permission"
       (let [resp (w-utils/web-request  :get "/users" {:login_provider "FACEBOOK" :login_provider_uid (ui/fb-id u)})]
         (is (= 403 (:status resp)))))
+
+    (testing "User has valid Signed Request but not a zolo user yet it should return 404"
+      (let [resp (w-utils/authed-request {:user/user-identities [{:identity/provider :provider/facebook
+                                                                  :identity/provider-uid "1000"}]}
+                                         :get (str "/users")
+                                         {:login_provider "FACEBOOK" :login_provider_uid (random-guid-str)})]
+        (is (= 404 (:status resp)))))
+
 
     (testing "when no matching user is present in db it should return 404"
       (let [resp (w-utils/authed-request u :get "/users" {:login_provider "FACEBOOK" :login_provider_uid "JUNK"})]
