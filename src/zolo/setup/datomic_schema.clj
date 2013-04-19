@@ -8,33 +8,31 @@
   (swap! SCHEMA-TX concat facts))
 
 (schema-set "USER ENTITY FACTS"
- (uuid-fact-schema :user/guid false "A GUID for the user" false false false false)
+ (uuid-fact-schema :user/guid false "A GUID for the user" :db.unique/identity true false false)
  (long-fact-schema :user/login-tz false "A user's timezone offset when she logged in" false false false false)
  (instant-fact-schema :user/last-updated false "The most recent time for when the user was updated" false false false false)
  (instant-fact-schema :user/refresh-started false "The most recent time for when the user update was attempted" false false false false)
 
  ;Social details
- (refs-fact-schema :user/user-identities false "A user's social detail records" false false false false)   
+ (refs-fact-schema :user/user-identities false "A user's social detail records" false false true false)   
 
  ;Contacts Information
- (refs-fact-schema :user/contacts false "A user's contacts" false false false false)
+ (refs-fact-schema :user/contacts false "A user's contacts" false false true false)
 
  ;Messages Information
- (refs-fact-schema :user/messages false "A contact's messages" false false false false)
- (refs-fact-schema :user/temp-messages false "A contact's temp messages" false false false false)
+ (refs-fact-schema :user/messages false "A contact's messages" false false true false)
+ (refs-fact-schema :user/temp-messages false "A contact's temp messages" false false true false)
 
  ;Suggested Set
- ;;TODO make this an component
- (refs-fact-schema :user/suggestion-sets false "Set of suggestion sets" false false false false)
-)
+ (refs-fact-schema :user/suggestion-sets false "Set of suggestion sets" false false true false))
 
 (schema-set "SUGGESTION SET"
- (uuid-fact-schema :suggestion-set/guid false "A GUID for suggestion set record" false false false false)
+ (uuid-fact-schema :suggestion-set/guid false "A GUID for suggestion set record" :db.unique/identity false false false)
  (string-fact-schema :suggestion-set/name  false  "A suggestion set name" false false false false)
  (refs-fact-schema :suggestion-set/contacts false "A suggested contacts" false false false false))
 
 (schema-set "USER IDENTITY FACTS"
- (uuid-fact-schema   :identity/guid false "A GUID for the user identity record" false false false false)
+ (uuid-fact-schema   :identity/guid false "A GUID for the user identity record" :db.unique/identity false false false)
  (string-fact-schema :identity/provider-uid  false  "A user's provider UID" false false false false)
  (enum-fact-schema   :identity/gender        false  "A user's gender" false false false false)
  (string-fact-schema :identity/country       false "A user's age" false false false false)
@@ -57,7 +55,7 @@
  (boolean-fact-schema :identity/permissions-granted false "Whether a user has given permission needed" false false false false))
 
 (schema-set "SOCIAL ENTITY FACTS"
- (uuid-fact-schema   :social/guid          false "A GUID for the social details record" false false false false)
+ (uuid-fact-schema   :social/guid          false "A GUID for the social details record" :db.unique/identity false false false)
  (string-fact-schema :social/provider-uid  false  "A user's provider UID" false false false false)
  (string-fact-schema :social/ui-provider-uid false "The UserIdentity this SI is associated with" false false false false)
  (boolean-fact-schema :social/not-a-person false "Marked true if heuristically determined to not be a person" false false false false)
@@ -91,15 +89,15 @@
 
 
 (schema-set "CONTACT ENTITY FACTS"
- (uuid-fact-schema   :contact/guid false "A GUID for a contact" false false false false)
+ (uuid-fact-schema   :contact/guid false "A GUID for a contact" :db.unique/identity false false false)
  ;Social details
- (refs-fact-schema :contact/social-identities false "A contact's social detail records" false false false false)
+ (refs-fact-schema :contact/social-identities false "A contact's social detail records" false false true false)
 
  (boolean-fact-schema :contact/muted false "Whether a contact is muted or not" false false false false)
  (long-fact-schema :contact/score false "A contact's score" false false false false))
 
 (schema-set "MESSAGE ENTITY FACTS"
- (uuid-fact-schema    :message/guid false "A GUID for messages" false false false false)
+ (uuid-fact-schema    :message/guid false "A GUID for messages" :db.unique/identity false false false)
  (string-fact-schema  :message/message-id false "ID for this message" false false false false)
  ;;TODO Need to store this
  (enum-fact-schema    :message/provider false "The platform: Facebook, LinkedIn, etc" false false false false)
@@ -119,7 +117,7 @@
  (string-fact-schema  :message/link false "a link about this message" false false false false))
 
 (schema-set "TEMP MESSAGE ENTITY FACTS"
- (uuid-fact-schema   :temp-message/guid false "A GUID for temporary messages" false false false false)
+ (uuid-fact-schema   :temp-message/guid false "A GUID for temporary messages" :db.unique/identity false false false)
  (enum-fact-schema   :temp-message/provider false "The provider platform of this temp message" false false false false)
  (string-fact-schema :temp-message/mode false "The sub-type of this message" false false false false)
  (string-fact-schema :temp-message/text true "The body of this message" false false false false)
@@ -129,5 +127,5 @@
  (strings-fact-schema :temp-message/thread-id false "The Thread ID of this message" false false false false))
 
 (schema-set "SERVER STATS"
- (uuid-fact-schema :server/guid false "A GUID for the server stats object" false false false false)
+ (uuid-fact-schema :server/guid false "A GUID for the server stats object" :db.unique/identity false false false)
  (instant-fact-schema :server/last-updated false "When the server last wrote something to datomic" false false false true))
