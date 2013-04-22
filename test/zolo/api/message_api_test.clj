@@ -24,7 +24,7 @@
 
     (testing "Unauthenticated user should be denied permission"
       (let [resp (w-utils/web-request :post (messages-url u jack) {:text "Hey" :provider "facebook"})]
-        (is (= 403 (:status resp)))))
+        (is (= 404 (:status resp)))))
         
     (testing "When user is not present it should return nil"
       (let [resp (w-utils/authed-request u  :post (messages-url "JUNK" jack) {})]

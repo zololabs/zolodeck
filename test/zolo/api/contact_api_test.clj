@@ -32,7 +32,7 @@
 
      (testing "Unauthenticated user should be denied permission"
        (let [resp (w-utils/web-request :get (contacts-url u jack) {})]
-         (is (= 403 (:status resp)))))
+         (is (= 404 (:status resp)))))
      
      (testing "when user is not present it should return nil"
        (let [resp (w-utils/authed-request u :get (contacts-url nil jack) {})]
@@ -53,7 +53,7 @@
 
     (testing "Unauthenticated user should be denied permission"
       (let [resp (w-utils/web-request :put (contacts-url u jack) {:muted true})]
-        (is (= 403 (:status resp)))))
+        (is (= 404 (:status resp)))))
     
     (testing "When user is not present it should return 404"
       (let [resp (w-utils/authed-request u  :put (contacts-url nil jack) {:muted true})]

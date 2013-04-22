@@ -24,11 +24,14 @@
              [zolo.api.stats-api :as s-api]
              [zolo.api.server-api :as server-api]))
 
+(derive :zolo.roles/owner :zolo.roles/user)
+
 (defroutes all-user-routes
   ;;TODO Just loging in the user it is not Updating the User 
   (PUT "/" [guid :as {params :params}] (user-api/update-user guid params))
   (GET "/" [guid] (-> guid user-api/find-user ))
 
+  ;;Suggestion Sets
   (GET "/suggestion_sets" [guid :as {params :params}] (ss-api/find-suggestion-sets guid params))
 
   ;;Contacts
@@ -45,11 +48,11 @@
 (defroutes APP-ROUTES
   (route/resources "/")
 
-;;  (context "/users" request (friend/authorize #{:zolo.roles/user} find-user-routes))
   (GET "/users" {params :params} (friend/authorize #{:zolo.roles/user
                                                      :zolo.roles/potential}
                                                    (-> params user-api/find-users)))
-  (context "/users/:guid" request (friend/authorize #{:zolo.roles/user} all-user-routes))
+  
+  (context "/users/:guid" request (friend/authorize #{:zolo.roles/owner} all-user-routes))
 
   ;;anonymous access
   (POST "/users" {params :params} (-> params user-api/new-user))

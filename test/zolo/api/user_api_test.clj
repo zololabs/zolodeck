@@ -37,7 +37,7 @@
 
      (testing "Unauthenticated user should be denied permission"
       (let [resp (w-utils/web-request :get (str "/users/" (:user/guid u)) {})]
-       (is (= 403 (:status resp)))))
+       (is (= 404 (:status resp)))))
     
     (testing "when user is not present it should return 404"
       (let [resp (w-utils/authed-request u :get (str "/users/" (random-guid-str)) {})]
@@ -54,7 +54,7 @@
 
     (testing "Unauthenticated user should be denied permission"
       (let [resp (w-utils/web-request  :put (str "/users/" (:user/guid u)) {:permissions_granted false})]
-        (is (= 403 (:status resp)))))
+        (is (= 404 (:status resp)))))
 
     (testing "when user is not present, it should return 404"
       (let [resp (w-utils/authed-request u  :put (str "/users/" (random-guid-str)) {})]
@@ -73,7 +73,7 @@
 
     (testing "Unauthenticated user should be denied permission"
       (let [resp (w-utils/web-request  :get "/users" {:login_provider "FACEBOOK" :login_provider_uid (ui/fb-id u)})]
-        (is (= 403 (:status resp)))))
+        (is (= 404 (:status resp)))))
 
     (testing "User has valid Signed Request but not a zolo user yet it should return 404"
       (let [resp (w-utils/authed-request {:user/user-identities [{:identity/provider :provider/facebook

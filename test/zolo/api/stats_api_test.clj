@@ -20,7 +20,7 @@
     
     (testing "Unauthenticated user should be denied permission"
       (let [resp (w-utils/web-request :get (str "/users/" (:user/guid u) "/contact_stats") {})]
-        (is (= 403 (:status resp)))))
+        (is (= 404 (:status resp)))))
 
     (testing "when user is not present, it should return 404"
       (let [resp (w-utils/authed-request u :get (str "/users/" (random-guid-str) "/contact_stats") {})]

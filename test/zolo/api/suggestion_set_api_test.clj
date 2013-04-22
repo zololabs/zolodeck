@@ -16,7 +16,7 @@
 
     (testing "Unauthenticated user should be denied permission"
       (let [resp (w-utils/web-request :get (str "/users/" (:user/guid shy) "/suggestion_sets") {})]
-        (is (= 403 (:status resp)))))
+        (is (= 404 (:status resp)))))
         
     (testing "when user is not present, it should return 404"
       (let [resp (w-utils/authed-request shy :get (str "/users/" (random-guid-str) "/suggestion_sets") {})]
