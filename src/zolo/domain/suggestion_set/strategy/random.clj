@@ -1,5 +1,6 @@
 (ns zolo.domain.suggestion-set.strategy.random
-  (:use zolo.utils.debug)
+  (:use zolo.utils.debug
+        zolo.utils.clojure)
   (:require [zolo.domain.interaction :as interaction]
             [zolo.domain.contact :as contact]))
 
@@ -9,4 +10,4 @@
          :user/contacts
          (remove contact/is-muted?)
          (remove #(contact/is-contacted-today? % ibc))
-         (take 5))))
+         (take-unique-randomely 5))))

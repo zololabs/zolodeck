@@ -3,6 +3,7 @@
         zolo.demonic.core
         zolo.test.core-utils
         zolo.utils.debug
+        zolo.utils.clojure
         [clojure.test :only [run-tests deftest is are testing]]
         conjure.core)
   (:require [zolo.domain.user :as user]
@@ -32,6 +33,21 @@
    (testing "When user has more than 5 contacts it should return only 5 of them"
      (let [u (pgen/generate-domain {:SPECS {:friends (pgen/create-friend-specs 12)}})]
        (is (= 5 (count (ss-s-random/compute u))))))
+
+   (testing "Suggestion Set should be random every day ... not return the same set again that frequently"
+     (let [u (pgen/generate-domain {:SPECS {:friends (pgen/create-friend-specs 100)}})
+           ss-frequencies (frequencies (domap ss-s-random/compute (repeat 50 u)))]
+
+       (domap (fn [[s-contacts n]]
+                (is (< n 3) (str "[ " (apply str (interleave (domap contact/first-name s-contacts) (repeat " , "))) " ] has been suggested : " n  " times"))
+                (is (= 5 (count s-contacts))))
+              ss-frequencies)))
+
+   (testing "Suggestion Set should be random every day and should return 5 every day if a user has 5 friends"
+     (let [u (pgen/generate-domain {:SPECS {:friends (pgen/create-friend-specs 5)}})
+           s-contacts (domap ss-s-random/compute (repeat 50 u))]
+
+       (domap #(is (= 5 (count (set %)))) s-contacts)))
 
    (testing "When user has contacts that are contacted today should not be part of suggestion set"
      (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)
