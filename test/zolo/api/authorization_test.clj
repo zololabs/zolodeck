@@ -79,6 +79,5 @@
                200 owner  :get  (c-stats-url owner)           {}
 
                404 hacker :get  (i-stats-url owner)           {}
-               200 owner  :get  (i-stats-url owner)           {}
-               )))))))
+               200 owner  :get  (i-stats-url owner)           {})))))))
 
