@@ -29,6 +29,12 @@
                  (zolo-cal/in-time-zone tz-offset-minutes))))
 
 ;;TODO test
+(defn thread-id [m]
+  (if (is-temp-message? m)
+    (:temp-message/thread-id m)
+    (:message/thread-id m)))
+
+;;TODO test
 (defn get-last-message-date [u]
   (or (->> u
            :user/messages
@@ -80,10 +86,14 @@
        :user/contacts
        (reduce bucket-contact {})))
 
+;;TODO Test this function
+(defn all-messages [u]
+  (concat (:user/messages u) (:user/temp-messages u)))
+
 (defn messages-by-contacts [u message-filter-fn]
   (let [contacts-lookup (contacts-by-social-identifier u)
-        all-messages (concat (:user/messages u) (:user/temp-messages u))
-        inbox-messages (filter message-filter-fn all-messages)
+        all-msgs (all-messages u)
+        inbox-messages (filter message-filter-fn all-msgs)
         mbc (reduce bucket-message {} inbox-messages)]
     (reduce #(assoc-in %1 [(contacts-lookup %2)] (sort-by message-date (mbc %2))) {} (keys contacts-lookup))))
 

@@ -12,6 +12,8 @@
             [zolo.utils.calendar :as zolo-cal]
             [clj-time.coerce :as ctc]))
 
+;;TODO this domain is still talking with Social Layer
+
 (def MODE-INBOX "INBOX")
 (def MODE-FEED "FEED")
 
