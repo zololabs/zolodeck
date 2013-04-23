@@ -29,9 +29,9 @@
      (fb-lab/make-friend mickey donald)
      (fb-lab/make-friend mickey daisy)
 
-     (let [m1 (fb-lab/send-message mickey donald "1" "Hi, what's going on?" "2012-05-01")
-           m2 (fb-lab/send-message donald mickey "1" "Nothing, just work..." "2012-05-02")
-           m3 (fb-lab/send-message mickey donald "1" "OK, should I get groceries?" "2012-05-03")]
+     (let [m1 (fb-lab/send-message mickey donald "1" "Hi, what's going on?" "2012-05-01 00:00")
+           m2 (fb-lab/send-message donald mickey "1" "Nothing, just work..." "2012-05-02 00:00")
+           m3 (fb-lab/send-message mickey donald "1" "OK, should I get groceries?" "2012-05-03 00:00")]
        
        (fb-lab/login-as mickey)
 
@@ -52,8 +52,8 @@
 
            (fb-lab/remove-all-messages mickey)
            
-           (let [m4 (fb-lab/send-message mickey daisy "2" "Hi, how's  it going?" "2012-06-01")
-                 m5 (fb-lab/send-message daisy mickey "2" "Good, I finished writing the tests" "2012-06-02")]
+           (let [m4 (fb-lab/send-message mickey daisy "2" "Hi, how's  it going?" "2012-06-01 00:00")
+                 m5 (fb-lab/send-message daisy mickey "2" "Good, I finished writing the tests" "2012-06-02 00:00")]
          
              (db-assert/assert-datomic-message-count 3)
 
@@ -74,7 +74,7 @@
        
        (fb-lab/make-friend mickey donald)
        
-       (let [m1 (fb-lab/send-message mickey donald "1" "Hi, what's going on?" "2012-05-01")
+       (let [m1 (fb-lab/send-message mickey donald "1" "Hi, what's going on?" "2012-05-01 00:00")
              tm1 (personas/create-temp-message db-mickey "to-uid1" "Hello")
              u-db-mickey (m-store/append-temp-message db-mickey tm1)]
        

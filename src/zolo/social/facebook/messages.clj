@@ -27,7 +27,7 @@
    :message_id :message/message-id
    :thread_id :message/thread-id
    :to :message/to
-   ;;TODO Add :message/subject
+   :subject :message/subject
    })
 
 (def FB-POST-KEYS

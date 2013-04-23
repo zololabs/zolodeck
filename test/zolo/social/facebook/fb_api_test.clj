@@ -53,11 +53,11 @@
         (fb-lab/make-friend mickey donald)
         (fb-lab/make-friend mickey daisy)
 
-        (fb-lab/send-message mickey donald "1" "Hi, what's going on?" "2012-05-01")
-        (fb-lab/send-message donald mickey "1" "Nothing, just work..." "2012-05-02")
-        (fb-lab/send-message mickey donald "1" "OK, should I get groceries?" "2012-05-03")
-        (fb-lab/send-message mickey daisy "2" "Hi, how's  it going?" "2012-06-01")
-        (fb-lab/send-message daisy mickey "2" "Good, I finished writing the tests" "2012-06-02")
+        (fb-lab/send-message mickey donald "1" "Hi, what's going on?" "2012-05-01 00:00")
+        (fb-lab/send-message donald mickey "1" "Nothing, just work..." "2012-05-02 00:00")
+        (fb-lab/send-message mickey donald "1" "OK, should I get groceries?" "2012-05-03 00:00")
+        (fb-lab/send-message mickey daisy "2" "Hi, how's  it going?" "2012-06-01 00:00")
+        (fb-lab/send-message daisy mickey "2" "Good, I finished writing the tests" "2012-06-02 00:00")
 
         (let [jack-messages (fb-messages/fetch-inbox (jack-access-token) START-TIMESTAMP)
               mickey-messages (fb-lab/fetch-messages mickey)]

@@ -31,6 +31,9 @@
     :provider/facebook (user-identity/fb-id u)
     (throw (RuntimeException. (str "Unknown provider specified: " provider)))))
 
+(defn all-user-identities-info [u]
+  (map user-identity/user-identity-info (:user/user-identities u)))
+
 ;;TODO test
 (defn all-permissions-granted? [u]
   (every? #(:identity/permissions-granted %) (:user/user-identities u)))

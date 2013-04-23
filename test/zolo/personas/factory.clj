@@ -43,7 +43,6 @@
 (defn fake-fetch-inbox [at date]
   (let [res (-> (fb-lab/current-user)
                 (fb-lab/fetch-messages date))]
-    (println "FAKE-fetch-inbox returning" (count res) "messages")
     res))
 
 (defn fake-extended-access-token [& args]

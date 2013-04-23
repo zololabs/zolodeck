@@ -13,6 +13,9 @@
       first
       :identity/provider-uid))
 
+(defn user-identity-info [ui]
+  [(:identity/provider ui) (:identity/provider-uid ui)])
+
 (defn is-fb? [ui]
   (is-provider? :provider/facebook ui))
 
