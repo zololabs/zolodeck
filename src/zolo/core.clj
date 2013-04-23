@@ -48,9 +48,7 @@
 (defroutes APP-ROUTES
   (route/resources "/")
 
-  (GET "/users" {params :params} (friend/authorize #{:zolo.roles/user
-                                                     :zolo.roles/potential}
-                                                   (-> params user-api/find-users)))
+  (GET "/users" {params :params} (friend/authorize #{:zolo.roles/owner} (user-api/find-users params)))
   
   (context "/users/:guid" request (friend/authorize #{:zolo.roles/owner} all-user-routes))
 
@@ -62,25 +60,20 @@
 
   (route/not-found "Page not found"))
 
-(def ring-app 
-  (-> APP-ROUTES
-      ;;web/wrap-user-info-logging
-      handler/api
-      wrap-json-params
-      web/wrap-accept-header-validation
-      web/wrap-jsonify
-      web/wrap-error-handling
-      web/wrap-request-logging
-      ))
-
 (def app
   (web/wrap-request-binding
    (web/wrap-options
     (demonic/wrap-demarcation
-     (friend/authenticate ring-app {:allow-anon? true
-                                    :workflows [zauth/authenticate]
-                                    :unauthenticated-handler #'zauth/return-forbidden
-                                    :unauthorized-handler #'zauth/return-forbidden})))))
+     (wrap-json-params
+      (handler/api
+       (web/wrap-request-logging
+        (web/wrap-error-handling
+         (web/wrap-jsonify
+          (web/wrap-accept-header-validation
+           (friend/authenticate APP-ROUTES {:allow-anon? true
+                                            :workflows [zauth/authenticate]
+                                            :unauthenticated-handler #'zauth/return-forbidden
+                                            :unauthorized-handler #'zauth/return-forbidden})))))))))))
 
 (defn start-api
   ([]

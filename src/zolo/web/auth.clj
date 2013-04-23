@@ -29,9 +29,26 @@
     (conj roles :zolo.roles/owner)
     roles))
 
-(defn- get-roles [user request]
+(defn- get-roles-for-existing-user [user request]
   (-> #{:zolo.roles/user}
       (mark-as-owner-if-needed user request)))
+
+(defn- get-search-roles-for-existing-user [fb-id request]
+  (if (= fb-id (get-in request [:params :login_provider_uid]))
+    #{:zolo.roles/user :zolo.roles/owner}
+    #{:zolo.roles/user}))
+
+(defn- get-roles-for-potential-user [fb-id request]
+  (if (= fb-id (get-in request [:params :login_provider_uid]))
+    #{:zolo.roles/potential :zolo.roles/owner}
+    #{:zolo.roles/potential}))
+
+(defn user-guid-in-uri? [request]
+  (re-find #"users/.+" (:uri request)))
+
+(defn user-search-uri? [request]
+  (re-find #"/users$" (:uri request)))
+
 
 (defn authenticate-using-facebook [signed-request request]
   (let [fb-id (-> signed-request
@@ -39,13 +56,18 @@
                   :user_id)
         user (u-store/find-by-provider-and-provider-uid :provider/facebook fb-id)]
     (when fb-id
-      (if user
-        (workflows/make-auth {:identity (:user/guid user)
-                              :roles (get-roles user request)}
-                             {::friend/redirect-on-auth? false})
-        (workflows/make-auth {:identity "potential-user"
-                              :roles #{:zolo.roles/potential}}
-                             {::friend/redirect-on-auth? false})))))
+      (cond
+       (and user (user-guid-in-uri? request)) (workflows/make-auth {:identity (:user/guid user)                                                                          :roles (get-roles-for-existing-user  user request)}
+                                                   {::friend/redirect-on-auth? false})
+
+       (and user (user-search-uri? request)) (workflows/make-auth {:identity (:user/guid user)                                                                          :roles (get-search-roles-for-existing-user fb-id request)}
+                                                   {::friend/redirect-on-auth? false})
+
+       (not user) (workflows/make-auth {:identity "potential-user"
+                                          :roles (get-roles-for-potential-user fb-id request)}
+                                       {::friend/redirect-on-auth? false})
+
+       :else (throw (RuntimeException. (str "Unknown situation found trying to authenticate-using-facebook" request)))))))
 
 (defn authenticate [{{:strs [authorization]} :headers :as request}]
   (when authorization

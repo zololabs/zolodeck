@@ -10,6 +10,7 @@
   (:require [zolo.domain.user :as user]
             [zolo.test.web-utils :as w-utils]
             [zolo.api.user-api :as user-api]
+            [zolo.domain.user-identity :as ui]
             [zolo.personas.factory :as personas]
             [zolo.marconi.core :as marconi]
             [zolo.marconi.facebook.core :as fb-lab]
@@ -79,5 +80,19 @@
                200 owner  :get  (c-stats-url owner)           {}
 
                404 hacker :get  (i-stats-url owner)           {}
-               200 owner  :get  (i-stats-url owner)           {})))))))
+               200 owner  :get  (i-stats-url owner)           {}
+               )))))))
+
+
+(demonictest test-find-users
+  (let [owner (pgen/generate {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)
+                                                (pgen/create-friend-spec "Jill" "Ferry" 1 1)]}})
+        hacker (pgen/generate {:SPECS {:friends []}})
+        owner-params {:login_provider "FACEBOOK" :login_provider_uid (ui/fb-id owner)}]
+
+    (testing "when owner is requesting with login provider uid it should return resource"
+      (is (= 200 (-> (w-utils/authed-request owner :get "/users" owner-params) :status))))
+
+    (testing "when hacker is requesting with login provider uid of owner it should deny permission"
+      (is (= 404 (-> (w-utils/authed-request hacker :get "/users" owner-params) :status))))))
 
