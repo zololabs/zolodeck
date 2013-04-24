@@ -5,12 +5,11 @@
         zolo.api.core
         [slingshot.slingshot :only [throw+ try+]])
   (:require [zolo.utils.logger :as logger]
-            [zolo.service.thread-service :as t-service]
-            [zolo.store.user-store :as u-store]))
+            [zolo.service.thread-service :as t-service]))
 
 ;;GET /threads/:action
-(defn find-threads [user-guid action]
-  (if-let [threads (t-service/find-threads (u-store/find-by-guid user-guid) action)]
+(defn find-threads [user-guid {:keys [action] :as params}]
+  (if-let [threads (t-service/find-threads user-guid action)]
     {:status (STATUS-CODES :ok)
      :body threads}
     (resource-not-found)))

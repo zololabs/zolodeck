@@ -1,6 +1,5 @@
 (ns zolo.service.suggestion-set-service-test
-  (:use [zolo.domain.user :as user]
-        zolo.demonic.test
+  (:use zolo.demonic.test
         zolo.demonic.core
         zolo.test.core-utils
         zolo.utils.debug

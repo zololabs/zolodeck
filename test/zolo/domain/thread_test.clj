@@ -35,7 +35,7 @@
         (is (= 1 (count threads)))
         (is (= (set (m/all-messages u)) (set (:thread/messages (first threads))))))))
 
-    (testing "When user has 1 reply-pending thread and 1 replied-to thread ... it should return the reply-to thread"
+    (testing "When user has 2 friends, with a reply-to and replied-to threads each, it should return reply-to"
       (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 9)
                                                        (pgen/create-friend-spec "Jim" "Beam" 1 10)]}})
 
@@ -47,4 +47,10 @@
 
         (is (= 1 (count threads)))
         (is (= #{u-uid} (:message/to last-m)))
-        (is (= jack-uid (:message/from last-m))))))
+        (is (= jack-uid (:message/from last-m)))))
+
+    (testing "When user has 2 friends, with both replied-to threads, it should return empty"
+      (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 20)
+                                                       (pgen/create-friend-spec "Jim" "Beam" 1 10)]}})]
+        
+        (is (empty? (t/find-reply-to-threads u))))))

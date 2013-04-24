@@ -48,7 +48,7 @@
 
 
   ;;Threads
-  (GET "/threads/:action" [guid action & params] (t-api/find-threads guid action))
+  (GET "/threads" [guid & params] (t-api/find-threads guid params))
   )
 
 (defroutes APP-ROUTES
