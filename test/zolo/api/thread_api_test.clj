@@ -13,13 +13,12 @@
             [zolo.utils.calendar :as zolo-cal]
             [zolo.test.web-utils :as w-utils]))
 
-(def REPLY-TO "reply_to")
-
 (demonictest test-find-suggestion-sets
   (let [shy (shy-persona/create)
         vincent (vincent-persona/create)
         vincent-uid (-> vincent :user/user-identities first :identity/provider-uid)
-        jack-uid (-> vincent :user/contacts second :contact/social-identities first :social/provider-uid)]
+        jack-ui (-> vincent :user/contacts second :contact/social-identities first)
+        jack-uid (:social/provider-uid jack-ui)]
 
     (testing "Unauthenticated user should be denied permission"
       (let [resp (w-utils/web-request :get (str "/users/" (:user/guid shy) "/threads") {})]
@@ -30,7 +29,7 @@
         (is (= 404 (:status resp)))))
 
     (testing "when user with no messages is present, it should return empty"
-      (let [resp (w-utils/authed-request shy :get (str "/users/" (:user/guid shy) "/threads") {:action REPLY-TO})]
+      (let [resp (w-utils/authed-request shy :get (str "/users/" (:user/guid shy) "/threads") {:action zolo.service.thread-service/REPLY-TO})]
         (is (= 200 (:status resp)))
         (is (empty? (get-in resp [:body])))))
 
@@ -40,15 +39,20 @@
     
     (testing "when user with 2 friends, and 1 reply-to thread, it should return the right thread"
       (let [resp (w-utils/authed-request vincent :get (str "/users/" (:user/guid vincent) "/threads")
-                                         {:action REPLY-TO})]
+                                         {:action zolo.service.thread-service/REPLY-TO})]
         (is (= 200 (:status resp)))
 
         (is (= 1 (count (get-in resp [:body]))))
-        (is (= 1 (count (-> resp :body first :messages))))
-        (is (-> resp :body first :guid))
-        
-        (is (= [vincent-uid] (-> resp :body first :messages first :to)))
-        (is (= jack-uid (-> resp :body first :messages first :from)))
-        (doseq [m (-> resp :body first :messages)]
-          (has-keys m [:message_id :guid :provider :thread_id :from :to :date :text]))))))
+
+        (let [r-thread (-> resp :body first)
+              lm-from-c (:lm_from_contact r-thread)]
+          (is (= 1 (count (:messages r-thread))))
+          (is (:guid r-thread))
+          (assert-map-values jack-ui [:social/first-name :social/last-name :social/photo-url]
+                             lm-from-c [:first_name :last_name :picture_url])
+          
+          (is (= [vincent-uid] (-> r-thread :messages first :to)))
+          (is (= jack-uid (-> r-thread :messages first :from)))
+          (doseq [m (:messages r-thread)]
+            (has-keys m [:message_id :guid :provider :thread_id :from :to :date :text])))))))
 

@@ -16,26 +16,25 @@
             [zolo.personas.vincent :as vincent-persona]
             [zolo.utils.calendar :as zolo-cal]))
 
-(def REPLY-TO "reply_to")
-
 (deftest test-find-reply-to-threads
 
   (demonic-testing "User is not present, it should return nil"
-    (is (nil? (t-service/find-threads nil REPLY-TO)))
-    (is (nil? (t-service/find-threads (random-guid-str) REPLY-TO))))
+    (is (nil? (t-service/find-threads nil t-service/REPLY-TO)))
+    (is (nil? (t-service/find-threads (random-guid-str) t-service/REPLY-TO))))
 
   (demonic-testing "User present, but has no messages, it should return empty"
     (let [shy (shy-persona/create)
-          threads (t-service/find-threads (:user/guid shy) REPLY-TO)]
+          threads (t-service/find-threads (:user/guid shy) t-service/REPLY-TO)]
       (is (empty? threads))))
 
   (demonic-testing "User has both a reply-to and a replied-to thread, it should return the reply-to thread"
     (let [vincent (vincent-persona/create)
           vincent-uid (-> vincent :user/user-identities first :identity/provider-uid)
-          jack-uid (-> vincent :user/contacts second :contact/social-identities first :social/provider-uid)
+          jack-ui (-> vincent :user/contacts second :contact/social-identities first)
+          jack-uid (:social/provider-uid jack-ui)
 
           all-threads (t/messages->threads (:user/messages vincent))
-          reply-threads (t-service/find-threads (:user/guid vincent) REPLY-TO)
+          reply-threads (t-service/find-threads (:user/guid vincent) t-service/REPLY-TO)
 
           r-messages (-> reply-threads first :thread/messages)
           last-m (last r-messages)]
@@ -44,6 +43,13 @@
       
       (is (= 1 (count reply-threads)))
       (is (-> reply-threads first :thread/guid))
+
+      (let [lm-from-c (-> reply-threads first :thread/lm-from-contact)]
+        (is (= (:social/first-name jack-ui) (:contact/first-name lm-from-c)))
+        (is (= (:social/last-name jack-ui) (:contact/last-name lm-from-c)))
+        (is (= (:social/photo-url jack-ui) (:contact/picture-url lm-from-c))))
+
+      
       (is (= 1 (count r-messages)))
       (is (= jack-uid (:message/from last-m)))
       (is (= #{vincent-uid} (:message/to last-m))))))

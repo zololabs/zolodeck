@@ -31,6 +31,10 @@
   (-> (filter #(contact-has-si? % si) cs)
       first))
 
+(defn find-by-provider-and-provider-uid [user social-provider social-provider-uid]
+  (find-contact-with-si (:user/contacts user)
+                        {:social/provider social-provider :social/provider-uid social-provider-uid}))
+
 (defn- update-si-in-contact [c fresh-si]
   (let [updated-si (-> (:contact/social-identities c)
                        (si/social-identity (si/social-identity-info fresh-si))
@@ -175,13 +179,15 @@
 ;;          (apply-offset offset)
 ;;          (apply-limit limit))))
 
+(defn distill-basic [c]
+  {:contact/first-name (first-name c)
+   :contact/last-name (last-name c)
+   :contact/guid (:contact/guid c)
+   :contact/muted (is-muted? c)
+   :contact/picture-url (picture-url c)})
+
 (defn distill [c ibc]
   (when c
     (let [interactions (ibc c)]
-      {:contact/first-name (first-name c)
-       :contact/last-name (last-name c)
-       :contact/guid (:contact/guid c)
-       :contact/muted (is-muted? c)
-       :contact/picture-url (picture-url c)
-       :contacted-today (is-contacted-today? c ibc)
-       :contact/interaction-daily-counts (interaction/daily-counts interactions)}))) 
+      (merge (distill-basic c) {:contacted-today (is-contacted-today? c ibc)
+                                :contact/interaction-daily-counts (interaction/daily-counts interactions)})))) 

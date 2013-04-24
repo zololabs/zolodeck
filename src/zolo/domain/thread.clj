@@ -2,12 +2,19 @@
   (:use zolo.utils.debug
         zolo.utils.clojure)
   (:require [zolo.domain.message :as m]
-            [zolo.domain.user :as u]))
+            [zolo.domain.user :as u]
+            [zolo.domain.contact :as c]))
 
-(defn distill [thread]
+(defn distill [u thread]
   (when thread
     {:thread/guid (:thread/guid thread)
      :thread/subject (:thread/subject thread)
+     :thread/lm-from-contact (it-> thread
+                                   (:thread/messages it)
+                                   (last it)
+                                   (c/find-by-provider-and-provider-uid u (:message/provider it) (:message/from it))
+                                   (c/distill-basic it))
+;     :thread/lm-to-contacts 
      :thread/messages (map m/distill (:thread/messages thread))}))
 
 (defn messages->thread [[thread-id msgs]]
