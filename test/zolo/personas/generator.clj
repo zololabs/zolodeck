@@ -36,7 +36,9 @@
                       [u friend]
                       [friend u])]
     (concat user-friend
-            [thread-id (str "Message ... User : " (:first_name friend) " - Thread-id :" thread-id " - Msg-id :" msg-id) (zcal/date-to-string (ctc/to-date (zcal/plus m-date msg-id :minute)))])))
+            [thread-id
+             (str "Message ... User : " (:first_name friend) " - Thread-id :" thread-id " - Msg-id :" (str "msg-" msg-id "-" (random-guid-str)))
+             (zcal/date-to-string (ctc/to-date (zcal/plus m-date msg-id :minute)))])))
 
 (defn- dummy-messages [u friend thread-id no-of-msgs m-date]
   (map #(dummy-message u friend thread-id % m-date)
@@ -45,7 +47,7 @@
 (defn- generate-messages [u friend no-of-i no-of-m]
   (let [no-of-msgs-per-interaction (no-of-msgs-per-interaction no-of-i no-of-m)]
     (mapcat (fn [[thread-id no-of-msgs] m-date]
-              (dummy-messages u friend thread-id no-of-msgs m-date))
+              (dummy-messages u friend (str "thread-" thread-id "-" (random-guid-str)) no-of-msgs m-date))
             no-of-msgs-per-interaction
             (simple-date-stream))))
 

@@ -22,12 +22,29 @@
       (is (empty? (t/find-reply-to-threads u)))))
 
   (testing "When user has 1 thread with last message sent ... it should return empty"
-    (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 8)]}})]
+    (doseq [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 8)]}
+                                     :UI-IDS-ALLOWED [:FACEBOOK :EMAIL]
+                                     :UI-IDS-COUNT 1})]
       (is (empty? (t/find-reply-to-threads u)))))
 
   (testing "When user has 1 thread with last message received ... it should return that thread"
-    (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 9)]}})
-          threads (t/find-reply-to-threads u)]
+    (doseq [u (pgen/generate-domain-all {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 9)]}
+                                         :UI-IDS-ALLOWED [:FACEBOOK :EMAIL]
+                                         :UI-IDS-COUNT 1})]
+      (let [threads (t/find-reply-to-threads u)]
+        (is (= 1 (count threads)))
+        (is (= (set (m/all-messages u)) (set (:thread/messages (first threads))))))))
 
-      (is (= 1 (count threads)))
-      (is (= (set (m/all-messages u)) (set (:thread/messages (first threads))))))))
+    (testing "When user has 1 reply-pending thread and 1 replied-to thread ... it should return the reply-to thread"
+      (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 9)
+                                                       (pgen/create-friend-spec "Jim" "Beam" 1 10)]}})
+
+            u-uid (-> u :user/user-identities first :identity/provider-uid)
+            jack-uid (-> u :user/contacts second :contact/social-identities first :social/provider-uid)
+
+            threads (t/find-reply-to-threads u)
+            last-m (-> threads first :thread/messages last)]
+
+        (is (= 1 (count threads)))
+        (is (= #{u-uid} (:message/to last-m)))
+        (is (= jack-uid (:message/from last-m))))))

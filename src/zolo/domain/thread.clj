@@ -28,7 +28,7 @@
   (filter #(is-reply-to? u %) threads))
 
 (defn find-reply-to-threads [u]
-  (->> u
-       m/all-messages
-       messages->threads
-       (filter-by-reply-to u)))
+  (it-> u
+        (m/all-messages it)
+        (messages->threads it)
+        (filter-by-reply-to u it)))
