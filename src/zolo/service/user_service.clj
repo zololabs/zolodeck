@@ -4,6 +4,7 @@
         [slingshot.slingshot :only [throw+ try+]])
   (:require [zolo.social.core :as social]
             [zolo.domain.user :as user]
+            [zolo.domain.message :as m]
             [zolo.store.user-store :as u-store]
             [zolo.domain.user-identity :as user-identity]
             [zolo.social.facebook.chat :as fb-chat]
@@ -95,7 +96,7 @@
       (logger/info first-name "Loaded contacts " (count (:user/contacts updated-u)))
       
       (let [updated-u (m-service/update-inbox-messages updated-u)]
-        (logger/info first-name "Inbox messages done for " (count (:user/contacts updated-u)) " contacts")    
+        (logger/info first-name (count (m/all-messages updated-u)) "- Inbox messages done for " (count (:user/contacts updated-u)) " contacts")    
         ;; (message/update-feed-messages-for-all-contacts (u-store/reload u))
         ;; (logger/info first-name "Feed messages done for " (count (:user/contacts (u-store/reload u))) " contacts")
         (logger/info first-name "Refresh data done")
