@@ -4,6 +4,11 @@
   (:require [zolo.domain.message :as m]
             [zolo.domain.user :as u]))
 
+(defn distill [thread]
+  (when thread
+    {:thread/subject (:thread/subject thread)
+     :thread/messages (map m/distill (:thread/messages thread))}))
+
 (defn messages->thread [[thread-id msgs]]
   {
    :thread/subject nil

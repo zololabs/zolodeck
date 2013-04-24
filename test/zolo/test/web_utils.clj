@@ -35,6 +35,8 @@
          (update-in [:body] json/read-json))))
 
 (defn authed-request
+  ([user method resource]
+     (authed-request user method resource {} {}))  
   ([user method resource body]
      (authed-request user method resource body {}))
   ([user method resource body params]

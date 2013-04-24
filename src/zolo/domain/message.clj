@@ -117,6 +117,9 @@
        (sort-by message-date)
        last))
 
+(defn distill [message]
+  (select-keys message [:message/message-id :message/guid :message/provider :message/thread-id :message/from :message/to :message/date :message/text]))
+
 ;; (defn feeds-start-time-seconds []
 ;;   (-> (zolo-cal/now-joda)
 ;;       (zolo-cal/minus 1 :week)

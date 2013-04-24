@@ -8,6 +8,6 @@
 (defn find-threads [user-guid action]
   (if-let [u (u-store/find-by-guid user-guid)]
     (condp = action
-      "reply_to" (t/find-reply-to-threads u)
-      "follow_up" (t/find-follow-up-threads u)
+      "reply_to" (->> u t/find-reply-to-threads (map t/distill))
+      "follow_up" (->> u t/find-follow-up-threads (map t/distill))
       (throw (RuntimeException. (str "Unknown action type trying to find threads: " action))))))
