@@ -41,8 +41,9 @@
           last-m (last r-messages)]
 
       (is (= 3 (count all-threads)))
-
+      
       (is (= 1 (count reply-threads)))
+      (is (-> reply-threads first :thread/guid))
       (is (= 1 (count r-messages)))
       (is (= jack-uid (:message/from last-m)))
       (is (= #{vincent-uid} (:message/to last-m))))))

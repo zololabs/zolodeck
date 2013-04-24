@@ -45,6 +45,8 @@
 
         (is (= 1 (count (get-in resp [:body]))))
         (is (= 1 (count (-> resp :body first :messages))))
+        (is (-> resp :body first :guid))
+        
         (is (= [vincent-uid] (-> resp :body first :messages first :to)))
         (is (= jack-uid (-> resp :body first :messages first :from)))
         (doseq [m (-> resp :body first :messages)]

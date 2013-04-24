@@ -6,11 +6,12 @@
 
 (defn distill [thread]
   (when thread
-    {:thread/subject (:thread/subject thread)
+    {:thread/guid (:thread/guid thread)
+     :thread/subject (:thread/subject thread)
      :thread/messages (map m/distill (:thread/messages thread))}))
 
 (defn messages->thread [[thread-id msgs]]
-  {
+  {:thread/guid thread-id
    :thread/subject nil
    :thread/messages (sort-by m/message-date msgs)})
 

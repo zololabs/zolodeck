@@ -33,6 +33,7 @@
                                          :UI-IDS-COUNT 1})]
       (let [threads (t/find-reply-to-threads u)]
         (is (= 1 (count threads)))
+        (is (-> threads first :thread/guid))
         (is (= (set (m/all-messages u)) (set (:thread/messages (first threads))))))))
 
     (testing "When user has 2 friends, with a reply-to and replied-to threads each, it should return reply-to"
