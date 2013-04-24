@@ -89,7 +89,7 @@
             msgs (-> u interaction/ibc interaction/messages-from-ibc)
             l-msg (message/last-sent-message jack msgs)]
         (is (not (nil? l-msg)))
-        (is (= #inst "2012-05-14T00:00:00.000000000-00:00" (message/message-date l-msg))))))
+        (is (= #inst "2012-05-14T00:02:00.000000000-00:00" (message/message-date l-msg))))))
 
   (testing "When temp and regular messages are present it should return the last sent message")) 
 

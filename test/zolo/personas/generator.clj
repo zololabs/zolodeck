@@ -17,7 +17,11 @@
             [zolo.utils.calendar :as zcal]
             [zolo.store.user-store :as u-store]
             [zolo.service.user-service :as u-service]
-            [zolo.domain.message :as message]))
+            [zolo.domain.message :as message]
+            [clj-time.coerce :as ctc]))
+
+(defn simple-date-stream []
+  (zcal/date-stream (ctc/to-date-time (zcal/date-string->instant "2012-05-10 00:00")) zcal/inc-date))
 
 (defn- no-of-msgs-per-interaction [no-of-interactions no-of-msgs]
   (let [outlier (mod no-of-msgs no-of-interactions)
@@ -32,19 +36,18 @@
                       [u friend]
                       [friend u])]
     (concat user-friend
-            [thread-id (str "Message ... User : " (:first_name friend) " - Thread-id :" thread-id " - Msg-id :" msg-id) (str (zcal/date-to-simple-string m-date) " 00:00")])))
+            [thread-id (str "Message ... User : " (:first_name friend) " - Thread-id :" thread-id " - Msg-id :" msg-id) (zcal/date-to-string (ctc/to-date (zcal/plus m-date msg-id :minute)))])))
 
 (defn- dummy-messages [u friend thread-id no-of-msgs m-date]
   (map #(dummy-message u friend thread-id % m-date)
-       (range 1 (+ no-of-msgs 1))))
+       (range 1 (+ 1 no-of-msgs))))
 
 (defn- generate-messages [u friend no-of-i no-of-m]
-  (let [no-of-msgs-per-interaction (no-of-msgs-per-interaction no-of-i no-of-m)
-        date-stream (zcal/inc-date-stream (zcal/date-string->instant "2012-05-10 00:00"))]
+  (let [no-of-msgs-per-interaction (no-of-msgs-per-interaction no-of-i no-of-m)]
     (mapcat (fn [[thread-id no-of-msgs] m-date]
               (dummy-messages u friend thread-id no-of-msgs m-date))
             no-of-msgs-per-interaction
-            date-stream)))
+            (simple-date-stream))))
 
 (defn- generate-messages-for-friend [u friend no-of-i no-of-m]
   (doseq [msg-info (generate-messages u friend no-of-i no-of-m)]
@@ -118,6 +121,7 @@
         (doall
          (map #(send-emails-for-interaction (:email-address u) friend-email  %1 %2)
               (email-count-distribution no-of-interactions no-of-messages)
+              ;;TODO Why tests fail when I use simple-date-stream
               (zcal/inc-date-stream (zcal/date-string->instant "yyyy-MM-dd" "2012-05-10"))))))
     u))
 

@@ -25,11 +25,11 @@
   (timestamp-for-test (System/currentTimeMillis)))
 
 (defmacro run-as-of [yyyy-MM-dd-str & body]
-  `(stubbing [zolo-cal/now-instant (zolo-cal/date-string->instant "yyyy-MM-dd" ~yyyy-MM-dd-str)
-              time/now (-> (zolo-cal/date-string->instant "yyyy-MM-dd" ~yyyy-MM-dd-str)
+  `(stubbing [zolo-cal/now-instant (zolo-cal/date-string->instant  (str ~yyyy-MM-dd-str " 23:59"))
+              time/now (-> (zolo-cal/date-string->instant (str ~yyyy-MM-dd-str " 23:59"))
                            .getTime
                            DateTime.)
-              zolo-cal/now (.getTime (zolo-cal/date-string->instant "yyyy-MM-dd" ~yyyy-MM-dd-str))]
+              zolo-cal/now (.getTime (zolo-cal/date-string->instant (str ~yyyy-MM-dd-str " 23:59")))]
      ~@body))
 
 (defmacro demonic-integration-testing [doc & body]

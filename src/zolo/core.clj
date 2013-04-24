@@ -22,6 +22,7 @@
              [zolo.api.contact-api :as c-api]
              [zolo.api.suggestion-set-api :as ss-api]
              [zolo.api.stats-api :as s-api]
+             [zolo.api.thread-api :as t-api]
              [zolo.api.server-api :as server-api]))
 
 (derive :zolo.roles/owner :zolo.roles/user)
@@ -43,7 +44,12 @@
 
   ;;Stats
   (GET "/contact_stats" [guid] (s-api/get-contact-stats guid))
-  (GET "/interaction_stats" [guid] (s-api/get-interaction-stats guid)))
+  (GET "/interaction_stats" [guid] (s-api/get-interaction-stats guid))
+
+
+  ;;Threads
+  (GET "/threads/:action" [guid action & params] (t-api/find-threads guid action))
+  )
 
 (defroutes APP-ROUTES
   (route/resources "/")
