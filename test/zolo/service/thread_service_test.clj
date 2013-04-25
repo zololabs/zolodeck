@@ -29,7 +29,8 @@
 
   (demonic-testing "User has both a reply-to and a replied-to thread, it should return the reply-to thread"
     (let [vincent (vincent-persona/create)
-          vincent-uid (-> vincent :user/user-identities first :identity/provider-uid)
+          vincent-ui (-> vincent :user/user-identities first)
+          vincent-uid (:identity/provider-uid vincent-ui)
           jack-ui (-> vincent :user/contacts second :contact/social-identities first)
           jack-uid (:social/provider-uid jack-ui)
 
@@ -49,7 +50,14 @@
         (is (= (:social/last-name jack-ui) (:contact/last-name lm-from-c)))
         (is (= (:social/photo-url jack-ui) (:contact/picture-url lm-from-c))))
 
-      
+      (let [reply-to-cs (-> reply-threads first :thread/reply-to-contacts)
+            reply-to-c (first reply-to-cs)]
+        (is (= 1 (count reply-to-cs)))
+        (is (= (:social/first-name jack-ui) (:contact/first-name reply-to-c)))
+        (is (= (:social/last-name jack-ui) (:contact/last-name reply-to-c)))
+        (is (= (:social/photo-url jack-ui) (:contact/picture-url reply-to-c))))
+
       (is (= 1 (count r-messages)))
       (is (= jack-uid (:message/from last-m)))
-      (is (= #{vincent-uid} (:message/to last-m))))))
+      (is (= #{vincent-uid} (:message/to last-m)))
+      (is (:message/snippet last-m)))))

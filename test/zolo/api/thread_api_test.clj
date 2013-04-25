@@ -45,7 +45,8 @@
         (is (= 1 (count (get-in resp [:body]))))
 
         (let [r-thread (-> resp :body first)
-              lm-from-c (:lm_from_contact r-thread)]
+              lm-from-c (:lm_from_contact r-thread)
+              reply-to-cs (:reply_to_contacts r-thread)]
           (is (= 1 (count (:messages r-thread))))
           (is (:guid r-thread))
           (assert-map-values jack-ui [:social/first-name :social/last-name :social/photo-url]
@@ -53,6 +54,11 @@
           
           (is (= [vincent-uid] (-> r-thread :messages first :to)))
           (is (= jack-uid (-> r-thread :messages first :from)))
+          (is (= 1 (count reply-to-cs)))
+          (let [reply-to-c (first reply-to-cs)]
+            (is (= (:social/first-name jack-ui) (:first_name reply-to-c)))
+            (is (= (:social/last-name jack-ui) (:last_name reply-to-c)))
+            (is (= (:social/photo-url jack-ui) (:picture_url reply-to-c))))
           (doseq [m (:messages r-thread)]
-            (has-keys m [:message_id :guid :provider :thread_id :from :to :date :text])))))))
+            (has-keys m [:message_id :guid :provider :thread_id :from :to :date :text :snippet])))))))
 
