@@ -119,7 +119,7 @@
        last))
 
 (defn extract-snippet [text]
-  (let [s (subs text 140)]
+  (let [s (subs text 0 140)]
     (if (> (count text) 140)
       (str s "...")
       s)))
