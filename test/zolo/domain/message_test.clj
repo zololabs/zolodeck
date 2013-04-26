@@ -3,6 +3,7 @@
         zolo.demonic.test
         zolo.demonic.core
         zolo.test.core-utils
+        zolo.test.assertions.core
         zolo.utils.debug
         [clojure.test :only [run-tests deftest is are testing]]
         conjure.core)
@@ -93,74 +94,46 @@
 
   (testing "When temp and regular messages are present it should return the last sent message")) 
 
-;; (deftest test-update-inbox-messages
-;;   (demonic-integration-testing  "First time user"
-;;     (personas/in-social-lab
-;;      (let [mickey (fb-lab/create-user "Mickey" "Mouse")
-;;            donald (fb-lab/create-friend "Donald" "Duck")
-;;            daisy (fb-lab/create-friend "Daisy" "Duck")
-;;            db-mickey (in-demarcation (user/signup-new-user (personas/create-social-user mickey)))]
-;;        (fb-lab/make-friend mickey donald)
-;;        (fb-lab/make-friend mickey daisy)
+(deftest test-distilled-messages
+  (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Amrut" "Indya" 1 2)]}})
+        u-ui (-> u :user/user-identities first)
+        u-uid (u-ui :identity/provider-uid)
+        amrut-ui (-> u :user/contacts first :contact/social-identities first)
+        amrut-uid (:social/provider-uid amrut-ui)
+        
+        sm (->> u :user/messages first (message/distill u))
+        rm (->> u :user/messages second (message/distill u))
+        ]
 
-;;        (let [m1 (fb-lab/send-message mickey donald "1" "Hi, what's going on?" "2012-05-01")
-;;              m2 (fb-lab/send-message donald mickey "1" "Nothing, just work..." "2012-05-02")
-;;              m3 (fb-lab/send-message mickey donald "1" "OK, should I get groceries?" "2012-05-03")
-             
-;;              m4 (fb-lab/send-message mickey daisy "2" "Hi, how's  it going?" "2012-06-01")
-;;              m5 (fb-lab/send-message daisy mickey "2" "Good, I finished writing the tests" "2012-06-02")]
-         
-;;          (fb-lab/login-as mickey)
+    (testing "basic information should be set on distilled messages"
+      (doseq [m [sm rm]]
+        (has-keys m [:message/message-id :message/guid :message/provider :message/thread-id
+                     :message/from :message/to :message/date :message/text :message/snippet :message/sent])))
 
-;;          (in-demarcation
-;;           (db-assert/assert-datomic-message-count 0))
+    (testing "when user himself sent a message, :message/sent should be set to true, and author should be user"
+      (is (:message/sent sm))
+      (is (= (:identity/first-name u-ui) (get-in sm [:message/author :author/first-name])))
+      (is (= (:identity/last-name u-ui) (get-in sm [:message/author :author/last-name])))
+      (is (= (:identity/photo-url u-ui) (get-in sm [:message/author :author/picture-url]))))
 
-;;          (in-demarcation
-;;           (contact/update-contacts (user/reload db-mickey))
-;;           (message/update-inbox-messages (user/reload db-mickey))
-;;           (db-assert/assert-datomic-message-count 5))
+    (testing "when user himself sent a message, reply-tos should reflect the contact"
+      (let [reply-tos (sm :message/reply-to)
+            reply-to (first reply-tos)]
+        (is (= 1 (count reply-tos)))
+        (is (= (:social/first-name amrut-ui) (:reply-to/first-name reply-to)))
+        (is (= (:social/last-name amrut-ui) (:reply-to/last-name reply-to)))
+        (is (= (:social/provider-uid amrut-ui) (:reply-to/provider-uid reply-to)))))
 
-;;          (in-demarcation)
-;;          (let [[dm1 dm2 dm3 dm4 dm5] (sort-by dom/message-date (:user/messages (in-demarcation (user/reload db-mickey))))]
-;;            (d-assert/messages-are-same m1 dm1)
-;;            (d-assert/messages-are-same m2 dm2)
-;;            (d-assert/messages-are-same m3 dm3)
-;;            (d-assert/messages-are-same m4 dm4)
-;;            (d-assert/messages-are-same m5 dm5)))))))
+    (testing "when user received a message, :message/sent should be set to false, and author should be contact"
+      (is-not (:message/sent rm))
+      (is (= (:social/first-name amrut-ui) (get-in rm [:message/author :author/first-name])))
+      (is (= (:social/last-name amrut-ui) (get-in rm [:message/author :author/last-name])))
+      (is (= (:social/photo-url amrut-ui) (get-in rm [:message/author :author/picture-url]))))
 
-
-;; (deftest test-update-feed-messages-for-contact
-;;   (demonic-integration-testing "Feeds should be updated"
-;;     (personas/in-social-lab
-;;      (let [mickey (fb-lab/create-user "Mickey" "Mouse")
-;;            donald (fb-lab/create-friend "Donald" "Duck")
-;;            daisy (fb-lab/create-friend "Daisy" "Duck")
-;;            db-mickey (in-demarcation (user/signup-new-user (personas/create-social-user mickey)))]
-
-;;        (fb-lab/make-friend mickey donald)
-;;        (fb-lab/make-friend mickey daisy)
-       
-;;        (let [m1 (fb-lab/send-message mickey donald "1" "Hi, what's going on?" "2012-05-01")
-;;              m2 (fb-lab/send-message donald mickey "1" "Nothing, just work..." "2012-05-02")
-;;              m3 (fb-lab/send-message mickey donald "1" "OK, should I get groceries?" "2012-05-03")
-             
-;;              m4 (fb-lab/send-message mickey daisy "2" "Hi, how's  it going?" "2012-06-01")
-;;              m5 (fb-lab/send-message daisy mickey "2" "Good, I finished writing the tests" "2012-06-02")]
-         
-;;          (fb-lab/login-as mickey)
-
-;;          (in-demarcation
-;;           (db-assert/assert-datomic-message-count 0))
-
-;;          (in-demarcation
-;;           (contact/update-contacts (user/reload db-mickey))
-;;           (message/update-inbox-messages (user/reload db-mickey))
-;;           (db-assert/assert-datomic-message-count 5))
-
-;;          (in-demarcation)
-;;          (let [[dm1 dm2 dm3 dm4 dm5] (sort-by dom/message-date (:user/messages (in-demarcation (user/reload db-mickey))))]
-;;            (d-assert/messages-are-same m1 dm1)
-;;            (d-assert/messages-are-same m2 dm2)
-;;            (d-assert/messages-are-same m3 dm3)
-;;            (d-assert/messages-are-same m4 dm4)
-;;            (d-assert/messages-are-same m5 dm5)))))))
+    (testing "when user himself sent a message, reply-tos should reflect the contact"
+      (let [reply-tos (rm :message/reply-to)
+            reply-to (first reply-tos)]
+        (is (= 1 (count reply-tos)))
+        (is (= (:social/first-name amrut-ui) (:reply-to/first-name reply-to)))
+        (is (= (:social/last-name amrut-ui) (:reply-to/last-name reply-to)))
+        (is (= (:social/provider-uid amrut-ui) (:reply-to/provider-uid reply-to)))))))

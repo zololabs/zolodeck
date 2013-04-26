@@ -7,6 +7,13 @@
 
 ;;TODO test this name space
 
+(defn find-by-provider-uid [u provider-uid]
+  (->> u
+       :user/contacts
+       (mapcat :contact/social-identities)
+       (filter #(= provider-uid (:social/provider-uid %)))
+       first))
+
 (defn social-identity-info [sd]
   [(:social/provider sd) (:social/provider-uid sd)])
 

@@ -43,21 +43,25 @@
       (is (= 3 (count all-threads)))
       
       (is (= 1 (count reply-threads)))
-      (is (-> reply-threads first :thread/guid))
+
+      (is (= 1 (count r-messages)))
+      (is (= jack-uid (:message/from last-m)))
+      (is (= #{vincent-uid} (:message/to last-m)))
+      (is (:message/snippet last-m))
+      (is-not (:message/sent last-m))
 
       (let [lm-from-c (-> reply-threads first :thread/lm-from-contact)]
         (is (= (:social/first-name jack-ui) (:contact/first-name lm-from-c)))
         (is (= (:social/last-name jack-ui) (:contact/last-name lm-from-c)))
         (is (= (:social/photo-url jack-ui) (:contact/picture-url lm-from-c))))
 
-      (let [reply-to-cs (-> reply-threads first :thread/reply-to-contacts)
-            reply-to-c (first reply-to-cs)]
-        (is (= 1 (count reply-to-cs)))
-        (is (= (:social/first-name jack-ui) (:contact/first-name reply-to-c)))
-        (is (= (:social/last-name jack-ui) (:contact/last-name reply-to-c)))
-        (is (= (:social/photo-url jack-ui) (:contact/picture-url reply-to-c))))
+      (let [author (:message/author last-m)]
+        (is (= (:social/first-name jack-ui) (:author/first-name author)))
+        (is (= (:social/last-name jack-ui) (:author/last-name author)))
+        (is (= (:social/photo-url jack-ui) (:author/picture-url author))))
 
-      (is (= 1 (count r-messages)))
-      (is (= jack-uid (:message/from last-m)))
-      (is (= #{vincent-uid} (:message/to last-m)))
-      (is (:message/snippet last-m)))))
+      (let [reply-tos (:message/reply-to last-m)
+            reply-to (first reply-tos)]
+        (is (= (:social/first-name jack-ui) (:reply-to/first-name reply-to)))
+        (is (= (:social/last-name jack-ui) (:reply-to/last-name reply-to)))
+        (is (= (:social/provider-uid jack-ui) (:reply-to/provider-uid reply-to)))))))

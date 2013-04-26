@@ -12,30 +12,31 @@
         (c/find-by-provider-and-provider-uid u (:message/provider it) (:message/from it))
         (c/distill-basic it)))
 
-(defn remove-self-from-reply-to [u message-to-uids]
-  (it-> u
-        (:user/user-identities it)
-        (map :identity/provider-uid it)
-        (remove (fn [to-uid] (some #{to-uid} it)) message-to-uids)))
+;; (defn remove-self-from-reply-to [u message-to-uids]
+;;   (it-> u
+;;         (:user/user-identities it)
+;;         (map :identity/provider-uid it)
+;;         (remove (fn [to-uid] (some #{to-uid} it)) message-to-uids)))
 
-(defn- reply-to-contacts [u thread]
-  (it-> thread
-        (:thread/messages it)
-        (last it)
-        (:message/to it)
-        (remove-self-from-reply-to u it)
-        (domap #(c/find-by-provider-and-provider-uid u (:message/provider it) %) it)
-        (domap c/distill-basic it)))
+;; (defn- reply-to-contacts [u thread]
+;;   (it-> thread
+;;         (:thread/messages it)
+;;         (last it)
+;;         (:message/to it)
+;;         (remove-self-from-reply-to u it)
+;;         (domap #(c/find-by-provider-and-provider-uid u (:message/provider it) %) it)
+;;         (domap c/distill-basic it)))
 
 (defn distill [u thread]
   (when thread
     (let [from (lm-from-contact u thread)
-          to (reply-to-contacts u thread)]
+          ;to (reply-to-contacts u thread)
+          ]
       {:thread/guid (:thread/guid thread)
        :thread/subject (:thread/subject thread)
        :thread/lm-from-contact from
-       :thread/reply-to-contacts (conj to from)
-       :thread/messages (map m/distill (:thread/messages thread))})))
+;       :thread/reply-to-contacts (conj to from)
+       :thread/messages (map #(m/distill u %) (:thread/messages thread))})))
 
 (defn- messages->thread [[thread-id msgs]]
   {:thread/guid thread-id

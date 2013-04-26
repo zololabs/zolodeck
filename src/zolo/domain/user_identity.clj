@@ -5,6 +5,12 @@
 
 ;;TODO tests for this whole namespace
 
+(defn find-by-provider-uid [u provider-uid]
+  (->> u
+       :user/user-identities
+       (filter #(= provider-uid (:identity/provider-uid %)))
+       first))
+
 (defn- is-provider? [provider ui]
   (= provider (:identity/provider ui)))
 
@@ -49,7 +55,4 @@
   (->> u
        fb-user-identity
        :identity/email))
-
-
-
 

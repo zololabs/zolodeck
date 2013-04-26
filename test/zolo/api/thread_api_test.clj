@@ -13,7 +13,7 @@
             [zolo.utils.calendar :as zolo-cal]
             [zolo.test.web-utils :as w-utils]))
 
-(demonictest test-find-suggestion-sets
+(demonictest test-find-reply-to-threads
   (let [shy (shy-persona/create)
         vincent (vincent-persona/create)
         vincent-uid (-> vincent :user/user-identities first :identity/provider-uid)
@@ -45,20 +45,27 @@
         (is (= 1 (count (get-in resp [:body]))))
 
         (let [r-thread (-> resp :body first)
-              lm-from-c (:lm_from_contact r-thread)
-              reply-to-cs (:reply_to_contacts r-thread)]
+              r-message (-> r-thread :messages first)
+              lm-from-c (:lm_from_contact r-thread)]
           (is (= 1 (count (:messages r-thread))))
           (is (:guid r-thread))
           (assert-map-values jack-ui [:social/first-name :social/last-name :social/photo-url]
                              lm-from-c [:first_name :last_name :picture_url])
           
-          (is (= [vincent-uid] (-> r-thread :messages first :to)))
-          (is (= jack-uid (-> r-thread :messages first :from)))
-          (is (= 1 (count reply-to-cs)))
-          (let [reply-to-c (first reply-to-cs)]
-            (is (= (:social/first-name jack-ui) (:first_name reply-to-c)))
-            (is (= (:social/last-name jack-ui) (:last_name reply-to-c)))
-            (is (= (:social/photo-url jack-ui) (:picture_url reply-to-c))))
+          (is (= [vincent-uid] (:to r-message)))
+          (is (= jack-uid (:from r-message)))
+
+          (let [author (:author r-message)]
+            (is (= (:social/first-name jack-ui) (:first_name author)))
+            (is (= (:social/last-name jack-ui) (:last_name author)))
+            (is (= (:social/photo-url jack-ui) (:picture_url author))))
+
+          (let [reply-tos (:reply_to r-message)
+                reply-to (first reply-tos)]
+            (is (= (:social/first-name jack-ui) (:first_name reply-to)))
+            (is (= (:social/last-name jack-ui) (:last_name reply-to)))
+            (is (= (:social/provider-uid jack-ui) (:provider_uid reply-to))))
+          
           (doseq [m (:messages r-thread)]
             (has-keys m [:message_id :guid :provider :thread_id :from :to :date :text :snippet])))))))
 

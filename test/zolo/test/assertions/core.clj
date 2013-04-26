@@ -15,7 +15,7 @@
 
 (defn has-keys [m key-seq]
   (doseq [k key-seq]
-    (is (not (nil? (m k))) (str "Value for key: " k " missing in map: " m))))
+    (is (some #{k} (keys m)) (str "Value for key: " k " missing in map: " m))))
 
 (defn assert-map-values [m1 m1-keys m2 m2-keys]
   (is (= (count m1-keys) (count m2-keys)) "No of keys don't match")
