@@ -41,12 +41,21 @@
         :user/_user-identities
         loadable/entity->loadable)))
 
-(defn find-by-guid [guid]
+(defn find-entity-id-by-guid [guid]
   (when guid
     (->> (if (string? guid) (java.util.UUID/fromString guid) guid)
          (demonic/run-query '[:find ?u :in $ ?guid :where [?u :user/guid ?guid]])
-         ffirst
-         demonic/load-entity)))
+         ffirst)))
+
+(defn find-entity-by-guid [guid]
+  (-> guid
+      find-entity-id-by-guid
+      load-from-db))
+
+(defn find-by-guid [guid]
+  (-> guid
+      find-entity-id-by-guid
+      demonic/load-entity))
 
 ;; TODO use datalog to only find users with permissions granted
 ;;TODO test

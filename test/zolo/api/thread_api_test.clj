@@ -38,8 +38,8 @@
         (is (= 500 (:status resp)))))
     
     (testing "when user with 2 friends, and 1 reply-to thread, it should return the right thread"
-      (let [resp (print-vals (w-utils/authed-request vincent :get (str "/users/" (:user/guid vincent) "/threads")
-                                                     {:action zolo.service.thread-service/REPLY-TO}))]
+      (let [resp (w-utils/authed-request vincent :get (str "/users/" (:user/guid vincent) "/threads")
+                                         {:action zolo.service.thread-service/REPLY-TO})]
         (is (= 200 (:status resp)))
 
         (is (= 1 (count (get-in resp [:body]))))

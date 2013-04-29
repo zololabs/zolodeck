@@ -9,7 +9,7 @@
 
 ;; Services
 (defn find-threads [user-guid action]
-  (if-let [u (u-store/find-by-guid user-guid)]
+  (if-let [u (u-store/find-entity-by-guid user-guid)]
     (condp = action
       REPLY-TO (->> u t/find-reply-to-threads (map #(t/distill u %)))
       FOLLOW-UP (->> u t/find-follow-up-threads (map #(t/distill u %)))
