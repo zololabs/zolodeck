@@ -157,7 +157,7 @@
         (remove (fn [to-uid] (some #{to-uid} it)) message-to-uids)))
 
 (defn- reply-to-for-distillation-from-to [u m]
-  ;; to - author 
+  ;; [to *] minus author 
   (->> (:message/to m)
        (remove-user-from-reply-to u)
        (map #(si/find-by-provider-uid u %))
@@ -167,15 +167,10 @@
 
 (defn- reply-to-for-distillation-from-from [u m is-sent]
   (if (not is-sent)
-    ;; (let [from-ui (ui/find-by-provider-uid u (:message/from m))]
-    ;;   {:reply-to/first-name (:identity/first-name from-ui)
-    ;;    :reply-to/last-name (:identity/last-name from-ui)
-    ;;    :reply-to/provider-uid (:identity/provider-uid from-ui)})
     (let [from-si (si/find-by-provider-uid u (:message/from m))]
       {:reply-to/first-name (:social/first-name from-si)
        :reply-to/last-name (:social/last-name from-si)
-       :reply-to/provider-uid (:social/provider-uid from-si)})
-    ))
+       :reply-to/provider-uid (:social/provider-uid from-si)})))
 
 (defn distill [u message]
   (let [is-sent (is-sent-by-user? u message)]

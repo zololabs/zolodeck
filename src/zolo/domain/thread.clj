@@ -3,7 +3,8 @@
         zolo.utils.clojure)
   (:require [zolo.domain.message :as m]
             [zolo.domain.user :as u]
-            [zolo.domain.contact :as c]))
+            [zolo.domain.contact :as c]
+            [clojure.string :as str]))
 
 (defn- lm-from-contact [u thread]
   (it-> thread
@@ -12,35 +13,29 @@
         (c/find-by-provider-and-provider-uid u (:message/provider it) (:message/from it))
         (c/distill-basic it)))
 
-;; (defn remove-self-from-reply-to [u message-to-uids]
-;;   (it-> u
-;;         (:user/user-identities it)
-;;         (map :identity/provider-uid it)
-;;         (remove (fn [to-uid] (some #{to-uid} it)) message-to-uids)))
+(defn- person-name [p]
+  (str (:reply-to/first-name p) " " (:reply-to/last-name p)))
 
-;; (defn- reply-to-contacts [u thread]
-;;   (it-> thread
-;;         (:thread/messages it)
-;;         (last it)
-;;         (:message/to it)
-;;         (remove-self-from-reply-to u it)
-;;         (domap #(c/find-by-provider-and-provider-uid u (:message/provider it) %) it)
-;;         (domap c/distill-basic it)))
+(defn- subject-from-people [distilled-message]
+  (it-> distilled-message
+        (:message/reply-to it)
+        (map person-name it)
+        (str/join ", " it)
+        (str "Conversation with " it)))
 
 (defn distill [u thread]
   (when thread
-    (let [from (lm-from-contact u thread)
-          ;to (reply-to-contacts u thread)
-          ]
+    (let [distilled-msgs (map #(m/distill u %) (:thread/messages thread))]
       {:thread/guid (:thread/guid thread)
-       :thread/subject (:thread/subject thread)
-       :thread/lm-from-contact from
-;       :thread/reply-to-contacts (conj to from)
-       :thread/messages (map #(m/distill u %) (:thread/messages thread))})))
+       :thread/subject (or (:thread/subject thread)
+                           (-> distilled-msgs last subject-from-people))
+       :thread/lm-from-contact (lm-from-contact u thread)
+       :thread/provider (-> thread :thread/messages first :message/provider)
+       :thread/messages distilled-msgs})))
 
 (defn- messages->thread [[thread-id msgs]]
   {:thread/guid thread-id
-   :thread/subject nil
+   :thread/subject (-> msgs first :message/subject)
    :thread/messages (sort-by m/message-date msgs)})
 
 (defn messages->threads [msgs]

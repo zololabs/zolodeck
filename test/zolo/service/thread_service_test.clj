@@ -43,7 +43,9 @@
       (is (= 3 (count all-threads)))
       
       (is (= 1 (count reply-threads)))
-
+      (is (= (str "Conversation with " (:social/first-name jack-ui) " " (:social/last-name jack-ui))
+             (-> reply-threads first :thread/subject)))
+      
       (is (= 1 (count r-messages)))
       (is (= jack-uid (:message/from last-m)))
       (is (= #{vincent-uid} (:message/to last-m)))

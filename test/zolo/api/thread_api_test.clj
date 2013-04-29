@@ -38,8 +38,8 @@
         (is (= 500 (:status resp)))))
     
     (testing "when user with 2 friends, and 1 reply-to thread, it should return the right thread"
-      (let [resp (w-utils/authed-request vincent :get (str "/users/" (:user/guid vincent) "/threads")
-                                         {:action zolo.service.thread-service/REPLY-TO})]
+      (let [resp (print-vals (w-utils/authed-request vincent :get (str "/users/" (:user/guid vincent) "/threads")
+                                                     {:action zolo.service.thread-service/REPLY-TO}))]
         (is (= 200 (:status resp)))
 
         (is (= 1 (count (get-in resp [:body]))))
@@ -49,6 +49,7 @@
               lm-from-c (:lm_from_contact r-thread)]
           (is (= 1 (count (:messages r-thread))))
           (is (:guid r-thread))
+          (is (= (str "Conversation with " (:social/first-name jack-ui) " " (:social/last-name jack-ui)) (:subject r-thread)))
           (assert-map-values jack-ui [:social/first-name :social/last-name :social/photo-url]
                              lm-from-c [:first_name :last_name :picture_url])
           
