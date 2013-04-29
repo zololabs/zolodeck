@@ -35,7 +35,7 @@
           jack-ui (-> vincent :user/contacts second :contact/social-identities first)
           jack-uid (:social/provider-uid jack-ui)
 
-          all-threads (t/messages->threads (:user/messages vincent))
+          all-threads (t/messages->threads vincent (:user/messages vincent))
           reply-threads (t-service/find-threads (:user/guid vincent) t-service/REPLY-TO)
 
           r-messages (-> reply-threads first :thread/messages)

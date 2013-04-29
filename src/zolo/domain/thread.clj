@@ -6,10 +6,12 @@
             [zolo.domain.contact :as c]
             [clojure.string :as str]))
 
+(defn- last-message [thread]
+  (-> thread :thread/messages first))
+
 (defn- lm-from-contact [u thread]
   (it-> thread
-        (:thread/messages it)
-        (first it)
+        (last-message it)
         (c/find-by-provider-and-provider-uid u (:message/provider it) (:message/from it))
         (c/distill-basic it)))
 
@@ -39,10 +41,16 @@
    :thread/messages (reverse-sort-by m/message-date msgs)})
 
 (defn is-group-chat? [thread]
-  (-> thread :thread/messages first :message/to count (> 1)))
+  (-> thread last-message :message/to count (> 1)))
+
+(defn contact-exists? [u thread]
+  (let [last-m (last-message thread)]
+    (->> last-m
+         :message/from
+         (c/find-by-provider-and-provider-uid u (:message/provider last-m)))))
 
 ;; TODO - filtering group-chats is temporary, remove this once we support reply-to-multiple
-(defn messages->threads [msgs]
+(defn messages->threads [u msgs]
   (if (empty? msgs)
     []
     (->> msgs
@@ -64,7 +72,8 @@
 (defn find-reply-to-threads [u]
   (it-> u
         (m/all-messages it)
-        (messages->threads it)
-        (filter-by-reply-to u it)))
+        (messages->threads u it)
+        (filter-by-reply-to u it)
+        (filter #(contact-exists? u %) it)))
 
 (defn find-follow-up-threads [u])
