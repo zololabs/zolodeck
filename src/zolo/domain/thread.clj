@@ -9,7 +9,7 @@
 (defn- lm-from-contact [u thread]
   (it-> thread
         (:thread/messages it)
-        (last it)
+        (first it)
         (c/find-by-provider-and-provider-uid u (:message/provider it) (:message/from it))
         (c/distill-basic it)))
 
@@ -28,7 +28,7 @@
     (let [distilled-msgs (map #(m/distill u %) (:thread/messages thread))]
       {:thread/guid (:thread/guid thread)
        :thread/subject (or (:thread/subject thread)
-                           (-> distilled-msgs last subject-from-people))
+                           (-> distilled-msgs first subject-from-people))
        :thread/lm-from-contact (lm-from-contact u thread)
        :thread/provider (-> thread :thread/messages first :message/provider)
        :thread/messages distilled-msgs})))
@@ -36,7 +36,7 @@
 (defn- messages->thread [[thread-id msgs]]
   {:thread/guid thread-id
    :thread/subject (-> msgs first :message/subject)
-   :thread/messages (sort-by m/message-date msgs)})
+   :thread/messages (reverse-sort-by m/message-date msgs)})
 
 (defn messages->threads [msgs]
   (if (empty? msgs)
@@ -46,7 +46,7 @@
          (map messages->thread))))
 
 (defn- is-follow-up? [u thread]
-  (let [last-m (-> thread :thread/messages last)
+  (let [last-m (-> thread :thread/messages first)
         m-info [(:message/provider last-m) (:message/from last-m)]
         provider-uids (u/all-user-identities-info u)]
     (some #{m-info} provider-uids)))

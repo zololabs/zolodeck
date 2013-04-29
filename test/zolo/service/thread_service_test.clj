@@ -7,6 +7,7 @@
         [clojure.test :only [run-tests deftest is are testing]]
         conjure.core)
   (:require [zolo.personas.factory :as personas]
+            [zolo.personas.generator :as pgen]
             [zolo.test.assertions.datomic :as db-assert]
             [zolo.test.assertions.domain :as d-assert]
             [zolo.marconi.facebook.core :as fb-lab]
@@ -67,3 +68,14 @@
         (is (= (:social/first-name jack-ui) (:reply-to/first-name reply-to)))
         (is (= (:social/last-name jack-ui) (:reply-to/last-name reply-to)))
         (is (= (:social/provider-uid jack-ui) (:reply-to/provider-uid reply-to)))))))
+
+(deftest performance-test
+  (demonic-testing "For a bunch of data, run in a loop"
+    (let [f-specs (repeatedly 50
+                              #(let [i (rand-int 10)
+                                     m (rand-nth (range i 100))]
+                                 (pgen/create-friend-spec (random-guid-str) (random-guid-str) i m)))
+          u (pgen/generate {:SPECS {:friends f-specs}})]
+      (count (:user/messages u))
+      (time (dotimes [n 50]
+              (t-service/find-threads (:user/guid u) t-service/REPLY-TO))))))
