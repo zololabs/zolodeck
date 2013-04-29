@@ -27,7 +27,7 @@
 
 (extend java.util.Date json/Write-JSON
         {:write-json (fn [d out escape-unicode?]
-                       (.print out (str "\"" (zolo-cal/date-to-string d (zolo-cal/simple-date-format "yyyy-MM-dd")) "\"")))})
+                       (.print out (str "\"" (zolo-cal/date-to-string d (zolo-cal/simple-date-format "yyyy-MM-dd hh:mm")) "\"")))})
 
 ;; (extend zolo.demonic.loadable.Loadable json/Write-JSON
 ;;         {:write-json (fn [x out escape-unicode?] (.print out
