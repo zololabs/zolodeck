@@ -38,12 +38,17 @@
    :thread/subject (-> msgs first :message/subject)
    :thread/messages (reverse-sort-by m/message-date msgs)})
 
+(defn is-group-chat? [thread]
+  (-> thread :thread/messages first :message/to count (> 1)))
+
+;; TODO - filtering group-chats is temporary, remove this once we support reply-to-multiple
 (defn messages->threads [msgs]
   (if (empty? msgs)
     []
     (->> msgs
          (group-by m/thread-id)
-         (map messages->thread))))
+         (map messages->thread)
+         (remove is-group-chat?))))
 
 (defn- is-follow-up? [u thread]
   (let [last-m (-> thread :thread/messages first)
