@@ -14,7 +14,9 @@
              [zolo.social.bootstrap]
              [zolo.web :as web]
              [compojure.route :as route]
-             [compojure.handler :as handler]
+             [ring.middleware.keyword-params :as kw-params-mw]
+             [ring.middleware.params :as params-mw]
+             [ring.middleware.nested-params :as nested-params-mw]
              [zolo.demonic.core :as demonic]
              [ring.util.response :as response]
              [zolo.api.user-api :as user-api]
@@ -40,7 +42,8 @@
   (PUT "/contacts/:c-guid" [guid c-guid & params] (c-api/update-contact guid c-guid params))
   
   ;;Messages
-  (POST "/contacts/:c-guid/messages" [guid c-guid & params] (m-api/send-message guid c-guid params))
+  (POST "/messages" [guid :as {params :params}] (m-api/send-message guid params))
+;  (POST "/contacts/:c-guid/messages" [guid c-guid & params] (m-api/send-message guid c-guid params))
 
   ;;Stats
   (GET "/contact_stats" [guid] (s-api/get-contact-stats guid))
@@ -70,16 +73,18 @@
   (web/wrap-request-binding
    (web/wrap-options
     (demonic/wrap-demarcation
-     (wrap-json-params
-      (handler/api
-       (web/wrap-request-logging
-        (web/wrap-error-handling
-         (web/wrap-jsonify
-          (web/wrap-accept-header-validation
-           (friend/authenticate APP-ROUTES {:allow-anon? true
-                                            :workflows [zauth/authenticate]
-                                            :unauthenticated-handler #'zauth/return-forbidden
-                                            :unauthorized-handler #'zauth/return-forbidden})))))))))))
+     (params-mw/wrap-params
+      (nested-params-mw/wrap-nested-params
+       (wrap-json-params
+        (kw-params-mw/wrap-keyword-params
+         (web/wrap-request-logging
+          (web/wrap-error-handling
+           (web/wrap-jsonify
+            (web/wrap-accept-header-validation
+             (friend/authenticate APP-ROUTES {:allow-anon? true
+                                              :workflows [zauth/authenticate]
+                                              :unauthenticated-handler #'zauth/return-forbidden
+                                              :unauthorized-handler #'zauth/return-forbidden})))))))))))))
 
 (defn start-api
   ([]

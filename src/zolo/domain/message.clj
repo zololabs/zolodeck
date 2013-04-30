@@ -248,10 +248,10 @@
 ;;        (pdoeach #(update-messages-for-contact user %) 20 true)))
 
 ;;TODO test
-(defn create-temp-message [from-uid to-uid provider thread-id text]
+(defn create-temp-message [from-uid to-uids provider thread-id text]
   {:temp-message/provider provider
    :temp-message/from from-uid
-   :temp-message/to to-uid
+   :temp-message/to to-uids
    :temp-message/text text
 ;  :temp-message/thread-id thread-id
    :temp-message/mode "INBOX"

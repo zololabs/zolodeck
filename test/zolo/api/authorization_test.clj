@@ -36,10 +36,8 @@
 (defn i-stats-url [u]
   (str "/users/" (or (:user/guid u) (random-guid-str)) "/interaction_stats"))
 
-(defn messages-url [u c]
-  (str "/users/" (or (:user/guid u) (random-guid-str))
-       "/contacts/" (or (:contact/guid c) (random-guid-str))
-       "/messages"))
+(defn messages-url [u]
+  (str "/users/" (or (:user/guid u) (random-guid-str)) "/messages"))
 
 (defn user-url [u]
   (str "/users/" (or (:user/guid u) (random-guid-str))))
@@ -72,8 +70,8 @@
                200 owner  :get  (contacts-url owner jack)    {}
 
                ;; Messages
-               404 hacker :post (messages-url owner jack)    {:text "Hey" :provider "facebook"}
-               201 owner  :post (messages-url owner jack)    {:text "Hey" :provider "facebook"}
+               404 hacker :post (messages-url owner)    {:text "Hey" :provider "facebook" :to ["123"] :guid (-> owner :user/guid str)}
+               201 owner  :post (messages-url owner)    {:text "Hey" :provider "facebook" :to ["123"] :guid (-> owner :user/guid str)}
 
                ;;Stats
                404 hacker :get  (c-stats-url owner)           {}

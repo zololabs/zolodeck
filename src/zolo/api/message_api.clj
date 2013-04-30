@@ -9,10 +9,8 @@
             [zolo.store.user-store :as u-store]
             [zolo.store.contact-store :as c-store]))
 
-;;POST /users/:guid/contacts/:c-guid/message
-(defn send-message [user-guid c-guid request-params]
-  (if-let [new-t-message (m-service/new-message (u-store/find-by-guid user-guid)
-                                                (c-store/find-by-guid c-guid)
-                                                request-params)]
-    {:status (STATUS-CODES :created)}
+;;POST /users/:guid/messages
+(defn send-message [user-guid params]
+  (if-let [new-t-message (m-service/new-message (u-store/find-by-guid user-guid) params)]
+    {:status (STATUS-CODES :created) :body new-t-message}
     (resource-not-found)))

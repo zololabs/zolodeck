@@ -92,25 +92,25 @@
 
 (demonictest test-new-message
   (let [u (pgen/generate {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
-        [jack] (sort-by contact/first-name (:user/contacts u))]
+        u-guid (-> u :user/guid str)
+        [jack] (sort-by contact/first-name (:user/contacts u))
+        jack-uid (-> jack :contact/social-identities first :social/provider-uid)]
 
     (testing "When user is not present it should return nil"
-      (is (nil? (m-service/new-message nil jack {:text "hey" :provider "facebook"}))))
-    
-    (testing "When contact is not present it should return nil"
-      (is (nil? (m-service/new-message u nil {:text "hey" :provider "facebook"}))))
+      (is (nil? (m-service/new-message nil {:text "hey" :provider "facebook" :guid u-guid :to [jack-uid]}))))
     
     (testing "When invalid message is send it should throw exception"
       (is (thrown-with-msg? RuntimeException #"bad-request"
-            (m-service/new-message u jack {:text "" :provider "facebook"})))
+            (m-service/new-message u {:text "" :provider "facebook" :guid u-guid :to [jack-uid]})))
       (is (thrown-with-msg? RuntimeException #"bad-request"
-            (m-service/new-message u jack {:text "Hey" :provider ""}))))
+            (m-service/new-message u {:text "Hey" :provider ""  :guid u-guid :to [jack-uid]}))))
     
     (mocking [fb-chat/send-message]
       (testing "Should call fb-chat send message with proper attributes and save temp message"
         (db-assert/assert-datomic-temp-message-count 0)
-        
-        (let [updated-u (m-service/new-message u jack {:text "Hey" :provider "facebook"})]
+
+        (m-service/new-message u {:text "Hey" :provider "facebook" :guid u-guid :to [jack-uid]})
+        (let [updated-u (u-store/reload u)]
           
           (verify-call-times-for fb-chat/send-message 1)
           (verify-first-call-args-for fb-chat/send-message u (contact/provider-id jack :provider/facebook) "Hey")
