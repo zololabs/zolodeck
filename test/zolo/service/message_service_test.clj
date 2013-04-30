@@ -1,9 +1,12 @@
 (ns zolo.service.message-service-test
   (:use zolo.utils.debug
+        zolo.utils.clojure
         clojure.test
         conjure.core
+        zolo.test.assertions.core
         zolo.demonic.test)
   (:require [zolo.personas.factory :as personas]
+            [zolo.personas.vincent :as vincent-persona]            
             [zolo.test.assertions.datomic :as db-assert]
             [zolo.test.assertions.domain :as d-assert]
             [zolo.service.contact-service :as c-service]
@@ -119,3 +122,38 @@
           
           (is (= 1 (count (:user/temp-messages updated-u))))
           (is (= "Hey" (-> updated-u :user/temp-messages first :temp-message/text))))))))
+
+
+(deftest test-distilled-temp-message
+  (demonic-testing "when user sends a new message, distillation should work for temp messages"
+    (let [vincent (vincent-persona/create)
+          vincent-ui (-> vincent :user/user-identities first)
+          vincent-uid (:identity/provider-uid vincent)
+          vincent-guid (-> vincent :user/guid str)
+
+          jill-ui (-> vincent :user/contacts first :contact/social-identities first)
+          jill-uid (:social/provider-uid jill-ui)]
+      (mocking [fb-chat/send-message]
+        (m-service/new-message vincent {:text "Hey" :provider "facebook" :guid vincent-guid :to [jill-uid]}))
+      (let [vincent (u-store/reload vincent)
+            last-tm (->> vincent :user/temp-messages last)
+            d-last-tm (->> last-tm (message/distill vincent))]
+
+        (is (= (:temp-message/message-id last-tm) (:message/message-id d-last-tm)))
+        (is (= (:temp-message/provider last-tm) (:message/provider d-last-tm)))
+        (is (= (:temp-message/guid last-tm) (:message/guid d-last-tm)))
+        (is (= vincent-uid (:temessage/from d-last-tm)))
+        (same-value?  [jill-uid] (:message/to d-last-tm))
+        
+        (is (= (:identity/first-name vincent-ui) (get-in d-last-tm [:message/author :author/first-name])))
+        (is (= (:identity/last-name vincent-ui) (get-in d-last-tm [:message/author :author/last-name])))
+        (is (= (:identity/photo-url vincent-ui) (get-in d-last-tm [:message/author :author/picture-url])))
+
+        (let [reply-to (-> d-last-tm :message/reply-to first)]
+          (is (= (:social/first-name jill-ui) (get-in reply-to [:reply-to/first-name])))
+          (is (= (:social/last-name jill-ui) (get-in reply-to [:reply-to/last-name])))
+          (is (= (:social/provider-uid jill-ui) (get-in reply-to [:reply-to/provider-uid]))))
+
+        (has-keys d-last-tm [:message/message-id :message/thread-id :message/snippet :message/sent :message/date :message/text])
+
+        ))))

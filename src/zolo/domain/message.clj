@@ -19,6 +19,11 @@
 (defn is-temp-message? [m]
   (:temp-message/guid m))
 
+(defn message-guid [m]
+  (if (is-temp-message? m)
+    (:temp-message/guid m)
+    (:message/guid m)))
+
 ;;TODO test
 (defn message-date
   ([m]
@@ -61,6 +66,16 @@
   (if (is-temp-message? m)
     (:temp-message/to m)
     (:message/to m)))
+
+(defn message-id [m]
+  (if (is-temp-message? m)
+    (:temp-message/id m)
+    (:message/id m)))
+
+(defn message-text [m]
+  (if (is-temp-message? m)
+    (:temp-message/text m)
+    (:message/text m)))
 
 (defn- update-buckets-for [buckets m contact-ids]
   (let [updater (fn [b contact-id]
@@ -125,7 +140,7 @@
       s)))
 
 (defn snippet [m]
-  (let [t (:message/text m)]
+  (let [t (message-text m)]
     (if (<= (count t) 140)
       t
       (extract-snippet t))))
@@ -134,18 +149,18 @@
   (it-> u
         (:user/user-identities it)
         (map :identity/provider-uid it)
-        (some #(= % (:message/from m)) it)
+        (some #(= % (message-from m)) it)
         (boolean it)))
 
 (def is-received-by-user? (complement is-sent-by-user?))
 
 (defn- author-for-distillation [u m is-sent]
   (if is-sent
-    (let [author-ui (ui/find-by-provider-uid u (:message/from m))]
+    (let [author-ui (ui/find-by-provider-uid u (message-from m))]
       {:author/first-name (:identity/first-name author-ui)
        :author/last-name (:identity/last-name author-ui)
        :author/picture-url (:identity/photo-url author-ui)})
-    (let [author-si (si/find-by-provider-uid u (:message/from m))]
+    (let [author-si (si/find-by-provider-uid u (message-from m))]
       {:author/first-name (:social/first-name author-si)
        :author/last-name (:social/last-name author-si)
        :author/picture-url (:social/photo-url author-si)})))
@@ -158,7 +173,7 @@
 
 (defn- reply-to-for-distillation-from-to [u m]
   ;; [to *] minus author 
-  (->> (:message/to m)
+  (->> (message-to m)
        (remove-user-from-reply-to u)
        (map #(si/find-by-provider-uid u %))
        (map (fn [si] {:reply-to/first-name (:social/first-name si)
@@ -167,15 +182,22 @@
 
 (defn- reply-to-for-distillation-from-from [u m is-sent]
   (if (not is-sent)
-    (let [from-si (si/find-by-provider-uid u (:message/from m))]
+    (let [from-si (si/find-by-provider-uid u (message-from m))]
       {:reply-to/first-name (:social/first-name from-si)
        :reply-to/last-name (:social/last-name from-si)
        :reply-to/provider-uid (:social/provider-uid from-si)})))
 
 (defn distill [u message]
   (let [is-sent (is-sent-by-user? u message)]
-    (-> message
-        (select-keys [:message/message-id :message/guid :message/provider :message/thread-id :message/from :message/to :message/date :message/text])
+    (-> {}
+        (assoc :message/message-id (message-id message))
+        (assoc :message/guid (message-guid message))
+        (assoc :message/provider (message-provider message))
+        (assoc :message/thread-id (thread-id message))
+        (assoc :message/from (message-from message))
+        (assoc :message/to (message-to message))
+        (assoc :message/date (message-date message))
+        (assoc :message/text (message-text message))
         (assoc :message/snippet (snippet message))
         (assoc :message/sent is-sent)
         (assoc :message/author (author-for-distillation u message is-sent))

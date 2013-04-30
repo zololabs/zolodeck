@@ -124,7 +124,7 @@
  (instant-fact-schema :temp-message/date false "The date this message was received/sent" false false false false)
  (string-fact-schema :temp-message/from false "The platform ID of the sender" false false false false)
  (strings-fact-schema :temp-message/to false "The platform IDs of the receivers" false false false false)
- (strings-fact-schema :temp-message/thread-id false "The Thread ID of this message" false false false false))
+ (string-fact-schema :temp-message/thread-id false "The Thread ID of this message" false false false false))
 
 (schema-set "SERVER STATS"
  (uuid-fact-schema :server/guid false "A GUID for the server stats object" :db.unique/identity false false false)
