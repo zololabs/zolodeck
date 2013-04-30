@@ -183,6 +183,16 @@
                                          (conj (reply-to-for-distillation-from-to u message)
                                                (reply-to-for-distillation-from-from u message is-sent)))))))
 
+;;TODO test
+(defn create-temp-message [from-uid to-uids provider thread-id text]
+  {:temp-message/provider provider
+   :temp-message/from from-uid
+   :temp-message/to to-uids
+   :temp-message/text text
+   :temp-message/thread-id (or thread-id (random-guid-str))
+   :temp-message/mode "INBOX"
+   :temp-message/date (zolo-cal/now-instant)})
+
 ;; (defn feeds-start-time-seconds []
 ;;   (-> (zolo-cal/now-joda)
 ;;       (zolo-cal/minus 1 :week)
@@ -247,12 +257,3 @@
 ;;        :user/contacts
 ;;        (pdoeach #(update-messages-for-contact user %) 20 true)))
 
-;;TODO test
-(defn create-temp-message [from-uid to-uids provider thread-id text]
-  {:temp-message/provider provider
-   :temp-message/from from-uid
-   :temp-message/to to-uids
-   :temp-message/text text
-;  :temp-message/thread-id thread-id
-   :temp-message/mode "INBOX"
-   :temp-message/date (zolo-cal/now-instant)})
