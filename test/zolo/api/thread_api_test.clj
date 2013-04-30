@@ -70,3 +70,51 @@
           (doseq [m (:messages r-thread)]
             (has-keys m [:message_id :guid :provider :thread_id :from :to :date :text :snippet])))))))
 
+
+(demonictest test-find-follow-up-threads
+  (let [shy (shy-persona/create)
+        vincent (vincent-persona/create)
+        vincent-ui (-> vincent :user/user-identities first)
+        vincent-uid (:identity/provider-uid vincent-ui)
+        jack-ui (-> vincent :user/contacts second :contact/social-identities first)
+        jack-uid (:social/provider-uid jack-ui)]
+
+    (testing "when user with no messages is present, it should return empty"
+      (let [resp (w-utils/authed-request shy :get (str "/users/" (:user/guid shy) "/threads") {:action zolo.service.thread-service/FOLLOW-UP})]
+        (is (= 200 (:status resp)))
+        (is (empty? (get-in resp [:body])))))
+    
+    (testing "when user with 2 friends, and 1 reply-to thread, it should return the right thread"
+      (let [resp (w-utils/authed-request vincent :get (str "/users/" (:user/guid vincent) "/threads")
+                                         {:action zolo.service.thread-service/FOLLOW-UP})]
+        (is (= 200 (:status resp)))
+
+        (is (= 2 (count (get-in resp [:body]))))
+
+        (let [f1-thread (-> resp :body first)
+              f2-thread (-> resp :body second)
+              f1-message (-> f1-thread :messages first)
+              lm-from-c1 (:lm_from_contact f1-thread)]
+          (is (= 2 (count (:messages f1-thread))))
+          (is (:guid f1-thread))
+          (is (= (str "Conversation with " (:social/first-name jack-ui) " " (:social/last-name jack-ui)) (:subject f1-thread)))
+          (assert-map-values jack-ui [:social/first-name :social/last-name :social/photo-url]
+                             lm-from-c1 [:first_name :last_name :picture_url])
+          
+          (is (= [jack-uid] (:to f1-message)))
+          (is (= vincent-uid (:from f1-message)))
+
+          (let [author (:author f1-message)]
+            (is (= (:identity/first-name vincent-ui) (:first_name author)))
+            (is (= (:identity/last-name vincent-ui) (:last_name author)))
+            (is (= (:identity/photo-url vincent-ui) (:picture_url author))))
+
+          (let [reply-tos (:reply_to f1-message)
+                reply-to (first reply-tos)]
+            (is (= (:social/first-name jack-ui) (:first_name reply-to)))
+            (is (= (:social/last-name jack-ui) (:last_name reply-to)))
+            (is (= (:social/provider-uid jack-ui) (:provider_uid reply-to))))
+          
+          (doseq [m (:messages f1-thread)]
+            (has-keys m [:message_id :guid :provider :thread_id :from :to :date :text :snippet])))))))
+

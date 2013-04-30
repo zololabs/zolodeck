@@ -9,11 +9,15 @@
 (defn- last-message [thread]
   (-> thread :thread/messages first))
 
-(defn- lm-from-contact [u thread]
-  (it-> thread
-        (last-message it)
-        (c/find-by-provider-and-provider-uid u (:message/provider it) (:message/from it))
+(defn- lm-contact [u last-message selector-fn]
+  (it-> last-message
+        (c/find-by-provider-and-provider-uid u (:message/provider it) (selector-fn it))
         (c/distill-basic it)))
+
+(defn- lm-from-to [u last-m]
+  (if (:message/sent last-m)
+    (lm-contact u last-m #(first (:message/to %)))
+    (lm-contact u last-m :message/from)))
 
 (defn- person-name [p]
   (str (:reply-to/first-name p) " " (:reply-to/last-name p)))
@@ -31,7 +35,7 @@
       {:thread/guid (:thread/guid thread)
        :thread/subject (or (:thread/subject thread)
                            (-> distilled-msgs first subject-from-people))
-       :thread/lm-from-contact (lm-from-contact u thread)
+       :thread/lm-from-contact (lm-from-to u (first distilled-msgs))
        :thread/provider (-> thread :thread/messages first :message/provider)
        :thread/messages distilled-msgs})))
 
@@ -43,11 +47,18 @@
 (defn is-group-chat? [thread]
   (-> thread last-message :message/to count (> 1)))
 
-(defn contact-exists? [u thread]
+(defn contact-exists? [u thread selector-fn]
   (let [last-m (last-message thread)]
     (->> last-m
-         :message/from
+         selector-fn
          (c/find-by-provider-and-provider-uid u (:message/provider last-m)))))
+
+(defn reply-to-contact-exists? [u thread]
+  (contact-exists? u thread :message/from))
+
+;; TODO - this needs to check for each contact once group chat is supported
+(defn follow-up-contact-exists? [u thread]
+  (contact-exists? u thread #(first (:message/to %))))
 
 ;; TODO - filtering group-chats is temporary, remove this once we support reply-to-multiple
 (defn messages->threads [u msgs]
@@ -66,14 +77,17 @@
 
 (def ^:private is-reply-to? (complement is-follow-up?))
 
-(defn- filter-by-reply-to [u threads]
-  (filter #(is-reply-to? u %) threads))
-
 (defn find-reply-to-threads [u]
   (it-> u
         (m/all-messages it)
         (messages->threads u it)
-        (filter-by-reply-to u it)
-        (filter #(contact-exists? u %) it)))
+        (filter #(is-reply-to? u %) it)
+        (filter #(reply-to-contact-exists? u %) it)))
 
-(defn find-follow-up-threads [u])
+(defn find-follow-up-threads [u]
+  (it-> u
+        (m/all-messages it)
+        (messages->threads u it)
+        (filter #(is-follow-up? u %) it)
+        (filter #(follow-up-contact-exists? u %) it)))
+
