@@ -212,7 +212,7 @@
     (run-as-of "2012-05-10"
       (d-core/run-in-gmt-tz
        (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 2)
-                                                            (pgen/create-friend-spec "Jill" "Ferry" 3 3)]}})
+                                                        (pgen/create-friend-spec "Jill" "Ferry" 3 3)]}})
              ibc (interaction/ibc u)]
          
          (let [[jack jill] (sort-by contact/first-name (:user/contacts u))
@@ -223,96 +223,21 @@
            (is (= (contact/picture-url jack) (:contact/picture-url distilled-jack)))
            (is (:contacted-today distilled-jack))
            (is (not (:muted distilled-jack)))
-           (is (= [["2012-05-10" 1]] (:contact/interaction-daily-counts distilled-jack)))))))))
+           (is (= [["2012-05-10" 1]] (:contact/interaction-daily-counts distilled-jack))))))))
 
-;; (deftest test-mute-contact
-;;   (demonic-testing "Muting a contact"
-;;     (personas/in-social-lab
-;;      (let [mickey (fb-lab/create-user "Mickey" "Mouse")
-;;            donald (fb-lab/create-friend "Donald" "Duck")
-;;            goofy (fb-lab/create-friend "Goofy" "Dog")
-;;            db-mickey (user/signup-new-user (personas/create-social-user mickey))]
 
-;;        (fb-lab/make-friend mickey donald)
-;;        (fb-lab/make-friend mickey goofy)
-       
-;;        (fb-lab/login-as mickey)
+  (testing "Social Idenitity should be also there as part of distilled user"
+    (run-as-of "2012-05-10"
+      (d-core/run-in-gmt-tz
+       (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 2)]}})
+             ibc (interaction/ibc u)]
+         
+         (let [jack (first (:user/contacts u))
+               distilled-jack (contact/distill jack ibc)]
 
-;;        (contact/update-contacts (user/reload db-mickey))       
-       
-;;        (let [[db-donald db-goofy] (sort-by :contact/first-name (:user/contacts (user/reload db-mickey)))]
-;;          (contact/set-muted db-goofy true)
-;;          (d-assert/contact-is-muted (contact/reload db-goofy))
-;;          (d-assert/contact-is-not-muted (contact/reload db-donald))))))
-
-;;   (demonic-integration-testing "Muting, then updating"
-;;     (personas/in-social-lab
-;;      (let [mickey (fb-lab/create-user "Mickey" "Mouse")
-;;            donald (fb-lab/create-friend "Donald" "Duck")
-;;            goofy (fb-lab/create-friend "Goofy" "Dog")
-;;            db-mickey (in-demarcation (user/signup-new-user (personas/create-social-user mickey)))]
-
-;;        (fb-lab/make-friend mickey goofy)
-       
-;;        (fb-lab/login-as mickey)
-
-;;        (in-demarcation (contact/update-contacts (user/reload db-mickey)))
-       
-;;        (in-demarcation
-;;         (let [db-goofy (first (:user/contacts (user/reload db-mickey)))]
-;;           (contact/set-muted db-goofy true)
-;;           (d-assert/contact-is-muted (contact/reload db-goofy))))
-
-;;        (fb-lab/make-friend mickey donald)
-;;        (fb-lab/update-user (:id goofy) {:first_name "Giify"})       
-;;        (in-demarcation (contact/update-contacts (user/reload db-mickey)))
-
-;;        (in-demarcation (user/update-scores (user/reload db-mickey)))
-
-;;        (in-demarcation
-;;         (let [[db-donald db-giify] (sort-by :contact/first-name (:user/contacts (user/reload db-mickey)))]
-;;           (d-assert/contact-is-muted (contact/reload db-giify))
-;;           (is (= "Giify" (:social/first-name (first (:contact/social-identities db-giify)))))
-;;           (d-assert/contact-is-not-muted (contact/reload db-donald))))))))
-
-;; (deftest test-update-contacts-repeatedly
-;;   (demonic-integration-testing  "Returning User"
-;;     (personas/in-social-lab
-;;      (let [mickey (fb-lab/create-user "Mickey" "Mouse")
-;;            donald (fb-lab/create-friend "Donald" "Duck")
-;;            minnie (fb-lab/create-friend "Minnie" "Mouse")
-;;            db-mickey (in-demarcation (user/signup-new-user (personas/create-social-user mickey)))]
-
-;;        (fb-lab/make-friend mickey donald)
-       
-;;        (fb-lab/login-as mickey)
-
-;;        (in-demarcation
-;;         (contact/update-contacts (user/reload db-mickey)))
-
-;;        (in-demarcation
-;;         (fb-lab/make-friend mickey minnie)
-;;         (contact/update-contacts (user/reload db-mickey)))
-
-;;        (in-demarcation
-;;         (is (= 2 (count (versions db-mickey :user/contacts)))))
-
-;;        (dotimes [n 100]
-;;          (in-demarcation
-;;           (contact/update-contacts (user/reload db-mickey))))
-       
-;;        (in-demarcation
-;;         (is (= 2 (count (versions db-mickey :user/contacts)))))))))
-
-;; (defn assert-all-contacts-are [strength-as-keyword contacts]
-;;   (is (every? #(.contains (:contact/first-name %) (name strength-as-keyword))
-;;               contacts)
-;;       (str "Not all contacts are " strength-as-keyword)))
-
-;; (defn assert-no-contacts-are [strength-as-keyword contacts]
-;;   (is (not (some #(.contains (:contact/first-name %) (name strength-as-keyword))
-;;                   contacts))
-;;       (str "Unexpectedly found contact of strength " strength-as-keyword)))
+           (is (= 1 (count (:contact/social-identities distilled-jack))))
+           (is (= [(si/distill (first (:contact/social-identities jack)))]
+                  (:contact/social-identities distilled-jack)))))))))
 
 ;; (demonictest test-contact-list
 ;;   (personas/in-social-lab
@@ -366,26 +291,3 @@
 ;;            (is (= 5 (count (contact/list-contacts (user/reload db-mickey) {:selectors [] :limit 50 :offset 55})))))))))
 
 
-;; (deftest test-format
-;;   (demonic-testing "Formated contacts show if contacted today or not"
-;;     (personas/in-social-lab
-;;      (let [client-date (java.util.Date.)
-;;            mickey (fb-lab/create-user "Mickey" "Mouse")
-;;            donald (fb-lab/create-friend "Donald" "Duck")
-;;            minnie (fb-lab/create-friend "Minnie" "Mouse")
-;;            db-mickey (user/signup-new-user (personas/create-social-user mickey))]
-
-;;        (fb-lab/login-as mickey)
-       
-;;        (fb-lab/make-friend mickey donald)
-;;        (fb-lab/make-friend mickey minnie)
-
-;;        (fb-lab/send-message mickey donald "1" "Hi, what's going on?" (zolo-cal/date-to-simple-string client-date))
-       
-;;        (contact/update-contacts (user/reload db-mickey))
-;;        (message/update-inbox-messages (user/reload db-mickey))
-
-;;        (let [ibc (print-vals "IBC :" (interaction/ibc (user/reload db-mickey)))
-;;              [db-donald db-minnie] (sort-by :contact/first-name (:user/contacts (in-demarcation (user/reload db-mickey))))]
-;;          (print-vals (contact/format db-donald ibc client-date))
-;;          )))))

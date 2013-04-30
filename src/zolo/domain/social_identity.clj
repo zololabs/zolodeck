@@ -52,3 +52,6 @@
 
 (defn is-a-person [si]
   (not (:social/not-a-person si)))
+
+(defn distill [si]
+  (select-keys si [:social/provider :social/provider-uid]))

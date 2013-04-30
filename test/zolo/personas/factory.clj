@@ -58,9 +58,7 @@
   (fake-email/fetch-contacts account-id))
 
 (defn fake-fetch-email-messages [account-id date-in-seconds]
-  (let [res (fake-email/fetch-messages account-id)]
-    (print "FAKE-fetch-email-messages returning" (count res) "emails")
-    res))
+  (fake-email/fetch-messages account-id))
 
 (defmacro in-social-lab [& body]
   `(marconi/in-lab
