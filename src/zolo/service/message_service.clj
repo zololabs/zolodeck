@@ -51,4 +51,9 @@
             tmp-msg (message/create-temp-message from-uid to-provider-uids provider thread-id text)]
         (fb-chat/send-message u (first to-provider-uids) text)
         (m-store/append-temp-message u tmp-msg)
-        tmp-msg))))
+        (let [reloaded-u (u-store/reload u)]
+          (->> reloaded-u
+               :user/temp-messages
+               (sort-by message/message-date)
+               last
+               (message/distill reloaded-u))))))) 
