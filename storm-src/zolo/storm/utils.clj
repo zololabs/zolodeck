@@ -93,7 +93,6 @@
         ffirst
         dh/load-from-db
         :user/_user-identities
-        first
         :user/guid
         str)))
 
