@@ -77,17 +77,20 @@
 
 (def ^:private is-reply-to? (complement is-follow-up?))
 
-(defn find-reply-to-threads [u]
+(defn all-threads [u]
   (it-> u
         (m/all-messages it)
-        (messages->threads u it)
+        (messages->threads u it)))
+
+(defn find-reply-to-threads [u]
+  (it-> u
+        (all-threads it)
         (filter #(is-reply-to? u %) it)
         (filter #(reply-to-contact-exists? u %) it)))
 
 (defn find-follow-up-threads [u]
   (it-> u
-        (m/all-messages it)
-        (messages->threads u it)
+        (all-threads it)
         (filter #(is-follow-up? u %) it)
         (filter #(follow-up-contact-exists? u %) it)))
 

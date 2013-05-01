@@ -3,6 +3,7 @@
         zolo.demonic.core
         zolo.utils.clojure
         zolo.test.core-utils
+        zolo.test.assertions.core
         zolo.utils.debug
         [clojure.test :only [run-tests deftest is are testing]]
         conjure.core)
@@ -12,10 +13,32 @@
             [zolo.test.assertions.domain :as d-assert]
             [zolo.marconi.facebook.core :as fb-lab]
             [zolo.service.thread-service :as t-service]
+            [zolo.domain.message :as m]
+            [zolo.service.message-service :as m-service]
+            [zolo.store.user-store :as u-store]
+            [zolo.social.facebook.chat :as fb-chat]
             [zolo.domain.thread :as t]
             [zolo.personas.shy :as shy-persona]
             [zolo.personas.vincent :as vincent-persona]
             [zolo.utils.calendar :as zolo-cal]))
+
+
+(deftest test-distilled-threads-with-temps
+  (demonic-testing "When user has a thread with some temp-messages, distillation should still work"
+    (doseq [u (pgen/generate-all {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 2)]}
+                                         :UI-IDS-ALLOWED [:FACEBOOK :EMAIL]
+                                         :UI-IDS-COUNT 1})]
+      (let [f-uid (-> u :user/contacts first :contact/social-identities first :social/provider-uid)]
+        (mocking [fb-chat/send-message]
+          (m-service/new-message u {:text "Hey hello" :provider "facebook" :guid (-> u :user/guid str) :to [f-uid]}))
+        (let [dt (->> u u-store/reload t/all-threads second (t/distill u))]
+          (has-keys dt [:thread/guid :thread/subject :thread/lm-from-contact :thread/provider :thread/messages])
+          (has-keys (:thread/lm-from-contact dt) [:contact/first-name :contact/last-name :contact/guid :contact/muted :contact/picture-url :contact/social-identities])
+          (doseq [m (:thread/messages dt)]
+            (has-keys m [:message/message-id :message/guid :message/provider :message/thread-id :message/from :message/to :message/date :message/text :message/snippet :message/sent :message/author :message/reply-to])
+            (has-keys (:message/author m) [:author/first-name :author/last-name :author/picture-url])
+            (doseq [r (:message/reply-to m)]
+              (has-keys r [:reply-to/first-name :reply-to/last-name :reply-to/provider-uid]))))))))
 
 (deftest test-find-reply-to-threads
 
@@ -67,9 +90,18 @@
             reply-to (first reply-tos)]
         (is (= (:social/first-name jack-ui) (:reply-to/first-name reply-to)))
         (is (= (:social/last-name jack-ui) (:reply-to/last-name reply-to)))
-        (is (= (:social/provider-uid jack-ui) (:reply-to/provider-uid reply-to)))))))
+        (is (= (:social/provider-uid jack-ui) (:reply-to/provider-uid reply-to))))
 
-
+      (testing "after replying to this thread, it shouldn't be a reply-to thread"
+        (let [r-message (first r-messages)
+              _ (mocking [fb-chat/send-message]
+                  (m-service/new-message vincent {:text "Hey hello" :provider "facebook"
+                                                  :guid (-> vincent :user/guid str)
+                                                  :to [(-> r-message :message/reply-to first :reply-to/provider-uid)]
+                                                  :thread_id (:message/thread-id r-message)}))
+              updated-r-threads (t-service/find-threads (:user/guid vincent) t-service/REPLY-TO)]
+          (is (= 1 (count reply-threads)))
+          (is (empty? updated-r-threads)))))))
 
 (deftest test-find-follow-up-threads
 

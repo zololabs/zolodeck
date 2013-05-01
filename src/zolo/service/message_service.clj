@@ -44,7 +44,7 @@
 
 (defn new-message [u params]
   (when u
-    (let [{text :text thread-id :thread-id to-provider :provider to-provider-uids :to} params]
+    (let [{text :text thread-id :thread_id to-provider :provider to-provider-uids :to} params]
       (service/validate-request! params val-request)
       (let [provider (service/provider-string->provider-enum to-provider)
             from-uid (user/provider-id u provider)
