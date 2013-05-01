@@ -128,17 +128,18 @@
           all-threads (t/messages->threads vincent (:user/messages vincent))
           follow-threads (t-service/find-threads (:user/guid vincent) t-service/FOLLOW-UP)
 
-          jack-messages (-> follow-threads first :thread/messages)
-          jill-messages (-> follow-threads second :thread/messages)
+          jill-messages (-> follow-threads first :thread/messages)          
+          jack-messages (-> follow-threads second :thread/messages)
+
           jack-last-m (first jack-messages)
           jill-last-m (first jill-messages)]
 
       (is (= 3 (count all-threads)))
       
       (is (= 2 (count follow-threads)))
-      (is (= (str "Conversation with " (:social/first-name jack-ui) " " (:social/last-name jack-ui))
-             (-> follow-threads first :thread/subject)))
       (is (= (str "Conversation with " (:social/first-name jill-ui) " " (:social/last-name jill-ui))
+             (-> follow-threads first :thread/subject)))
+      (is (= (str "Conversation with " (:social/first-name jack-ui) " " (:social/last-name jack-ui))
              (-> follow-threads second :thread/subject)))
       
       (is (= 2 (count jack-messages)))
@@ -148,7 +149,7 @@
       (is (:message/snippet jack-last-m))
       (is (:message/sent jack-last-m))
 
-      (let [lm-from-c (-> follow-threads first :thread/lm-from-contact)]
+      (let [lm-from-c (-> follow-threads second :thread/lm-from-contact)]
         (is (= (:social/first-name jack-ui) (:contact/first-name lm-from-c)))
         (is (= (:social/last-name jack-ui) (:contact/last-name lm-from-c)))
         (is (= (:social/photo-url jack-ui) (:contact/picture-url lm-from-c))))

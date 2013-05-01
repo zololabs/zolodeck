@@ -91,8 +91,8 @@
 
         (is (= 2 (count (get-in resp [:body]))))
 
-        (let [f1-thread (-> resp :body first)
-              f2-thread (-> resp :body second)
+        (let [f1-thread (-> resp :body second)
+              f2-thread (-> resp :body first)
               f1-message (-> f1-thread :messages first)
               lm-from-c1 (:lm_from_contact f1-thread)]
           (is (= 2 (count (:messages f1-thread))))
