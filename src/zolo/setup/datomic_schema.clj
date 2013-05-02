@@ -106,6 +106,7 @@
  (strings-fact-schema :message/attachments false "list of links" false false false false)
  (string-fact-schema  :message/subject false "the subject of this message" false false false false)
  (string-fact-schema  :message/text true "The body of the message" false false false false)
+ (string-fact-schema  :message/snippet false "The body of the message" false false false false)
  (instant-fact-schema :message/date false "The date the message was received" false false false false)
  (string-fact-schema  :message/from false "The platform ID of the sender" false false false false)
  (strings-fact-schema :message/to false "The platform ID of the receiver" false false false false)
