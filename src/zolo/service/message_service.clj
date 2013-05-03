@@ -14,11 +14,15 @@
             [zolo.demonic.core :as demonic]
             [zolo.utils.calendar :as zcal]))
 
+(defn- tag-user-identity [m ui]
+  (assoc m :message/user-identity (:db/id ui)))
+
 (defn- get-messages-for-user-identity [user-identity last-updated-seconds]
   (let [{provider :identity/provider
          access-token :identity/auth-token
          provider-uid :identity/provider-uid} user-identity]
-    (social/fetch-messages provider access-token provider-uid last-updated-seconds)))
+    (->> (social/fetch-messages provider access-token provider-uid last-updated-seconds)
+         (map #(tag-user-identity % user-identity)))))
 
 (defn- get-inbox-messages-for-user [u]
   (let [last-updated-seconds (zcal/to-seconds (message/get-last-message-date u))]

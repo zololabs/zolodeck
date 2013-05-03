@@ -98,6 +98,7 @@
 
 (schema-set "MESSAGE ENTITY FACTS"
  (uuid-fact-schema    :message/guid false "A GUID for messages" :db.unique/identity false false false)
+ (ref-fact-schema     :message/user-identity false "The UI this message was sourced from" false false false false)
  (string-fact-schema  :message/message-id false "ID for this message" false false false false)
  ;;TODO Need to store this
  (enum-fact-schema    :message/provider false "The platform: Facebook, LinkedIn, etc" false false false false)
