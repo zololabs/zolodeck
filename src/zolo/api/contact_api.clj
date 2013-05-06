@@ -23,12 +23,6 @@
      :body distilled-c}
     (resource-not-found)))
 
-;; (defn list-contacts [request-params]
-;;   (map fe/format-contact-info
-;;        (-> (user/current-user)
-;;            (contact/list-contacts {}))))
-
-
 
 
 
