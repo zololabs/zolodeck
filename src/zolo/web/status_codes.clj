@@ -4,6 +4,7 @@
   {:ok 200
    :created 201
    :found 302
+   :see-other 303
    :bad-request 400
    :forbidden 403
    :not-found 404})
