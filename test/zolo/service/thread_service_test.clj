@@ -31,7 +31,7 @@
       (let [f-uid (-> u :user/contacts first :contact/social-identities first :social/provider-uid)]
         (mocking [fb-chat/send-message]
           (m-service/new-message u {:text "Hey hello" :provider "facebook" :guid (-> u :user/guid str) :to [f-uid]}))
-        (let [dt (->> u u-store/reload t/all-threads second (t/distill u))]
+        (let [dt (->> u u-store/reload t/all-threads print-vals second (t/distill u))]
           (has-keys dt [:thread/guid :thread/subject :thread/lm-from-contact :thread/provider :thread/messages])
           (has-keys (:thread/lm-from-contact dt) [:contact/first-name :contact/last-name :contact/guid :contact/muted :contact/picture-url :contact/social-identities])
           (doseq [m (:thread/messages dt)]

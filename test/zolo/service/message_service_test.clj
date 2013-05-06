@@ -13,6 +13,7 @@
             [zolo.service.message-service :as m-service]
             [zolo.domain.contact :as contact]
             [zolo.domain.message :as message]
+            [zolo.domain.user-identity :as user-identity]
             [zolo.store.user-store :as u-store]
             [zolo.store.message-store :as m-store]
             [zolo.marconi.facebook.core :as fb-lab]
@@ -44,7 +45,8 @@
          (let [refreshed-mickey (-> db-mickey
                                     c-service/update-contacts-for-user
                                     m-service/update-inbox-messages)
-               ui-db-id (-> refreshed-mickey :user/user-identities first :db/id)
+               ui (-> refreshed-mickey :user/user-identities first)
+               ui-db-id (:db/id ui)
                refreshed-messages (->> refreshed-mickey
                                        :user/messages
                                        (sort-by message/message-date))]

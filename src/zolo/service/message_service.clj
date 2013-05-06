@@ -12,23 +12,35 @@
             [zolo.service.core :as service]
             [zolo.store.message-store :as m-store]
             [zolo.demonic.core :as demonic]
-            [zolo.utils.calendar :as zcal]))
+            [zolo.utils.calendar :as zcal]
+            [clj-time.coerce :as ctc]))
+
+(defn- messages-start-time-default-seconds [ui]
+  (condp = (:identity/provider ui)
+    :provider/facebook (-> #inst "2000-10-22" zcal/to-seconds)
+    :provider/email (-> (zcal/now-instant) (zcal/minus 7 :days) ctc/to-date zcal/to-seconds)
+    (throw (RuntimeException. (str "Unknown provider: " (:identity/provider ui))))))
+
+(defn- last-updated-time-seconds [ui]
+  (or (-not-nil-> (message/get-last-message-date ui)
+                  zcal/to-seconds)
+      (messages-start-time-default-seconds ui)))
 
 (defn- tag-user-identity [m ui]
   (assoc m :message/user-identity (:db/id ui)))
 
-(defn- get-messages-for-user-identity [user-identity last-updated-seconds]
+(defn- get-messages-for-user-identity [user-identity]
   (let [{provider :identity/provider
          access-token :identity/auth-token
-         provider-uid :identity/provider-uid} user-identity]
+         provider-uid :identity/provider-uid} user-identity
+         last-updated-seconds (print-vals "Last M-Date:" (last-updated-time-seconds user-identity))]
     (->> (social/fetch-messages provider access-token provider-uid last-updated-seconds)
          (map #(tag-user-identity % user-identity)))))
 
 (defn- get-inbox-messages-for-user [u]
-  (let [last-updated-seconds (zcal/to-seconds (message/get-last-message-date u))]
-    (->> u
-         :user/user-identities
-         (mapcat #(get-messages-for-user-identity % last-updated-seconds)))))
+  (->> u
+       :user/user-identities
+       (mapcat get-messages-for-user-identity)))
 
  ;; Services
 (defn update-inbox-messages [u]
