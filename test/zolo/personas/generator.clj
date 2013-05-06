@@ -222,3 +222,10 @@
 (defn generate-domain-all [specs]
   (personas/domain-persona (generate-all specs)))
 
+;;;; RUNNER
+
+(defmacro run-generative-tests [user-variable specs & body]
+  `(doseq [g-spec# (generative-specs ~specs)]
+     (print-vals "*************************** Running Generative Test Scenario:\n" g-spec#)
+     (let [~user-variable (generate-user g-spec#)]
+       ~@body)))
