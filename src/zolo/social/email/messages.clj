@@ -3,7 +3,8 @@
           zolo.utils.clojure)
     (:require [zolo.social.email.gateway :as gateway]
               [zolo.utils.domain :as domain]
-              [zolo.utils.calendar :as zcal]))
+              [zolo.utils.calendar :as zcal]
+              [zolo.utils.string :as zstring]))
 
 (defn to [m]
   (get-in m [:addresses :to]))
@@ -11,12 +12,18 @@
 (defn from [m]
   (get-in m [:addresses :from :email]))
 
+(defn- snippet [m]
+  (let [t (:content m)]
+    (if (<= (count t) 140)
+      t
+      (zstring/snippet t))))
+
 (defn cio-message->message [m]
   (domain/force-schema-types
    {:message/message-id (:email_message_id m)
     :message/provider :provider/email
     :message/subject (:subject m)
-    ;; :message/text
+    :message/text (snippet m)
     :message/date (-> m :date_received zcal/seconds->instant)
     :message/from (from m)
     :message/to (->> m to (map :email))

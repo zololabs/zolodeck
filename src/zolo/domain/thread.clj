@@ -77,6 +77,9 @@
 
 (def ^:private is-reply-to? (complement is-follow-up?))
 
+(defn- sort-by-recent-threads [threads]
+  (reverse-sort-by #(-> % :thread/messages first m/message-date) threads))
+
 (defn all-threads [u]
   (it-> u
         (m/all-messages it)
@@ -86,11 +89,13 @@
   (it-> u
         (all-threads it)
         (filter #(is-reply-to? u %) it)
-        (filter #(reply-to-contact-exists? u %) it)))
+        (filter #(reply-to-contact-exists? u %) it)
+        (sort-by-recent-threads it)))
 
 (defn find-follow-up-threads [u]
   (it-> u
         (all-threads it)
         (filter #(is-follow-up? u %) it)
-        (filter #(follow-up-contact-exists? u %) it)))
+        (filter #(follow-up-contact-exists? u %) it)
+        (sort-by-recent-threads it)))
 

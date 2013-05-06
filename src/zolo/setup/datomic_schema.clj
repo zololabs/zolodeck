@@ -98,6 +98,7 @@
 
 (schema-set "MESSAGE ENTITY FACTS"
  (uuid-fact-schema    :message/guid false "A GUID for messages" :db.unique/identity false false false)
+ (ref-fact-schema     :message/user-identity false "The UI this message was sourced from" false false false false)
  (string-fact-schema  :message/message-id false "ID for this message" false false false false)
  ;;TODO Need to store this
  (enum-fact-schema    :message/provider false "The platform: Facebook, LinkedIn, etc" false false false false)
@@ -106,6 +107,7 @@
  (strings-fact-schema :message/attachments false "list of links" false false false false)
  (string-fact-schema  :message/subject false "the subject of this message" false false false false)
  (string-fact-schema  :message/text true "The body of the message" false false false false)
+ (string-fact-schema  :message/snippet false "The body of the message" false false false false)
  (instant-fact-schema :message/date false "The date the message was received" false false false false)
  (string-fact-schema  :message/from false "The platform ID of the sender" false false false false)
  (strings-fact-schema :message/to false "The platform ID of the receiver" false false false false)

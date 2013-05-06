@@ -21,7 +21,7 @@
     (doseq [u (pgen/generate-domain-all {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 9)]}
                                          :UI-IDS-ALLOWED [:FACEBOOK :EMAIL]
                                          :UI-IDS-COUNT 1})]
-      (let [dt (->> u t/all-threads first (t/distill u) print-vals)]
+      (let [dt (->> u t/all-threads first (t/distill u))]
         (has-keys dt [:thread/guid :thread/subject :thread/lm-from-contact :thread/provider :thread/messages])
         (has-keys (:thread/lm-from-contact dt) [:contact/first-name :contact/last-name :contact/guid :contact/muted :contact/picture-url :contact/social-identities])
         (doseq [m (:thread/messages dt)]

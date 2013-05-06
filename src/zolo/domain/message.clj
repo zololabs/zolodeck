@@ -3,8 +3,9 @@
         zolo.utils.clojure)
   (:require [clojure.set :as set]
             [zolo.utils.maps :as zolo-maps]
-            [zolo.utils.calendar :as zolo-cal]
-            [zolo.utils.domain :as utils-domain]
+            [zolo.utils.calendar :as zcal]
+            [zolo.utils.string :as zstring]
+            [zolo.utils.domain :as domain]
             [zolo.domain.user-identity :as ui]
             [zolo.domain.social-identity :as si]
             [zolo.social.core :as social]            
@@ -13,7 +14,7 @@
             [zolo.utils.logger :as logger]))
 
 (def MESSAGES-START-TIME #inst "2000-10-22")
-(def MESSAGES-START-TIME-SECONDS (-> MESSAGES-START-TIME .getTime zolo-cal/to-seconds))
+(def MESSAGES-START-TIME-SECONDS (-> MESSAGES-START-TIME .getTime zcal/to-seconds))
 
 ;;TODO test
 (defn is-temp-message? [m]
@@ -32,7 +33,7 @@
        (:message/date m)))
   ([m tz-offset-minutes]
      (-not-nil-> (message-date m)
-                 (zolo-cal/in-time-zone tz-offset-minutes))))
+                 (zcal/in-time-zone tz-offset-minutes))))
 
 ;;TODO test
 (defn thread-id [m]
@@ -133,17 +134,8 @@
        (sort-by message-date)
        last))
 
-(defn extract-snippet [text]
-  (let [s (subs text 0 140)]
-    (if (> (count text) 140)
-      (str s "...")
-      s)))
-
 (defn snippet [m]
-  (let [t (message-text m)]
-    (if (<= (count t) 140)
-      t
-      (extract-snippet t))))
+  (zstring/snippet (message-text m) 140))
 
 (defn is-sent-by-user? [u m]
   (it-> u
@@ -213,18 +205,18 @@
    :temp-message/text text
    :temp-message/thread-id (or thread-id (random-guid-str))
    :temp-message/mode "INBOX"
-   :temp-message/date (zolo-cal/now-instant)})
+   :temp-message/date (zcal/now-instant)})
 
 ;; (defn feeds-start-time-seconds []
-;;   (-> (zolo-cal/now-joda)
-;;       (zolo-cal/minus 1 :week)
-;;       (zolo-cal/to-seconds)))
+;;   (-> (zcal/now-joda)
+;;       (zcal/minus 1 :week)
+;;       (zcal/to-seconds)))
 
 ;; (defn message-identifier [m]
 ;;   [(dom/message-provider m) (dom/message-id m)])
 
 ;; (defn refreshed-messages [user fresh-messages]
-;;   (utils-domain/update-fresh-entities-with-db-id (:user/messages user)
+;;   (domain/update-fresh-entities-with-db-id (:user/messages user)
 ;;                                                  fresh-messages
 ;;                                                  message-identifier
 ;;                                                  dom/message-guid))
@@ -242,7 +234,7 @@
 ;;                   (sort-by :message/date)
 ;;                   last
 ;;                   :message/date)
-;;         seconds (if date (-> date .getTime zolo-cal/to-seconds))]
+;;         seconds (if date (-> date .getTime zcal/to-seconds))]
 ;;     (->> user
 ;;          :user/user-identities
 ;;          (mapcat #(get-messages-for-user-identity % (or seconds MESSAGES-START-TIME-SECONDS))))))
@@ -264,7 +256,7 @@
 ;;          auth-token (-> user (dom/user-identity-for-provider provider) :identity/auth-token)
 ;;          fmg (group-by dom/message-provider feed-messages)
 ;;          date (->> provider fmg (sort-by dom/message-date) last dom/message-date)
-;;          seconds (if date (-> date .getTime zolo-cal/to-seconds))
+;;          seconds (if date (-> date .getTime zcal/to-seconds))
 ;;          feed-messages (social/fetch-feed provider auth-token contact-uid (or seconds (feeds-start-time-seconds)))]
 ;;      (demonic/append-multiple user :user/messages feed-messages))))
 

@@ -43,13 +43,16 @@
        (testing  "User with no previous messages"
          (let [refreshed-mickey (-> db-mickey
                                     c-service/update-contacts-for-user
-                                    m-service/update-inbox-messages)]
+                                    m-service/update-inbox-messages)
+               ui-db-id (-> refreshed-mickey :user/user-identities first :db/id)
+               refreshed-messages (->> refreshed-mickey
+                                       :user/messages
+                                       (sort-by message/message-date))]
 
            (db-assert/assert-datomic-message-count 3)
-
-           (d-assert/messages-list-are-same [m1 m2 m3] (->> refreshed-mickey
-                                                            :user/messages
-                                                            (sort-by message/message-date)))))
+           (d-assert/messages-list-are-same [m1 m2 m3] refreshed-messages)
+           (doseq [m refreshed-messages]
+             (is (= ui-db-id (-> m :message/user-identity :db/id))))))
 
        (testing "When previous messages are present it should not override"
 
