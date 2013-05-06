@@ -1,4 +1,4 @@
-(defproject com.currylogic/zolodeck-api "0.1.0-SNAPSHOT"
+(defproject zololabs/zolodeck-api "0.1.0-SNAPSHOT"
   :description "Zolodeck API"
 
   :dependencies [[org.clojure/clojure "1.5.1"]
