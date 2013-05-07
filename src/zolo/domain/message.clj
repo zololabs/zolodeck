@@ -13,8 +13,8 @@
             [zolo.demonic.core :as demonic]
             [zolo.utils.logger :as logger]))
 
-(def MESSAGES-START-TIME #inst "2000-10-22")
-(def MESSAGES-START-TIME-SECONDS (-> MESSAGES-START-TIME .getTime zcal/to-seconds))
+;; (def MESSAGES-START-TIME #inst "2000-10-22")
+;; (def MESSAGES-START-TIME-SECONDS (-> MESSAGES-START-TIME .getTime zcal/to-seconds))
 
 ;;TODO test
 (defn is-temp-message? [m]
@@ -42,15 +42,21 @@
     (:message/thread-id m)))
 
 ;;TODO test
-(defn get-last-message-date [u]
-  (or (->> u
-           :user/messages
-           (remove is-temp-message?)
-           (sort-by :message/date)
-           last
-           :message/date)
-      MESSAGES-START-TIME))
+;; (defn get-last-message-date [u]
+;;   (or (->> u
+;;            :user/messages
+;;            (remove is-temp-message?)
+;;            (sort-by :message/date)
+;;            last
+;;            :message/date)
+;;       MESSAGES-START-TIME))
 
+(defn get-last-message-date [ui]
+  (->> ui
+       ui/message-entitites
+       (sort-by message-date)
+       last
+       message-date))
 
 ;;TODO test
 (defn message-provider [m]
