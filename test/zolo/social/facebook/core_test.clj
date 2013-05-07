@@ -13,6 +13,8 @@
             [zolo.personas.factory :as personas]
             [zolo.personas.generator :as pgen]))
 
+(def DUMMY-MESSAGES-START-TIME-SECONDS 123123123)
+
 (deftest test-signup-user
   (personas/in-social-lab
    (let [mickey (fb-lab/create-user "Mickey" "Mouse")
@@ -55,7 +57,7 @@
            m4 (fb-lab/send-message mickey daisy "2" "Hi, how's  it going?" "2012-06-01 00:00")
            m5 (fb-lab/send-message daisy mickey "2" "Good, I finished writing the tests" "2012-06-02 00:00")]
        
-       (let [fb-messages (sort-by message/message-date (social/fetch-messages :provider/facebook (:access-token mickey) (:uid mickey) message/MESSAGES-START-TIME-SECONDS))]
+       (let [fb-messages (sort-by message/message-date (social/fetch-messages :provider/facebook (:access-token mickey) (:uid mickey) DUMMY-MESSAGES-START-TIME-SECONDS))]
          (c-assert/assert-message m1 (nth fb-messages 0))
          (c-assert/assert-message m2 (nth fb-messages 1))
          (c-assert/assert-message m3 (nth fb-messages 2))
@@ -78,7 +80,7 @@
            f2 (fb-lab/post-to-wall mickey daisy "happy birthday" "2012-05-02")
            f3 (fb-lab/post-to-wall daisy donald "check this picture" "2012-06-02")]
        
-       (let [[donald1 donald3] (sort-by message/message-date (social/fetch-feed :provider/facebook (:access-token mickey) (:uid donald) message/MESSAGES-START-TIME-SECONDS))]
+       (let [[donald1 donald3] (sort-by message/message-date (social/fetch-feed :provider/facebook (:access-token mickey) (:uid donald) DUMMY-MESSAGES-START-TIME-SECONDS))]
          (c-assert/assert-feed f1 donald1)
          (c-assert/assert-feed f3 donald3))))))
 
