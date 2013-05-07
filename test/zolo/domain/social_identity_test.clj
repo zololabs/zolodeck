@@ -9,13 +9,13 @@
             [zolo.personas.generator :as pgen]))
 
 (deftest test-not-a-person
-  (demonic-testing "when SIs have clean email-addresses"
+  (testing "when SIs have clean email-addresses"
     (run-as-of "2012-05-12"
-      (pgen/run-generative-tests u {:SPECS {:friends [(pgen/create-friend-spec "Lucky" "Strike" 1 1)
-                                                      (pgen/create-friend-spec "Mighty" "Mouse" 2 5)
-                                                      (pgen/create-friend-spec "Bat" "Man" 3 10)
-                                                      (pgen/create-friend-spec "Hello" "Man" 5 20)
-                                                      (pgen/create-friend-spec "R2" "D2" 7 30)]}
+      (pgen/run-demarcated-generative-tests u {:SPECS {:friends [(pgen/create-friend-spec "Lucky" "Strike" 1 1)
+                                                                 (pgen/create-friend-spec "Mighty" "Mouse" 2 5)
+                                                                 (pgen/create-friend-spec "Bat" "Man" 3 10)
+                                                                 (pgen/create-friend-spec "Hello" "Man" 5 20)
+                                                                 (pgen/create-friend-spec "R2" "D2" 7 30)]}
                                     :UI-IDS-ALLOWED [:EMAIL :FACEBOOK]
                                     :UI-IDS-COUNT 2}
                                  (let [sis (->> u :user/contacts (mapcat :contact/social-identities))]
@@ -23,9 +23,9 @@
                                    (doseq [s sis]
                                      (is (si/is-a-person s)))))))
   
-  (demonic-testing "when an SI has a suspect email-addresses"
+  (testing "when an SI has a suspect email-addresses"
     (run-as-of "2012-05-12"
-      (pgen/run-generative-tests u {:SPECS {:friends [(pgen/create-friend-spec "Lucky" "Strike" 1 1)
+      (pgen/run-demarcated-generative-tests u {:SPECS {:friends [(pgen/create-friend-spec "Lucky" "Strike" 1 1)
                                                       (pgen/create-friend-spec "Mighty" "Mouse" 2 5)
                                                       (pgen/create-friend-spec "Bat" "Man" 3 10)
                                                       (pgen/create-friend-spec "donotreply" "Man" 5 20)

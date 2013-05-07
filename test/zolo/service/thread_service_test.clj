@@ -26,13 +26,14 @@
   (demonic-testing "When user has a thread with some temp-messages, distillation should still work"
     (run-as-of "2012-05-12"
       (pgen/run-generative-tests u {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 2)]}
-                                    :UI-IDS-ALLOWED [:FACEBOOK :EMAIL]
+                                    :UI-IDS-ALLOWED [:FACEBOOK]
                                     :UI-IDS-COUNT 1}
-        (let [f-uid (-> u :user/contacts first :contact/social-identities first :social/provider-uid)]
+        (let [f-uid (-> u :user/contacts first
+                        :contact/social-identities first :social/provider-uid)]
           (mocking [fb-chat/send-message]
             (m-service/new-message u {:text "Hey hello" :provider "facebook" :guid (-> u :user/guid str) :to [f-uid]}))
+
           (let [all-t (->> u u-store/reload t/all-threads)
-                _ (is (= 2 (count all-t)))
                 dt (->> all-t second (t/distill u))]
             (has-keys dt [:thread/guid :thread/subject :thread/lm-from-contact :thread/provider :thread/messages])
             (has-keys (:thread/lm-from-contact dt) [:contact/first-name :contact/last-name :contact/guid :contact/muted :contact/picture-url :contact/social-identities])

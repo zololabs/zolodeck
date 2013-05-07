@@ -33,7 +33,7 @@
   (let [{provider :identity/provider
          access-token :identity/auth-token
          provider-uid :identity/provider-uid} user-identity
-         last-updated-seconds (print-vals "Last M-Date:" (last-updated-time-seconds user-identity))]
+         last-updated-seconds (last-updated-time-seconds user-identity)]
     (->> (social/fetch-messages provider access-token provider-uid last-updated-seconds)
          (map #(tag-user-identity % user-identity)))))
 
