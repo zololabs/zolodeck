@@ -7,9 +7,9 @@
 (def ^:dynamic *creds* (oauth/make-oauth-creds (conf/context-io-key) (conf/context-io-secret)))
 
 (defn get-data- [data-fn account-id limit offset other-params results-key-seq results]
-  (let [resp (data-fn *creds* :params (time (print-vals "GetData:" data-fn
-                                                        (merge {:account-id account-id :limit limit :offset offset}
-                                                               other-params))))]
+  (let [resp (data-fn *creds* :params (print-vals "GetData:" data-fn
+                                                  (merge {:account-id account-id :limit limit :offset offset}
+                                                         other-params)))]
     (if (not= 200 (get-in resp [:status :code]))
       results
       (let [cs (get-in resp results-key-seq)
@@ -29,7 +29,23 @@
 
 (defn get-messages
   ([account-id date-after-in-seconds]
-     (get-data- context-io/list-account-messages account-id 1000 0 {:date_after date-after-in-seconds :include_body 1} [:body] []))
+     (get-data- context-io/list-account-messages account-id 1000 0 {:date_after date-after-in-seconds} [:body] []))
   ([account-id date-after-in-seconds date-before-in-seconds]
-     (get-data- context-io/list-account-messages account-id 1000 0 {:date_after date-after-in-seconds :date_before date-before-in-seconds :include_body 1} [:body] [])))
+     (get-data- context-io/list-account-messages account-id 1000 0 {:date_after date-after-in-seconds :date_before date-before-in-seconds} [:body] [])))
 
+(defn- gmail-prefixed [thread-id]
+  (if (.startsWith thread-id "gm-")
+    thread-id
+    (str "gm-" thread-id)))
+
+(defn get-gmail-thread [account-id thread-id]
+  (context-io/get-account-thread
+   *creds*
+   :params
+   {:account-id account-id :thread-id (gmail-prefixed thread-id) :include_body 1}))
+
+(defn get-thread [account-id message-id-in-thread]
+  (context-io/list-account-messages-in-thread
+   *creds*
+   :params
+   {:account-id account-id :message-id message-id-in-thread :include_body 1}))
