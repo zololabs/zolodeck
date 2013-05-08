@@ -10,32 +10,36 @@
 
 (deftest test-not-a-person
   (testing "when SIs have clean email-addresses"
-    (doseq [u (pgen/generate-domain-all {:SPECS {:friends [(pgen/create-friend-spec "Lucky" "Strike" 1 1)
-                                                           (pgen/create-friend-spec "Mighty" "Mouse" 2 5)
-                                                           (pgen/create-friend-spec "Bat" "Man" 3 10)
-                                                           (pgen/create-friend-spec "Hello" "Man" 5 20)
-                                                           (pgen/create-friend-spec "R2" "D2" 7 30)]}
-                                         :UI-IDS-ALLOWED [:EMAIL :FACEBOOK]
-                                         :UI-IDS-COUNT 2})]
-      (let [sis (->> u :user/contacts (mapcat :contact/social-identities))]
-        (is (= 5 (count sis)))
-        (doseq [s sis]
-          (is (si/is-a-person s))))))
-
+    (run-as-of "2012-05-12"
+      (pgen/run-demarcated-generative-tests u {:SPECS {:friends [(pgen/create-friend-spec "Lucky" "Strike" 1 1)
+                                                                 (pgen/create-friend-spec "Mighty" "Mouse" 2 5)
+                                                                 (pgen/create-friend-spec "Bat" "Man" 3 10)
+                                                                 (pgen/create-friend-spec "Hello" "Man" 5 20)
+                                                                 (pgen/create-friend-spec "R2" "D2" 7 30)]}
+                                    :UI-IDS-ALLOWED [:EMAIL :FACEBOOK]
+                                    :UI-IDS-COUNT 2}
+                                 (let [sis (->> u :user/contacts (mapcat :contact/social-identities))]
+                                   (is (= 5 (count sis)))
+                                   (doseq [s sis]
+                                     (is (si/is-a-person s)))))))
+  
   (testing "when an SI has a suspect email-addresses"
-    (doseq [u (pgen/generate-domain-all {:SPECS {:friends [(pgen/create-friend-spec "Lucky" "Strike" 1 1)
-                                                           (pgen/create-friend-spec "Mighty" "Mouse" 2 5)
-                                                           (pgen/create-friend-spec "Bat" "Man" 3 10)
-                                                           (pgen/create-friend-spec "donotreply" "Man" 5 20)
-                                                           (pgen/create-friend-spec "R2" "D2" 7 30)]}
-                                         :UI-IDS-ALLOWED [:EMAIL :FACEBOOK]
-                                         :UI-IDS-COUNT 2})]
-      (let [sis (->> u :user/contacts (mapcat :contact/social-identities))]
-        (is (= 5 (count sis)))
-        (doseq [s sis]
-          (if (= "donotreply@Man.com" (:social/provider-uid s))
-            (is-not (si/is-a-person s))
-            (is (si/is-a-person s))))))))
+    (run-as-of "2012-05-12"
+      (pgen/run-demarcated-generative-tests u {:SPECS {:friends [(pgen/create-friend-spec "Lucky" "Strike" 1 1)
+                                                      (pgen/create-friend-spec "Mighty" "Mouse" 2 5)
+                                                      (pgen/create-friend-spec "Bat" "Man" 3 10)
+                                                      (pgen/create-friend-spec "donotreply" "Man" 5 20)
+                                                      (pgen/create-friend-spec "R2" "D2" 7 30)]}
+                                    :UI-IDS-ALLOWED [:EMAIL :FACEBOOK]
+                                    :UI-IDS-COUNT 2}
+                                 (let [sis (->> u :user/contacts (mapcat :contact/social-identities))]
+                                   (is (= 5 (count sis)))
+                                   (doseq [s sis]
+                                     (if (= "donotreply@Man.com" (:social/provider-uid s))
+                                       (is-not (si/is-a-person s))
+                                       (is (si/is-a-person s))))))))
+
+  )
 
 ;; (deftest test-update
 ;;   (demonic-testing "Should throw Runtime Exception when nil is passed"

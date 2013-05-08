@@ -1,7 +1,7 @@
 (ns zolo.domain.user-identity
-  (:use zolo.utils.debug
-        [zolo.demonic.core :only [run-query load-entity]])
-  (:require [zolo.demonic.core :as demonic]))
+  (:use zolo.utils.debug)
+  (:require [zolo.demonic.core :as demonic]
+            [zolo.demonic.helper :as dh]))
 
 ;;TODO tests for this whole namespace
 
@@ -48,7 +48,7 @@
                               [?u :identity/permissions-granted true ?tx]]
                             uig)
          ffirst
-         load-entity
+         demonic/load-entity
          :db/txInstant)))
 
 (defn fb-email [u]
@@ -56,3 +56,17 @@
        fb-user-identity
        :identity/email))
 
+(defn- find-messages [ui]
+  (->> (demonic/run-query '[:find ?m :in $ ?ui
+                            :where
+                            [?m :message/user-identity ?ui]]
+                          (:db/id ui))
+       (map first)))
+
+(defn messages [ui]
+  (->> (find-messages ui)
+       (map demonic/load-entity)))
+
+(defn message-entitites [ui]
+  (->> (find-messages ui)
+       (map dh/load-from-db)))

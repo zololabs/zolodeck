@@ -54,6 +54,7 @@
 (defn fake-fetch-inbox [at date]
   (let [res (-> (fb-lab/current-user)
                 (fb-lab/fetch-messages date))]
+    ;(print-vals "FakeFetchInbox returning " (count res) " messages...")
     res))
 
 (defn fake-extended-access-token [& args]
@@ -137,4 +138,7 @@
 ;;   (with-demonic-demarcation true (f)))
 
 (defmacro domain-persona [& body]
+  `(with-demonic-demarcation true ~@body))
+
+(defmacro in-test-demarcation [& body]
   `(with-demonic-demarcation true ~@body))

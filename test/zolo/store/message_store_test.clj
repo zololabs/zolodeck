@@ -10,6 +10,8 @@
             [zolo.marconi.facebook.core :as fb-lab]
             [zolo.social.core :as social]))
 
+(def DUMMY-MESSAGES-START-TIME-SECONDS 123123123)
+
 (demonictest test-append-messages
   (personas/in-social-lab
    (let [mickey (fb-lab/create-user "Mickey" "Mouse")
@@ -28,7 +30,7 @@
 
        (db-assert/assert-datomic-message-count 0)
 
-       (let [messages (social/fetch-messages :provider/facebook "at" "pid" message/MESSAGES-START-TIME-SECONDS)
+       (let [messages (social/fetch-messages :provider/facebook "at" "pid" DUMMY-MESSAGES-START-TIME-SECONDS)
              u-db-mickey (m-store/append-messages db-mickey messages)]
 
          (testing "When no messages are present"
@@ -47,7 +49,7 @@
          
              (db-assert/assert-datomic-message-count 3)
 
-             (let [messages (social/fetch-messages :provider/facebook "at" "pid" message/MESSAGES-START-TIME-SECONDS)
+             (let [messages (social/fetch-messages :provider/facebook "at" "pid" DUMMY-MESSAGES-START-TIME-SECONDS)
                    u-db-mickey (m-store/append-messages u-db-mickey messages)]
 
                (db-assert/assert-datomic-message-count 5)

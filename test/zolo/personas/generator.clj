@@ -55,10 +55,6 @@
   (doseq [msg-info (generate-messages u friend no-of-i no-of-m)]
     (apply fb-lab/send-message msg-info)))
 
-(defn- generate-emails [u friend no-of-i no-of-m]
-  (doseq [msg-info (generate-messages u friend no-of-i no-of-m)]
-    (apply fb-lab/send-message msg-info)))
-
 (def DEFAULT-SPECS {:first-name "first"
                     :last-name "last"
                     :friends []})
@@ -108,20 +104,22 @@
   (let [msg-counts (repeat (int (/ message-count interaction-count)) interaction-count)]
     (conj (butlast msg-counts) (+ (mod message-count interaction-count) (last msg-counts)))))
 
-(defn send-emails-for-interaction [user-email friend-email interaction-email-count interaction-date]
+(defn send-emails-for-interaction [user-email friend-email thread-id interaction-email-count interaction-date]
   (dotimes [x interaction-email-count]
-    (let [f (rand-int 2) t (- 1 f)
+    (let [f (rand-int 2)
+          t (- 1 f)
           from (nth [user-email friend-email] f)
           to (nth [user-email friend-email] t)]
-      (apply email-lab/send-message (flatten [(zcal/date-to-string interaction-date) from to (str "SUB:" (random-guid-str)) (str "BODY:" (random-guid-str))])))))
+      (apply email-lab/send-message (flatten [(zcal/date-to-string interaction-date) from to (str "SUB:" (random-guid-str)) thread-id (str "BODY:" (random-guid-str))])))))
 
 (defn setup-email-ui [specs]
   (let [{first-name :first-name last-name :last-name :as specs} (merge DEFAULT-SPECS specs)
         u (email-lab/create-account first-name last-name (str first-name "@" last-name ".com"))]
     (doseq [{no-of-messages :no-of-messages no-of-interactions :no-of-interactions :as friend} (:friends specs)]
-      (let [friend-email (str (:first-name friend) "@" (:last-name friend) ".com")]
+      (let [friend-email (str (:first-name friend) "@" (:last-name friend) ".com")
+            thread-id (str "THREAD-ID-FAKE:" (random-guid-str))]
         (doall
-         (map #(send-emails-for-interaction (:email-address u) friend-email  %1 %2)
+         (map #(send-emails-for-interaction (:email-address u) friend-email thread-id  %1 %2)
               (email-count-distribution no-of-interactions no-of-messages)
               ;;TODO Why tests fail when I use simple-date-stream
               (zcal/inc-date-stream (zcal/date-string->instant "yyyy-MM-dd" "2012-05-10"))))))
@@ -175,9 +173,13 @@
 (defn- get-spec-combos [specs]
   ;; TODO - use (:UI-IDS-COUNT specs) instead of (count (:UI-IDS-ALLOWED specs))  
   ;; when you can have more than one FB or EMAIL account
+  ;; Also, not supporting multiple FB accounts right now
   (let [ui-combos (combo/selections (:UI-IDS-ALLOWED specs) (count (:UI-IDS-ALLOWED specs)))
+        ui-combos (remove #(= '(:FACEBOOK :FACEBOOK) %) ui-combos)
+        _ (print-vals "UI-COMBOS:" ui-combos)
         f-count (count (get-in specs [:SPECS :friends]))
-        f-combos (filter #(= f-count (apply + %)) (combo/selections (range (inc f-count)) (count (:UI-IDS-ALLOWED specs))))
+        f-combos (filter #(= f-count (apply + %))
+                         (combo/selections (range (inc f-count)) (count (:UI-IDS-ALLOWED specs))))
         ui-repeated (apply concat (repeat ui-combos))
         spec-pairs (map list ui-repeated f-combos)
         spec-combos (map (fn [[ui-combos f-combos]]
@@ -222,3 +224,16 @@
 (defn generate-domain-all [specs]
   (personas/domain-persona (generate-all specs)))
 
+;;;; RUNNER
+
+(defmacro run-generative-tests [user-variable specs & body]
+  `(doseq [g-spec# (generative-specs ~specs)]
+     (print-vals "*************************** Running Generative Test Scenario:\n" g-spec#)
+     (let [~user-variable (generate-user g-spec#)]
+       ~@body)))
+
+(defmacro run-demarcated-generative-tests [user-variable specs & body]
+  `(doseq [g-spec# (generative-specs ~specs)]
+     (print-vals "*************************** Running Generative Test Scenario:\n" g-spec#)
+     (let [~user-variable (personas/in-test-demarcation (generate-user g-spec#))]
+       ~@body)))
