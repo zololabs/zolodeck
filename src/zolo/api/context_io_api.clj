@@ -12,12 +12,12 @@
 
 ;;TODO Clean up this namespace and also write test
 
-(defn exchange-code-for-token [code]
+(defn exchange-code-for-token [code callback-url]
   (-> (http/post "https://accounts.google.com/o/oauth2/token"
                  {:form-params {:code code
                                 :client_id (conf/google-key)
                                 :client_secret (conf/google-secret)
-                                :redirect_uri "http://dev.zolodeck.com/google_callback.html"
+                                :redirect_uri callback-url
                                 :grant_type "authorization_code"}
                   :throw-entire-message? true})
       :body
@@ -34,9 +34,9 @@
         (print-vals-> "Google User Info")
         (merge token-info))))
 
-(defn user-info [g-code]
+(defn user-info [g-code callback-url]
   (-> g-code
-      exchange-code-for-token
+      (exchange-code-for-token callback-url)
       google-user-info))
 
 (defn context-io-account-id [g-user-info]
@@ -46,8 +46,8 @@
         :id)))
 
 (defn get-account [request-params]
-  (let [{g-code :google_code} request-params
-        u-info (user-info g-code)]
+  (let [{g-code :google_code callback-url :callback_url} request-params
+        u-info (user-info g-code callback-url)]
     {:status (STATUS-CODES :ok)
      :body (print-vals "Ci ACCOUNT ID" {:ci_account_id (context-io-account-id u-info)})}))
 
