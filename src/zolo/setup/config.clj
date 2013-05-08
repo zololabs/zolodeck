@@ -39,6 +39,12 @@
 (defn context-io-secret []
   (get-in CONFIG-MAP [:configs ENV :context-io-secret]))
 
+(defn google-key []
+  (get-in CONFIG-MAP [:configs ENV :google-key]))
+
+(defn google-secret []
+  (get-in CONFIG-MAP [:configs ENV :google-secret]))
+
 (defn li-api-key []
   (get-in CONFIG-MAP [:configs ENV :li-api-key]))
 

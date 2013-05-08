@@ -33,13 +33,13 @@
   (-> #{:zolo.roles/user}
       (mark-as-owner-if-needed user request)))
 
-(defn- get-search-roles-for-existing-user [fb-id request]
-  (if (= fb-id (get-in request [:params :login_provider_uid]))
+(defn- get-search-roles-for-existing-user [id request]
+  (if (= id (get-in request [:params :login_provider_uid]))
     #{:zolo.roles/user :zolo.roles/owner}
     #{:zolo.roles/user}))
 
-(defn- get-roles-for-potential-user [fb-id request]
-  (if (= fb-id (get-in request [:params :login_provider_uid]))
+(defn- get-roles-for-potential-user [id request]
+  (if (= id (get-in request [:params :login_provider_uid]))
     #{:zolo.roles/potential :zolo.roles/owner}
     #{:zolo.roles/potential}))
 
@@ -48,7 +48,6 @@
 
 (defn user-search-uri? [request]
   (re-find #"/users$" (:uri request)))
-
 
 (defn authenticate-using-facebook [signed-request request]
   (let [fb-id (-> signed-request
@@ -69,8 +68,24 @@
 
        :else (throw (RuntimeException. (str "Unknown situation found trying to authenticate-using-facebook" request)))))))
 
+(defn authenticate-using-email [cio-account-id request]
+  (let [user (u-store/find-by-provider-and-provider-uid :provider/email cio-account-id)]
+    (cond
+     (and user (user-guid-in-uri? request)) (workflows/make-auth {:identity (:user/guid user)                                                                          :roles (get-roles-for-existing-user  user request)}
+                                                                 {::friend/redirect-on-auth? false})
+
+     (and user (user-search-uri? request)) (workflows/make-auth {:identity (:user/guid user)                                                                          :roles (get-search-roles-for-existing-user cio-account-id request)}
+                                                                {::friend/redirect-on-auth? false})
+
+     (not user) (workflows/make-auth {:identity "potential-user"
+                                      :roles (get-roles-for-potential-user cio-account-id request)}
+                                     {::friend/redirect-on-auth? false})
+
+     :else (throw (RuntimeException. (str "Unknown situation found trying to authenticate-using-email" request))))))
+
 (defn authenticate [{{:strs [authorization]} :headers :as request}]
   (when authorization
     (let [[provider access-token] (-> authorization zstring/decode-base64 (string/split #" "))]
-      (if (= provider social/FACEBOOK)
-        (authenticate-using-facebook access-token request)))))
+      (condp = provider
+        social/FACEBOOK (authenticate-using-facebook access-token request)
+        social/EMAIL (authenticate-using-email access-token request)))))

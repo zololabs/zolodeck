@@ -12,7 +12,7 @@
     :identity/email (-> ui :email_addresses first)
     :identity/permissions-granted true}))
 
-(defn user-identity [account-id]
-  (-> account-id
+(defn user-identity [cio-account-id]
+  (-> cio-account-id
       gateway/get-account
       to-user-identity))

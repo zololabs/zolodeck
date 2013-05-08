@@ -12,6 +12,7 @@
              [zolo.utils.logger :as logger]
              [zolo.setup.config :as config]
              [zolo.social.bootstrap]
+             [zolo.service.bootstrap]
              [zolo.web :as web]
              [compojure.route :as route]
              [ring.middleware.keyword-params :as kw-params-mw]
@@ -25,7 +26,8 @@
              [zolo.api.suggestion-set-api :as ss-api]
              [zolo.api.stats-api :as s-api]
              [zolo.api.thread-api :as t-api]
-             [zolo.api.server-api :as server-api]))
+             [zolo.api.server-api :as server-api]
+             [zolo.api.context-io-api :as cio-api]))
 
 (derive :zolo.roles/owner :zolo.roles/user)
 
@@ -64,6 +66,9 @@
   ;;anonymous access
   (POST "/users" {params :params} (-> params user-api/new-user))
 
+  ;;Context IO
+  (GET "/context_io/account" {params :params} (cio-api/get-account params))
+  
   ;;GENERAL
   (GET "/server/status" {params :params} (server-api/status params))
 
