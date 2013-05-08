@@ -28,6 +28,17 @@
         :access_token (get-in fb-creds [:providerLoginInfo :authResponse :accessToken])
         :login_provider_uid (get-in fb-creds [:providerLoginInfo :authResponse :userID])})))
 
+(defn email-request-params
+  ([email-user permission-granted?]
+     (email-request-params email-user permission-granted? 420))
+  ([email-user permission-granted? login-tz]
+     {:login_provider "EMAIL"
+      :guid nil
+      :login_tz login-tz
+      :permissions_granted permission-granted?
+      :access_token (:access-token email-user)
+      :login_provider_uid (:email-address email-user)}))
+
 (defn fake-extended-user-info [at uid]
   (-> uid
       fb-lab/get-user
@@ -98,10 +109,6 @@
   (-> fb-user
       create-domain-user-from-fb-user
       u-store/save))
-
-(defn email-request-params [email-user]
-  {:account-id (:account-id email-user)
-   :login_provider social/EMAIL})
 
 (defn fetch-email-ui [email-user]
   (-> email-user

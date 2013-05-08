@@ -12,7 +12,8 @@
            [zolo.domain.message :as message]
            [zolo.test.assertions.datomic :as db-assert]
            [zolo.test.assertions.domain :as d-assert]
-           [zolo.marconi.facebook.core :as fb-lab]))
+           [zolo.marconi.facebook.core :as fb-lab]
+           [zolo.marconi.context-io.core :as email-lab]))
 
 (deftest test-get-users
   (demonic-testing "when user is not present it should return nil"
@@ -65,9 +66,8 @@
          (db-assert/assert-datomic-user-count 1)
          (db-assert/assert-datomic-user-identity-count 1))))))
 
-
-(deftest test-new-user
-  (demonic-testing "new user sign up - good request"
+(deftest test-new-user-using-facebook
+  (demonic-testing "new user sign up using Facebook - good request"
     (personas/in-social-lab
      (let [mickey (fb-lab/create-user "Mickey" "Mouse")]
 
@@ -103,6 +103,25 @@
 
     (db-assert/assert-datomic-user-count 0)
     (db-assert/assert-datomic-user-identity-count 0)))
+
+
+(deftest test-new-user-using-email
+  (demonic-testing "new user sign up using Google - good request"
+    (personas/in-social-lab
+     (let [mickey (email-lab/create-account "Mickey" "Mouse" "Mickey.Mouse@gmail.com")]
+
+       (print-vals mickey)
+
+       (db-assert/assert-datomic-user-count 0)
+       (db-assert/assert-datomic-user-identity-count 0)
+       
+       (let [distilled-mickey (u-service/new-user (personas/email-request-params mickey true))
+             d-mickey (u-store/reload distilled-mickey)]
+         (is (= "Mickey.Mouse@gmail.com" (:user/email distilled-mickey)))
+
+         (is (-> d-mickey :user/user-identities first :identity/permissions-granted))
+         (db-assert/assert-datomic-user-count 1)
+         (db-assert/assert-datomic-user-identity-count 1))))))
 
 
 (demonictest ^:storm test-refresh-user-data-and-scores
