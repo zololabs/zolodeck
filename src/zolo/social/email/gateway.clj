@@ -7,9 +7,9 @@
 (def ^:dynamic *creds* (oauth/make-oauth-creds (conf/context-io-key) (conf/context-io-secret)))
 
 (defn get-data- [data-fn account-id limit offset other-params results-key-seq results]
-  (let [resp (data-fn *creds* :params (print-vals "GetData:" data-fn
-                                                  (merge {:account-id account-id :limit limit :offset offset}
-                                                         other-params)))]
+  (let [resp (data-fn *creds* :params (time (print-vals "GetData:" data-fn
+                                                        (merge {:account-id account-id :limit limit :offset offset}
+                                                               other-params))))]
     (if (not= 200 (get-in resp [:status :code]))
       results
       (let [cs (get-in resp results-key-seq)
@@ -24,8 +24,12 @@
 (defn get-account [account-id]
   (context-io/get-account *creds* :params {:id account-id}))
 
-(defn get-contacts [account-id date-in-seconds]
-  (get-data- context-io/list-account-contacts account-id 500 0 {:active_after date-in-seconds} [:body :matches] []))
+(defn get-contacts [account-id date-after-in-seconds]
+  (get-data- context-io/list-account-contacts account-id 500 0 {:active_after date-after-in-seconds} [:body :matches] []))
 
-(defn get-messages [account-id date-in-seconds]
-  (get-data- context-io/list-account-messages account-id 1000 0 {:date_after date-in-seconds} [:body] []))
+(defn get-messages
+  ([account-id date-after-in-seconds]
+     (get-data- context-io/list-account-messages account-id 1000 0 {:date_after date-after-in-seconds :include_body 1} [:body] []))
+  ([account-id date-after-in-seconds date-before-in-seconds]
+     (get-data- context-io/list-account-messages account-id 1000 0 {:date_after date-after-in-seconds :date_before date-before-in-seconds :include_body 1} [:body] [])))
+
