@@ -1,7 +1,19 @@
 (use 'zolo.demonic.core 'zolo.utils.clojure)
 
 
-(require '[zolo.domain.user :as u] '[zolo.domain.contact :as c] '[zolo.domain.message :as m] '[zolo.stats.activity :as act] '[zolo.domain.interaction :as int] '[zolo.utils.calendar :as zolo-cal] '[zolo.api.user-api :as uapi] '[zolo.domain.user-identity :as ui] '[datomic.api :as db] '[zolo.demonic.helper :as dh])
+(require '[zolo.domain.user :as u]
+         '[zolo.domain.contact :as c]
+         '[zolo.domain.message :as m]
+         '[zolo.domain.interaction :as int]
+         '[zolo.domain.user-identity :as ui]
+
+         '[zolo.store.user-store :as u-store]
+
+         '[zolo.utils.calendar :as zolo-cal]
+
+         '[zolo.api.user-api :as uapi]
+         '[datomic.api :as db]
+         '[zolo.demonic.helper :as dh] )
 
 
 (do (zolo.setup.config/setup-config)

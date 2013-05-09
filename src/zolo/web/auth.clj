@@ -85,7 +85,7 @@
 
 (defn authenticate [{{:strs [authorization]} :headers :as request}]
   (when authorization
-    (let [[provider access-token] (-> authorization zstring/decode-base64 (string/split #" "))]
+    (let [[provider token] (-> authorization zstring/decode-base64 (string/split #" "))]
       (condp = provider
-        social/FACEBOOK (authenticate-using-facebook access-token request)
-        social/EMAIL (authenticate-using-email access-token request)))))
+        social/FACEBOOK (authenticate-using-facebook token request)
+        social/EMAIL (authenticate-using-email token request)))))

@@ -15,6 +15,9 @@
             [zolo.service.contact-service :as c-service]
             [zolo.service.message-service :as m-service]))
 
+(defn create-new-user [ui]
+  {:user/user-identities [ui]})
+
 (defn update-with-extended-fb-auth-token
   ([user]
      (let [fb-ui (user-identity/fb-user-identity user)]
@@ -22,9 +25,6 @@
   ([user access-token]
      (let [e-at (fb-gateway/extended-access-token access-token (conf/fb-app-id) (conf/fb-app-secret))]
        (user/update-with-extended-fb-auth-token user e-at))))
-
-(defn create-new-user [ui]
-  {:user/user-identities [ui]})
 
 (defn extend-fb-token [u]
   (-> u
@@ -47,6 +47,7 @@
 
 ;; Services
 (defmulti new-user social/login-dispatcher)
+(defmulti update-user social/login-dispatcher)
 
 (defn get-users [request-params]
   (-> (find-user request-params)
@@ -55,7 +56,6 @@
 (defn get-user-by-guid [guid]
   (-> (u-store/find-by-guid guid)
       user/distill))
-
 
 
 ;;TODO clean up

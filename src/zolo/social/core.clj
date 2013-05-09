@@ -26,9 +26,9 @@
 
 (defn login-dispatcher
   ([params]
-     (login-dispatcher params {}))
-  ( [params cookies]
-      (get-in params [:login_provider])))
+     (login-dispatcher nil params))
+  ([guid params]
+     (get-in params [:login_provider])))
 
 (defn provider-dispatcher [provider access-token user-id date]
   provider)

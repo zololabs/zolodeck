@@ -31,3 +31,13 @@
       (user/update-tz-offset (:login_tz request-params))
       u-store/save
       user/distill))
+
+
+;;TODO Need to Check Permissions Granted. Only when Permission is
+;;Granted it should proceed to get more info about the user
+(defmethod u-service/update-user social/EMAIL [guid request-params]
+  (-not-nil-> (u-store/find-by-guid guid)
+              (user/update-permissions-granted (:permissions_granted request-params))
+              (user/update-tz-offset (:login_tz request-params))
+              u-store/save
+              user/distill))

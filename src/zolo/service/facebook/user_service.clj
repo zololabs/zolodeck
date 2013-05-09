@@ -40,3 +40,15 @@
       log-into-fb-chat
       u-store/save
       user/distill))
+
+
+;;TODO Need to Check Permissions Granted. Only when Permission is
+;;Granted it should proceed to get more info about the user
+(defmethod u-service/update-user social/FACEBOOK [guid request-params]
+  (-not-nil-> (u-store/find-by-guid guid)
+              (u-service/update-with-extended-fb-auth-token (:access_token request-params))
+              (user/update-permissions-granted (:permissions_granted request-params))
+              (user/update-tz-offset (:login_tz request-params))
+              log-into-fb-chat
+              u-store/save
+              user/distill))
