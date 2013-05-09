@@ -113,7 +113,7 @@
             t (- 1 f)
             from (nth [user-email friend-email] f)
             to (nth [user-email friend-email] t)]
-        (apply email-lab/send-message (flatten [(zcal/date-to-string interaction-date) from to (str "SUB:" (random-guid-str)) thread-id (str "BODY:" (random-guid-str))]))))))
+        (email-lab/send-message from to (str "SUB:" (random-guid-str)) thread-id (str "BODY:" (random-guid-str)) (zcal/date-to-string interaction-date))))))
 
 (defn setup-email-ui [specs]
   (let [{first-name :first-name last-name :last-name :as specs} (merge DEFAULT-SPECS specs)

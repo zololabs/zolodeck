@@ -14,7 +14,7 @@
            [zolo.test.assertions.datomic :as db-assert]
            [zolo.test.assertions.domain :as d-assert]
            [zolo.marconi.facebook.core :as fb-lab]
-           [zolo.marconi.context-io.core :as email-lab]
+           [zolo.marconi.context-io.core :as e-lab]
            [zolo.personas.generator :as pgen]))
 
 (deftest test-get-users
@@ -110,7 +110,7 @@
 (deftest test-new-user-using-email
   (demonic-testing "new user sign up using Google - good request"
     (personas/in-social-lab
-     (let [mickey (email-lab/create-account "Mickey" "Mouse" "Mickey.Mouse@gmail.com")]
+     (let [mickey (e-lab/create-account "Mickey" "Mouse" "Mickey.Mouse@gmail.com")]
 
        (db-assert/assert-datomic-user-count 0)
        (db-assert/assert-datomic-user-identity-count 0)
@@ -186,6 +186,60 @@
              (is (= 20 (:contact/score db-daisy)))
              (is (= 30 (:contact/score db-donald)))
              (is (= 0 (:contact/score db-minnie)))))
+
+         (testing "should stamp last updated date"
+           (is (not (nil? (:user/last-updated refreshed-mickey))))))))))
+
+
+(demonictest ^:storm test-refresh-user-data-and-scores-for-email
+  (personas/in-social-lab
+   (let [mickey-email "mickey@gmail.com"
+         mickey (e-lab/create-account "Mickey" "Mouse" mickey-email)
+         db-mickey (personas/create-db-user-from-email-user mickey)]
+     
+     (let [m1 (e-lab/send-message mickey-email "donald@gmail.com" "s1" "t1" "Hi, what's going on?" "2012-05-01 00:00")
+           m2 (e-lab/send-message "donald@gmail.com" mickey-email "s2" "t2" "Nothing, just work." "2012-05-02 00:00")
+           m3 (e-lab/send-message mickey-email "donald@gmail.com" "s3" "t3" "OK, groceries?" "2012-05-03 00:00")
+
+           m4 (e-lab/send-message "daisy@gmail.com" mickey-email "s4" "t4" "Nothing, just work." "2012-05-04 00:00")
+           m5 (e-lab/send-message mickey-email "daisy@gmail.com" "s5" "t4" "OK, groceries?" "2012-05-05 00:00")]
+       
+       (db-assert/assert-datomic-message-count 0)
+
+       (let [refreshed-mickey (pgen/refresh-everything db-mickey)]
+
+         (testing "should stamp refresh start time"
+           (is (not (nil? (:user/refresh-started refreshed-mickey)))))
+
+         (testing "should update contacts"
+
+           (let [[db-daisy db-donald] (->> refreshed-mickey
+                                           :user/contacts
+                                           (sort-by contact/first-name))]
+
+             (db-assert/assert-datomic-contact-count 2)
+             (db-assert/assert-datomic-social-count 2)
+
+             (is (= "daisy@gmail.com" (-> db-daisy :contact/social-identities first :social/provider-uid)))
+             (is (= "daisy@gmail.com" (-> db-daisy :contact/social-identities first :social/email)))
+
+             (is (= "donald@gmail.com" (-> db-donald :contact/social-identities first :social/provider-uid)))
+             (is (= "donald@gmail.com" (-> db-donald :contact/social-identities first :social/email)))))
+
+         (testing "should update messages"
+           (db-assert/assert-datomic-message-count 5)
+
+           (d-assert/messages-list-are-same [m1 m2 m3 m4 m5] (->> refreshed-mickey
+                                                                  :user/messages
+                                                                  (sort-by message/message-date))))
+
+         (testing "should update scores"
+           (let [[db-daisy db-donald] (->> refreshed-mickey
+                                           :user/contacts
+                                           (sort-by contact/first-name))]
+             
+             (is (= 20 (:contact/score db-daisy)))
+             (is (= 30 (:contact/score db-donald)))))
 
          (testing "should stamp last updated date"
            (is (not (nil? (:user/last-updated refreshed-mickey))))))))))

@@ -17,6 +17,7 @@
       :social/first-name (:first-name c-name)
       :social/last-name (:last-name c-name)
       :social/provider-uid (:email c)
+      :social/email (:email c)
       :social/provider :provider/email
       :social/photo-url (:thumbnail c)})))
 

@@ -5,7 +5,7 @@
         [clojure.test :only [is are]])
   (:require [zolo.social.core :as social]
             [zolo.social.facebook.messages :as fb-messages]
-            [zolo.utils.calendar :as zolo-cal]
+            [zolo.utils.calendar :as zcal]
             [zolo.demonic.core :as demonic]))
 
 (defn user-identities-are-same [fb-user db-ui]
@@ -43,15 +43,33 @@
 (defn contact-is-not-muted [db-contact]
   (is (not (:contact/muted db-contact)) (str (:contact/first-name db-contact) " is muted!")))
 
-(defn messages-are-same [fb-message db-message]
+(defn fb-messages-are-same [fb-message db-message]
   (let [fb-message-keys [:author_id :body :message_id :thread_id :to]
         db-message-keys [:message/from :message/text :message/message-id :message/thread-id :message/to]]
     (assert-map-values fb-message fb-message-keys db-message db-message-keys)
     (is (= :provider/facebook (:message/provider db-message)))
-    (is (= (zolo-cal/millis->instant (-> fb-message :created_time (* 1000))) (:message/date db-message)))
+    (is (= (zcal/millis->instant (-> fb-message :created_time (* 1000))) (:message/date db-message)))
     (if (empty? (:attachment fb-message))
       (is (nil? (:message/attachments db-message)))
       (is (same-value? (:attachment fb-message) (:message/attachments db-message))))))
+
+(defn email-messages-are-same [e-message db-message]
+  (let [e-message-keys [:thread-id :from :subject]
+        db-message-keys [:message/thread-id :message/from :message/subject]]
+    (assert-map-values e-message e-message-keys db-message db-message-keys)
+    (is (= :provider/email (:message/provider db-message)))
+    (is (= #{(:to e-message)} (:message/to db-message)))
+    (is (.contains (:message/message-id db-message) (:id e-message)))
+    (is (= 10 (- (-> db-message :message/date zcal/to-seconds) (-> e-message :date zcal/to-seconds))))
+    (if (empty? (:attachment e-message))
+      (is (nil? (:message/attachments db-message)))
+      (is (same-value? (:attachment e-message) (:message/attachments db-message))))))
+
+(defn messages-are-same [message db-message]
+  (condp = (:message/provider db-message)
+    :provider/facebook (fb-messages-are-same message db-message)
+    :provider/email (email-messages-are-same message db-message)
+    (is false (str "Unknown Message Provider : " (:message/provider db-message)))))
 
 (defn messages-list-are-same [fb-messages db-messages]
   (doall (map #(messages-are-same %1 %2) fb-messages db-messages)))
