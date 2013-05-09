@@ -113,25 +113,15 @@
 (defn all-messages [u]
   (concat (:user/messages u) (:user/temp-messages u)))
 
-(defn messages-by-contacts [u message-filter-fn]
+(defn messages-by-contacts [u]
   (let [contacts-lookup (contacts-by-social-identifier u)
-        all-msgs (all-messages u)
-        inbox-messages (filter message-filter-fn all-msgs)
-        mbc (reduce bucket-message {} inbox-messages)]
+        mbc (reduce bucket-message {} (all-messages u))]
     (reduce #(assoc-in %1 [(contacts-lookup %2)] (sort-by message-date (mbc %2))) {} (keys contacts-lookup))))
 
 ;;TODO test
 (defn- is-sent-to [c msg]
   (some #(not (nil? %))
         (domap #((message-to msg) (:social/provider-uid %)) (:contact/social-identities c))))
-
-;;TODO Dont need this anymore as there will be only one type of message?!?
-(defn is-inbox-message? [m]
-  (or (= "INBOX" (:message/mode m))
-      (is-temp-message? m)))
-
-(defn inbox-messages-by-contacts [u]
-  (messages-by-contacts u is-inbox-message?))
 
 ;;TODO test
 (defn last-sent-message [c msgs]
@@ -210,7 +200,6 @@
    :temp-message/to to-uids
    :temp-message/text text
    :temp-message/thread-id (or thread-id (random-guid-str))
-   :temp-message/mode "INBOX"
    :temp-message/date (zcal/now-instant)})
 
 ;; (defn feeds-start-time-seconds []

@@ -22,24 +22,10 @@
             [zolo.personas.vincent :as vincent-persona]
             [zolo.personas.generator :as pgen]))
 
-(deftest test-is-inbox-message
-  (testing "When nil is passed return false"
-    (is (not (message/is-inbox-message? nil))))
-
-  (testing "When not inbox message it should return false"
-    (is (not (message/is-inbox-message? {:message/mode "FEED"})))
-    (is (not (message/is-inbox-message? {:message/mode "JUNK"}))))
-
-  (testing "When inbox message it should return true"
-    (is (message/is-inbox-message? {:message/mode "INBOX"})))
-
-  (testing "When temp message it should return true"
-    (is (message/is-inbox-message? {:temp-message/guid "abc"}))))
-
 (deftest test-inbox-messages-by-contacts
   (testing "when no messages are present"
     (let [shy (shy-persona/create-domain)
-          imbc (message/inbox-messages-by-contacts shy)]
+          imbc (message/messages-by-contacts shy)]
 
       (is (not (nil? imbc)))
 
@@ -53,7 +39,7 @@
 
   (testing "when messages are present"
     (let [vincent (vincent-persona/create-domain)
-          imbc (message/inbox-messages-by-contacts vincent)]
+          imbc (message/messages-by-contacts vincent)]
       
       (is (not (nil? imbc)))
 

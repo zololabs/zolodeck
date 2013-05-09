@@ -27,7 +27,7 @@
 (deftest test-interactions-by-contacts
   (testing "when no messages are present"
     (let [shy (shy-persona/create-domain)
-          imbc (message/inbox-messages-by-contacts shy)
+          imbc (message/messages-by-contacts shy)
           ibc (interaction/interactions-by-contacts imbc)]
 
       (is (not (nil? ibc)))
@@ -42,7 +42,7 @@
 
   (testing "when messages are present"
     (let [vincent (vincent-persona/create-domain)
-          imbc (message/inbox-messages-by-contacts vincent)
+          imbc (message/messages-by-contacts vincent)
           ibc (interaction/interactions-by-contacts imbc)]
       
       (is (not (nil? ibc)))

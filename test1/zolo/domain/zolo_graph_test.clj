@@ -169,7 +169,6 @@
            (jack-msg :message/guid)            [:guid]
            (jack-msg :message/message-id)      [:message-id]
            (jack-msg :message/platform)        [:platform]
-           (jack-msg :message/mode)            [:mode]
            (jack-msg :message/text)            [:text]
            (jack-msg :message/date)            [:date]
            (jack-msg :message/from)            [:from]

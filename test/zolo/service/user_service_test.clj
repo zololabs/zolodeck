@@ -2,6 +2,7 @@
   (:use [clojure.test :only [deftest is are testing]]
         zolo.utils.debug
         zolo.utils.clojure
+        zolo.test.core-utils
         zolo.test.assertions.core
         zolo.demonic.test)
   (require [zolo.service.user-service :as u-service]
@@ -13,7 +14,8 @@
            [zolo.test.assertions.datomic :as db-assert]
            [zolo.test.assertions.domain :as d-assert]
            [zolo.marconi.facebook.core :as fb-lab]
-           [zolo.marconi.context-io.core :as email-lab]))
+           [zolo.marconi.context-io.core :as email-lab]
+           [zolo.personas.generator :as pgen]))
 
 (deftest test-get-users
   (demonic-testing "when user is not present it should return nil"
@@ -122,7 +124,7 @@
          (db-assert/assert-datomic-user-identity-count 1))))))
 
 
-(demonictest ^:storm test-refresh-user-data-and-scores
+(demonictest ^:storm test-refresh-user-data-and-scores-for-facebook
   (personas/in-social-lab
    (let [mickey (fb-lab/create-user "Mickey" "Mouse")
          donald (fb-lab/create-friend "Donald" "Duck")
@@ -187,3 +189,40 @@
 
          (testing "should stamp last updated date"
            (is (not (nil? (:user/last-updated refreshed-mickey))))))))))
+
+(demonictest ^:storm test-refresh-user-data-and-scores-using-gen
+  (personas/in-social-lab
+   (run-as-of "2012-05-12"
+     (pgen/run-generative-tests
+         u {:SPECS {:friends [(pgen/create-friend-spec "Donald" "Duck" 3 5)
+                              (pgen/create-friend-spec "Daisy" "Duck" 2 4)
+                              (pgen/create-friend-spec "Minnie" "Mouse" 1 1)]}
+            :UI-IDS-ALLOWED [:FACEBOOK :EMAIL]
+            :UI-IDS-COUNT 1}
+         
+         (testing "should stamp refresh start time"
+           (is (not (nil? (:user/refresh-started u)))))
+         
+         (testing "should update contacts"
+           
+           (let [[db-daisy db-donald db-minnie] (->> u
+                                                     :user/contacts
+                                                     (sort-by contact/first-name))]
+             
+             (is (= 3 (count (:user/contacts u))))))
+         
+         (testing "should update messages"
+           (is (= 10 (count (:user/messages u)))))
+         
+         (testing "should update scores"
+           (let [[db-daisy db-donald db-minnie] (->> u
+                                                     :user/contacts
+                                                     (sort-by contact/first-name))]
+             
+             (is (= 20 (:contact/score db-daisy)))
+             (is (= 30 (:contact/score db-donald)))
+             (is (= 10 (:contact/score db-minnie)))))
+         
+         
+         (testing "should stamp last updated date"
+           (is (not (nil? (:user/last-updated u)))))))))

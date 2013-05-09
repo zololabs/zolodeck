@@ -11,7 +11,6 @@
      {:guid guid
       :message-id (str "msg-" guid)
       :platform "Facebook"
-      :mode "Message"
       :text (str "This is message : " guid)
       :date #inst "1980-08-08T00:00:00.000-00:00"
       :from "user-100"

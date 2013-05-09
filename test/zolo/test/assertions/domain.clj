@@ -58,7 +58,7 @@
 
 (defn temp-messages-are-same [t-message db-t-message]
 
-  (let [keys [:temp-message/provider :temp-message/from :temp-message/text :temp-message/date :temp-message/mode]]
+  (let [keys [:temp-message/provider :temp-message/from :temp-message/text :temp-message/date]]
     (assert-map-values t-message keys db-t-message keys))
 
   (is (= #{(:temp-message/to t-message)}

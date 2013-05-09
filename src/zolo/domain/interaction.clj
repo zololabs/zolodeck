@@ -94,5 +94,5 @@
 
 (defn ibc [user]
   (-> user
-      message/inbox-messages-by-contacts
+      message/messages-by-contacts
       interactions-by-contacts))

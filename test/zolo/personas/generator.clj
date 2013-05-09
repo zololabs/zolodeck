@@ -101,25 +101,27 @@
     (refresh-everything db-u)))
 
 (defn email-count-distribution [interaction-count message-count]
-  (let [msg-counts (repeat (int (/ message-count interaction-count)) interaction-count)]
-    (conj (butlast msg-counts) (+ (mod message-count interaction-count) (last msg-counts)))))
+  (if (or (zero? interaction-count) (zero? message-count))
+    []
+    (let [msg-counts (repeat interaction-count (int (/ message-count interaction-count)))]
+      (conj (butlast msg-counts) (+ (mod message-count interaction-count) (last msg-counts))))))
 
-(defn send-emails-for-interaction [user-email friend-email thread-id interaction-email-count interaction-date]
-  (dotimes [x interaction-email-count]
-    (let [f (rand-int 2)
-          t (- 1 f)
-          from (nth [user-email friend-email] f)
-          to (nth [user-email friend-email] t)]
-      (apply email-lab/send-message (flatten [(zcal/date-to-string interaction-date) from to (str "SUB:" (random-guid-str)) thread-id (str "BODY:" (random-guid-str))])))))
+(defn send-emails-for-interaction [user-email friend-email interaction-email-count interaction-date]
+  (let [thread-id (str "THREAD-ID-FAKE:" (random-guid-str))]
+    (dotimes [x interaction-email-count]
+      (let [f (rand-int 2)
+            t (- 1 f)
+            from (nth [user-email friend-email] f)
+            to (nth [user-email friend-email] t)]
+        (apply email-lab/send-message (flatten [(zcal/date-to-string interaction-date) from to (str "SUB:" (random-guid-str)) thread-id (str "BODY:" (random-guid-str))]))))))
 
 (defn setup-email-ui [specs]
   (let [{first-name :first-name last-name :last-name :as specs} (merge DEFAULT-SPECS specs)
         u (email-lab/create-account first-name last-name (str first-name "@" last-name ".com"))]
     (doseq [{no-of-messages :no-of-messages no-of-interactions :no-of-interactions :as friend} (:friends specs)]
-      (let [friend-email (str (:first-name friend) "@" (:last-name friend) ".com")
-            thread-id (str "THREAD-ID-FAKE:" (random-guid-str))]
+      (let [friend-email (str (:first-name friend) "@" (:last-name friend) ".com")]
         (doall
-         (map #(send-emails-for-interaction (:email-address u) friend-email thread-id  %1 %2)
+         (map #(send-emails-for-interaction (:email-address u) friend-email %1 %2)
               (email-count-distribution no-of-interactions no-of-messages)
               ;;TODO Why tests fail when I use simple-date-stream
               (zcal/inc-date-stream (zcal/date-string->instant "yyyy-MM-dd" "2012-05-10"))))))
@@ -214,8 +216,8 @@
 
 (defn generate-all [specs]
   (->> specs
-      generative-specs
-      (domap generate-user)))
+       generative-specs
+       (domap generate-user)))
 
 (defn generate-domain [specs]
   (personas/domain-persona (generate specs)))

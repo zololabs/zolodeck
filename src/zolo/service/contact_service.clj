@@ -50,7 +50,7 @@
 (defn update-scores [u]
   (when u
     (let [ibc (-> u
-                  message/inbox-messages-by-contacts
+                  message/messages-by-contacts
                   interaction/interactions-by-contacts)]
       (doeach #(contact/update-score ibc %) (:user/contacts u))
       (u-store/reload u))))

@@ -14,13 +14,9 @@
 
 ;;TODO this domain is still talking with Social Layer
 
-(def MODE-INBOX "INBOX")
-(def MODE-FEED "FEED")
-
 (def FB-MESSAGE-KEYS
   {:attachment :message/attachments
    :provider :message/provider
-   :mode :message/mode
    :author_id :message/from
    :body :message/text
    :created_time :message/date
@@ -40,14 +36,12 @@
    :picture :message/picture 
    :link :message/link
    :icon :message/icon
-   :mode :message/mode
 })
 
 (defn fb-message->message [fb-message]
   (-> fb-message
       (assoc :created_time (zolo-cal/millis->instant (-> fb-message :created_time (* 1000))))
       ;;TODO Make this an enum too
-      (assoc :mode MODE-INBOX)
       (maps/update-all-map-keys FB-MESSAGE-KEYS)
       (assoc :message/provider :provider/facebook)
       (domain/force-schema-types)))
@@ -57,7 +51,6 @@
       (assoc :created_time (ctc/to-date (:created_time fb-post)))
       (assoc :from (get-in fb-post [:from :id]))
       (assoc :to (map :id (get-in fb-post [:to :data])))
-      (assoc :mode MODE-FEED)
       (maps/update-all-map-keys FB-POST-KEYS)
       (assoc :message/provider :provider/facebook)
       (domain/force-schema-types)))
