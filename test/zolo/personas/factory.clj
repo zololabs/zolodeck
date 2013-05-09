@@ -29,6 +29,8 @@
         :login_provider_uid (get-in fb-creds [:providerLoginInfo :authResponse :userID])})))
 
 (defn email-request-params
+  ([email-user]
+     (email-request-params email-user true))
   ([email-user permission-granted?]
      (email-request-params email-user permission-granted? 420))
   ([email-user permission-granted? login-tz]
@@ -36,8 +38,8 @@
       :guid nil
       :login_tz login-tz
       :permissions_granted permission-granted?
-      :access_token (:access-token email-user)
-      :login_provider_uid (:email-address email-user)}))
+      :access_token (:account-id email-user)
+      :login_provider_uid (:account-id email-user)}))
 
 (defn fake-extended-user-info [at uid]
   (-> uid

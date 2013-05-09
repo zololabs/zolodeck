@@ -78,7 +78,7 @@
        
        (let [distilled-mickey (u-service/new-user (personas/fb-request-params mickey true))
              d-mickey (u-store/reload distilled-mickey)]
-         (is (= "Mickey.Mouse@gmail.com" (:user/email distilled-mickey)))
+         (is (= ["Mickey.Mouse@gmail.com"] (:user/emails distilled-mickey)))
 
          (is (-> d-mickey user-identity/fb-user-identity :identity/permissions-granted))
          (db-assert/assert-datomic-user-count 1)
@@ -110,14 +110,12 @@
     (personas/in-social-lab
      (let [mickey (email-lab/create-account "Mickey" "Mouse" "Mickey.Mouse@gmail.com")]
 
-       (print-vals mickey)
-
        (db-assert/assert-datomic-user-count 0)
        (db-assert/assert-datomic-user-identity-count 0)
        
        (let [distilled-mickey (u-service/new-user (personas/email-request-params mickey true))
              d-mickey (u-store/reload distilled-mickey)]
-         (is (= "Mickey.Mouse@gmail.com" (:user/email distilled-mickey)))
+         (is (= ["Mickey.Mouse@gmail.com"] (:user/emails distilled-mickey)))
 
          (is (-> d-mickey :user/user-identities first :identity/permissions-granted))
          (db-assert/assert-datomic-user-count 1)

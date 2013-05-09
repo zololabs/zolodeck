@@ -148,7 +148,7 @@
            d-mickey (personas/create-domain-user-from-fb-user mickey)
            du (user/distill d-mickey)]
        (is (= (str (:user/guid d-mickey)) (:user/guid du)))
-       (is (= (ui/fb-email d-mickey) (:user/email du)))))))
+       (is (= ["Mickey.Mouse@gmail.com"] (:user/emails du)))))))
 
 
 (deftest test-provider-id

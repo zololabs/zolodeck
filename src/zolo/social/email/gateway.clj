@@ -5,7 +5,7 @@
             [context-io.api.two :as context-io]))
 
 (defn context-io-creds []
-  (print-vals "Creds :" (oauth/make-oauth-creds (conf/context-io-key) (conf/context-io-secret))))
+  (oauth/make-oauth-creds (conf/context-io-key) (conf/context-io-secret)))
 
 (defn- cio-source-params [email access-token refresh-token]
   {:email email
@@ -21,9 +21,8 @@
    :provider_consumer_key (conf/google-key)})
 
 (defn get-data- [data-fn account-id limit offset other-params results-key-seq results]
-  (let [resp (time (data-fn (context-io-creds) :params (print-vals "GetData:" data-fn
-                                                        (merge {:account-id account-id :limit limit :offset offset}
-                                                               other-params))))]
+  (let [resp (time (data-fn (context-io-creds) :params (merge {:account-id account-id :limit limit :offset offset}
+                                                              other-params)))]
     (if (not= 200 (get-in resp [:status :code]))
       results
       (let [cs (get-in resp results-key-seq)
@@ -59,12 +58,12 @@
 
 (defn get-gmail-thread [account-id thread-id]
   (context-io/get-account-thread
-   *creds*
+   (context-io-creds)
    :params
    {:account-id account-id :thread-id (gmail-prefixed thread-id) :include_body 1}))
 
 (defn get-thread [account-id message-id-in-thread]
   (context-io/list-account-messages-in-thread
-   *creds*
+   (context-io-creds)
    :params
    {:account-id account-id :message-id message-id-in-thread :include_body 1}))

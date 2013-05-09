@@ -55,8 +55,8 @@
           (are [expected user method url params] (= expected (-> (w-utils/authed-request user method url params) :status))
 
                ;;Users
-               404 hacker :put  (user-url owner)             {:permissions_granted false :login_tz 420}
-               200 owner  :put  (user-url owner)             {:permissions_granted false :login_tz 420}
+               404 hacker :put  (user-url owner)             {:login_provider "FACEBOOK" :permissions_granted false :login_tz 420}
+               200 owner  :put  (user-url owner)             {:login_provider "FACEBOOK" :permissions_granted false :login_tz 420}
 
                404 hacker :get  (user-url owner)             {}
                200 owner  :get  (user-url owner)             {}

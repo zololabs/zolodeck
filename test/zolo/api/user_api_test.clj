@@ -24,7 +24,7 @@
      (let [mickey (fb-lab/create-user "Mickey" "Mouse")
            resp (w-utils/web-request :post "/users" (personas/fb-request-params mickey true))]
        (is (= 201 (:status resp)))
-       (is (= "Mickey.Mouse@gmail.com" (get-in resp [:body :email]))))))
+       (is (= ["Mickey.Mouse@gmail.com"] (get-in resp [:body :emails]))))))
 
   (demonic-testing "New User Signup - bad request"
     (personas/in-social-lab
@@ -62,7 +62,7 @@
 
     (testing "when user is present, it should return updated distilled user"
       (personas/in-social-lab
-       (let [resp (w-utils/authed-request u  :put (str "/users/" (:user/guid u)) {:permissions_granted false :login_tz 420})]
+       (let [resp (w-utils/authed-request u  :put (str "/users/" (:user/guid u)) {:login_provider "FACEBOOK" :permissions_granted false :login_tz 420})]
 
          (is (= 200 (:status resp)))
          (is (= (str (:user/guid u)) (get-in resp [:body :guid]))))))))
@@ -92,7 +92,7 @@
       (let [resp (w-utils/authed-request u :get "/users" {:login_provider "FACEBOOK" :login_provider_uid (ui/fb-id u)})]
 
         (is (= 200 (:status resp)))
-        (is (= (ui/fb-email u) (get-in resp [:body :email])))
+        (is (= (ui/email-ids u) (get-in resp [:body :emails])))
         (is (= (str (:user/guid u)) (get-in resp [:body :guid])))))))
 
 

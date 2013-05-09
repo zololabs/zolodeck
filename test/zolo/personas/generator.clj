@@ -176,7 +176,6 @@
   ;; Also, not supporting multiple FB accounts right now
   (let [ui-combos (combo/selections (:UI-IDS-ALLOWED specs) (count (:UI-IDS-ALLOWED specs)))
         ui-combos (remove #(= '(:FACEBOOK :FACEBOOK) %) ui-combos)
-        _ (print-vals "UI-COMBOS:" ui-combos)
         f-count (count (get-in specs [:SPECS :friends]))
         f-combos (filter #(= f-count (apply + %))
                          (combo/selections (range (inc f-count)) (count (:UI-IDS-ALLOWED specs))))

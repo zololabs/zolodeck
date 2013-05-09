@@ -46,8 +46,25 @@
    :updated [:optional]})
 
 ;; Services
-(defmulti new-user social/login-dispatcher)
-(defmulti update-user social/login-dispatcher)
+(defmulti additional-user-identity-processing (fn [u params] (social/login-dispatcher params)))
+
+(defn new-user [request-params]
+  (-> request-params
+      (service/validate-request! val-request)
+      social/fetch-user-identity
+      create-new-user
+      (user/update-tz-offset (:login_tz request-params))
+      (additional-user-identity-processing request-params)
+      u-store/save
+      user/distill))
+
+(defn update-user [guid request-params]
+  (-not-nil-> (u-store/find-by-guid guid)
+              (user/update-permissions-granted (:permissions_granted request-params))
+              (user/update-tz-offset (:login_tz request-params))
+              (additional-user-identity-processing request-params)
+              u-store/save
+              user/distill))
 
 (defn get-users [request-params]
   (-> (find-user request-params)

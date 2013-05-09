@@ -67,7 +67,7 @@
 (defn distill [u]
   (when u 
     {:user/guid (str (:user/guid u))
-     :user/email (user-identity/fb-email u)
+     :user/emails (user-identity/email-ids u)
      :user/updated (not (nil? (:user/last-updated u)))
      ;;TODO test
      :user/all-permissions-granted (all-permissions-granted? u)}))

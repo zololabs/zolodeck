@@ -20,7 +20,6 @@
   (login-creds request-params))
 
 (defmethod social/fetch-user-identity social/EMAIL [params]
-  (print-vals "Fetching User for Email : " params)
   (logger/trace "EMAIL fetch-user-identity params:" params)
   (let [{cio-account-id :access_token} params]
     (users/user-identity cio-account-id)))
