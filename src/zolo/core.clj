@@ -54,6 +54,7 @@
 
   ;;Threads
   (GET "/threads" [guid & params] (t-api/find-threads guid params))
+  (GET "/provider/:provider-uid/threads/:t-guid" [guid t-guid provider-uid] (t-api/load-thread-details guid t-guid provider-uid))
   )
 
 (defroutes APP-ROUTES

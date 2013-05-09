@@ -52,3 +52,19 @@
   ([account-id date-after-in-seconds date-before-in-seconds]
      (get-data- context-io/list-account-messages account-id 1000 0 {:date_after date-after-in-seconds :date_before date-before-in-seconds} [:body] [])))
 
+(defn- gmail-prefixed [thread-id]
+  (if (.startsWith thread-id "gm-")
+    thread-id
+    (str "gm-" thread-id)))
+
+(defn get-gmail-thread [account-id thread-id]
+  (context-io/get-account-thread
+   *creds*
+   :params
+   {:account-id account-id :thread-id (gmail-prefixed thread-id) :include_body 1}))
+
+(defn get-thread [account-id message-id-in-thread]
+  (context-io/list-account-messages-in-thread
+   *creds*
+   :params
+   {:account-id account-id :message-id message-id-in-thread :include_body 1}))

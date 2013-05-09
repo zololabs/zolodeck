@@ -12,18 +12,15 @@
 (defn from [m]
   (get-in m [:addresses :from :email]))
 
-(defn- snippet [m]
-  (let [t (:content m)]
-    (if (<= (count t) 140)
-      t
-      (zstring/snippet t))))
+(defn- message-body [m]
+  (->> m :body (filter #(= "text/plain" (:type %))) first :content))
 
 (defn cio-message->message [m]
   (domain/force-schema-types
    {:message/message-id (:email_message_id m)
     :message/provider :provider/email
     :message/subject (:subject m)
-    :message/text (snippet m)
+    :message/text (message-body m)
     :message/date (-> m :date_received zcal/seconds->instant)
     :message/from (from m)
     :message/to (->> m to (map :email))
@@ -40,5 +37,12 @@
 (defn get-messages [cio-account-id date-in-seconds]
   (it-> cio-account-id
         (gateway/get-messages it date-in-seconds)
+        (select-valid it)
+        (domap cio-message->message it)))
+
+(defn get-messages-for-thread [cio-account-id any-message-id-in-thread]
+  (it-> cio-account-id
+        (gateway/get-thread it any-message-id-in-thread)
+        (get-in it [:body :messages])
         (select-valid it)
         (domap cio-message->message it)))
