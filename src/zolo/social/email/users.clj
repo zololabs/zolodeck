@@ -6,7 +6,8 @@
 (defn- to-user-identity [cio-account]
   (domain/force-schema-types
    {:identity/provider :provider/email
-    :identity/provider-uid (:id cio-account)
+    :identity/provider-uid (-> cio-account :email_addresses first)
+    :identity/auth-token (:id cio-account)
     :identity/first-name (:first_name cio-account)
     :identity/last-name (:last_name cio-account)
     :identity/email (-> cio-account :email_addresses first)

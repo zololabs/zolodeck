@@ -27,19 +27,25 @@
       (assoc :user-temp/fb-permissions-time (user-identity/fb-permissions-time u))
       (assoc :user-temp/creation-time (creation-time u))))
 
-(defn find-by-provider-and-provider-uid [provider provider-uid]
-  (logger/debug (str "Finding user for provider : " provider " and provider-uid : " provider-uid))
-  (when (and provider-uid (social/valid-provider? provider))
+(defn find-by-provider-and-property [provider p-name p-value]
+  (logger/debug (str "Finding user for provider : " provider " and property : " p-name "," p-value))
+  (when (and p-name p-value (social/valid-provider? provider))
     (-> (demonic/run-query
-         '[:find ?i :in $ ?provider ?provider-uid
+         '[:find ?i :in $ ?provider ?p-name ?p-value
            :where
-           [?i :identity/provider-uid ?provider-uid]
+           [?i ?p-name ?p-value]
            [?i :identity/provider ?provider]
-           ] provider provider-uid)
+           ] provider p-name p-value)
         ffirst
         demonic-helper/load-from-db
         :user/_user-identities
         loadable/entity->loadable)))
+
+(defn find-by-provider-and-provider-uid [provider provider-uid]
+  (find-by-provider-and-property provider :identity/provider-uid provider-uid))
+
+(defn find-by-provider-and-auth-token [provider auth-token]
+  (find-by-provider-and-property provider :identity/auth-token auth-token))
 
 (defn find-entity-id-by-guid [guid]
   (when guid

@@ -48,7 +48,8 @@
   (let [{g-code :google_code callback-url :callback_url} request-params
         u-info (user-info g-code callback-url)]
     {:status (STATUS-CODES :ok)
-     :body {:ci_account_id (context-io-account-id u-info)}}))
+     :body {:cio_account_id (context-io-account-id u-info)
+            :email (:email u-info)}}))
 
 
 

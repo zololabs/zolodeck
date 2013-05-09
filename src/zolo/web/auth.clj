@@ -69,7 +69,7 @@
        :else (throw (RuntimeException. (str "Unknown situation found trying to authenticate-using-facebook" request)))))))
 
 (defn authenticate-using-email [cio-account-id request]
-  (let [user (u-store/find-by-provider-and-provider-uid :provider/email cio-account-id)]
+  (let [user (u-store/find-by-provider-and-auth-token :provider/email cio-account-id)]
     (cond
      (and user (user-guid-in-uri? request)) (workflows/make-auth {:identity (:user/guid user)                                                                          :roles (get-roles-for-existing-user  user request)}
                                                                  {::friend/redirect-on-auth? false})
