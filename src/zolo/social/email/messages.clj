@@ -46,3 +46,4 @@
         (get-in it [:body :messages])
         (select-valid it)
         (domap cio-message->message it)))
+

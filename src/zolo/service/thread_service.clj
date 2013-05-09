@@ -3,7 +3,8 @@
         zolo.utils.clojure)
   (:require [zolo.domain.thread :as t]
             [zolo.store.user-store :as u-store]
-            [zolo.social.email.gateway :as e-gateway]))
+            [zolo.store.message-store :as m-store]            
+            [zolo.social.email.messages :as messages]))
 
 (def REPLY-TO "reply_to")
 (def FOLLOW-UP "follow_up")
@@ -16,9 +17,11 @@
       FOLLOW-UP (->> u t/find-follow-up-threads (map #(t/distill u %)))
       (throw (RuntimeException. (str "Unknown action type trying to find threads: " action))))))
 
-(defn load-gmail-thread-details [user-guid account-id thread-guid]
+(defn load-thread-details [user-guid message-id]
   (if-let [u (u-store/find-entity-by-guid user-guid)]
-    (->> (e-gateway/get-gmail-thread account-id thread-guid)
-         (t/messages->threads u)
-         first
-         t/distill)))
+    (if-let [m (m-store/find-by-id message-id)]
+      (if-let [account-id (-> m :message/user-identity :identity/provider-uid)]
+        (->> (messages/get-messages-for-thread account-id message-id)
+             (t/messages->threads u)
+             first
+             (t/distill u))))))

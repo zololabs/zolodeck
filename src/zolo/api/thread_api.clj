@@ -14,8 +14,8 @@
      :body threads}
     (resource-not-found)))
 
-(defn load-thread-details [user-guid thread-guid provider-uid]
-  (if-let [t (t-service/load-gmail-thread-details user-guid provider-uid thread-guid)]
+(defn load-thread [user-guid message-id]
+  (if-let [t (t-service/load-thread-details user-guid message-id)]
     {:status (STATUS-CODES :ok)
      :body t}
     (resource-not-found)))
