@@ -7,15 +7,15 @@
 (def ^:dynamic *creds* (oauth/make-oauth-creds (conf/context-io-key) (conf/context-io-secret)))
 
 (defn get-data- [data-fn account-id limit offset other-params results-key-seq results]
-  (let [resp (data-fn *creds* :params (print-vals "GetData:" data-fn
-                                                  (merge {:account-id account-id :limit limit :offset offset}
-                                                         other-params)))]
+  (let [resp (time (data-fn *creds* :params (print-vals "GetData:" data-fn
+                                                        (merge {:account-id account-id :limit limit :offset offset}
+                                                               other-params))))]
     (if (not= 200 (get-in resp [:status :code]))
       results
       (let [cs (get-in resp results-key-seq)
             num (count cs)]
-        (if (zero? num)
-          results
+        (if (< num limit) ;(zero? num)
+          (concat results cs)
           (recur data-fn account-id limit (+ offset num) other-params results-key-seq (concat results cs)))))))
 
 (defn get-accounts []

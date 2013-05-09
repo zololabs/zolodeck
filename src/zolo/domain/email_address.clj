@@ -11,6 +11,8 @@
         "alert"
 
         "billing"
+
+        "customerservice"
         
         "donotreply"
         "do-not-reply"
@@ -46,6 +48,8 @@
         "shipping"
         "support"        
         "system"
+        "services"
+        "summary"
 
         "twitter"
 
@@ -61,6 +65,7 @@
 (def NON-PERSON-DOMAIN-REGEXES
   (->> ["postmaster"
         "emails"
+        "facebookmail.com"
         ]
        (map #(str ".*" % ".*"))
        (map #(java.util.regex.Pattern/compile %))))
