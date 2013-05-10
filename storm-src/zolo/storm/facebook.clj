@@ -6,6 +6,7 @@
         backtype.storm.config
         zolo.storm.utils)
   (:require [zolo.setup.datomic-setup :as datomic]
+            [zolo.service.storm-service :as s-service]
             [zolo.setup.config :as config]
             [zolo.demonic.core :as demonic]
             [zolo.domain.user :as user]
@@ -21,16 +22,9 @@
            ;[zolo.storm.fns PrintVals UpdateContacts UpdateMessages]
            ))
 
-(defn refresh-guids-to-process []
-  ;;(logger/info "Finding Refresh GUIDS to process...")
-  (demonic/in-demarcation
-   (->> (u-store/find-all-users-for-refreshes)
-        (remove recently-created-or-updated)
-        (domap #(str (:user/guid %))))))
-
 (defn init-refresh-guids [guids-atom]
   ;;(logger/info "InitRefreshGuids...")  
-  (reset! guids-atom (refresh-guids-to-process))
+  (reset! guids-atom (s-service/refresh-guids-to-process))
   ;(logger/trace "Number of Refresh GUIDS:" (count @guids-at))
   (if (empty? @guids-atom)
     (short-pause "Waiting for stale users..."))
@@ -84,8 +78,8 @@
                 (let [tx-report (.poll trq)]
                   (if-not tx-report
                     (short-pause "No tx reports")
-                    (let [new-guid (new-user-in-tx-report tx-report)
-                          perm-guid (permissions-granted-in-tx-report tx-report)]
+                    (let [new-guid (s-service/new-user-in-tx-report tx-report)
+                          perm-guid (s-service/permissions-granted-in-tx-report tx-report)]
                       (condp = [(not (empty? new-guid)) (not (empty? perm-guid))] 
                         [true true]   (emit-new-or-perm-user new-guid :NEW collector)
                         [true false]  (short-log (str "Insufficient permissions given for: " new-guid))

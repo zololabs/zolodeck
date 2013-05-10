@@ -28,6 +28,7 @@
         "info"
 
         "mail"
+        "mailer"
         "marketing"
         "member"
 

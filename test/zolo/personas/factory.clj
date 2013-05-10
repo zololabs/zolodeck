@@ -86,6 +86,21 @@
                email-gateway/get-messages fake-fetch-email-messages]
       ~@body)))
 
+(defmacro in-email-lab [& body]
+  `(marconi/in-lab
+    (stubbing [email-gateway/get-account fake-email-account
+               email-gateway/get-contacts fake-fetch-email-contacts 
+               email-gateway/get-messages fake-fetch-email-messages]
+      ~@body)))
+
+(defmacro in-fb-lab [& body]
+  `(marconi/in-lab
+    (stubbing [fb-gateway/extended-user-info fake-extended-user-info
+               fb-gateway/friends-list fake-friends-list
+               fb-messages/fetch-inbox fake-fetch-inbox
+               fb-stream/recent-activity fake-fetch-feed
+               fb-gateway/extended-access-token fake-extended-access-token]
+      ~@body)))
 ;; (defn create-new-db-user
 ;;   ([first-name last-name]
 ;;      (create-new-db-user first-name last-name true))

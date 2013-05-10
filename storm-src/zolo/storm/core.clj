@@ -5,6 +5,7 @@
              [zolo.utils.logger :as logger]
              [zolo.setup.config :as config]
              [zolo.social.bootstrap]
+             [zolo.service.bootstrap]
              [zolo.storm.facebook :as fb]
              [zolo.demonic.core :as demonic]))
 

@@ -11,12 +11,6 @@
             [zolo.utils.calendar :as zolo-cal])
   (:import [backtype.storm.tuple Values Fields]))
 
-(defn new-user-freshness-period []
-  (conf/new-user-freshness-millis))
-
-(defn user-update-wait []
-  (conf/user-update-wait-fb-millis))
-
 (defn values [& things]
   (Values. (into-array things)))
 
@@ -35,66 +29,23 @@
   (logger/trace "[Sleep ms:" millis "] " msg)
   (Thread/sleep millis))
 
-(defn refresh-started-recently? [now refresh-started]
-  (if refresh-started
-    (let [elapsed-since-started (- now (.getTime refresh-started))]
-      (< elapsed-since-started (user-update-wait)))))
 
-(defn last-updated-recently? [now last-updated]
-  (if last-updated
-    (let [elapsed-since-updated (- now (.getTime last-updated))]
-      (< elapsed-since-updated (user-update-wait)))))
 
-(defn is-brand-new-user?
-  ([now {refresh-started :user/refresh-started creation-time :user-temp/creation-time :as u}]
-     (and (not refresh-started)
-          (< (- now (.getTime creation-time)) (new-user-freshness-period))))
-  ([u]
-     (is-brand-new-user? (zolo-cal/now) u)))
 
-(defn is-recently-permitted?
-  ([now {refresh-started :user/refresh-started permissions-time :user/fb-permissions-time :as u}]
-     (and (not refresh-started)
-          (< (- now (.getTime permissions-time)) (new-user-freshness-period))))
-  ([u]
-     (is-brand-new-user? (zolo-cal/now) u)))
 
-(defn recently-created-or-updated [{guid :user/guid
-                                    last-updated :user/last-updated
-                                    refresh-started :user/refresh-started :as u}]
-  (let [now (zolo-cal/now)
-        recent? (or (is-brand-new-user? now u)
-                    (refresh-started-recently? now refresh-started)
-                    (last-updated-recently? now last-updated))]
-    ;(logger/trace "User:" guid ", recently updated:" recent?)
-    ;; (print-vals "guid:" guid
-    ;;               "brand-new:" (is-brand-new-user? now u)
-    ;;               "ref-recent:" (refresh-started-recently? now refresh-started)
-    ;;               "last-updated:" (last-updated-recently? now last-updated))
-    recent?))
 
-(defn new-user-in-tx-report [tx-report]
-  (demonic/in-demarcation
-   (->> tx-report
-        :tx-data
-        (demonic/run-raw-query '[:find ?ug :in ?us $data
-                                 :where 
-                                 [$data _ ?us ?ug _ true]] (demonic/schema-attrib-id :user/guid))
-        ffirst
-        str)))
 
-(defn permissions-granted-in-tx-report [tx-report]
-  (demonic/in-demarcation
-   (->> tx-report
-        :tx-data
-        (demonic/run-raw-query '[:find ?ue :in ?us $data
-                                 :where 
-                                 [$data ?ue ?us true _ true]] (demonic/schema-attrib-id :identity/permissions-granted))
-        ffirst
-        dh/load-from-db
-        :user/_user-identities
-        :user/guid
-        str)))
+
+;; (defn is-recently-permitted?
+;;   ([now {refresh-started :user/refresh-started permissions-time :user/fb-permissions-time :as u}]
+;;      (and (not refresh-started)
+;;           (< (- now (.getTime permissions-time)) (new-user-freshness-period))))
+;;   ([u]
+;;      (is-brand-new-user? (zolo-cal/now) u)))
+
+
+
+
 
 (defn inst-seconds-ago [seconds]
   (zolo-cal/millis->instant (.getMillis (time/minus (time/now) (time/secs seconds)))))

@@ -5,13 +5,16 @@
             [zolo.utils.domain :as domain]
             [clojure.string :as string]))
 
-(defn split-name [name]
-  (let [sn (string/split name #" ")]
-    {:first-name (first sn)
-     :last-name (string/join " " (rest sn))}))
+(defn split-name [name email]
+  (if name
+    (let [sn (string/split name #" ")]
+      {:first-name (first sn)
+       :last-name (string/join " " (rest sn))})
+    {:first-name email
+     :last-name ""}))
 
 (defn cio-contact->social-identity [c]
-  (let [c-name (split-name (:name c))]
+  (let [c-name (split-name (:name c) (:email c))]
     (domain/force-schema-types
      {:social/nickname (:name c)
       :social/first-name (:first-name c-name)

@@ -18,19 +18,6 @@
 (defn create-new-user [ui]
   {:user/user-identities [ui]})
 
-(defn update-with-extended-fb-auth-token
-  ([user]
-     (let [fb-ui (user-identity/fb-user-identity user)]
-       (update-with-extended-fb-auth-token user (:identity/auth-token fb-ui))))
-  ([user access-token]
-     (let [e-at (fb-gateway/extended-access-token access-token (conf/fb-app-id) (conf/fb-app-secret))]
-       (user/update-with-extended-fb-auth-token user e-at))))
-
-(defn extend-fb-token [u]
-  (-> u
-      update-with-extended-fb-auth-token
-      u-store/save))
-
 (defn- find-user [request-params]
   (u-store/find-by-provider-and-provider-uid
    (social/provider request-params)
@@ -46,7 +33,8 @@
    :updated [:optional]})
 
 ;; Services
-(defmulti additional-user-identity-processing (fn [u params] (social/login-dispatcher params)))
+(defmulti additional-login-processing (fn [u params] (social/login-dispatcher params)))
+(defmulti pre-refresh-processing (fn [u] (-> u :user/user-identities first :identity/provider)))
 
 (defn new-user [request-params]
   (-> request-params
@@ -54,7 +42,7 @@
       social/fetch-user-identity
       create-new-user
       (user/update-tz-offset (:login_tz request-params))
-      (additional-user-identity-processing request-params)
+      (additional-login-processing request-params)
       u-store/save
       user/distill))
 
@@ -62,7 +50,7 @@
   (-not-nil-> (u-store/find-by-guid guid)
               (user/update-permissions-granted (:permissions_granted request-params))
               (user/update-tz-offset (:login_tz request-params))
-              (additional-user-identity-processing request-params)
+              (additional-login-processing request-params)
               u-store/save
               user/distill))
 
@@ -82,7 +70,7 @@
     (let [updated-u (-> u
                         u-store/reload
                         u-store/stamp-refresh-start
-                        extend-fb-token
+                        pre-refresh-processing
                         c-service/update-contacts-for-user)]
       (logger/info first-name "Loaded contacts " (count (:user/contacts updated-u)))
       

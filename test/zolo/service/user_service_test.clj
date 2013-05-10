@@ -125,7 +125,7 @@
 
 
 (demonictest ^:storm test-refresh-user-data-and-scores-for-facebook
-  (personas/in-social-lab
+  (personas/in-fb-lab
    (let [mickey (fb-lab/create-user "Mickey" "Mouse")
          donald (fb-lab/create-friend "Donald" "Duck")
          daisy (fb-lab/create-friend "Daisy" "Duck")
@@ -192,7 +192,7 @@
 
 
 (demonictest ^:storm test-refresh-user-data-and-scores-for-email
-  (personas/in-social-lab
+  (personas/in-email-lab
    (let [mickey-email "mickey@gmail.com"
          mickey (e-lab/create-account "Mickey" "Mouse" mickey-email)
          db-mickey (personas/create-db-user-from-email-user mickey)]

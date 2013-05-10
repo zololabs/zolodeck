@@ -11,5 +11,8 @@
             [zolo.service.user-service :as u-service]))
 
 ;; Services
-(defmethod u-service/additional-user-identity-processing social/EMAIL [new-user request-params]
+(defmethod u-service/additional-login-processing social/EMAIL [new-user request-params]
   new-user)
+
+(defmethod u-service/pre-refresh-processing :provider/email [u]
+  u)

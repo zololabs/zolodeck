@@ -46,7 +46,7 @@
   (-> u fb-user-identity :identity/permissions-granted))
 
 (defn fb-permissions-time [u]
-  (let [uig (-> u fb-user-identity :identity/guid)]
+  (if-let [uig (-> u fb-user-identity :identity/guid)]
     (->> (demonic/run-query '[:find ?tx :in $ ?g
                               :where
                               [?u :identity/guid ?g]

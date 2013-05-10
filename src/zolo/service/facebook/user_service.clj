@@ -18,8 +18,24 @@
     nil)
   user)
 
+(defn- update-with-extended-fb-auth-token
+  ([user]
+     (let [fb-ui (user-identity/fb-user-identity user)]
+       (update-with-extended-fb-auth-token user (:identity/auth-token fb-ui))))
+  ([user access-token]
+     (let [e-at (fb-gateway/extended-access-token access-token (conf/fb-app-id) (conf/fb-app-secret))]
+       (user/update-with-extended-fb-auth-token user e-at))))
+
+(defn- extend-fb-token [u]
+  (-> u
+      update-with-extended-fb-auth-token
+      u-store/save))
+
 ;; Services
-(defmethod u-service/additional-user-identity-processing social/FACEBOOK [new-user request-params]
+(defmethod u-service/additional-login-processing social/FACEBOOK [new-user request-params]
   (-> new-user
-      (u-service/update-with-extended-fb-auth-token (:access_token request-params))
+      (update-with-extended-fb-auth-token (:access_token request-params))
       log-into-fb-chat))
+
+(defmethod u-service/pre-refresh-processing :provider/facebook [u]
+  (extend-fb-token u))
