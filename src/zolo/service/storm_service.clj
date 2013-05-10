@@ -21,7 +21,7 @@
 (defn refresh-started-recently? [now refresh-started]
   (if refresh-started
     (let [elapsed-since-started (- now (.getTime refresh-started))]
-      (< elapsed-since-started 300000))))
+      (< elapsed-since-started (conf/user-update-wait-fb-millis)))))
 
 (defn last-updated-recently? [now last-updated]
   (if last-updated

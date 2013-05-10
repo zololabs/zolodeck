@@ -8,6 +8,7 @@
             [zolo.utils.string :as zstring]
             [zolo.utils.logger :as logger]
             [zolo.social.core :as social]
+            [zolo.domain.user-identity :as ui]
             [cemerick.friend :as friend]
             (cemerick.friend [workflows :as workflows]
                              [credentials :as creds])))
@@ -69,16 +70,17 @@
        :else (throw (RuntimeException. (str "Unknown situation found trying to authenticate-using-facebook" request)))))))
 
 (defn authenticate-using-email [cio-account-id request]
-  (let [user (u-store/find-by-provider-and-auth-token :provider/email cio-account-id)]
+  (let [user (u-store/find-by-provider-and-auth-token :provider/email cio-account-id)
+        email-id (first (ui/email-ids user))]
     (cond
-     (and user (user-guid-in-uri? request)) (workflows/make-auth {:identity (:user/guid user)                                                                          :roles (get-roles-for-existing-user  user request)}
+     (and user (user-guid-in-uri? request)) (workflows/make-auth {:identity (:user/guid user)                                                                          :roles (get-roles-for-existing-user user request)}
                                                                  {::friend/redirect-on-auth? false})
 
-     (and user (user-search-uri? request)) (workflows/make-auth {:identity (:user/guid user)                                                                          :roles (get-search-roles-for-existing-user cio-account-id request)}
+     (and user (user-search-uri? request)) (workflows/make-auth {:identity (:user/guid user)                                                                          :roles (get-search-roles-for-existing-user email-id request)}
                                                                 {::friend/redirect-on-auth? false})
 
      (not user) (workflows/make-auth {:identity "potential-user"
-                                      :roles (get-roles-for-potential-user cio-account-id request)}
+                                      :roles (get-roles-for-potential-user email-id request)}
                                      {::friend/redirect-on-auth? false})
 
      :else (throw (RuntimeException. (str "Unknown situation found trying to authenticate-using-email" request))))))

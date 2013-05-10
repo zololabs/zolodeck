@@ -54,15 +54,15 @@
                 (when-let [n (next-refresh-guid guids)]
                   (demonic/in-demarcation
                    (let [u (u-store/find-by-guid n)]
-                     (when (user-identity/fb-permissions-granted? u)
-                       (u-store/stamp-refresh-start u)
-                       (logger/info "RefreshUserSpout emitting GUID:" n " for " (user/first-name u) " " (user/last-name u))
-                       (emit-spout! collector [n]))))))
+                     (u-store/stamp-refresh-start u)
+                     (logger/info "RefreshUserSpout emitting GUID:" n " for " (user/first-name u) " " (user/last-name u))
+                     (emit-spout! collector [n])))))
      (ack [id]))))
 
 (defn emit-new-or-perm-user [guid new-or-perm collector]
   (demonic/in-demarcation
    (let [u (u-store/find-by-guid guid)]
+     
      (u-store/stamp-refresh-start u)
      (logger/trace "NewPermSpout emitting " new-or-perm " user guid" guid " for " (user/first-name u) " " (user/last-name u))))
   (emit-spout! collector [guid]))
@@ -113,9 +113,11 @@
 (defn fb-topology []
   (topology
    {"1" (spout-spec refresh-user-spout)
-    "2" (spout-spec new-user-tx-spout)}
-   {"3" (bolt-spec {"1" :shuffle
-                    "2" :shuffle}
+    ;"2" (spout-spec new-user-tx-spout)
+    }
+   {"2" (bolt-spec {"1" :shuffle
+;                    "2" :shuffle
+                    }
                    process-user
                    :p 2)}))
 

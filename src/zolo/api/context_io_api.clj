@@ -41,7 +41,7 @@
   (let [{email :email at :access_token rt :refresh_token} g-user-info
         ui (ui-store/find-by-provider-and-email :provider/email email)]
     (if ui
-      (:identity/provider-uid ui)
+      (:identity/auth-token ui)
       (-> (e-gateway/create-account email at rt) :id))))
 
 (defn get-account [request-params]
