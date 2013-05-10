@@ -10,7 +10,7 @@
             [zolo.setup.config :as config]
             [zolo.demonic.core :as demonic]
             [zolo.domain.user :as user]
-            [zolo.domain.user-identity :as user-identity]            
+            [zolo.domain.user-identity :as ui]            
             [zolo.utils.logger :as logger]
             [zolo.utils.clojure :as clj]
             [clojure.tools.cli :as cli]
@@ -62,10 +62,10 @@
 (defn emit-new-or-perm-user [guid new-or-perm collector]
   (demonic/in-demarcation
    (let [u (u-store/find-by-guid guid)]
-     
-     (u-store/stamp-refresh-start u)
-     (logger/trace "NewPermSpout emitting " new-or-perm " user guid" guid " for " (user/first-name u) " " (user/last-name u))))
-  (emit-spout! collector [guid]))
+     (when-not (ui/is-provider? :provider/email (-> u :user/user-identities first))
+       (u-store/stamp-refresh-start u)
+       (logger/trace "NewPermSpout emitting " new-or-perm " user guid" guid " for " (user/first-name u) " " (user/last-name u))
+       (emit-spout! collector [guid])))))
 
 (defspout new-user-tx-spout ["user-guid"]
   [conf context collector]
@@ -93,31 +93,28 @@
   (try
     (config/setup-config)
     (datomic/init-connection)
-    (demonic/in-demarcation
-     (let [guid (.getStringByField tuple "user-guid")
-           u (u-store/find-by-guid guid)]
-       (logger/info "Processing user:" (user/first-name u))
-       (demonic/in-demarcation
-        (u-service/refresh-user-data u))
-       ;;TODO Need to reload
-       ;;TODO Why this has to be 2 different demarcation?
-       (demonic/in-demarcation
-        (u-service/refresh-user-scores (u-store/reload u)))
-       (demonic/in-demarcation
-        (logger/info "Completed bolt for " (user/first-name u) " with " (count (:user/contacts (u-store/reload u))) " contacts"))
-       (if (> (- (count (:user/contacts (u-store/reload u))) (count (:user/contacts u))) 10)
-         (throw (RuntimeException. (str "Zombie warning for " (user/first-name u)))))))
+    (let [guid (.getStringByField tuple "user-guid")
+          u (demonic/in-demarcation (u-store/find-by-guid guid))]
+      (logger/info "Processing user:" (user/first-name u))
+      (demonic/in-demarcation
+       (u-service/refresh-user-data u))
+      (demonic/in-demarcation
+       (u-service/refresh-user-scores (u-store/reload u)))
+      (demonic/in-demarcation
+       (logger/info "Completed bolt for " (user/first-name u) " with " (count (:user/contacts (u-store/reload u))) " contacts"))
+      (if (and (> (count (:user/contacts u)) 0)
+               (> (- (count (:user/contacts (demonic/in-demarcation (u-store/reload u))))
+                     (count (:user/contacts u))) 10))
+        (throw (RuntimeException. (str "Zombie warning for " (user/first-name u))))))
     (catch Exception e
       (logger/error e "Exception in bolt! Occured while processing tuple:" tuple))))
 
 (defn fb-topology []
   (topology
    {"1" (spout-spec refresh-user-spout)
-    ;"2" (spout-spec new-user-tx-spout)
-    }
-   {"2" (bolt-spec {"1" :shuffle
-;                    "2" :shuffle
-                    }
+    "2" (spout-spec new-user-tx-spout)}
+   {"3" (bolt-spec {"1" :shuffle
+                    "2" :shuffle}
                    process-user
                    :p 2)}))
 

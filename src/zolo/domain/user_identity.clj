@@ -11,7 +11,7 @@
        (filter #(= provider-uid (:identity/provider-uid %)))
        first))
 
-(defn- is-provider? [provider ui]
+(defn is-provider? [provider ui]
   (= provider (:identity/provider ui)))
 
 (defn provider-uid [provider uis]

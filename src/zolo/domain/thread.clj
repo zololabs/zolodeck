@@ -51,7 +51,8 @@
   (let [last-m (last-message thread)]
     (->> last-m
          selector-fn
-         (c/find-by-provider-and-provider-uid u (:message/provider last-m)))))
+         (c/find-by-provider-and-provider-uid u (:message/provider last-m))
+         c/is-a-person?)))
 
 (defn reply-to-contact-exists? [u thread]
   (contact-exists? u thread :message/from))
@@ -88,8 +89,10 @@
 (defn find-reply-to-threads [u]
   (it-> u
         (all-threads it)
+        
         (filter #(is-reply-to? u %) it)
         (filter #(reply-to-contact-exists? u %) it)
+        
         (sort-by-recent-threads it)))
 
 (defn find-follow-up-threads [u]
