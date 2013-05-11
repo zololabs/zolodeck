@@ -16,7 +16,7 @@
   (if-let [distilled-u (u-service/get-users request-params)]
     {:status (STATUS-CODES :ok)
      :body distilled-u}
-    (resource-not-found)))
+    (resource-not-found "User")))
 
 ;;POST /users
 (defn new-user [request-params]
@@ -30,11 +30,11 @@
   (if-let [distilled-u (u-service/update-user guid request-params)]
     {:status (STATUS-CODES :ok)
      :body distilled-u}
-    (resource-not-found)))
+    (resource-not-found "User")))
 
 ;; GET /users/guid
 (defn find-user [guid]
   (if-let [distilled-u (u-service/get-user-by-guid guid)]
     {:status (STATUS-CODES :ok)
      :body distilled-u}
-    (resource-not-found)))
+    (resource-not-found "User")))

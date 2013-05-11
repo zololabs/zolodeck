@@ -12,10 +12,10 @@
   (if-let [threads (t-service/find-threads user-guid action)]
     {:status (STATUS-CODES :ok)
      :body threads}
-    (resource-not-found)))
+    (resource-not-found "Thread")))
 
 (defn load-thread [user-guid message-id]
   (if-let [t (t-service/load-thread-details user-guid message-id)]
     {:status (STATUS-CODES :ok)
      :body t}
-    (resource-not-found)))
+    (resource-not-found "Thread")))

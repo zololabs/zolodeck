@@ -12,10 +12,10 @@
   (if-let [cs (s-service/contact-stats (u-store/find-by-guid guid))]
     {:status (STATUS-CODES :ok)
      :body cs}
-    (resource-not-found)))
+    (resource-not-found "Contact")))
 
 (defn get-interaction-stats [guid]
   (if-let [is (s-service/interaction-stats (u-store/find-by-guid guid))]
     {:status (STATUS-CODES :ok)
      :body is}
-    (resource-not-found)))
+    (resource-not-found "Interaction")))

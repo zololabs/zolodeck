@@ -77,7 +77,7 @@
 (defn message-id [m]
   (if (is-temp-message? m)
     (:temp-message/id m)
-    (:message/id m)))
+    (:message/message-id m)))
 
 (defn message-text [m]
   (if (is-temp-message? m)

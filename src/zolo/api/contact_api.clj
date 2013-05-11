@@ -13,7 +13,7 @@
   (if-let [distilled-c (c-service/get-contact-by-guid (u-store/find-by-guid u-guid) c-guid)]
     {:status (STATUS-CODES :ok)
      :body distilled-c}
-    (resource-not-found)))
+    (resource-not-found "Contact")))
 
 (defn update-contact [u-guid c-guid request-params]
   (if-let [distilled-c (c-service/update-contact (u-store/find-by-guid u-guid)
@@ -21,7 +21,7 @@
                                                  request-params)]
     {:status (STATUS-CODES :created)
      :body distilled-c}
-    (resource-not-found)))
+    (resource-not-found "Contact")))
 
 
 

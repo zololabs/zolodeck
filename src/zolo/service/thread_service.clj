@@ -17,10 +17,11 @@
       FOLLOW-UP (->> u t/find-follow-up-threads (map #(t/distill u %)))
       (throw (RuntimeException. (str "Unknown action type trying to find threads: " action))))))
 
+;;TODO Only will work for email
 (defn load-thread-details [user-guid message-id]
-  (if-let [u (u-store/find-entity-by-guid user-guid)]
-    (if-let [m (m-store/find-by-id message-id)]
-      (if-let [account-id (-> m :message/user-identity :identity/provider-uid)]
+  (if-let [u (print-vals "User : " (u-store/find-entity-by-guid user-guid))]
+    (if-let [m (print-vals "Message :" (m-store/find-by-id message-id))]
+      (if-let [account-id (-> m :message/user-identity :identity/auth-token)]
         (->> (messages/get-messages-for-thread account-id message-id)
              (t/messages->threads u)
              first

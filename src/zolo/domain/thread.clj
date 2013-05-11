@@ -32,7 +32,7 @@
 (defn distill [u thread]
   (when thread
     (let [distilled-msgs (map #(m/distill u %) (:thread/messages thread))]
-      {:thread/guid (:thread/guid thread)
+      {:thread/guid (-> distilled-msgs last :message/message-id)
        :thread/subject (or (:thread/subject thread)
                            (-> distilled-msgs first subject-from-people))
        :thread/lm-from-contact (lm-from-to u (first distilled-msgs))

@@ -13,4 +13,4 @@
 (defn send-message [user-guid params]
   (if-let [new-t-message (m-service/new-message (u-store/find-by-guid user-guid) params)]
     {:status (STATUS-CODES :created) :body new-t-message}
-    (resource-not-found)))
+    (resource-not-found "Message")))
