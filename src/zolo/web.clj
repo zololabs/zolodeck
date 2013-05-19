@@ -22,12 +22,20 @@
 (defn- write-json-uuid [x out escape-unicode?]
   (.print out (str "\"" x "\"")))
 
+(defn- format-joda-time [d]
+  (str (clj-time.format/unparse (clj-time.format/formatters :date) d) " "
+       (clj-time.format/unparse (clj-time.format/formatters :hour-minute) d)))
+
 (extend java.util.UUID json/Write-JSON
         {:write-json write-json-uuid})
 
 (extend java.util.Date json/Write-JSON
         {:write-json (fn [d out escape-unicode?]
                        (.print out (str "\"" (zolo-cal/date-to-string d (zolo-cal/simple-date-format "yyyy-MM-dd hh:mm")) "\"")))})
+
+(extend org.joda.time.DateTime json/Write-JSON
+        {:write-json (fn [d out escape-unicode?]
+                       (.print out (str "\"" (format-joda-time d) "\"")))})
 
 ;; (extend zolo.demonic.loadable.Loadable json/Write-JSON
 ;;         {:write-json (fn [x out escape-unicode?] (.print out

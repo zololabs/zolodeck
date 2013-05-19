@@ -18,30 +18,32 @@
             [zolo.store.user-store :as u-store]
             [zolo.social.facebook.chat :as fb-chat]
             [zolo.domain.thread :as t]
+            [zolo.domain.core :as d-core]
             [zolo.personas.shy :as shy-persona]
             [zolo.personas.vincent :as vincent-persona]
             [zolo.utils.calendar :as zolo-cal]))
  
 (deftest test-distilled-threads-with-temps
   (demonic-testing "When user has a thread with some temp-messages, distillation should still work"
-    (run-as-of "2012-05-12"
-      (pgen/run-generative-tests u {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 2)]}
-                                    :UI-IDS-ALLOWED [:FACEBOOK]
-                                    :UI-IDS-COUNT 1}
-        (let [f-uid (-> u :user/contacts first
-                        :contact/social-identities first :social/provider-uid)]
-          (mocking [fb-chat/send-message]
-            (m-service/new-message u {:text "Hey hello" :provider "facebook" :guid (-> u :user/guid str) :to [f-uid]}))
+    (d-core/run-in-gmt-tz
+     (run-as-of "2012-05-12"
+       (pgen/run-generative-tests u {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 2)]}
+                                     :UI-IDS-ALLOWED [:FACEBOOK]
+                                     :UI-IDS-COUNT 1}
+                                  (let [f-uid (-> u :user/contacts first
+                                                  :contact/social-identities first :social/provider-uid)]
+                                    (mocking [fb-chat/send-message]
+                                      (m-service/new-message u {:text "Hey hello" :provider "facebook" :guid (-> u :user/guid str) :to [f-uid]}))
 
-          (let [all-t (->> u u-store/reload t/all-threads)
-                dt (->> all-t second (t/distill u))]
-            (has-keys dt [:thread/guid :thread/subject :thread/lm-from-contact :thread/provider :thread/messages])
-            (has-keys (:thread/lm-from-contact dt) [:contact/first-name :contact/last-name :contact/guid :contact/muted :contact/picture-url :contact/social-identities])
-            (doseq [m (:thread/messages dt)]
-              (has-keys m [:message/message-id :message/guid :message/provider :message/thread-id :message/from :message/to :message/date :message/text :message/snippet :message/sent :message/author :message/reply-to])
-              (has-keys (:message/author m) [:author/first-name :author/last-name :author/picture-url])
-              (doseq [r (:message/reply-to m)]
-                (has-keys r [:reply-to/first-name :reply-to/last-name :reply-to/provider-uid])))))))))
+                                    (let [all-t (->> u u-store/reload t/all-threads)
+                                          dt (->> all-t second (t/distill u))]
+                                      (has-keys dt [:thread/guid :thread/subject :thread/lm-from-contact :thread/provider :thread/messages])
+                                      (has-keys (:thread/lm-from-contact dt) [:contact/first-name :contact/last-name :contact/guid :contact/muted :contact/picture-url :contact/social-identities])
+                                      (doseq [m (:thread/messages dt)]
+                                        (has-keys m [:message/message-id :message/guid :message/provider :message/thread-id :message/from :message/to :message/date :message/text :message/snippet :message/sent :message/author :message/reply-to])
+                                        (has-keys (:message/author m) [:author/first-name :author/last-name :author/picture-url])
+                                        (doseq [r (:message/reply-to m)]
+                                          (has-keys r [:reply-to/first-name :reply-to/last-name :reply-to/provider-uid]))))))))))
  
 (deftest test-find-reply-to-threads
  

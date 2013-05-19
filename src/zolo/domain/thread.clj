@@ -31,7 +31,7 @@
 
 (defn distill [u thread]
   (when thread
-    (let [distilled-msgs (map #(m/distill u %) (:thread/messages thread))]
+    (let [distilled-msgs (domap #(m/distill u (u/tz-offset-minutes) %) (:thread/messages thread))]
       {:thread/guid (-> distilled-msgs last :message/message-id)
        :thread/subject (or (:thread/subject thread)
                            (-> distilled-msgs first subject-from-people))

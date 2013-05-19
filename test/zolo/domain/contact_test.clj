@@ -212,7 +212,10 @@
     (run-as-of "2012-05-10"
       (d-core/run-in-gmt-tz
        (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 2)
-                                                        (pgen/create-friend-spec "Jill" "Ferry" 3 3)]}})
+                                                        ;(pgen/create-friend-spec
+                                                        ;"Jill"
+                                                        ;"Ferry" 3 3)
+                                                        ]}})
              ibc (interaction/ibc u)]
          
          (let [[jack jill] (sort-by contact/first-name (:user/contacts u))
