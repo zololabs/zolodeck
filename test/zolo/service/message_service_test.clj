@@ -100,12 +100,16 @@
 
 (demonictest test-new-message
   (let [u (pgen/generate {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
+        u-uid (-> u :user/user-identities first :identity/provider-uid)
+        u-email (-> u :user/user-identities first :identity/email)
+        u-at (-> u :user/user-identities first :identity/auth-token)
         u-guid (-> u :user/guid str)
         [jack] (sort-by contact/first-name (:user/contacts u))
-        jack-uid (-> jack :contact/social-identities first :social/provider-uid)]
+        jack-uid (-> jack :contact/social-identities first :social/provider-uid)
+        jack-email (-> jack :contact/social-identities first :social/email)]
 
     (testing "When user is not present it should return nil"
-      (is (nil? (m-service/new-message nil {:text "hey" :provider "facebook" :guid u-guid :to [jack-uid]}))))
+      (is (nil? (m-service/new-message nil {:from u-uid :text "hey" :provider "facebook" :guid u-guid :to [jack-uid]}))))
     
     (testing "When invalid message is send it should throw exception"
       (is (thrown-with-msg? RuntimeException #"bad-request"
@@ -117,11 +121,12 @@
       (testing "Should call fb-chat send message with proper attributes and save temp message"
         (db-assert/assert-datomic-temp-message-count 0)
 
-        (m-service/new-message u {:text "Hey" :provider "facebook" :guid u-guid :to [jack-uid]})
+        (m-service/new-message u {:from u-uid :text "Hey" :provider "facebook" :guid u-guid :to [jack-uid]})
+
         (let [updated-u (u-store/reload u)]
           
           (verify-call-times-for fb-chat/send-message 1)
-          (verify-first-call-args-for fb-chat/send-message u (contact/provider-id jack :provider/facebook) "Hey")
+          (verify-first-call-args-for fb-chat/send-message u-uid u-at (contact/provider-id jack :provider/facebook) "Hey")
           
           (db-assert/assert-datomic-temp-message-count 1)
           
@@ -133,13 +138,13 @@
   (demonic-testing "when user sends a new message, distillation should work for temp messages"
     (let [vincent (vincent-persona/create)
           vincent-ui (-> vincent :user/user-identities first)
-          vincent-uid (:identity/provider-uid vincent)
+          vincent-uid (-> vincent-ui :identity/provider-uid str)
           vincent-guid (-> vincent :user/guid str)
 
           jill-ui (-> vincent :user/contacts first :contact/social-identities first)
           jill-uid (:social/provider-uid jill-ui)]
       (mocking [fb-chat/send-message]
-        (m-service/new-message vincent {:text "Hey" :provider "facebook" :guid vincent-guid :to [jill-uid]}))
+        (m-service/new-message vincent {:text "Hey" :provider "facebook" :from vincent-uid :guid vincent-guid :to [jill-uid]}))
       (let [vincent (u-store/reload vincent)
             last-tm (->> vincent :user/temp-messages last)
             d-last-tm (->> last-tm (message/distill vincent))]
@@ -147,7 +152,7 @@
         (is (= (:temp-message/message-id last-tm) (:message/message-id d-last-tm)))
         (is (= (:temp-message/provider last-tm) (:message/provider d-last-tm)))
         (is (= (:temp-message/guid last-tm) (:message/guid d-last-tm)))
-        (is (= vincent-uid (:temessage/from d-last-tm)))
+        (is (= vincent-uid (:message/from d-last-tm)))
         (same-value?  [jill-uid] (:message/to d-last-tm))
         
         (is (= (:identity/first-name vincent-ui) (get-in d-last-tm [:message/author :author/first-name])))

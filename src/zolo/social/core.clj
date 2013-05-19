@@ -52,3 +52,7 @@
 (defmethod provider-uid nil [request-params]
   (throw+ {:type :forbidden :message "Provider UID is nil"}))
 
+(defn message-provider-dispatch [provider a_ f_ to_ th_ s_ m_]
+  provider)
+
+(defmulti send-message message-provider-dispatch)

@@ -28,10 +28,11 @@
       (pgen/run-generative-tests u {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 2)]}
                                     :UI-IDS-ALLOWED [:FACEBOOK]
                                     :UI-IDS-COUNT 1}
-        (let [f-uid (-> u :user/contacts first
+      (let [u-uid (-> u :user/user-identities first :identity/provider-uid)
+            f-uid (-> u :user/contacts first
                         :contact/social-identities first :social/provider-uid)]
           (mocking [fb-chat/send-message]
-            (m-service/new-message u {:text "Hey hello" :provider "facebook" :guid (-> u :user/guid str) :to [f-uid]}))
+            (m-service/new-message u {:text "Hey hello" :provider "facebook" :from u-uid :guid (-> u :user/guid str) :to [f-uid]}))
 
           (let [all-t (->> u u-store/reload t/all-threads)
                 dt (->> all-t second (t/distill u))]
@@ -100,6 +101,7 @@
               _ (mocking [fb-chat/send-message]
                   (m-service/new-message vincent {:text "Hey hello" :provider "facebook"
                                                   :guid (-> vincent :user/guid str)
+                                                  :from vincent-uid
                                                   :to [(-> r-message :message/reply-to first :reply-to/provider-uid)]
                                                   :thread_id (:message/thread-id r-message)}))
               updated-r-threads (t-service/find-threads (:user/guid vincent) t-service/REPLY-TO)]

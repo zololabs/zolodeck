@@ -3,8 +3,9 @@
   (:require [zolo.social.core :as social]
             [zolo.social.facebook.gateway :as gateway]
             [zolo.social.facebook.users :as users]            
-            [zolo.social.facebook.social-identities :as sis]
+            [zolo.social.facebook.social-identities :as sis]            
             [zolo.social.facebook.messages :as messages]
+            [zolo.social.facebook.chat :as chat]
             [zolo.utils.logger :as logger]
             [zolo.utils.maps :as zolo-maps]))
 
@@ -41,3 +42,6 @@
 (defmethod social/fetch-contact-feeds :provider/facebook [provider access-token last-updated-string provider-uids]
   ;(logger/trace "FetchContactFeeds:" provider-uids)
   (messages/fetch-all-contact-feeds access-token last-updated-string provider-uids))
+
+(defmethod social/send-message :provider/facebook [provider access-token from-provider-uid to-provider-uids thread-id subject message]
+  (chat/send-message from-provider-uid access-token (first to-provider-uids) message))

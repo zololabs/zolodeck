@@ -149,6 +149,7 @@
                                to-user-provider-id
                                :provider/facebook
                                "thread-id"
+                               "subject"
                                text))
 
 ;; (defn domain-persona [f]

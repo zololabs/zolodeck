@@ -2,7 +2,7 @@
   (:use zolo.utils.debug
         zolo.utils.clojure)
   (:require [clojure.set :as set]
-            [zolo.utils.maps :as zolo-maps]
+            [zolo.utils.maps :as zmaps]
             [zolo.utils.calendar :as zcal]
             [zolo.utils.string :as zstring]
             [zolo.utils.domain :as domain]
@@ -194,13 +194,15 @@
                                                (reply-to-for-distillation-from-from u message is-sent)))))))
 
 ;;TODO test
-(defn create-temp-message [from-uid to-uids provider thread-id text]
-  {:temp-message/provider provider
-   :temp-message/from from-uid
-   :temp-message/to to-uids
-   :temp-message/text text
-   :temp-message/thread-id (or thread-id (random-guid-str))
-   :temp-message/date (zcal/now-instant)})
+(defn create-temp-message [from-uid to-uids provider thread-id subject text]
+  (zmaps/remove-nil-vals
+   {:temp-message/provider provider
+    :temp-message/from from-uid
+    :temp-message/to to-uids
+    :temp-message/text text
+    :temp-message/subject subject   
+    :temp-message/thread-id (or thread-id (random-guid-str))
+    :temp-message/date (zcal/now-instant)}))
 
 ;; (defn feeds-start-time-seconds []
 ;;   (-> (zcal/now-joda)

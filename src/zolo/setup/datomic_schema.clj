@@ -104,7 +104,7 @@
  (enum-fact-schema    :message/provider false "The platform: Facebook, LinkedIn, etc" false false false false)
  ;;TODO Need to change this to enum
  (strings-fact-schema :message/attachments false "list of links" false false false false)
- (string-fact-schema  :message/subject false "the subject of this message" false false false false)
+ (string-fact-schema  :message/subject true "the subject of this message" false false false false)
  (string-fact-schema  :message/text true "The body of the message" false false false false)
  (string-fact-schema  :message/snippet false "The body of the message" false false false false)
  (instant-fact-schema :message/date false "The date the message was received" false false false false)
@@ -118,13 +118,14 @@
  (string-fact-schema  :message/link false "a link about this message" false false false false))
 
 (schema-set "TEMP MESSAGE ENTITY FACTS"
- (uuid-fact-schema   :temp-message/guid false "A GUID for temporary messages" :db.unique/identity false false false)
- (enum-fact-schema   :temp-message/provider false "The provider platform of this temp message" false false false false)
- (string-fact-schema :temp-message/text true "The body of this message" false false false false)
+ (uuid-fact-schema    :temp-message/guid false "A GUID for temporary messages" :db.unique/identity false false false)
+ (enum-fact-schema    :temp-message/provider false "The provider platform of this temp message" false false false false)
+ (string-fact-schema  :temp-message/subject true "the subject of this temp message" false false false false)
+ (string-fact-schema  :temp-message/text true "The body of this message" false false false false)
  (instant-fact-schema :temp-message/date false "The date this message was received/sent" false false false false)
- (string-fact-schema :temp-message/from false "The platform ID of the sender" false false false false)
+ (string-fact-schema  :temp-message/from false "The platform ID of the sender" false false false false)
  (strings-fact-schema :temp-message/to false "The platform IDs of the receivers" false false false false)
- (string-fact-schema :temp-message/thread-id false "The Thread ID of this message" false false false false))
+ (string-fact-schema  :temp-message/thread-id false "The Thread ID of this message" false false false false))
 
 (schema-set "SERVER STATS"
  (uuid-fact-schema :server/guid false "A GUID for the server stats object" :db.unique/identity false false false)

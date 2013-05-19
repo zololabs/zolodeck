@@ -49,6 +49,7 @@
        (personas/in-social-lab
         (let [owner (pgen/generate {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)
                                                       (pgen/create-friend-spec "Jill" "Ferry" 1 1)]}})
+              owner-uid (-> owner :user/user-identities first :identity/provider-uid)
               [jack jill] (sort-by contact/first-name (:user/contacts owner))
               hacker (pgen/generate {:SPECS {:friends []}})]
           
@@ -70,8 +71,8 @@
                200 owner  :get  (contacts-url owner jack)    {}
 
                ;; Messages
-               404 hacker :post (messages-url owner)    {:text "Hey" :provider "facebook" :to ["123"] :guid (-> owner :user/guid str)}
-               201 owner  :post (messages-url owner)    {:text "Hey" :provider "facebook" :to ["123"] :guid (-> owner :user/guid str)}
+               404 hacker :post (messages-url owner)    {:from owner-uid :text "Hey" :provider "facebook" :to ["123"] :guid (-> owner :user/guid str)}
+               201 owner  :post (messages-url owner)    {:from owner-uid :text "Hey" :provider "facebook" :to ["123"] :guid (-> owner :user/guid str)}
 
                ;;Stats
                404 hacker :get  (c-stats-url owner)           {}

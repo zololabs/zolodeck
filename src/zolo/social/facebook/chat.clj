@@ -15,17 +15,14 @@
   (if-let [conn (@CONNECTIONS uid)]
     (.isLive conn)))
 
-(defn connect-user! [u]
-  (let [{uid :identity/provider-uid access-token :identity/auth-token} (user-identity/fb-user-identity u)]
-    (when-not (chat-connected? uid)
-      (add-to-connections! uid (FacebookChat. (conf/fb-app-id) access-token)))))
+(defn connect-user! [uid access-token]
+  (when-not (chat-connected? uid)
+    (add-to-connections! uid (FacebookChat. (conf/fb-app-id) access-token))))
 
 (defn jid-for [uid]
   (str "-" uid "@chat.facebook.com"))
 
-(defn send-message [from-user to-uid message]
-  (connect-user! from-user)
-  (-> from-user
-      user-identity/fb-id
-      (@CONNECTIONS)
-      (.sendMessage (jid-for to-uid) message)))
+;; TODO - enable mutli user chat here
+(defn send-message [fb-id access-token to-uids message]
+  (connect-user! fb-id access-token)
+  (.sendMessage (@CONNECTIONS fb-id) (-> to-uids first jid-for) message))

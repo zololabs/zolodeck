@@ -19,6 +19,7 @@
 
 (demonictest test-new-message
   (let [u (pgen/generate {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
+        u-uid (-> u :user/user-identities first :identity/provider-uid)
         jack (first (:user/contacts u))
         jack-uid (-> jack :contact/social-identities first :social/provider-uid)]
 
@@ -39,6 +40,7 @@
         (db-assert/assert-datomic-temp-message-count 0)
         (let [resp (w-utils/authed-request u  :post (messages-url u) {:text "Hey"
                                                                       :provider "facebook"
+                                                                      :from u-uid
                                                                       :to [jack-uid jack-uid]})]
           (is (= 201 (:status resp))))
         (db-assert/assert-datomic-temp-message-count 1))))) 
