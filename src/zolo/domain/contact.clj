@@ -111,8 +111,8 @@
   (let [last-send-message (->> ibc
                                (interaction/messages-from-ibc-for-contact c)
                                (message/last-sent-message c))]
-    (zcal/same-day-instance? (zcal/now-joda user/*tz-offset-minutes*)
-                             (message/message-date last-send-message user/*tz-offset-minutes*))))
+    (zcal/same-day-instance? (zcal/now-joda (user/tz-offset-minutes))
+                             (message/message-date last-send-message (user/tz-offset-minutes)))))
 
 (defn is-muted? [c]
   (true? (:contact/muted c)))

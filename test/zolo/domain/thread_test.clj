@@ -18,18 +18,19 @@
 
 (deftest test-distilled-threads
   (testing "When user has a thread with all regular messages, distillation should work"
-    (run-as-of "2012-05-12"
-      (pgen/run-demarcated-generative-tests u {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 9)]}
-                                    :UI-IDS-ALLOWED [:FACEBOOK]
-                                    :UI-IDS-COUNT 1}
-        (let [dt (->> u t/all-threads first (t/distill u))]
-          (has-keys dt [:thread/guid :thread/subject :thread/lm-from-contact :thread/provider :thread/messages])
-          (has-keys (:thread/lm-from-contact dt) [:contact/first-name :contact/last-name :contact/guid :contact/muted :contact/picture-url :contact/social-identities])
-          (doseq [m (:thread/messages dt)]
-            (has-keys m [:message/message-id :message/guid :message/provider :message/thread-id :message/from :message/to :message/date :message/text :message/snippet :message/sent :message/author :message/reply-to])
-            (has-keys (:message/author m) [:author/first-name :author/last-name :author/picture-url])
-            (doseq [r (:message/reply-to m)]
-              (has-keys r [:reply-to/first-name :reply-to/last-name :reply-to/provider-uid]))))))))
+    (d-core/run-in-gmt-tz
+     (run-as-of "2012-05-12"
+       (pgen/run-demarcated-generative-tests u {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 9)]}
+                                                :UI-IDS-ALLOWED [:FACEBOOK]
+                                                :UI-IDS-COUNT 1}
+                                             (let [dt (->> u t/all-threads first (t/distill u))]
+                                               (has-keys dt [:thread/guid :thread/subject :thread/lm-from-contact :thread/provider :thread/messages])
+                                               (has-keys (:thread/lm-from-contact dt) [:contact/first-name :contact/last-name :contact/guid :contact/muted :contact/picture-url :contact/social-identities])
+                                               (doseq [m (:thread/messages dt)]
+                                                 (has-keys m [:message/message-id :message/guid :message/provider :message/thread-id :message/from :message/to :message/date :message/text :message/snippet :message/sent :message/author :message/reply-to])
+                                                 (has-keys (:message/author m) [:author/first-name :author/last-name :author/picture-url])
+                                                 (doseq [r (:message/reply-to m)]
+                                                   (has-keys r [:reply-to/first-name :reply-to/last-name :reply-to/provider-uid])))))))))
 
 (deftest test-find-reply-to-threads
   (run-as-of "2012-05-12"

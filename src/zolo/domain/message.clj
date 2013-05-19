@@ -175,23 +175,29 @@
        :reply-to/last-name (:social/last-name from-si)
        :reply-to/provider-uid (:social/provider-uid from-si)})))
 
-(defn distill [u message]
-  (let [is-sent (is-sent-by-user? u message)]
-    (-> {}
-        (assoc :message/message-id (message-id message))
-        (assoc :message/guid (message-guid message))
-        (assoc :message/provider (message-provider message))
-        (assoc :message/thread-id (thread-id message))
-        (assoc :message/from (message-from message))
-        (assoc :message/to (message-to message))
-        (assoc :message/date (message-date message))
-        (assoc :message/text (message-text message))
-        (assoc :message/snippet (snippet message))
-        (assoc :message/sent is-sent)
-        (assoc :message/author (author-for-distillation u message is-sent))
-        (assoc :message/reply-to (remove nil?
-                                         (conj (reply-to-for-distillation-from-to u message)
-                                               (reply-to-for-distillation-from-from u message is-sent)))))))
+(defn distill
+  ([u message]
+     (distill u nil message))
+  ([u tz-offset-minutes message]
+     (let [is-sent (is-sent-by-user? u message)
+           m-date (if tz-offset-minutes
+                    (message-date message tz-offset-minutes)
+                    (message-date message))]
+       (-> {}
+           (assoc :message/message-id (message-id message))
+           (assoc :message/guid (message-guid message))
+           (assoc :message/provider (message-provider message))
+           (assoc :message/thread-id (thread-id message))
+           (assoc :message/from (message-from message))
+           (assoc :message/to (message-to message))
+           (assoc :message/date m-date)
+           (assoc :message/text (message-text message))
+           (assoc :message/snippet (snippet message))
+           (assoc :message/sent is-sent)
+           (assoc :message/author (author-for-distillation u message is-sent))
+           (assoc :message/reply-to (remove nil?
+                                            (conj (reply-to-for-distillation-from-to u message)
+                                                  (reply-to-for-distillation-from-from u message is-sent))))))))
 
 ;;TODO test
 (defn create-temp-message [from-uid to-uids provider thread-id subject text]
