@@ -43,5 +43,5 @@
   ;(logger/trace "FetchContactFeeds:" provider-uids)
   (messages/fetch-all-contact-feeds access-token last-updated-string provider-uids))
 
-(defmethod social/send-message :provider/facebook [provider access-token from-provider-uid to-provider-uids thread-id subject message]
+(defmethod social/send-message :provider/facebook [provider access-token from-provider-uid to-provider-uids thread-id reply-to-message-id subject message]
   (chat/send-message from-provider-uid access-token (first to-provider-uids) message))

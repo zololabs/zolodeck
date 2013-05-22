@@ -55,10 +55,11 @@
   {:provider [:required :string :empty-not-allowed]
    :text [:required :string :empty-not-allowed]
    :thread_id [:optional :string]
+   :reply_to_message_id [:optional :string]
+   :subject [:optional :string]
    :from [:required :string :empty-not-allowed]
    :to [:required :collection :empty-not-allowed]
-   :guid [:required :string :empty-not-allowed]
-   })
+   :guid [:required :string :empty-not-allowed]})
 
 (defn- temp-message-distilled [u]
   (let [reloaded-u (u-store/reload u)]
@@ -68,14 +69,16 @@
          last
          (message/distill reloaded-u))))
 
+;; params should have either thread_id or reply_to_message_id
+;; Facebook uses thread_id and emails use reply_to_message_id
 (defn new-message [u params]
   (when u
     (service/validate-request! params val-request)
     (let [{to-provider :provider from-uid :from to-provider-uids :to
-           thread-id :thread_id subject :subject text :text} params
+           thread-id :thread_id reply-to-message-id :reply_to_message_id subject :subject text :text} params
            provider (service/provider-string->provider-enum to-provider)
            from-ui (ui/find-by-provider-uid u from-uid)
            tmp-msg (message/create-temp-message from-uid to-provider-uids provider thread-id subject text)]
-      (social/send-message provider (:identity/auth-token from-ui) from-uid to-provider-uids thread-id subject text)
+      (social/send-message provider (:identity/auth-token from-ui) from-uid to-provider-uids thread-id reply-to-message-id subject text)
       (m-store/append-temp-message u tmp-msg)
       (temp-message-distilled u))))

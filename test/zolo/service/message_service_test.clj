@@ -18,6 +18,7 @@
             [zolo.store.message-store :as m-store]
             [zolo.marconi.facebook.core :as fb-lab]
             [zolo.social.facebook.chat :as fb-chat]
+            [zolo.social.email.gateway :as e-gateway]
             [zolo.personas.generator :as pgen]))
 
 (demonictest test-update-inbox-messages
@@ -98,15 +99,13 @@
            (db-assert/assert-datomic-temp-message-count 0))))))))
 
 
-(demonictest test-new-message
+(demonictest test-new-message-from-facebook
   (let [u (pgen/generate {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
         u-uid (-> u :user/user-identities first :identity/provider-uid)
-        u-email (-> u :user/user-identities first :identity/email)
         u-at (-> u :user/user-identities first :identity/auth-token)
         u-guid (-> u :user/guid str)
         [jack] (sort-by contact/first-name (:user/contacts u))
-        jack-uid (-> jack :contact/social-identities first :social/provider-uid)
-        jack-email (-> jack :contact/social-identities first :social/email)]
+        jack-uid (-> jack :contact/social-identities first :social/provider-uid)]
 
     (testing "When user is not present it should return nil"
       (is (nil? (m-service/new-message nil {:from u-uid :text "hey" :provider "facebook" :guid u-guid :to [jack-uid]}))))
@@ -121,17 +120,44 @@
       (testing "Should call fb-chat send message with proper attributes and save temp message"
         (db-assert/assert-datomic-temp-message-count 0)
 
-        (m-service/new-message u {:from u-uid :text "Hey" :provider "facebook" :guid u-guid :to [jack-uid]})
+        (m-service/new-message u {:from u-uid :text "How you doing?" :provider "facebook" :guid u-guid :to [jack-uid]})
 
         (let [updated-u (u-store/reload u)]
           
           (verify-call-times-for fb-chat/send-message 1)
-          (verify-first-call-args-for fb-chat/send-message u-uid u-at (contact/provider-id jack :provider/facebook) "Hey")
+          (verify-first-call-args-for fb-chat/send-message u-uid u-at (contact/provider-id jack :provider/facebook) "How you doing?")
           
           (db-assert/assert-datomic-temp-message-count 1)
           
           (is (= 1 (count (:user/temp-messages updated-u))))
-          (is (= "Hey" (-> updated-u :user/temp-messages first :temp-message/text))))))))
+          (is (= "How you doing?" (-> updated-u :user/temp-messages first :temp-message/text))))))))
+
+
+(demonictest test-new-message-from-email
+  (let [u (pgen/generate {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}
+                          :UI-IDS-ALLOWED [:EMAIL]
+                          :UI-IDS-COUNT 1})
+        u-uid (-> u :user/user-identities first :identity/provider-uid)
+        u-email (-> u :user/user-identities first :identity/email)
+        u-at (-> u :user/user-identities first :identity/auth-token)
+        u-guid (-> u :user/guid str)
+        [jack] (sort-by contact/first-name (:user/contacts u))
+        jack-uid (-> jack :contact/social-identities first :social/provider-uid)]
+
+    (mocking [e-gateway/send-email]
+      (testing "Should call send-email with proper attributes and save temp message"
+        (db-assert/assert-datomic-temp-message-count 0)
+
+        (m-service/new-message u {:from u-email :subject "Hi" :text "How you doing?" :provider "email" :guid u-guid :to ["jack@email.com"] :reply_to_message_id "123123"})
+        (let [updated-u (u-store/reload u)]
+          
+          (verify-call-times-for e-gateway/send-email 1)
+          (verify-first-call-args-for e-gateway/send-email u-at u-email ["jack@email.com"] "123123" "Hi" "How you doing?")
+          
+          (db-assert/assert-datomic-temp-message-count 1)
+          
+          (is (= 1 (count (:user/temp-messages updated-u))))
+          (is (= "How you doing?" (-> updated-u :user/temp-messages first :temp-message/text))))))))
 
 
 (deftest test-distilled-temp-message

@@ -1,6 +1,7 @@
 (ns zolo.social.email.core
   (:use zolo.utils.debug)
   (:require [zolo.social.core :as social]
+            [zolo.social.email.gateway :as gateway]
             [zolo.social.email.users :as users]
             [zolo.social.email.social-identities :as si]
             [zolo.social.email.messages :as messages]
@@ -29,3 +30,6 @@
 
 (defmethod social/fetch-messages :provider/email [provider access-token user-id date-in-seconds]
   (messages/get-messages access-token date-in-seconds))
+
+(defmethod social/send-message :provider/email [provider access-token from-email to-emails thead-id reply-to-message-id subject message]
+  (gateway/send-email access-token from-email to-emails reply-to-message-id subject message))
