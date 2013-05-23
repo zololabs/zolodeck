@@ -86,10 +86,9 @@
         u-uid (u-ui :identity/provider-uid)
         amrut-ui (-> u :user/contacts first :contact/social-identities first)
         amrut-uid (:social/provider-uid amrut-ui)
-        
-        sm (->> u :user/messages first (message/distill u))
-        rm (->> u :user/messages second (message/distill u))
-        ]
+
+        rm (->> u :user/messages first (message/distill u))
+        sm (->> u :user/messages second (message/distill u))]
 
     (testing "basic information should be set on distilled messages"
       (doseq [m [sm rm]]

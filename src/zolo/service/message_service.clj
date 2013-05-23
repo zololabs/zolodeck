@@ -16,10 +16,14 @@
             [zolo.utils.calendar :as zcal]
             [clj-time.coerce :as ctc]))
 
+(def INITIAL-PULL-DATE-FACEBOOK #inst "2000-10-22")
+
+(def INITIAL-PULL-DAYS-EMAIL 10)
+
 (defn- messages-start-time-default-seconds [ui]
   (condp = (:identity/provider ui)
-    :provider/facebook (-> #inst "2000-10-22" zcal/to-seconds)
-    :provider/email (-> (zcal/now-instant) (zcal/minus 7 :days) ctc/to-date zcal/to-seconds)
+    :provider/facebook (zcal/to-seconds INITIAL-PULL-DATE-FACEBOOK)
+    :provider/email (-> (zcal/now-instant) (zcal/minus INITIAL-PULL-DAYS-EMAIL :days) ctc/to-date zcal/to-seconds)
     (throw (RuntimeException. (str "Unknown provider: " (:identity/provider ui))))))
 
 (defn- last-updated-time-seconds [ui]
@@ -28,7 +32,7 @@
       (messages-start-time-default-seconds ui)))
 
 (defn- tag-user-identity [m ui]
-  (assoc m :message/user-identity (:db/id ui)))
+  (assoc m :message/user-identity ui))
 
 (defn- get-messages-for-user-identity [user-identity]
   (let [{provider :identity/provider

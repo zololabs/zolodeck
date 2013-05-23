@@ -42,13 +42,14 @@
 
 (defn run-all-zolo-tests 
   ([dir]
-     (binding [*file-path-prefix* dir
-               conf/ENV :test]
-       (let [test-pkgs (clojure/find-ns-in-dir dir)]
-         (doseq [pkg test-pkgs]
-           (print-vals "Loading " pkg)
-           (require pkg))
-         (apply run-tests test-pkgs))))
+     (time
+      (binding [*file-path-prefix* dir
+                conf/ENV :test]
+        (let [test-pkgs (clojure/find-ns-in-dir dir)]
+          (doseq [pkg test-pkgs]
+            (print-vals "Loading " pkg)
+            (require pkg))
+          (apply run-tests test-pkgs)))))
   ([]
      (run-all-zolo-tests "test")))
 
