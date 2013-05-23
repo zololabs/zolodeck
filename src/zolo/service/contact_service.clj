@@ -21,7 +21,7 @@
   (let [{provider :identity/provider
          access-token :identity/auth-token
          provider-uid :identity/provider-uid} user-identity]
-    (social/fetch-social-identities provider access-token provider-uid "2012-10-22")))
+    (social/fetch-social-identities provider access-token provider-uid "2000-10-22")))
 
 (defn- fresh-social-identities [u]
   (->> (:user/user-identities u)
