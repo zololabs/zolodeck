@@ -32,7 +32,7 @@
       (messages-start-time-default-seconds ui)))
 
 (defn- tag-user-identity [m ui]
-  (assoc m :message/user-identity ui))
+  (assoc m :message/user-identity (:db/id ui)))
 
 (defn- get-messages-for-user-identity [user-identity]
   (let [{provider :identity/provider
