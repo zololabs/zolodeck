@@ -57,14 +57,17 @@
                (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 9)
                                                                 (pgen/create-friend-spec "Jim" "Beam" 1 10)]}})
                      u-uid (-> u :user/user-identities first :identity/provider-uid)
-                     jack-uid (-> u :user/contacts second :contact/social-identities first :social/provider-uid)
+
+                     [jack jim] (->> u :user/contacts (sort-by :contact/first-name))
+                     
+                     jack-uid (-> jack :contact/social-identities first :social/provider-uid)
 
                      threads (t/find-reply-to-threads u)
                      last-m (-> threads first :thread/messages first)]
 
                  (is (= 1 (count threads)))
                  (is (= #{u-uid} (:message/to last-m)))
-                 (is (= jack-uid (:message/from last-m)))))
+107                 (is (= jack-uid (:message/from last-m)))))
 
              (testing "When user has 2 friends, with both replied-to threads, it should return empty"
                (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 20)
@@ -96,9 +99,11 @@
              (testing "When user has 2 friends, with a reply-to and replied-to threads each, it should return reply-to"
                (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 9)
                                                                 (pgen/create-friend-spec "Jim" "Beam" 1 10)]}})
-
+                     
                      u-uid (-> u :user/user-identities first :identity/provider-uid)
-                     jim-uid (-> u :user/contacts first :contact/social-identities first :social/provider-uid)
+
+                     [jack jim] (->> u :user/contacts (sort-by :contact/first-name))
+                     jim-uid (-> jim :contact/social-identities first :social/provider-uid)
 
                      threads (t/find-follow-up-threads u)
                      last-m (-> threads first :thread/messages first)]
