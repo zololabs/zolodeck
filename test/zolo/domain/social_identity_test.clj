@@ -16,8 +16,8 @@
                                                                  (pgen/create-friend-spec "Bat" "Man" 3 10)
                                                                  (pgen/create-friend-spec "Hello" "Man" 5 20)
                                                                  (pgen/create-friend-spec "R2" "D2" 7 30)]}
-                                    :UI-IDS-ALLOWED [:EMAIL :FACEBOOK]
-                                    :UI-IDS-COUNT 2}
+                                               :UI-IDS-ALLOWED [:EMAIL :FACEBOOK]
+                                               :UI-IDS-COUNT 2}
                                  (let [sis (->> u :user/contacts (mapcat :contact/social-identities))]
                                    (is (= 5 (count sis)))
                                    (doseq [s sis]
@@ -30,8 +30,8 @@
                                                       (pgen/create-friend-spec "Bat" "Man" 3 10)
                                                       (pgen/create-friend-spec "donotreply" "Man" 5 20)
                                                       (pgen/create-friend-spec "R2" "D2" 7 30)]}
-                                    :UI-IDS-ALLOWED [:EMAIL :FACEBOOK]
-                                    :UI-IDS-COUNT 2}
+                                               :UI-IDS-ALLOWED [:EMAIL :FACEBOOK]
+                                               :UI-IDS-COUNT 2}
                                  (let [sis (->> u :user/contacts (mapcat :contact/social-identities))]
                                    (is (= 5 (count sis)))
                                    (doseq [s sis]
