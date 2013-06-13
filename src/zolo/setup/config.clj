@@ -51,6 +51,9 @@
 (defn li-secret-key []
   (get-in CONFIG-MAP [:configs ENV :li-secret-key]))
 
+(defn pento-host []
+  (get-in CONFIG-MAP [:configs ENV :pento-host]))
+
 (defn system-properties []
   (get-in CONFIG-MAP [:configs ENV :system-properties]))
 

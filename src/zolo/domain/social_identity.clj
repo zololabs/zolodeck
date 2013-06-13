@@ -45,13 +45,12 @@
   (if (is-email? si)
     (:social/provider-uid si)))
 
-(defn mark-person-status [si]
+(defn is-a-person? [si]
   (if-not (is-email? si)
-    (assoc si :social/not-a-person false)
-    (assoc si :social/not-a-person (addy/matches-non-person-signal? (:social/provider-uid si)))))
-
-(defn is-a-person [si]
-  (not (:social/not-a-person si)))
+    true
+    (let [iap (:social/is-a-person si)
+          eps (:social/email-person-score si)]
+      (if-not (nil? iap) iap (>= eps 0)))))
 
 (defn distill [si]
   (select-keys si [:social/provider :social/provider-uid]))

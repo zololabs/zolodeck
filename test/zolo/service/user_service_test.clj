@@ -7,6 +7,7 @@
         zolo.demonic.test)
   (require [zolo.service.user-service :as u-service]
            [zolo.domain.user-identity :as user-identity]
+           [zolo.domain.social-identity :as si]
            [zolo.store.user-store :as u-store]
            [zolo.personas.factory :as personas]
            [zolo.domain.contact :as contact]
@@ -202,7 +203,9 @@
            m3 (e-lab/send-message mickey-email "donald@gmail.com" "s3" "t3" "OK, groceries?" "2012-05-03 00:00")
 
            m4 (e-lab/send-message "daisy@gmail.com" mickey-email "s4" "t4" "Nothing, just work." "2012-05-04 00:00")
-           m5 (e-lab/send-message mickey-email "daisy@gmail.com" "s5" "t4" "OK, groceries?" "2012-05-05 00:00")]
+           m5 (e-lab/send-message mickey-email "daisy@gmail.com" "s5" "t4" "OK, groceries?" "2012-05-05 00:00")
+
+           m6 (e-lab/send-message mickey-email "admin@thoughtworks.com" "s6" "t6" "Special Deal!" "2012-05-05 00:00")]
        
        (db-assert/assert-datomic-message-count 0)
 
@@ -213,12 +216,15 @@
 
          (testing "should update contacts"
 
-           (let [[db-daisy db-donald] (->> refreshed-mickey
-                                           :user/contacts
-                                           (sort-by contact/first-name))]
+           (let [[db-tw db-daisy db-donald] (->> refreshed-mickey
+                                                 :user/contacts
+                                                 (sort-by contact/first-name))]
 
-             (db-assert/assert-datomic-contact-count 2)
-             (db-assert/assert-datomic-social-count 2)
+             (db-assert/assert-datomic-contact-count 3)
+             (db-assert/assert-datomic-social-count 3)
+
+             (is (= "admin@thoughtworks.com" (-> db-tw :contact/social-identities first :social/provider-uid)))
+             (is (= "admin@thoughtworks.com" (-> db-tw :contact/social-identities first :social/email)))
 
              (is (= "daisy@gmail.com" (-> db-daisy :contact/social-identities first :social/provider-uid)))
              (is (= "daisy@gmail.com" (-> db-daisy :contact/social-identities first :social/email)))
@@ -227,17 +233,27 @@
              (is (= "donald@gmail.com" (-> db-donald :contact/social-identities first :social/email)))))
 
          (testing "should update messages"
-           (db-assert/assert-datomic-message-count 5)
+           (db-assert/assert-datomic-message-count 6)
 
-           (d-assert/messages-list-are-same [m1 m2 m3 m4 m5] (->> refreshed-mickey
-                                                                  :user/messages
-                                                                  (sort-by message/message-date))))
+           (d-assert/messages-list-are-same [m1 m2 m3 m4 m5 m6] (->> refreshed-mickey
+                                                                     :user/messages
+                                                                     (sort-by message/message-date))))
 
+         (testing "should know about person/not-a-person"
+           (let [[db-tw db-daisy db-donald] (->> refreshed-mickey
+                                                 :user/contacts
+                                                 (sort-by contact/first-name))]
+
+             (is (-> db-daisy  :contact/social-identities first si/is-a-person?))
+             (is (-> db-donald :contact/social-identities first si/is-a-person?))
+             (is (not (-> db-tw :contact/social-identities first si/is-a-person?)))))
+         
          (testing "should update scores"
-           (let [[db-daisy db-donald] (->> refreshed-mickey
+           (let [[db-tw db-daisy db-donald] (->> refreshed-mickey
                                            :user/contacts
                                            (sort-by contact/first-name))]
-             
+
+             (is (= 10 (:contact/score db-tw)))
              (is (= 20 (:contact/score db-daisy)))
              (is (= 30 (:contact/score db-donald)))))
 

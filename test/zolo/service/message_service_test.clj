@@ -90,7 +90,7 @@
        (fb-lab/login-as mickey)
 
        (db-assert/assert-datomic-temp-message-count 1)
-
+       
        (testing  "User with no previous messages"
          (let [refreshed-mickey (-> u-db-mickey
                                     c-service/update-contacts-for-user

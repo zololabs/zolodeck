@@ -6,6 +6,7 @@
   (:require [zolo.marconi.core :as marconi]
             [zolo.marconi.facebook.core :as fb-lab]
             [zolo.marconi.context-io.fake-api :as fake-email]
+            [zolo.gateway.pento.core :as pento]
             [zolo.social.facebook.gateway :as fb-gateway]
             [zolo.social.facebook.messages :as fb-messages]
             [zolo.social.facebook.stream :as fb-stream]
@@ -74,6 +75,13 @@
 (defn fake-fetch-email-messages [account-id date-in-seconds]
   (fake-email/fetch-messages account-id))
 
+(defn fake-pento-score [email-address]
+  (float
+   (condp = email-address
+     "admin@thoughtworks.com" -10.23
+     "donotreply@Man.com" -20.46
+     100.00)))
+
 (defmacro in-social-lab [& body]
   `(marconi/in-lab
     (stubbing [fb-gateway/extended-user-info fake-extended-user-info
@@ -83,14 +91,16 @@
                fb-gateway/extended-access-token fake-extended-access-token
                email-gateway/get-account fake-email-account
                email-gateway/get-contacts fake-fetch-email-contacts 
-               email-gateway/get-messages fake-fetch-email-messages]
+               email-gateway/get-messages fake-fetch-email-messages
+               pento/score fake-pento-score]
       ~@body)))
 
 (defmacro in-email-lab [& body]
   `(marconi/in-lab
     (stubbing [email-gateway/get-account fake-email-account
                email-gateway/get-contacts fake-fetch-email-contacts 
-               email-gateway/get-messages fake-fetch-email-messages]
+               email-gateway/get-messages fake-fetch-email-messages
+               pento/score fake-pento-score]
       ~@body)))
 
 (defmacro in-fb-lab [& body]
