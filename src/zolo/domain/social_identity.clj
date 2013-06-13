@@ -48,9 +48,7 @@
 (defn is-a-person? [si]
   (if-not (is-email? si)
     true
-    (let [iap (:social/is-a-person si)
-          eps (:social/email-person-score si)]
-      (if-not (nil? iap) iap (>= eps 0)))))
+    (> (:social/email-person-score si) 0)))
 
 (defn distill [si]
   (select-keys si [:social/provider :social/provider-uid :social/ui-provider-uid]))

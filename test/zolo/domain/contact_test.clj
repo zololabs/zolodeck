@@ -169,6 +169,24 @@
      (testing "When :contact/muted is true it should return true"
        (is (contact/is-muted? (assoc jack :contact/muted true)))))))
 
+(deftest test-is-a-person
+  (d-core/run-in-gmt-tz
+   (pgen/run-demarcated-generative-tests u {:SPECS {:friends [(pgen/create-friend-spec "admin" "thoughtworks" 1 1)
+                                                              (pgen/create-friend-spec "jack" "ripper" 1 1)]}
+                                            :UI-IDS-ALLOWED [:EMAIL :FACEBOOK]}
+      (let [admin (->> u :user/contacts (sort-by #(-> % :contact/social-identities first :social/first-name)) first)
+            admin-si (-> admin :contact/social-identities first)]
+        (testing "When :contact/is-a-person is nil, and is provider/email it depends on the email address"
+          (if (si/is-email? admin-si)
+            (is (not (contact/is-a-person? admin)))
+            (is (contact/is-a-person? admin))))
+        
+        (testing "When :contact/is-a-person is false it should return false"
+          (is (not (contact/is-a-person? (assoc admin :contact/is-a-person false)))))
+        
+        (testing "When :contact/is-a-person is true it should return true"
+          (is (contact/is-a-person? (assoc admin :contact/is-a-person true))))))))
+
 (deftest test-contacts-with-score
   (d-core/run-in-gmt-tz
    (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Strong" "Contact" 50 50)

@@ -58,7 +58,6 @@
  (uuid-fact-schema    :social/guid                 "A GUID for the social details record" :uniqueness :db.unique/identity)
  (string-fact-schema  :social/provider-uid         "A user's provider UID")
  (string-fact-schema  :social/ui-provider-uid      "The UserIdentity this SI is associated with")
- (boolean-fact-schema :social/is-a-person          "Marked true if user marks this as a person, or false if s/he marked as not a person")
  (float-fact-schema   :social/email-person-score   "Person score as computed by Pento")
  (enum-fact-schema    :social/gender               "A user's gender")
  (string-fact-schema  :social/country              "A user's age")
@@ -89,17 +88,16 @@
 
 
 (schema-set "CONTACT ENTITY FACTS"
- (uuid-fact-schema   :contact/guid            "A GUID for a contact" :uniqueness :db.unique/identity )
- ;Social details
- (refs-fact-schema :contact/social-identities "A contact's social detail records" :component? true)
-
- (boolean-fact-schema :contact/muted          "Whether a contact is muted or not")
- (long-fact-schema :contact/score             "A contact's score"))
+ (uuid-fact-schema    :contact/guid              "A GUID for a contact" :uniqueness :db.unique/identity)
+ (refs-fact-schema    :contact/social-identities "A contact's social detail records" :component? true)
+ (boolean-fact-schema :contact/muted             "Whether a contact is muted or not")
+ (boolean-fact-schema :contact/is-a-person       "Marked true if user marks this as a person, or false if s/he marked as not a person") 
+ (long-fact-schema    :contact/score             "A contact's score"))
 
 (schema-set "MESSAGE ENTITY FACTS"
- (uuid-fact-schema    :message/guid           "A GUID for messages" :uniqueness :db.unique/identity )
+ (uuid-fact-schema    :message/guid           "A GUID for messages" :uniqueness :db.unique/identity)
  (ref-fact-schema     :message/user-identity  "The UI this message was sourced from")
- (string-fact-schema  :message/message-id     "ID for this message" :uniqueness :db.unique/identity )
+ (string-fact-schema  :message/message-id     "ID for this message" :uniqueness :db.unique/identity)
  ;;TODO Need to store this
  (enum-fact-schema    :message/provider       "The platform: Facebook, LinkedIn, etc")
  ;;TODO Need to change this to enum
