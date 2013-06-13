@@ -21,7 +21,7 @@
                                  (let [sis (->> u :user/contacts (mapcat :contact/social-identities))]
                                    (is (= 5 (count sis)))
                                    (doseq [s sis]
-                                     (is (si/is-a-person s)))))))
+                                     (is (si/is-a-person? s)))))))
   
   (testing "when an SI has a suspect email-addresses"
     (run-as-of "2012-05-12"
@@ -36,8 +36,8 @@
                                    (is (= 5 (count sis)))
                                    (doseq [s sis]
                                      (if (= "donotreply@Man.com" (:social/provider-uid s))
-                                       (is-not (si/is-a-person s))
-                                       (is (si/is-a-person s))))))))
+                                       (is-not (si/is-a-person? s))
+                                       (is (si/is-a-person? s))))))))
 
   )
 

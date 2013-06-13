@@ -12,10 +12,16 @@
             [zolo.store.contact-store :as c-store]
             [zolo.utils.logger :as logger]
             [zolo.social.facebook.gateway :as fb-gateway]
+            [zolo.gateway.pento.core :as pento]
             [zolo.setup.config :as conf]
             [zolo.service.core :as service]
             [zolo.domain.core :as d-core]
             [zolo.utils.maps :as zmaps]))
+
+(defn set-person-score [si]
+  (if-not (si/is-email? si)
+    si
+    (assoc si :social/email-person-score (-> si :social/provider-uid pento/score))))
 
 (defn- fresh-social-identities-for-user-identity [user-identity]
   (let [{provider :identity/provider
@@ -26,7 +32,7 @@
 (defn- fresh-social-identities [u]
   (->> (:user/user-identities u)
        (mapcat fresh-social-identities-for-user-identity)
-       (map si/mark-person-status)))
+       (map set-person-score)))
 
 (defn- update-contacts [user]
   (->> user

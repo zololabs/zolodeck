@@ -120,7 +120,7 @@
 ;;TOOD test this
 (defn is-a-person? [c]
   (when c
-    (every? #(si/is-a-person %) (:contact/social-identities c))))
+    (every? #(si/is-a-person? %) (:contact/social-identities c))))
 
 (defn contact-score [c]
   (or (:contact/score c) 0))
