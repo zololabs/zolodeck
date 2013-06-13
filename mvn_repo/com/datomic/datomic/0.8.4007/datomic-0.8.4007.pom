@@ -11,7 +11,7 @@
  <groupId>com.datomic</groupId>
  <artifactId>datomic-pro</artifactId>
  <name>datomic-pro</name>
- <version>0.8.3789</version>
+ <version>0.8.4007</version>
  <organization>
   <name>Metadata Partners, LLC</name>
   <url>http://datomic.com</url>
@@ -44,23 +44,23 @@
   <dependency>
    <groupId>org.slf4j</groupId>
    <artifactId>jul-to-slf4j</artifactId>
-   <version>1.6.4</version>
+   <version>1.7.5</version>
   </dependency>
   <dependency>
    <groupId>org.slf4j</groupId>
    <artifactId>slf4j-nop</artifactId>
-   <version>1.6.4</version>
+   <version>1.7.5</version>
   </dependency>
   <dependency>
    <groupId>org.slf4j</groupId>
    <artifactId>log4j-over-slf4j</artifactId>
-   <version>1.6.4</version>
+   <version>1.7.5</version>
    <scope>runtime</scope>
   </dependency>
   <dependency>
    <groupId>org.slf4j</groupId>
    <artifactId>jcl-over-slf4j</artifactId>
-   <version>1.6.4</version>
+   <version>1.7.5</version>
   </dependency>
   <dependency>
    <groupId>net.java.dev.jets3t</groupId>
@@ -95,6 +95,10 @@
      <artifactId>log4j</artifactId>
     </exclusion>
     <exclusion>
+     <groupId>org.jboss.netty</groupId>
+     <artifactId>netty</artifactId>
+    </exclusion>
+    <exclusion>
      <groupId>com.google.guava</groupId>
      <artifactId>guava</artifactId>
     </exclusion>
@@ -106,9 +110,9 @@
    <version>2.2.21.Final</version>
   </dependency>
   <dependency>
-   <groupId>org.jboss.netty</groupId>
+   <groupId>io.netty</groupId>
    <artifactId>netty</artifactId>
-   <version>3.2.4.Final</version>
+   <version>3.6.6.Final</version>
   </dependency>
   <dependency>
    <groupId>org.infinispan</groupId>
@@ -131,7 +135,7 @@
   <dependency>
    <groupId>com.h2database</groupId>
    <artifactId>h2</artifactId>
-   <version>1.3.165</version>
+   <version>1.3.171</version>
   </dependency>
   <dependency>
    <groupId>org.apache.lucene</groupId>
@@ -141,7 +145,7 @@
   <dependency>
    <groupId>com.google.guava</groupId>
    <artifactId>guava</artifactId>
-   <version>12.0.1</version>
+   <version>14.0.1</version>
   </dependency>
   <dependency>
    <groupId>spy</groupId>
@@ -153,19 +157,21 @@
    <artifactId>couchbase-client</artifactId>
    <version>1.0.3</version>
    <scope>provided</scope>
+   <exclusions>
+    <exclusion>
+     <groupId>org.jboss.netty</groupId>
+     <artifactId>netty</artifactId>
+    </exclusion>
+   </exclusions>
   </dependency>
   <dependency>
    <groupId>com.amazonaws</groupId>
    <artifactId>aws-java-sdk</artifactId>
-   <version>1.3.0</version>
+   <version>1.4.5</version>
    <exclusions>
     <exclusion>
      <groupId>javax.mail</groupId>
      <artifactId>mail</artifactId>
-    </exclusion>
-    <exclusion>
-     <groupId>org.codehaus.jackson</groupId>
-     <artifactId>jackson-core-asl</artifactId>
     </exclusion>
     <exclusion>
      <groupId>org.apache.httpcomponents</groupId>
@@ -178,14 +184,9 @@
    </exclusions>
   </dependency>
   <dependency>
-   <groupId>org.codehaus.jackson</groupId>
-   <artifactId>jackson-core-asl</artifactId>
-   <version>1.8.0</version>
-  </dependency>
-  <dependency>
    <groupId>org.apache.httpcomponents</groupId>
    <artifactId>httpclient</artifactId>
-   <version>4.2-alpha1</version>
+   <version>4.1</version>
    <exclusions>
     <exclusion>
      <groupId>commons-logging</groupId>

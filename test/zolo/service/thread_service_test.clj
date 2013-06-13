@@ -61,7 +61,12 @@
     (let [vincent (vincent-persona/create)
           vincent-ui (-> vincent :user/user-identities first)
           vincent-uid (:identity/provider-uid vincent-ui)
-          jack-ui (-> vincent :user/contacts second :contact/social-identities first)
+          jack-ui (->> vincent
+                       :user/contacts
+                       (sort-by :contact/first-name)
+                       first
+                       :contact/social-identities
+                       first)
           jack-uid (:social/provider-uid jack-ui)
  
           all-threads (t/messages->threads vincent (:user/messages vincent))
@@ -125,11 +130,13 @@
     (let [vincent (vincent-persona/create)
           vincent-ui (-> vincent :user/user-identities first)
           vincent-uid (:identity/provider-uid vincent-ui)
+
+          [jack jill] (->> vincent :user/contacts (sort-by :contact/first-name))
  
-          jill-ui (-> vincent :user/contacts first :contact/social-identities first)
+          jill-ui (-> jill :contact/social-identities first)
           jill-uid (:social/provider-uid jill-ui)
  
-          jack-ui (-> vincent :user/contacts second :contact/social-identities first)
+          jack-ui (-> jack :contact/social-identities first)
           jack-uid (:social/provider-uid jack-ui)
  
           all-threads (t/messages->threads vincent (:user/messages vincent))
