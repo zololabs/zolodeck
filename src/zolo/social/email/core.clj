@@ -26,7 +26,7 @@
     (users/user-identity cio-account-id)))
 
 (defmethod social/fetch-social-identities :provider/email [provider access-token user-id date-in-seconds]
-  (si/get-social-identities access-token date-in-seconds))
+  (si/get-social-identities access-token user-id date-in-seconds))
 
 (defmethod social/fetch-messages :provider/email [provider access-token user-id date-in-seconds]
   (messages/get-messages access-token date-in-seconds))

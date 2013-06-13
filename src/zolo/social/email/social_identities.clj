@@ -13,18 +13,19 @@
     {:first-name email
      :last-name ""}))
 
-(defn cio-contact->social-identity [c]
+(defn cio-contact->social-identity [c user-id]
   (let [c-name (split-name (:name c) (:email c))]
     (domain/force-schema-types
      {:social/nickname (:name c)
       :social/first-name (:first-name c-name)
       :social/last-name (:last-name c-name)
       :social/provider-uid (:email c)
+      :social/ui-provider-uid user-id
       :social/email (:email c)
       :social/provider :provider/email
       :social/photo-url (:thumbnail c)})))
 
-(defn get-social-identities [cio-account-id date-in-seconds]
+(defn get-social-identities [cio-account-id user-id date-in-seconds]
   (it-> cio-account-id
         (gateway/get-contacts it date-in-seconds)
-        (domap cio-contact->social-identity it)))
+        (domap #(cio-contact->social-identity % user-id) it)))

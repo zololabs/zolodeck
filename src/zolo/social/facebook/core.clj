@@ -29,7 +29,7 @@
 (defmethod social/fetch-social-identities :provider/facebook [provider access-token user-id date]
   ;(logger/trace "FetchContacts:" provider)
   (let [friends (gateway/friends-list access-token user-id)]
-    (doall (map sis/social-identity-object friends))))
+    (doall (map #(sis/social-identity-object % user-id) friends))))
 
 (defmethod social/fetch-messages :provider/facebook [provider access-token user-id date]
   ;(logger/trace "FetchMessages:" provider)
@@ -44,4 +44,4 @@
   (messages/fetch-all-contact-feeds access-token last-updated-string provider-uids))
 
 (defmethod social/send-message :provider/facebook [provider access-token from-provider-uid to-provider-uids thread-id reply-to-message-id subject message]
-  (chat/send-message from-provider-uid access-token (first to-provider-uids) message))
+  (chat/send-message from-provider-uid access-token to-provider-uids message))

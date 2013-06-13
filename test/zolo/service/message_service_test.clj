@@ -125,7 +125,7 @@
         (let [updated-u (u-store/reload u)]
           
           (verify-call-times-for fb-chat/send-message 1)
-          (verify-first-call-args-for fb-chat/send-message u-uid u-at (contact/provider-id jack :provider/facebook) "How you doing?")
+          (verify-first-call-args-for fb-chat/send-message u-uid u-at [(contact/provider-id jack :provider/facebook)] "How you doing?")
           
           (db-assert/assert-datomic-temp-message-count 1)
           

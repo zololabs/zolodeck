@@ -6,7 +6,7 @@
             [zolo.utils.countries :as countries]
             [zolo.utils.logger :as logger]))
 
-(defn social-identity-object [friend]
+(defn social-identity-object [friend user-id]
   (let [[language country-code] (string/split "_" (:locale friend))
         [month day year] (string/split "/" (:birthday friend))]
     (domain/force-schema-types
@@ -21,6 +21,7 @@
       :social/birth-year year
       :social/provider-uid (:id friend)
       :social/provider :provider/facebook
+      :social/ui-provider-uid user-id
       :social/photo-url (get-in friend [:picture :data :url])
       })))
 
