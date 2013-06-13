@@ -84,6 +84,11 @@
     (:temp-message/text m)
     (:message/text m)))
 
+(defn message-subject [m]
+  (if (is-temp-message? m)
+    (:temp-message/subject m)
+    (:message/subject m)))
+
 (defn- update-buckets-for [buckets m contact-ids]
   (let [updater (fn [b contact-id]
                   (update-in b [[(message-provider m) contact-id]] conj m))]
@@ -166,14 +171,16 @@
        (map #(si/find-by-provider-uid u %))
        (map (fn [si] {:reply-to/first-name (:social/first-name si)
                      :reply-to/last-name (:social/last-name si)
-                     :reply-to/provider-uid (:social/provider-uid si)}))))
+                     :reply-to/provider-uid (:social/provider-uid si)
+                     :reply-to/ui-provider-uid (:social/ui-provider-uid si)}))))
 
 (defn- reply-to-for-distillation-from-from [u m is-sent]
   (if (not is-sent)
     (let [from-si (si/find-by-provider-uid u (message-from m))]
       {:reply-to/first-name (:social/first-name from-si)
        :reply-to/last-name (:social/last-name from-si)
-       :reply-to/provider-uid (:social/provider-uid from-si)})))
+       :reply-to/provider-uid (:social/provider-uid from-si)
+       :reply-to/ui-provider-uid (:social/ui-provider-uid from-si)})))
 
 (defn distill
   ([u message]
@@ -191,6 +198,7 @@
            (assoc :message/from (message-from message))
            (assoc :message/to (message-to message))
            (assoc :message/date m-date)
+           (assoc :message/subject (message-subject message))
            (assoc :message/text (message-text message))
            (assoc :message/snippet (snippet message))
            (assoc :message/sent is-sent)

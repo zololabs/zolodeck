@@ -53,4 +53,4 @@
       (if-not (nil? iap) iap (>= eps 0)))))
 
 (defn distill [si]
-  (select-keys si [:social/provider :social/provider-uid]))
+  (select-keys si [:social/provider :social/provider-uid :social/ui-provider-uid]))
