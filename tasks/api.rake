@@ -44,7 +44,7 @@ namespace :api do
       info "Generating logback config"
 
       @graylog2_host = "monitor.zolodeck.com"
-      @development = true
+      @env = "development"
 
       Config.generate binding, Dir.pwd + "/../zolo-repo/site-cookbooks/api/templates/default/logback.xml.erb", File.expand_path("~/.zolo/logback.xml")
 
