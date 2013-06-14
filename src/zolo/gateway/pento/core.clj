@@ -14,8 +14,9 @@
                      :body
                      print-vals
                      json/read-json)]
-    (-> email-address keyword json-map float)))
+    (-> email-address keyword json-map)))
 
 (defn score [email-address]
-  (let [s (try (pento-score email-address) (catch Exception e))]
-    (or s 0.0)))
+  (float
+   (let [s (try (pento-score email-address) (catch Exception e))]
+     (or s 0.0))))
