@@ -7,10 +7,15 @@
 (defn classify-url [email-address]
   (print-vals (str "http://" (conf/pento-host) "/classify?email=" email-address)))
 
-(defn score [email-address]
+(defn pento-score [email-address]
   (let [json-map (-> email-address
                      classify-url
                      http/get
                      :body
+                     print-vals
                      json/read-json)]
     (-> email-address keyword json-map float)))
+
+(defn score [email-address]
+  (let [s (try (pento-score email-address) (catch Exception e))]
+    (or s 0.0)))
