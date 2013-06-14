@@ -26,6 +26,13 @@ namespace :api do
       @env = "development"
       @datomic_uri = "datomic:free://localhost:4334/zolodeck-dev"
       @kiss_api_key = "0574cc154095cc7ddcaa04480daa22903da7f1b7"
+
+      @context_io_key = "b3h4p2id"
+      @context_io_secret = "XNKjHu4bQsHeIVEz"
+
+      @google_key = "899706640798-9h6p8ighe2ajq66mg9h8djqpd1fk6lr3.apps.googleusercontent.com"
+      @google_secret = "3eTbg9vDw5Cchw8qOsZON--I"
+      
       @system_properties = "{}"
       
       sh "mkdir ~/.zolo" unless File.exist?(File.expand_path("~/.zolo"))
