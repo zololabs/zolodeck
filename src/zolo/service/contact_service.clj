@@ -41,11 +41,13 @@
        (assoc user :user/contacts)))
 
 ;;TODO Move to core
-(defn- request-params->contact-attrs [params]
-  (zmaps/transform-keys-with params {:muted :contact/muted}))
+(defn request-params->contact-attrs [params]
+  (zmaps/transform-keys-with params {:muted :contact/muted
+                                     :person :contact/is-a-person}))
 
 (def val-request
-  {:muted [:required :boolean]})
+  {:muted [:optional :boolean]
+   :person [:optional :boolean]})
 
 ;; Services
 (defn update-contacts-for-user [u]
@@ -70,7 +72,7 @@
 (defn update-contact [u c params]
   (when (and u c)
     (d-core/run-in-tz-offset (:user/login-tz u)
-                             (let [updated-c (it-> (select-keys params [:muted])
+                             (let [updated-c (it-> (select-keys params [:muted :person])
                                                    (service/validate-request! it val-request)
                                                    (request-params->contact-attrs it)
                                                    (merge c it)

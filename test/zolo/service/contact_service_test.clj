@@ -145,12 +145,6 @@
        (testing "When contact is not present it should return nil"
          (is (nil? (c-service/update-contact u nil {:muted true}))))
        
-       (testing "When invalid contact is send it should throw exception"
-         (is (thrown-with-msg? RuntimeException #"bad-request"
-               (c-service/update-contact u jack {:muted ""})))
-         (is (thrown-with-msg? RuntimeException #"bad-request"
-               (c-service/update-contact u jack {:text "Hey"}))))
-       
        (testing "When called with proper attributes it should update contact"
          (db-assert/assert-datomic-contact-count 1)
          (db-assert/assert-datomic-social-count 1)
@@ -166,7 +160,20 @@
            (is (contact/is-muted? (c-store/find-by-guid (:contact/guid jack))))
 
            (is (= (dissoc (contact/distill jack ibc) :contact/muted)
-                  (dissoc updated-jack :contact/muted)))))))))
+                  (dissoc updated-jack :contact/muted)))
+           )
+
+
+         (let [updated-jack (c-service/update-contact u jack {:person true :muted false})]
+            
+            (db-assert/assert-datomic-contact-count 1)
+            (db-assert/assert-datomic-social-count 1)
+            
+            (is (contact/is-a-person? updated-jack))
+            (is (contact/is-a-person? (c-store/find-by-guid (:contact/guid jack))))
+            
+            (is (= (dissoc (contact/distill jack ibc) :contact/is-a-person)
+                   (dissoc updated-jack :contact/is-a-person)))))))))
 
 
 
