@@ -82,6 +82,8 @@
        (let [distilled-mickey (u-service/new-user (personas/fb-request-params mickey true))
              d-mickey (u-store/reload distilled-mickey)]
          (is (= ["Mickey.Mouse@gmail.com"] (:user/emails distilled-mickey)))
+         (is (:user/data-ready-in distilled-mickey))
+         (is (> (:user/data-ready-in distilled-mickey) (* 90 60)))
 
          (is (-> d-mickey user-identity/fb-user-identity :identity/permissions-granted))
          (db-assert/assert-datomic-user-count 1)
@@ -119,6 +121,8 @@
        (let [distilled-mickey (u-service/new-user (personas/email-request-params mickey true))
              d-mickey (u-store/reload distilled-mickey)]
          (is (= ["Mickey.Mouse@gmail.com"] (:user/emails distilled-mickey)))
+         (is (:user/data-ready-in distilled-mickey))
+         (is (> (:user/data-ready-in distilled-mickey) (* 90 60)))         
 
          (is (-> d-mickey :user/user-identities first :identity/permissions-granted))
          (db-assert/assert-datomic-user-count 1)

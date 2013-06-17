@@ -4,7 +4,7 @@
         zolo.utils.clojure)
   (:require [zolo.domain.user-identity :as user-identity]
             [zolo.utils.maps :as zolo-maps]
-            [zolo.utils.calendar :as zolo-cal]
+            [zolo.utils.calendar :as zcal]
             [zolo.utils.logger :as logger]))
 
 (def ^:dynamic *tz-offset-minutes* nil)
@@ -44,9 +44,9 @@
 
 (defn client-date-time
   ([u]
-     (client-date-time u (zolo-cal/now-instant)))
+     (client-date-time u (zcal/now-instant)))
   ([u t]
-     (zolo-cal/in-time-zone t (or (:user/login-tz u) 0))))
+     (zcal/in-time-zone t (or (:user/login-tz u) 0))))
 
 (defn update-with-extended-fb-auth-token [u token]
   (let [fb-ui (user-identity/fb-user-identity u)
@@ -68,6 +68,7 @@
   (when u 
     {:user/guid (str (:user/guid u))
      :user/emails (user-identity/email-ids u)
+     :user/data-ready-in (- (zcal/to-seconds (:user/data-ready-in u)) (zcal/to-seconds (zcal/now)))
      :user/updated (not (nil? (:user/last-updated u)))
      ;;TODO test
      :user/all-permissions-granted (all-permissions-granted? u)}))

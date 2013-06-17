@@ -13,10 +13,17 @@
             [zolo.setup.config :as conf]
             [zolo.service.core :as service]
             [zolo.service.contact-service :as c-service]
-            [zolo.service.message-service :as m-service]))
+            [zolo.service.message-service :as m-service]
+            [zolo.utils.calendar :as zcal]))
+
+(defn- approx-two-hours-from-now []
+  (-> (zcal/now-joda)
+      (zcal/plus (+ 90 (rand-int 60)) :minutes)
+      zcal/to-inst))
 
 (defn create-new-user [ui]
-  {:user/user-identities [ui]})
+  {:user/user-identities [ui]
+   :user/data-ready-in (approx-two-hours-from-now)})
 
 (defn- find-user [request-params]
   (u-store/find-by-provider-and-provider-uid
