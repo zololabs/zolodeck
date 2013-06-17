@@ -15,7 +15,8 @@
             [zolo.domain.user :as user]
             [zolo.store.user-store :as u-store]
             [zolo.service.user-service :as u-service]
-            [zolo.domain.message :as message]))
+            [zolo.domain.message :as message]
+            [zolo.utils.calendar :as zcal]))
 
 (defn fb-request-params
   ([fb-user permission-granted?]
@@ -131,7 +132,8 @@
   (it-> fb-user
         (fetch-fb-ui it)
         (assoc {} :user/user-identities [it])
-        (assoc it :user/login-tz 0)))
+        (assoc it :user/login-tz 0)
+        (assoc it :user/data-ready-in (zcal/now-instant))))
 
 (defn create-db-user-from-fb-user [fb-user]
   (-> fb-user
@@ -147,7 +149,8 @@
   (it-> email-user
         (fetch-email-ui it)
         (assoc {} :user/user-identities [it])
-        (assoc it :user/login-tz 0)))
+        (assoc it :user/login-tz 0)
+        (assoc it :user/data-ready-in (zcal/now-instant))))
 
 (defn create-db-user-from-email-user [email-user]
   (-> email-user

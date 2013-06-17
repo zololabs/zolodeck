@@ -16,7 +16,7 @@
             [zolo.test.assertions.domain :as d-assert]
             [zolo.marconi.core :as marconi]
             [zolo.marconi.facebook.core :as fb-lab]
-            [zolo.utils.calendar :as zolo-cal]
+            [zolo.utils.calendar :as zcal]
             [zolo.personas.generator :as pgen]))
 
 ;; (deftest test-update
@@ -120,12 +120,12 @@
     (is (thrown? RuntimeException (user/client-date-time {} nil))))
 
   (testing "when no timezone offset is present it should return time in UTC"
-    (let [t (zolo-cal/date-string->instant "yyyy-MM-dd" "2012-12-21")]
+    (let [t (zcal/date-string->instant "yyyy-MM-dd" "2012-12-21")]
       (assert-same-day? "2012-12-21" (user/client-date-time nil t))`
       (assert-same-day? "2012-12-21" (user/client-date-time {} t))))
 
   (testing "when timezone offset is presnt it should return time in timezone with offset"
-    (let [t (zolo-cal/date-string->instant "yyyy-MM-dd" "2012-12-21")]
+    (let [t (zcal/date-string->instant "yyyy-MM-dd" "2012-12-21")]
       (assert-same-day? "2012-12-21" (user/client-date-time {:user/login-tz -330} t))
       (assert-same-day? "2012-12-20" (user/client-date-time {:user/login-tz 420} t)))))
 
@@ -134,13 +134,13 @@
     (is (nil? (user/distill nil))))
   
   (testing "Email should be empty if no user-identities are present"
-    (let [du (user/distill {:user/guid "abc"})]
+    (let [du (user/distill {:user/guid "abc" :user/data-ready-in (zcal/now)})]
       (is (= "abc" (:user/guid du)))
       (is (empty? (:user/email du)))))
 
   (testing "Updated flag should be returned properly"
-    (is (:user/updated (user/distill {:user/last-updated "sometime"})))
-    (is (not (:user/updated (user/distill {:user/guid "abc"})))))
+    (is (:user/updated (user/distill {:user/last-updated "sometime" :user/data-ready-in (zcal/now)})))
+    (is (not (:user/updated (user/distill {:user/guid "abc" :user/data-ready-in (zcal/now)})))))
   
   (demonic-testing "Should return properly distilled user"
     (personas/in-social-lab
