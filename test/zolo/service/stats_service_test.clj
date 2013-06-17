@@ -24,7 +24,7 @@
     (run-as-of "2012-07-1"
       (is (nil? (s-service/contact-stats nil)))))
 
-  (demonic-testing "When user is present"
+  (demonic-testing "When user is present, and has FB friends"
     (let [u (pgen/generate {:SPECS {:friends [(pgen/create-friend-spec "Strong" "Contact" 50 50)
                                               (pgen/create-friend-spec "Medium" "Contact" 10 10)
                                               (pgen/create-friend-spec "Weak1" "Contact1" 5 5)
@@ -51,5 +51,34 @@
         (is (= 3 (:quartered (s-service/contact-stats u)))))
       
       (run-as-of "2012-07-01"
-        (is (= 1 (:quartered (s-service/contact-stats u))))))))
+                 (is (= 1 (:quartered (s-service/contact-stats u)))))))
+
+
+  (demonic-testing "When user is present, and has email friends"
+    (let [u (pgen/generate {:SPECS {:friends [(pgen/create-friend-spec "Strong" "Contact" 50 50)
+                                              (pgen/create-friend-spec "Medium" "Contact" 10 10)
+                                              (pgen/create-friend-spec "Weak1" "Contact1" 5 5)
+                                              (pgen/create-friend-spec "Weak2" "Contact2" 1 1)
+                                              (pgen/create-friend-spec "admin" "thoughtworks" 1 1)]}
+                            :UI-IDS-ALLOWED [:EMAIL]})
+          [medium strong weak1 weak2 admin] (sort-by contact/first-name (:user/contacts u))
+          ibc (interaction/ibc u)]
+      
+      (run-as-of "2012-07-1"
+        (let [c-stats (s-service/contact-stats u)]
+          (is (= 4 (:total c-stats)))
+          (is (= 1 (:strong c-stats)))
+          (is (= 1 (:medium c-stats)))
+          (is (= 2 (:weak c-stats)))
+
+          (is (= (d-core/run-in-tz-offset (:user/login-tz u) (contact/distill strong ibc))
+                 (:strongest-contact c-stats)))
+          (is (= (d-core/run-in-tz-offset (:user/login-tz u) (contact/distill weak2 ibc))
+                 (:weakest-contact c-stats)))))
+
+      (run-as-of "2014-07-01"
+        (is (= 5 (:quartered (s-service/contact-stats u)))))
+
+      (run-as-of "2012-09-01"
+        (is (= 4 (:quartered (s-service/contact-stats u))))))))
 

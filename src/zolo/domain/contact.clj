@@ -125,11 +125,16 @@
         iap
         (every? #(si/is-a-person? %) (:contact/social-identities c))))))
 
+(defn person-contacts [u]
+  (->> u
+       :user/contacts
+       (filter is-a-person?)))
+
 (defn contact-score [c]
   (or (:contact/score c) 0))
 
 (defn- contacts-with-score-between [u lower upper]
-  (->> (filter #(and (>= (contact-score %) lower) (<= (contact-score %) upper)) (:user/contacts u))
+  (->> (filter #(and (>= (contact-score %) lower) (<= (contact-score %) upper)) (person-contacts u))
        (sort-by :contact/score)
        reverse))
 

@@ -14,7 +14,7 @@
   (when u
     (d-core/run-in-tz-offset (:user/login-tz u)
                              (let [ibc (interaction/ibc u)
-                                   contacts (sort-by contact/contact-score (:user/contacts u))]
+                                   contacts (sort-by contact/contact-score (contact/person-contacts u))]
                                {:total (count contacts)
                                 :strong (count (contact/strong-contacts u))
                                 :medium (count (contact/medium-contacts u))
