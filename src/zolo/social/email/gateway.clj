@@ -34,16 +34,23 @@
           (concat results cs)
           (recur data-fn account-id limit (+ offset num) other-params results-key-seq (concat results cs)))))))
 
-(defn create-account [email access-token refresh-token]
-  (-> (context-io/create-account (context-io-creds) :params (cio-source-params email access-token refresh-token))
-      :body))
-
 (defn get-accounts []
   (context-io/list-accounts (context-io-creds)))
 
 (defn get-account [account-id]
   (-> (context-io/get-account (context-io-creds) :params {:id account-id})
       :body))
+
+(defn get-account-by-email [email]
+  (-> (context-io/list-accounts (context-io-creds) :params {:email email})
+      :body
+      first))
+
+(defn create-account [email access-token refresh-token]
+  (or
+   (get-account-by-email email)
+   (-> (context-io/create-account (context-io-creds) :params (cio-source-params email access-token refresh-token))
+       :body)))
 
 (defn get-contacts [account-id date-after-in-seconds]
   (get-data- context-io/list-account-contacts account-id 500 0 {:active_after date-after-in-seconds} [:body :matches] []))
