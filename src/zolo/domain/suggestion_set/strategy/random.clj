@@ -7,7 +7,7 @@
 (defn compute [u]
   (let [ibc (interaction/ibc u)]
     (->> u
-         :user/contacts
+         contact/person-contacts         
          (remove contact/is-muted?)
          (remove #(contact/is-contacted-today? % ibc))
          (take-unique-randomely 5))))

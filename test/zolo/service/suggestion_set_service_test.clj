@@ -11,7 +11,8 @@
             [zolo.marconi.facebook.core :as fb-lab]
             [zolo.service.suggestion-set-service :as ss-service]
             [zolo.domain.suggestion-set :as ss]
-            [zolo.domain.contact :as contact]
+            [zolo.domain.contact :as contact] 
+            [zolo.personas.generator :as pgen]           
             [zolo.personas.shy :as shy-persona]
             [zolo.personas.vincent :as vincent-persona]
             [zolo.utils.calendar :as zolo-cal]))
@@ -70,3 +71,13 @@
         (db-assert/assert-datomic-contact-count 2)
 
         (is (not (nil? ss-set)))))))
+
+(deftest test-find-suggestion-set-for-user-with-non-person-contacts
+  (demonic-testing "When user is present, and has email friends"
+    (run-as-of "2012-12-21"
+               (let [u (pgen/generate {:SPECS {:friends [(pgen/create-friend-spec "roy" "thoughtworks" 1 1)
+                                                         (pgen/create-friend-spec "admin" "thoughtworks" 1 1)]}
+                              :UI-IDS-ALLOWED [:EMAIL]})
+                     ss-set (ss-service/find-suggestion-set-for-today (:user/guid u))]
+                 (is (= 1 (count (:suggestion-set/contacts ss-set))))
+                 (is (= "roy" (-> ss-set :suggestion-set/contacts first :contact/first-name)))))))
