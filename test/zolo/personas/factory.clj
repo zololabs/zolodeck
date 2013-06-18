@@ -76,7 +76,7 @@
 (defn fake-fetch-email-messages [account-id date-in-seconds]
   (fake-email/fetch-messages account-id))
 
-(defn fake-pento-score [email-address]
+(defn fake-pento-score [email-address & other-args]
   (float
    (condp = email-address
      "admin@thoughtworks.com" -10.23

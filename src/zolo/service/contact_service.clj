@@ -18,10 +18,13 @@
             [zolo.domain.core :as d-core]
             [zolo.utils.maps :as zmaps]))
 
+(defn pento-score [{email-address :social/provider-uid person-name :social/nickname sent-count :social/sent-count received-count :social/received-count}]
+  (pento/score email-address person-name sent-count received-count))
+
 (defn set-person-score [si]
   (if-not (si/is-email? si)
     si
-    (assoc si :social/email-person-score (-> si :social/provider-uid pento/score))))
+    (assoc si :social/email-person-score (pento-score si))))
 
 (defn- fresh-social-identities-for-user-identity [user-identity]
   (let [{provider :identity/provider

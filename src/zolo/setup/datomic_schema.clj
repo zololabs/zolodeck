@@ -76,7 +76,9 @@
  (string-fact-schema  :social/state                 "A user's state")
  (string-fact-schema  :social/city                  "A user's city")
  (string-fact-schema  :social/zip                   "A user's zip")
- (string-fact-schema  :social/nickname              "A user's nick name"))
+ (string-fact-schema  :social/nickname              "A user's nick name")
+ (long-fact-schema    :social/sent-count            "A user's sent messages count for this identity")
+ (long-fact-schema    :social/received-count        "A user's received messages count for this identity"))
 
 (schema-set "ENUMS FACTS"
   (enum-value-schema :gender/male)
