@@ -7,7 +7,15 @@
               [zolo.utils.string :as zstring]))
 
 (defn to [m]
-  (get-in m [:addresses :to]))
+  (concat
+   (get-in m [:addresses :to])
+   (get-in m [:addresses :bcc])))
+
+(defn cc [m]
+  (get-in m [:addresses :cc]))
+
+(defn bcc [m]
+  (get-in m [:addresses :bcc]))
 
 (defn from [m]
   (get-in m [:addresses :from :email]))
@@ -24,6 +32,7 @@
     :message/date (-> m :date_received zcal/seconds->instant)
     :message/from (from m)
     :message/to (->> m to (map :email))
+    :message/cc (->> m cc (map :email))
     :message/thread-id (:gmail_thread_id m)
     ;; :message/reply-to
     }))

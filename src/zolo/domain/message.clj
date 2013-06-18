@@ -72,7 +72,10 @@
 (defn message-to [m]
   (if (is-temp-message? m)
     (:temp-message/to m)
-    (:message/to m)))
+    (set
+     (concat
+      (:message/to m)
+      (:message/cc m)))))
 
 (defn message-id [m]
   (if (is-temp-message? m)

@@ -109,6 +109,7 @@
  (instant-fact-schema :message/date              "The date the message was received")
  (string-fact-schema  :message/from              "The platform ID of the sender")
  (strings-fact-schema :message/to                "The platform ID of the receiver")
+ (strings-fact-schema :message/cc                "The platform ID of the receiver")
  (string-fact-schema  :message/thread-id         "The message thread id")
  (string-fact-schema  :message/reply-to          "The platform ID of the sender")
  (string-fact-schema  :message/story             "what this message is about")
