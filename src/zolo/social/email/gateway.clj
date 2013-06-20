@@ -5,7 +5,8 @@
             [context-io.oauth :as oauth]
             [context-io.api.two :as context-io]
             [clj-http.client :as http]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [zolo.utils.string :as zstring]))
 
 (defn context-io-creds []
   (oauth/make-oauth-creds (conf/context-io-key) (conf/context-io-secret)))
@@ -78,7 +79,12 @@
    :params
    {:account-id account-id :message-id (java.net.URLEncoder/encode message-id-in-thread) :include_body 1}))
 
+(defn mark-as-read [account-id message-id]
+  (context-io/set-account-message-flags (context-io-creds) :params {:account-id account-id :message-id (zstring/url-encode message-id) :seen 1}))
+
 (defn send-email [account-id from-email to-emails reply-to-message-id subject message]
   (let [to (string/join "," to-emails)
         m-string (rfc822-message from-email to reply-to-message-id subject message)]
-    (context-io/create-account-exit (context-io-creds) :params {:account-id account-id :message m-string :rcpt to})))
+    (context-io/create-account-exit (context-io-creds) :params {:account-id account-id :message m-string :rcpt to})
+    (mark-as-read account-id reply-to-message-id)))
+
