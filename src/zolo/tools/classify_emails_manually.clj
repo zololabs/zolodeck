@@ -28,11 +28,14 @@
       (previous-bads  (:email contact))))
 
 (defn progress [file-name]
-  (it-> file-name
-        (slurp it)
-        (.split it "\r\n")
-        (map json/read-json it)
-        (group-by :email it)))
+  (try
+    (it-> file-name
+          (slurp it)
+          (.split it "\r\n")
+          (map json/read-json it)
+          (group-by :email it))
+    (catch Exception e
+      {})))
 
 (defn classify [contact-details person-file not-person-file]
   (let [person-progress (progress person-file)
