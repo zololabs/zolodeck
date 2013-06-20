@@ -56,15 +56,15 @@
         (is (= 404 (:status resp)))))
     
     (testing "When user is not present it should return 404"
-      (let [resp (w-utils/authed-request u  :put (contacts-url nil jack) {:muted true})]
+      (let [resp (w-utils/authed-request u :put (contacts-url nil jack) {:muted true})]
           (is (= 404 (:status resp)))))
     
     (testing "When contact is not present it should return nil"
-      (let [resp (w-utils/authed-request u  :put (contacts-url u nil) {:muted true})]
+      (let [resp (w-utils/authed-request u :put (contacts-url u nil) {:muted true})]
         (is (= 404 (:status resp)))))
     
     (testing "When invalid contact is send it should throw exception"
-      (let [resp (w-utils/authed-request u  :put (contacts-url u jack) {:muted "JUNK"})]
+      (let [resp (w-utils/authed-request u :put (contacts-url u jack) {:muted "JUNK"})]
         (is (= 400 (:status resp)))))
     
     (testing "When called with proper attributes it should update contact"
@@ -73,10 +73,12 @@
 
       (is (not (contact/is-muted? jack)))
       
-      (let [resp (w-utils/authed-request u  :put (contacts-url u jack) {:muted true})]
+      (let [resp (w-utils/authed-request u :put (contacts-url u jack) {:muted true})]
 
         (db-assert/assert-datomic-contact-count 1)
         (db-assert/assert-datomic-social-count 1)
         
         (is (= 201 (:status resp)))
-        (is (get-in resp [:body :muted]))))))
+
+        (is (get-in resp [:body :muted]))
+        (is (get-in resp [:body :person]))))))

@@ -161,6 +161,7 @@
    :contact/last-name (last-name c)
    :contact/guid (:contact/guid c)
    :contact/muted (is-muted? c)
+   :contact/person (is-a-person? c)
    :contact/picture-url (picture-url c)
    :contact/social-identities (map si/distill (:contact/social-identities c))})
 

@@ -223,7 +223,8 @@
          (is (= (:contact/guid jack) (:contact/guid distilled-jack)))
          (is (= (contact/picture-url jack) (:contact/picture-url distilled-jack)))
          (is (not (:contacted-today distilled-jack)))
-         (is (not (:muted distilled-jack)))
+         (is (not (:contact/muted distilled-jack)))
+         (is (:contact/person distilled-jack))
          (is (empty? (:contact/interaction-daily-counts distilled-jack)))))))
 
   (testing "When proper contact with interactions is passed"
@@ -243,7 +244,7 @@
            (is (= (:contact/guid jack) (:contact/guid distilled-jack)))
            (is (= (contact/picture-url jack) (:contact/picture-url distilled-jack)))
            (is (:contacted-today distilled-jack))
-           (is (not (:muted distilled-jack)))
+           (is (not (:contact/muted distilled-jack)))
            (is (= [["2012-05-10" 1]] (:contact/interaction-daily-counts distilled-jack))))))))
 
 
