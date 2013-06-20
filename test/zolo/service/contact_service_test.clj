@@ -160,9 +160,7 @@
            (is (contact/is-muted? (c-store/find-by-guid (:contact/guid jack))))
 
            (is (= (dissoc (contact/distill jack ibc) :contact/muted)
-                  (dissoc updated-jack :contact/muted)))
-           )
-
+                  (dissoc updated-jack :contact/muted))))
 
          (let [updated-jack (c-service/update-contact u jack {:person true :muted false})]
             
