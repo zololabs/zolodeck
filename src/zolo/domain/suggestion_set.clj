@@ -17,7 +17,7 @@
 (defn- reason-for-suggesting [c ibc]
   (let [days-not-contacted (contact/days-not-contacted c ibc)]
     (if (= -1 days-not-contacted)
-      "You never interacted"
+      "You haven't connected in a while"
       (str "Your last interaction was " days-not-contacted " days ago"))))
 
 (defn- contact-info [c ibc]
