@@ -17,7 +17,7 @@
 (defn user-choice []
   (try
     (let [input (.toUpperCase (read-line))]
-      (if (or (= "Y" input) (= "N" input) (= "X" input))
+      (if (some #{input} ["Y" "N" "X" ""])
         input
         (user-choice)))
     (catch Exception e
@@ -45,9 +45,10 @@
       (if-not (processed? cd person-progress not-person-progress)
         (do
           (print-vals "Contact:" (:name cd) "|" (:email cd))
-          (println "Person? [y/n/x]")
+          (println "Person? [y]/n/x:")
           (let [choice (user-choice)]
             (condp = choice
+              "" (spit person-file (contact-json cd) :append true)
               "Y" (spit person-file (contact-json cd) :append true)
               "N" (spit not-person-file (contact-json cd) :append true)
               (print-vals "Quiting."))
