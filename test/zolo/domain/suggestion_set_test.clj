@@ -82,7 +82,7 @@
            (let [jack (first (:user/contacts u))
                  jack-from-ss (first (:suggestion-set/contacts distilled-ss))]
              (is (= (contact/distill jack ibc) (dissoc jack-from-ss :contact/reason-to-connect)))
-             (is (= "You never interacted" (:contact/reason-to-connect jack-from-ss))))))
+             (is (= "You haven't connected in a while" (:contact/reason-to-connect jack-from-ss))))))
 
        (testing "Contact has been contacted last month"
          (run-as-of "2012-06-10"
