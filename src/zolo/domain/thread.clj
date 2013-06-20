@@ -44,9 +44,6 @@
    :thread/subject (-> msgs first :message/subject)
    :thread/messages (reverse-sort-by m/message-date msgs)})
 
-(defn is-group-chat? [thread]
-  (-> thread last-message :message/to count (> 1)))
-
 (defn contact-exists? [u thread selector-fn]
   (let [last-m (last-message thread)]
     (->> last-m
@@ -67,8 +64,7 @@
     []
     (->> msgs
          (group-by m/thread-id)
-         (map messages->thread)
-         (remove is-group-chat?))))
+         (map messages->thread))))
 
 (defn- is-follow-up? [u thread]
   (let [last-m (-> thread :thread/messages first)
