@@ -3,6 +3,7 @@
         zolo.utils.clojure)
   (:require [zolo.social.email.gateway :as email]
             [zolo.utils.calendar :as zcal]
+            [zolo.utils.string :as zstring]
             [clojure.data.json :as json]
             [clojure.string :as str]))
 
@@ -13,7 +14,7 @@
   (-> contact-details
       (select-keys [:email :name :received_count :sent_count])
       json/json-str
-      (str "\r\n")))
+      (str "\n")))
 
 (defn user-choice []
   (try
@@ -31,7 +32,7 @@
 (defn read-file [file-name]
   (it-> file-name
           (slurp it)
-          (.split it "\r\n")
+          (.split it "\n")
           (map json/read-json it)))
 
 (defn progress [file-name]
@@ -44,16 +45,17 @@
 
 (defn dump-file [data file]
   (->> data
-       (str/join "\r\n")
+       (map json/json-str)
+       (str/join "\n")
+;       zstring/chop
+;       zstring/chomp
        (spit file)))
 
 (defn swap-last [from-file to-file]
   (let [from-data (read-file from-file)
         to-data (read-file to-file)]
-;    (spit from-file (butlast from-data))
-;    (spit to-file (conj to-data (last from-data)))
     (dump-file (butlast from-data) from-file)
-    (dump-file (conj to-data (last from-data)) to-file)))
+    (dump-file (concat to-data (list (last from-data))) to-file)))
 
 (defn classify [contact-details person-file not-person-file]
   (print-vals "Starting...")
