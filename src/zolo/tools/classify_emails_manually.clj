@@ -14,7 +14,7 @@
   (-> contact-details
       (select-keys [:email :name :received_count :sent_count])
       json/json-str
-      (str "\n")))
+      (str "\r\n")))
 
 (defn user-choice []
   (try
@@ -44,12 +44,11 @@
       {})))
 
 (defn dump-file [data file]
-  (->> data
-       (map json/json-str)
-       (str/join "\n")
-;       zstring/chop
-;       zstring/chomp
-       (spit file)))
+  (it-> data
+       (map json/json-str it)
+       (str/join "\n" it)
+       (str it "\r\n")
+       (spit file it)))
 
 (defn swap-last [from-file to-file]
   (let [from-data (read-file from-file)
@@ -76,10 +75,15 @@
               "Y" (spit person-file (contact-json cd) :append true)
               "N" (spit not-person-file (contact-json cd) :append true)
               "UY" (swap-last person-file not-person-file)
-              "UN" (swap-last person-file not-person-file)
+              "UN" (swap-last not-person-file person-file)
               (print-vals "Quiting."))
-            (if-not (= "X" choice)
-              (recur (first remaining) (rest remaining)))))
+            (condp = choice
+              "UY" (recur cd remaining)
+              "UN" (recur cd remaining)
+              "Y" (recur (first remaining) (rest remaining))
+              "N" (recur (first remaining) (rest remaining))
+              "" (recur (first remaining) (rest remaining))
+              (print-vals "Next..."))))
         (recur (first remaining) (rest remaining))))))
 
 (defn go! [cio-account-id person-output-file not-person-output-file]
