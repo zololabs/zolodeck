@@ -54,7 +54,8 @@
   (let [from-data (read-file from-file)
         to-data (read-file to-file)]
     (dump-file (butlast from-data) from-file)
-    (dump-file (concat to-data (list (last from-data))) to-file)))
+    (dump-file (concat to-data (list (last from-data))) to-file))
+  (print-vals "Undo complete!"))
 
 (defn classify [contact-details person-file not-person-file]
   (print-vals "Starting...")
@@ -83,7 +84,7 @@
               "Y" (recur (first remaining) (rest remaining))
               "N" (recur (first remaining) (rest remaining))
               "" (recur (first remaining) (rest remaining))
-              (print-vals "Next..."))))
+              (print-vals "Done."))))
         (recur (first remaining) (rest remaining))))))
 
 (defn go! [cio-account-id person-output-file not-person-output-file]
