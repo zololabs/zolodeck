@@ -7,8 +7,10 @@
             [clojure.data.json :as json]
             [clojure.string :as str]))
 
-(defn all-contacts-details [cio-account-id]
+(defn all-contacts-details- [cio-account-id]
   (email/get-contacts cio-account-id (zcal/to-seconds #inst "2000-01-01")))
+
+(def all-contacts-details (memoize all-contacts-details-))
 
 (defn contact-json [contact-details]
   (-> contact-details
