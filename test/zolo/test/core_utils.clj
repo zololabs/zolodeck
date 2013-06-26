@@ -12,7 +12,7 @@
 
 (def ^:dynamic *file-path-prefix* nil)
 
-(def ^:dynamic *generative-verbosity*)
+(def ^:dynamic *generative-verbosity* false)
 
 (conf/setup-config)
 (datomic-setup/init-datomic)
