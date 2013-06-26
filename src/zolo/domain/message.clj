@@ -92,6 +92,11 @@
     (:temp-message/subject m)
     (:message/subject m)))
 
+(defn message-done? [m]
+  (if (is-temp-message? m)
+    (:temp-message/done m)
+    (:message/done m)))
+
 (defn- update-buckets-for [buckets m contact-ids]
   (let [updater (fn [b contact-id]
                   (update-in b [[(message-provider m) contact-id]] conj m))]
@@ -200,6 +205,7 @@
            (assoc :message/thread-id (thread-id message))
            (assoc :message/from (message-from message))
            (assoc :message/to (message-to message))
+           (assoc :message/done (message-done? message))
            (assoc :message/date m-date)
            (assoc :message/subject (message-subject message))
            (assoc :message/text (message-text message))
@@ -220,6 +226,11 @@
     :temp-message/subject subject   
     :temp-message/thread-id (or thread-id (random-guid-str))
     :temp-message/date (zcal/now-instant)}))
+
+(defn set-doneness [m done?]
+  (if (is-temp-message? m)
+    (assoc m :temp-message/done done?)
+    (assoc m :message/done done?)))
 
 ;; (defn feeds-start-time-seconds []
 ;;   (-> (zcal/now-joda)

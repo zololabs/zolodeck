@@ -178,3 +178,19 @@
         (is (= (:social/first-name jack-ui) (:reply-to/first-name reply-to)))
         (is (= (:social/last-name jack-ui) (:reply-to/last-name reply-to)))
         (is (= (:social/provider-uid jack-ui) (:reply-to/provider-uid reply-to)))))))
+
+(deftest test-mark-as-done
+ 
+  (demonic-testing "User is not present, it should return nil"
+    (is (nil? (t-service/update-thread-details nil "message-id" true)))
+    (is (nil? (t-service/update-thread-details (random-guid-str) "message-id" true))))
+ 
+  (demonic-testing "User present, but has no specified message, it should return empty"
+    (let [vincent (vincent-persona/create)]
+      (is (nil? (t-service/update-thread-details (:user/guid vincent) "message-id" true)))))
+
+  (demonic-testing "User present, but has no specified message, it should return empty"
+    (let [vincent (vincent-persona/create)
+          m-id (-> vincent :user/messages last m/message-id)]
+      (is (not (:message/done (t-service/update-thread-details (:user/guid vincent) m-id false))))      
+      (is (:message/done (t-service/update-thread-details (:user/guid vincent) m-id true))))))

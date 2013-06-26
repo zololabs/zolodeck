@@ -122,3 +122,13 @@
         (is (= (:social/first-name amrut-ui) (:reply-to/first-name reply-to)))
         (is (= (:social/last-name amrut-ui) (:reply-to/last-name reply-to)))
         (is (= (:social/provider-uid amrut-ui) (:reply-to/provider-uid reply-to)))))))
+
+(deftest test-mark-as-done
+  (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Amrut" "Indya" 1 1)]}})
+        m (->> u :user/messages first (message/distill u))
+        tm (message/create-temp-message "from" ["to"] :provider/facebook "thread-id" "subject" "text")]
+    (print-vals "M:" m)
+    (is (not (message/message-done? m)))
+    (is (message/message-done? (message/set-doneness m true)))
+    (is (not (message/message-done? tm)))
+    (is (message/message-done? (message/set-doneness tm true)))))

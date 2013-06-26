@@ -55,7 +55,7 @@
   ;;Threads
   (GET "/threads" [guid & params] (t-api/find-threads guid params))
   (GET "/threads/:m-guid" [guid m-guid] (t-api/load-thread guid m-guid))
-  )
+  (PUT "/threads/:m-guid" [guid m-guid] (t-api/update-thread guid m-guid)))
 
 (defroutes APP-ROUTES
   (route/resources "/")

@@ -19,3 +19,9 @@
     {:status (STATUS-CODES :ok)
      :body t}
     (resource-not-found "Thread")))
+
+(defn update-thread [user-guid message-id {done? :done :as params}]
+  (if-let [t (t-service/update-thread-details user-guid message-id done?)]
+    {:status (STATUS-CODES :ok)
+     :body t}
+    (resource-not-found "Thread")))
