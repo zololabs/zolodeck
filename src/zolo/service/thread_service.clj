@@ -34,7 +34,7 @@
 (defn update-thread-details [user-guid message-id done?]
   (if-let [u (u-store/find-entity-by-guid user-guid)]
     (d-core/run-in-tz-offset (:user/login-tz u)
-        (if-let [msg (m-store/find-by-id message-id)]
+      (if-let [msg (m-store/find-by-id message-id)]
           (it-> msg
                 (m/set-doneness it done?)
                 (m-store/update-message it)

@@ -10,6 +10,7 @@
   (:require [zolo.personas.factory :as personas]
             [zolo.personas.shy :as shy-persona]
             [zolo.personas.vincent :as vincent-persona]
+            [zolo.domain.message :as m]
             [zolo.utils.calendar :as zolo-cal]
             [zolo.test.web-utils :as w-utils]))
 
@@ -118,3 +119,19 @@
           (doseq [m (:messages f1-thread)]
             (has-keys m [:message_id :guid :provider :thread_id :from :to :date :text :snippet])))))))
 
+(demonictest test-mark-as-done
+  (let [vincent (vincent-persona/create)
+        m-id (-> vincent :user/messages last m/message-id)]
+
+    (testing "User is not present, it should return nil"
+      (let [resp (w-utils/authed-request vincent :put (str "/users/" (random-guid-str) "/threads/" m-id) {:done true})]
+        (is (= 404 (:status resp)))))
+
+    (testing "Message not present, it should return nil"
+      (let [resp (w-utils/authed-request vincent :put (str "/users/" (:user/guid vincent) "/threads/" (random-guid-str)) {:done true})]
+        (is (= 404 (:status resp)))))
+
+    (testing "Both user and message present, should return message as done"
+      (let [resp (w-utils/authed-request vincent :put (str "/users/" (:user/guid vincent) "/threads/" m-id) {:done true})]
+        (is (= 200 (:status resp)))
+        (is (get-in resp [:body :done]))))))
