@@ -11,6 +11,7 @@
             [zolo.social.core :as social]            
             [zolo.demonic.schema :as schema]
             [zolo.demonic.core :as demonic]
+            [zolo.demonic.helper :as dh]
             [zolo.utils.logger :as logger]))
 
 ;; (def MESSAGES-START-TIME #inst "2000-10-22")
@@ -18,7 +19,8 @@
 
 ;;TODO test
 (defn is-temp-message? [m]
-  (:temp-message/guid m))
+  (or (:temp-message/guid m)
+      (= "temp-message" (dh/entity-name m))))
 
 (defn message-guid [m]
   (if (is-temp-message? m)

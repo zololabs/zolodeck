@@ -88,7 +88,8 @@
         amrut-uid (:social/provider-uid amrut-ui)
 
         sm (->> u :user/messages first (message/distill u))
-        rm (->> u :user/messages second (message/distill u))]
+        rm (->> u :user/messages second (message/distill u))
+        ]
 
     (testing "basic information should be set on distilled messages"
       (doseq [m [sm rm]]
@@ -121,7 +122,27 @@
         (is (= 1 (count reply-tos)))
         (is (= (:social/first-name amrut-ui) (:reply-to/first-name reply-to)))
         (is (= (:social/last-name amrut-ui) (:reply-to/last-name reply-to)))
-        (is (= (:social/provider-uid amrut-ui) (:reply-to/provider-uid reply-to)))))))
+        (is (= (:social/provider-uid amrut-ui) (:reply-to/provider-uid reply-to)))))
+
+    (testing "when a temp message is created, it can be distilled properly"
+      (let [tm (message/create-temp-message u-uid [amrut-uid] (:identity/provider u-ui) "thread-id" "subject" "text")
+            dtm (message/distill u tm)]
+        (is (= "text" (:message/text dtm)))
+        (is (= [amrut-uid] (:message/to dtm)))
+        (is (nil? (:message/done dtm)))
+        (is (= u-uid (:message/from dtm)))
+        (is (:message/sent dtm))
+        (is (= "text" (:message/snippet dtm)))
+        (is (= "subject" (:message/subject dtm)))
+        (is (= "thread-id" (:message/thread-id dtm)))
+        (is (= "Amrut" (-> dtm :message/reply-to first :reply-to/first-name)))
+        (is (= "Indya" (-> dtm :message/reply-to first :reply-to/last-name)))
+        (is (= amrut-uid (-> dtm :message/reply-to first :reply-to/provider-uid)))
+        (is (= u-uid (-> dtm :message/reply-to first :reply-to/ui-provider-uid)))
+        (is (= (:identity/provider u-ui) (:message/provider dtm)))
+        (is (= (:identity/first-name u-ui) (get-in dtm [:message/author :author/first-name])))
+        (is (= (:identity/last-name u-ui) (get-in dtm [:message/author :author/last-name])))
+        (is (= (:identity/photo-url u-ui) (get-in dtm [:message/author :author/picture-url])))))))
 
 (deftest test-mark-as-done
   (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Amrut" "Indya" 1 1)]}})
