@@ -10,7 +10,7 @@
                  
                  [com.cemerick/friend "0.1.5"]
 
-                 [org.clojure/data.json "0.2.2"]
+                 [org.clojure/data.json "0.1.2"]
                  [clj-http "0.5.3" :exclusions [commons-logging]]
 
                  [clj-time "0.4.4"]
