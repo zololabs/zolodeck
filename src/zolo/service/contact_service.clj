@@ -6,6 +6,7 @@
             [zolo.domain.user :as user]
             [zolo.domain.contact :as contact]
             [zolo.domain.message :as message]
+            [zolo.domain.thread :as t]
             [zolo.domain.social-identity :as si]            
             [zolo.domain.interaction :as interaction]
             [zolo.store.user-store :as u-store]
@@ -17,6 +18,9 @@
             [zolo.service.core :as service]
             [zolo.domain.core :as d-core]
             [zolo.utils.maps :as zmaps]))
+
+(def REPLY-TO "reply_to")
+(def FOLLOW-UP "follow_up")
 
 (defn pento-score [{email-address :social/provider-uid person-name :social/nickname sent-count :social/sent-count received-count :social/received-count}]
   (pento/score email-address person-name sent-count received-count))
@@ -82,4 +86,29 @@
                                                    (c-store/save it))
                                    u (u-store/reload u)
                                    ibc (interaction/ibc u)]
-                               (contact/distill updated-c ibc))))) 
+                               (contact/distill updated-c ibc)))))
+
+
+(defn contacts-to-reply [u]
+  (->> u
+       t/find-reply-to-threads
+       (t/distill-by-contacts u)
+       (map (fn [[c threads]] (merge c {:reply-to-threads threads})))))
+
+(defn selector-contacts [u selector]
+  (condp = selector
+    "reply_to" (contacts-to-reply u)
+    (throw+ {:type :severe :message (str "Unknown Contacts selector : " selector)})))
+
+(defn apply-selectors [selectors user]
+  (if (empty? selectors)
+    (:user/contacts user)
+    (->> selectors
+         distinct
+         (map #(selector-contacts user %))
+         (apply concat))))
+
+(defn list-contacts [user options]
+  (d-core/run-in-tz-offset (:user/login-tz user)
+                           (let [{:keys [selectors]} options]
+                             (apply-selectors selectors user))))

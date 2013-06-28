@@ -39,6 +39,9 @@
        :thread/provider (-> thread :thread/messages first :message/provider)
        :thread/messages distilled-msgs})))
 
+(defn distill-by-contacts [u threads]
+  (group-by :thread/lm-from-contact (domap #(distill u %) threads)))
+
 (defn- messages->thread [[thread-id msgs]]
   {:thread/guid thread-id
    :thread/subject (-> msgs first :message/subject)

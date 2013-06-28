@@ -67,7 +67,7 @@
 
                  (is (= 1 (count threads)))
                  (is (= #{u-uid} (:message/to last-m)))
-107                 (is (= jack-uid (:message/from last-m)))))
+                 (is (= jack-uid (:message/from last-m)))))
 
              (testing "When user has 2 friends, with both replied-to threads, it should return empty"
                (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 20)

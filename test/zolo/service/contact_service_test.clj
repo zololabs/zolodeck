@@ -20,8 +20,11 @@
             [zolo.domain.core :as d-core]
             [zolo.store.user-store :as u-store]
             [zolo.store.contact-store :as c-store]
+            [zolo.social.facebook.chat :as fb-chat]
             [zolo.marconi.facebook.core :as fb-lab]
             [zolo.utils.calendar :as zolo-cal]
+            [zolo.personas.shy :as shy-persona]
+            [zolo.personas.vincent :as vincent-persona]
             [zolo.personas.generator :as pgen]))
 
 (deftest test-update-contacts-for-user
@@ -173,5 +176,99 @@
             (is (= (dissoc (contact/distill jack ibc) :contact/is-a-person)
                    (dissoc updated-jack :contact/is-a-person)))))))))
 
+
+(deftest test-find-reply-to-contacts
+
+  (let [reply-to-options {:selectors ["reply_to"]}]
+    
+    (demonic-testing "User is not present, it should return nil"
+      (is (empty? (c-service/list-contacts nil reply-to-options))))
+    
+    (demonic-testing "User present, but has no messages, it should return empty"
+      (let [shy (shy-persona/create)
+            contacts (c-service/list-contacts (:user/guid shy) reply-to-options)]
+        (is (empty? contacts))))
+    
+    (demonic-testing "User has both a reply-to and a replied-to contact, it should return the reply-to contact"
+      (let [vincent (vincent-persona/create)
+            vincent-ui (-> vincent :user/user-identities first)
+            vincent-uid (:identity/provider-uid vincent-ui)
+            jack-ui (->> vincent
+                         :user/contacts
+                         (sort-by :contact/first-name)
+                         first
+                         :contact/social-identities
+                         first)
+            jack-uid (:social/provider-uid jack-ui)
+            
+            reply-to-contacts (c-service/list-contacts vincent reply-to-options)
+            reply-threads (-> reply-to-contacts first :reply-to-threads)
+            
+            r-messages (-> reply-threads first :thread/messages)
+            last-m (first r-messages)]
+        
+        (is (= 1 (count reply-to-contacts)))
+        (is (= 1 (count reply-threads)))
+        
+        (is (= (str "Conversation with " (:social/first-name jack-ui) " " (:social/last-name jack-ui))
+               (-> reply-threads first :thread/subject)))
+        
+        (is (= 1 (count r-messages)))
+        (is (= jack-uid (:message/from last-m)))
+        (is (= #{vincent-uid} (:message/to last-m)))
+        (is (:message/snippet last-m))
+        (is-not (:message/sent last-m))
+        
+        (let [lm-from-c (-> reply-threads first :thread/lm-from-contact)]
+          (is (= (:social/first-name jack-ui) (:contact/first-name lm-from-c)))
+          (is (= (:social/last-name jack-ui) (:contact/last-name lm-from-c)))
+          (is (= (:social/photo-url jack-ui) (:contact/picture-url lm-from-c))))
+        
+        (let [author (:message/author last-m)]
+          (is (= (:social/first-name jack-ui) (:author/first-name author)))
+          (is (= (:social/last-name jack-ui) (:author/last-name author)))
+          (is (= (:social/photo-url jack-ui) (:author/picture-url author))))
+        
+        (let [reply-tos (:message/reply-to last-m)
+              reply-to (first reply-tos)]
+          (is (= (:social/first-name jack-ui) (:reply-to/first-name reply-to)))
+          (is (= (:social/last-name jack-ui) (:reply-to/last-name reply-to)))
+          (is (= (:social/provider-uid jack-ui) (:reply-to/provider-uid reply-to))))
+        
+        (testing "after replying to this thread, it shouldn't be a reply-to thread"
+          (let [r-message (first r-messages)
+                _ (mocking [fb-chat/send-message]
+                    (m-service/new-message vincent {:text "Hey hello" :provider "facebook"
+                                                    :guid (-> vincent :user/guid str)
+                                                    :from vincent-uid
+                                                    :to [(-> r-message :message/reply-to first :reply-to/provider-uid)]
+                                                    :thread_id (:message/thread-id r-message)}))
+                updated-r-threads (c-service/list-contacts (:user/guid vincent) reply-to-options)]
+            (is (= 1 (count reply-threads)))
+            (is (empty? updated-r-threads))))))
+    
+    (demonic-testing "When user has 1 friend, with 2  reply-to  threads, it should return both threads"
+      (let [u (pgen/generate {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 2 10)]}})
+            jack (->> u :user/contacts first)
+            jack-ui (-> jack :contact/social-identities first)
+            
+            reply-to-contacts (c-service/list-contacts u reply-to-options)
+            thread-contact (-> reply-to-contacts first)
+            reply-threads (-> reply-to-contacts first :reply-to-threads)]
+        
+        (is (= 1 (count reply-to-contacts)))
+        (is (= 2 (count reply-threads)))
+        
+        (is (= (:social/first-name jack-ui) (:contact/first-name thread-contact)))
+        (is (= (:social/last-name jack-ui) (:contact/last-name thread-contact)))
+        (is (= (:social/photo-url jack-ui) (:contact/picture-url thread-contact)))))
+
+    (demonic-testing "When user has 2 friends, with reply-to  threads, it should return both contacts"
+      (let [u (pgen/generate {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 2 10)
+                                                (pgen/create-friend-spec "Jill" "Ferry" 2 10)]}})
+            
+            reply-to-contacts (c-service/list-contacts u reply-to-options)]
+        
+        (is (= 2 (count reply-to-contacts)))))))
 
 

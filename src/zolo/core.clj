@@ -40,6 +40,7 @@
   (GET "/suggestion_sets" [guid :as {params :params}] (ss-api/find-suggestion-sets guid params))
 
   ;;Contacts
+  (GET "/contacts" [guid & params] (c-api/list-contacts guid params))
   (GET "/contacts/:c-guid" [guid c-guid] (c-api/find-contact guid c-guid))
   (PUT "/contacts/:c-guid" [guid c-guid & params] (c-api/update-contact guid c-guid params))
   
