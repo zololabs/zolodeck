@@ -69,6 +69,9 @@
          (group-by m/thread-id)
          (map messages->thread))))
 
+(defn is-done? [thread]
+  (-> thread :thread/messages first  m/message-done?))
+
 (defn- is-follow-up? [u thread]
   (let [last-m (-> thread :thread/messages first)
         m-info [(:message/provider last-m) (:message/from last-m)]
@@ -87,11 +90,10 @@
 
 (defn find-reply-to-threads [u]
   (it-> u
-        (all-threads it)
-        
+        (all-threads it)        
         (filter #(is-reply-to? u %) it)
         (filter #(reply-to-contact-exists? u %) it)
-        
+        (remove is-done? it)
         (sort-by-recent-threads it)))
 
 (defn find-follow-up-threads [u]

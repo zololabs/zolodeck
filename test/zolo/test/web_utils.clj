@@ -24,6 +24,16 @@
              "authorization" DUMMY-FB-AUTH}
    :content-type "application/json; charset=UTF-8"})
 
+(defn decode-json-response [r]
+  (let [decoded (json/read-json r)]
+    (if (map? decoded)
+      (transform-keys-with decoded (fn [k]
+                                     (let [ds (read-string (name k))]
+                                       (if (map? ds)
+                                         ds
+                                         k))))
+      decoded)))
+
 (defn web-request
   ([method resource]
      (web-request method resource "" {}))
@@ -32,7 +42,7 @@
   ([method resource body params]
      (-> (compojure-request method resource (json/json-str body) params)
          server/app
-         (update-in [:body] json/read-json))))
+         (update-in [:body] decode-json-response))))
 
 (defn authed-request
   ([user method resource]
