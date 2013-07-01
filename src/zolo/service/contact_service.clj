@@ -18,13 +18,33 @@
             [zolo.domain.core :as d-core]
             [zolo.utils.maps :as zmaps]))
 
-(defn pento-score [{email-address :social/provider-uid person-name :social/nickname sent-count :social/sent-count received-count :social/received-count}]
-  (pento/score email-address person-name sent-count received-count))
+;; (defn pento-score [{email-address :social/provider-uid person-name :social/nickname sent-count :social/sent-count received-count :social/received-count}]
+;;   (pento/score email-address person-name sent-count received-count))
 
-(defn set-person-score [si]
+;; (defn set-person-score [si]
+;;   (if-not (si/is-email? si)
+;;     si
+;;     (assoc si :social/email-person-score (pento-score si))))
+
+(defn select-pento-keys [si]
+  (let [key-names {:social/provider-uid :email
+                   :social/nickname :name
+                   :social/sent-count :sent_count
+                   :social/received-count :received_count}]
+    (-> si
+        (select-keys (keys key-names))
+        (zmaps/update-all-map-keys key-names))))
+
+(defn set-person-score [si score-lookup]
   (if-not (si/is-email? si)
     si
-    (assoc si :social/email-person-score (pento-score si))))
+    (assoc si :social/email-person-score (score-lookup (:social/provider-uid si)))))
+
+(defn set-person-scores [si-list]
+  (let [scores (->> si-list
+                    (map select-pento-keys)
+                    pento/score-all)]
+    (map #(set-person-score % scores) si-list)))
 
 (defn- fresh-social-identities-for-user-identity [user-identity]
   (let [{provider :identity/provider
@@ -35,7 +55,7 @@
 (defn- fresh-social-identities [u]
   (->> (:user/user-identities u)
        (mapcat fresh-social-identities-for-user-identity)
-       (map set-person-score)))
+       set-person-scores))
 
 (defn- update-contacts [user]
   (->> user

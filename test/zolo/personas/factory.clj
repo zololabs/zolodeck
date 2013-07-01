@@ -16,7 +16,8 @@
             [zolo.store.user-store :as u-store]
             [zolo.service.user-service :as u-service]
             [zolo.domain.message :as message]
-            [zolo.utils.calendar :as zcal]))
+            [zolo.utils.calendar :as zcal]
+            [zolo.utils.maps :as zmaps]))
 
 (defn fb-request-params
   ([fb-user permission-granted?]
@@ -76,12 +77,11 @@
 (defn fake-fetch-email-messages [account-id date-in-seconds]
   (fake-email/fetch-messages account-id))
 
-(defn fake-pento-score [email-address & other-args]
-  (float
-   (condp = email-address
-     "admin@thoughtworks.com" -10.23
-     "donotreply@Man.com" -20.46
-     100.00)))
+(defn fake-pento-score-all [email-address-info-list]
+  (let [defaults (zipmap (map :email email-address-info-list) (repeat 100))
+        results (merge defaults {"admin@thoughtworks.com" -10.23
+                                 "donotreply@Man.com" -20.46})]
+    (zmaps/transform-vals-with results #(float %2))))
 
 (defmacro in-social-lab [& body]
   `(marconi/in-lab
@@ -93,7 +93,7 @@
                email-gateway/get-account fake-email-account
                email-gateway/get-contacts fake-fetch-email-contacts 
                email-gateway/get-messages fake-fetch-email-messages
-               pento/score fake-pento-score]
+               pento/score-all fake-pento-score-all]
       ~@body)))
 
 (defmacro in-email-lab [& body]
@@ -101,7 +101,7 @@
     (stubbing [email-gateway/get-account fake-email-account
                email-gateway/get-contacts fake-fetch-email-contacts 
                email-gateway/get-messages fake-fetch-email-messages
-               pento/score fake-pento-score]
+               pento/score-all fake-pento-score-all]
       ~@body)))
 
 (defmacro in-fb-lab [& body]
@@ -110,18 +110,9 @@
                fb-gateway/friends-list fake-friends-list
                fb-messages/fetch-inbox fake-fetch-inbox
                fb-stream/recent-activity fake-fetch-feed
-               fb-gateway/extended-access-token fake-extended-access-token]
+               fb-gateway/extended-access-token fake-extended-access-token
+               pento/score-all fake-pento-score-all]
       ~@body)))
-;; (defn create-new-db-user
-;;   ([first-name last-name]
-;;      (create-new-db-user first-name last-name true))
-;;   ([first-name last-name permission-granted?]
-;;      (stubbing [fb-gateway/extended-user-info fake-extended-user-info]
-;;        (let [user (fb-lab/create-user first-name last-name)
-;;              params (fb-request-params user permission-granted?)]
-;;          (-> (social/fetch-user-identity params)
-;;              user/signup-new-user
-;;              (user/update-permissions-granted permission-granted?))))))
 
 (defn fetch-fb-ui [fb-user]
   (it-> fb-user
