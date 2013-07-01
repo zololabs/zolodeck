@@ -23,6 +23,12 @@
      :body distilled-c}
     (resource-not-found "Contact")))
 
+(defn list-contacts [u-guid params]
+  (if-let [contacts (c-service/list-contacts (u-store/find-by-guid u-guid) params)]
+    {:status (STATUS-CODES :ok)
+     :body contacts}
+    (resource-not-found "Contact")))
+
 
 
 

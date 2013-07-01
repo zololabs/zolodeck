@@ -10,6 +10,7 @@
   (:require [zolo.personas.factory :as personas]
             [zolo.personas.shy :as shy-persona]
             [zolo.personas.vincent :as vincent-persona]
+            [zolo.domain.message :as m]
             [zolo.utils.calendar :as zolo-cal]
             [zolo.test.web-utils :as w-utils]))
 
@@ -118,3 +119,31 @@
           (doseq [m (:messages f1-thread)]
             (has-keys m [:message_id :guid :provider :thread_id :from :to :date :text :snippet])))))))
 
+(demonictest test-mark-as-done
+  (let [vincent (vincent-persona/create)
+        last-m-id (->> vincent :user/messages (reverse-sort-by m/message-date) first m/message-id)]
+
+    (testing "User is not present, it should return nil"
+      (let [resp (w-utils/authed-request vincent :put (str "/users/" (random-guid-str) "/threads/" last-m-id) {:done true})]
+        (is (= 404 (:status resp)))))
+
+    (testing "Message not present, it should return nil"
+      (let [resp (w-utils/authed-request vincent :put (str "/users/" (:user/guid vincent) "/threads/" (random-guid-str)) {:done true})]
+        (is (= 404 (:status resp)))))
+
+    (testing "Both user and message present, should return message as done"
+      (let [resp (w-utils/authed-request vincent :put (str "/users/" (:user/guid vincent) "/threads/" last-m-id) {:done true})]
+        (is (= 200 (:status resp)))
+        (is (get-in resp [:body :done]))))))
+
+(demonictest test-reply-to-after-marked-done
+  (testing "Once you mark as done, thread shouldn't show up in reply-to view"
+    (let [vincent (vincent-persona/create)
+          last-m-id (->> vincent :user/messages (reverse-sort-by m/message-date) first m/message-id)
+          resp (w-utils/authed-request vincent :get (str "/users/" (:user/guid vincent) "/threads") {:action zolo.service.thread-service/REPLY-TO})]
+      (is (= 1 (count (get-in resp [:body]))))
+
+      (w-utils/authed-request vincent :put (str "/users/" (:user/guid vincent) "/threads/" last-m-id) {:done true})
+      
+      (let [resp (w-utils/authed-request vincent :get (str "/users/" (:user/guid vincent) "/threads") {:action zolo.service.thread-service/REPLY-TO})]
+        (is (zero? (count (get-in resp [:body]))))))))

@@ -39,6 +39,9 @@
        :thread/provider (-> thread :thread/messages first :message/provider)
        :thread/messages distilled-msgs})))
 
+(defn distill-by-contacts [u threads]
+  (group-by :thread/lm-from-contact (domap #(distill u %) threads)))
+
 (defn- messages->thread [[thread-id msgs]]
   {:thread/guid thread-id
    :thread/subject (-> msgs first :message/subject)
@@ -66,6 +69,9 @@
          (group-by m/thread-id)
          (map messages->thread))))
 
+(defn is-done? [thread]
+  (-> thread :thread/messages first  m/message-done?))
+
 (defn- is-follow-up? [u thread]
   (let [last-m (-> thread :thread/messages first)
         m-info [(:message/provider last-m) (:message/from last-m)]
@@ -84,11 +90,10 @@
 
 (defn find-reply-to-threads [u]
   (it-> u
-        (all-threads it)
-        
+        (all-threads it)        
         (filter #(is-reply-to? u %) it)
         (filter #(reply-to-contact-exists? u %) it)
-        
+        (remove is-done? it)
         (sort-by-recent-threads it)))
 
 (defn find-follow-up-threads [u]

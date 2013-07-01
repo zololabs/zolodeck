@@ -14,11 +14,13 @@ namespace :uberjar do
 
   desc "For API"
   task :api do
+    sh "lein clean"
     sh "lein uberjar zolo.core"
   end
 
   desc "For Storm"
   task :storm do
+    sh "lein clean"
     sh "lein with-profile storm uberjar zolo.storm.core"
   end
 
@@ -29,6 +31,7 @@ namespace :test do
   desc "Runs API unit tests"
   task :unit do
     Rake::Task["api:config:generate"].invoke("test")
+    sh "lein clean"
     info "Running API Unit Tests"
     sh "lein test"
     Rake::Task["api:config:generate"].invoke
@@ -36,6 +39,7 @@ namespace :test do
   
   desc "Runs API integration tests"
   task :integration do
+    sh "lein clean"
     Rake::Task["api:config:generate"].invoke("test")
     info "Running API Integration Tests"
     info "Example : (deftest ^:integration test-upsert-user)"
@@ -45,6 +49,7 @@ namespace :test do
   
   desc "Runs API all tests"
   task :all do
+    sh "lein clean"
     info "Running API Unit and Integration Tests"
     Rake::Task["api:config:generate"].invoke("test")
     sh "lein test :all"
@@ -53,6 +58,7 @@ namespace :test do
 
   desc "Runs API all tests using storm Lib"
   task :storm do
+    sh "lein clean"
     info "Running API Unit and Integration Tests using Storm Profile"
     Rake::Task["api:config:generate"].invoke("test")
     sh "lein with-profile storm test :storm"

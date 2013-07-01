@@ -117,17 +117,19 @@
  (string-fact-schema  :message/story             "what this message is about")
  (string-fact-schema  :message/icon              "an icon to represent this message")
  (string-fact-schema  :message/picture           "a picture about this message")
- (string-fact-schema  :message/link              "a link about this message"))
+ (string-fact-schema  :message/link              "a link about this message")
+ (boolean-fact-schema :message/done              "True if the thread this message belongs to is done"))
 
 (schema-set "TEMP MESSAGE ENTITY FACTS"
- (uuid-fact-schema    :temp-message/guid         "A GUID for temporary messages" :uniqueness :db.unique/identity)
- (enum-fact-schema    :temp-message/provider     "The provider platform of this temp message")
- (string-fact-schema  :temp-message/subject      "The subject of this temp message" :index? true)
- (string-fact-schema  :temp-message/text         "The body of this message" :index? true)
- (instant-fact-schema :temp-message/date         "The date this message was received/sent")
- (string-fact-schema  :temp-message/from         "The platform ID of the sender")
- (strings-fact-schema :temp-message/to           "The platform IDs of the receivers")
- (string-fact-schema  :temp-message/thread-id    "The Thread ID of this message"))
+ (uuid-fact-schema     :temp-message/guid         "A GUID for temporary messages" :uniqueness :db.unique/identity)
+ (enum-fact-schema     :temp-message/provider     "The provider platform of this temp message")
+ (string-fact-schema   :temp-message/subject      "The subject of this temp message" :index? true)
+ (string-fact-schema   :temp-message/text         "The body of this message" :index? true)
+ (instant-fact-schema  :temp-message/date         "The date this message was received/sent")
+ (string-fact-schema   :temp-message/from         "The platform ID of the sender")
+ (strings-fact-schema  :temp-message/to           "The platform IDs of the receivers")
+ (string-fact-schema   :temp-message/thread-id    "The Thread ID of this message")
+ (boolean-fact-schema  :temp-message/done         "True if the thread this message belongs to is done"))
 
 (schema-set "SERVER STATS"
  (uuid-fact-schema :server/guid                  "A GUID for the server stats object" :uniqueness :db.unique/identity )

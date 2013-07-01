@@ -12,6 +12,8 @@
 
 (def ^:dynamic *file-path-prefix* nil)
 
+(def ^:dynamic *generative-verbosity* false)
+
 (conf/setup-config)
 (datomic-setup/init-datomic)
 
@@ -41,17 +43,20 @@
         (zolo.setup.datomic-setup/reset)))))
 
 (defn run-all-zolo-tests 
-  ([dir]
+  ([dir gen-verbosity]
      (time
       (binding [*file-path-prefix* dir
+                *generative-verbosity* gen-verbosity
                 conf/ENV :test]
         (let [test-pkgs (clojure/find-ns-in-dir dir)]
           (doseq [pkg test-pkgs]
             (print-vals "Loading " pkg)
             (require pkg))
           (apply run-tests test-pkgs)))))
+  ([gen-verbosity]
+     (run-all-zolo-tests "test" gen-verbosity))
   ([]
-     (run-all-zolo-tests "test")))
+     (run-all-zolo-tests "test" false)))
 
 (defn signed-request-for [fb-user-map]
   {:user_id (:id fb-user-map)})

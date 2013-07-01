@@ -2,6 +2,7 @@
   (:use zolo.utils.debug
         zolo.utils.clojure)
   (:require [zolo.domain.thread :as t]
+            [zolo.domain.message :as m]
             [zolo.store.user-store :as u-store]
             [zolo.store.message-store :as m-store]
             [zolo.domain.core :as d-core]
@@ -29,3 +30,12 @@
                                       (t/messages->threads u)
                                       first
                                       (t/distill u)))))))
+
+(defn update-thread-details [user-guid message-id done?]
+  (if-let [u (u-store/find-entity-by-guid user-guid)]
+    (d-core/run-in-tz-offset (:user/login-tz u)
+      (if-let [msg (m-store/find-by-id message-id)]
+          (it-> msg
+                (m/set-doneness it done?)
+                (m-store/update-message it)
+                (m/distill u it))))))

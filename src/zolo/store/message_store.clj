@@ -28,3 +28,6 @@
 
 (defn append-temp-message [u t-message]
   (demonic/append-single-and-reload u :user/temp-messages t-message))
+
+(defn update-message [message]
+  (demonic/insert-and-reload message))

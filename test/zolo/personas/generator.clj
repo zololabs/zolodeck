@@ -18,7 +18,8 @@
             [zolo.store.user-store :as u-store]
             [zolo.service.user-service :as u-service]
             [zolo.domain.message :as message]
-            [clj-time.coerce :as ctc]))
+            [clj-time.coerce :as ctc]
+            [zolo.test.core-utils :as test-core]))
 
 (defn simple-date-stream []
   (zcal/date-stream (ctc/to-date-time (zcal/date-string->instant "2012-05-10 00:00")) zcal/inc-date))
@@ -229,12 +230,14 @@
 
 (defmacro run-generative-tests [user-variable specs & body]
   `(doseq [g-spec# (generative-specs ~specs)]
-     (print-vals "*************************** Running Generative Test Scenario:\n" g-spec#)
+     (if test-core/*generative-verbosity*
+         (print-vals "*************************** Running Generative Test Scenario:\n" g-spec#))
      (let [~user-variable (generate-user g-spec#)]
        ~@body)))
 
 (defmacro run-demarcated-generative-tests [user-variable specs & body]
   `(doseq [g-spec# (generative-specs ~specs)]
-     (print-vals "*************************** Running Generative Test Scenario:\n" g-spec#)
+     (if test-core/*generative-verbosity*
+       (print-vals "*************************** Running Generative Test Scenario:\n" g-spec#))
      (let [~user-variable (personas/in-test-demarcation (generate-user g-spec#))]
        ~@body)))

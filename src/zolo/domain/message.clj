@@ -11,6 +11,7 @@
             [zolo.social.core :as social]            
             [zolo.demonic.schema :as schema]
             [zolo.demonic.core :as demonic]
+            [zolo.demonic.helper :as dh]
             [zolo.utils.logger :as logger]))
 
 ;; (def MESSAGES-START-TIME #inst "2000-10-22")
@@ -18,7 +19,8 @@
 
 ;;TODO test
 (defn is-temp-message? [m]
-  (:temp-message/guid m))
+  (or (:temp-message/guid m)
+      (= "temp-message" (dh/entity-name m))))
 
 (defn message-guid [m]
   (if (is-temp-message? m)
@@ -91,6 +93,11 @@
   (if (is-temp-message? m)
     (:temp-message/subject m)
     (:message/subject m)))
+
+(defn message-done? [m]
+  (if (is-temp-message? m)
+    (:temp-message/done m)
+    (:message/done m)))
 
 (defn- update-buckets-for [buckets m contact-ids]
   (let [updater (fn [b contact-id]
@@ -200,6 +207,7 @@
            (assoc :message/thread-id (thread-id message))
            (assoc :message/from (message-from message))
            (assoc :message/to (message-to message))
+           (assoc :message/done (message-done? message))
            (assoc :message/date m-date)
            (assoc :message/subject (message-subject message))
            (assoc :message/text (message-text message))
@@ -220,6 +228,11 @@
     :temp-message/subject subject   
     :temp-message/thread-id (or thread-id (random-guid-str))
     :temp-message/date (zcal/now-instant)}))
+
+(defn set-doneness [m done?]
+  (if (is-temp-message? m)
+    (assoc m :temp-message/done done?)
+    (assoc m :message/done done?)))
 
 ;; (defn feeds-start-time-seconds []
 ;;   (-> (zcal/now-joda)
