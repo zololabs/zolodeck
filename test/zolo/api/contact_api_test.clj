@@ -19,6 +19,7 @@
             [zolo.personas.generator :as pgen]
             [zolo.domain.core :as d-core]
             [zolo.domain.contact :as contact]
+            [zolo.domain.message :as m]            
             [zolo.personas.shy :as shy-persona]
             [zolo.personas.vincent :as vincent-persona]
             [zolo.test.assertions.datomic :as db-assert]
@@ -27,6 +28,9 @@
 (defn- contacts-url [u c]
   (str "/users/" (or (:user/guid u) (random-guid-str))
        "/contacts/" (or (:contact/guid c) (random-guid-str))))
+
+(defn- put-thread-url [u-guid ui-guid m-id]
+  (str "/users/" u-guid "/ui/" ui-guid "/threads/" m-id))
 
 (demonictest test-get-contact
   (d-core/run-in-gmt-tz
@@ -90,8 +94,11 @@
 (demonictest test-find-reply-to-contacts
   (let [reply-to-options {:selectors ["reply_to"]}
         shy (shy-persona/create)
+
         vincent (vincent-persona/create)
         vincent-uid (-> vincent :user/user-identities first :identity/provider-uid)
+        vincent-ui-guid (-> vincent :user/user-identities first :identity/guid)
+        
         jack-ui (-> vincent :user/contacts second :contact/social-identities first)
         jack-uid (:social/provider-uid jack-ui)]
 
@@ -144,7 +151,15 @@
             (is (= (:social/provider-uid jack-ui) (:provider_uid reply-to))))
           
           (doseq [m (:messages r-thread)]
-            (has-keys m [:message_id :guid :provider :thread_id :from :to :date :text :snippet])))))))
+            (has-keys m [:message_id :guid :provider :thread_id :from :to :date :text :snippet])))))
+
+    (testing "after marking as done, reply-to contact shouldn't show up"
+      (let [resp (w-utils/authed-request vincent :get (str "/users/" (:user/guid vincent) "/contacts") reply-to-options)
+            last-m-id (-> resp :body first :reply_to_threads first :messages first :message_id)]
+        (is (= 1 (count (get-in resp [:body]))))
+        (w-utils/authed-request vincent :put (put-thread-url (:user/guid vincent) vincent-ui-guid last-m-id) {:done true})
+        (let [resp (w-utils/authed-request vincent :get (str "/users/" (:user/guid vincent) "/contacts") reply-to-options)]
+          (is (zero? (count (get-in resp [:body])))))))))
 
 
 (demonictest test-find-follow-up-contacts

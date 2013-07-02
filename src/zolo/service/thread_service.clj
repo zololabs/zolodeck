@@ -9,18 +9,6 @@
             [zolo.domain.core :as d-core]
             [zolo.social.email.messages :as messages]))
 
-(def REPLY-TO "reply_to")
-(def FOLLOW-UP "follow_up")
-
-;; Services
-(defn find-threads [user-guid action]
-  (if-let [u (u-store/find-entity-by-guid user-guid)]
-    (d-core/run-in-tz-offset (:user/login-tz u)
-                             (condp = action
-                               REPLY-TO (->> u t/find-reply-to-threads (domap #(t/distill u %)))
-                               FOLLOW-UP (->> u t/find-follow-up-threads (domap #(t/distill u %)))
-                               (throw (RuntimeException. (str "Unknown action type trying to find threads: " action)))))))
-
 ;;TODO Only will work for email
 (defn load-thread-details [user-guid ui-guid message-id]
   (if-let [u (u-store/find-entity-by-guid user-guid)]
