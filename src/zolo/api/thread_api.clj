@@ -7,13 +7,6 @@
   (:require [zolo.utils.logger :as logger]
             [zolo.service.thread-service :as t-service]))
 
-;;GET /threads/:action
-(defn find-threads [user-guid {:keys [action] :as params}]
-  (if-let [threads (t-service/find-threads user-guid action)]
-    {:status (STATUS-CODES :ok)
-     :body threads}
-    (resource-not-found "Thread")))
-
 (defn load-thread [user-guid ui-guid message-id]
   (if-let [t (print-vals (t-service/load-thread-details user-guid ui-guid message-id))]
     {:status (STATUS-CODES :ok)

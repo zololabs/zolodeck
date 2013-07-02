@@ -107,15 +107,22 @@
                                (contact/distill updated-c ibc)))))
 
 
-(defn contacts-to-reply [u]
+(defn contacts-for-reply-to [u]
   (->> u
        t/find-reply-to-threads
        (t/distill-by-contacts u)
        (map (fn [[c threads]] (merge c {:reply-to-threads threads})))))
 
+(defn contacts-for-follow-up [u]
+  (->> u
+       t/find-follow-up-threads
+       (t/distill-by-contacts u)
+       (map (fn [[c threads]] (merge c {:follow-up-threads threads})))))
+
 (defn selector-contacts [u selector]
   (condp = selector
-    "reply_to" (contacts-to-reply u)
+    REPLY-TO (contacts-for-reply-to u)
+    FOLLOW-UP (contacts-for-follow-up u)
     (throw+ {:type :severe :message (str "Unknown Contacts selector : " selector)})))
 
 (defn apply-selectors [selectors user]
