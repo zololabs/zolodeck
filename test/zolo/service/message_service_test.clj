@@ -79,12 +79,13 @@
     (personas/in-social-lab
      (let [mickey (fb-lab/create-user "Mickey" "Mouse")
            donald (fb-lab/create-friend "Donald" "Duck")
-           db-mickey (personas/create-db-user-from-fb-user mickey)]
+           db-mickey (personas/create-db-user-from-fb-user mickey)
+           db-mickey-ui (-> db-mickey :user/user-identities first)]
        
        (fb-lab/make-friend mickey donald)
        
        (let [m1 (fb-lab/send-message mickey donald "1" "Hi, what's going on?" "2012-05-01 00:00")
-             tm1 (personas/create-temp-message db-mickey "to-uid1" "Hello")
+             tm1 (personas/create-temp-message db-mickey db-mickey-ui "to-uid1" "Hello")
              u-db-mickey (m-store/append-temp-message db-mickey tm1)]
        
        (fb-lab/login-as mickey)

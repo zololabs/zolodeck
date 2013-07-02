@@ -61,17 +61,18 @@
 (demonictest test-append-temp-message
   (personas/in-social-lab
    (let [mickey (fb-lab/create-user "Mickey" "Mouse")
-         db-mickey (personas/create-db-user-from-fb-user mickey)]
+         db-mickey (personas/create-db-user-from-fb-user mickey)
+         db-mickey-ui (-> db-mickey :user/user-identities first)]
 
      (db-assert/assert-datomic-temp-message-count 0)
 
-     (let [tm1 (personas/create-temp-message db-mickey "to-uid1" "Hello")
+     (let [tm1 (personas/create-temp-message db-mickey db-mickey-ui "to-uid1" "Hello")
            u-db-mickey (m-store/append-temp-message db-mickey tm1)]
 
        (db-assert/assert-datomic-temp-message-count 1)
        (d-assert/temp-messages-are-same tm1 (-> u-db-mickey :user/temp-messages first))
 
-       (let [tm2 (personas/create-temp-message db-mickey "to-uid2" "How are you?")
+       (let [tm2 (personas/create-temp-message db-mickey db-mickey-ui "to-uid2" "How are you?")
              u-db-mickey (m-store/append-temp-message db-mickey tm2)]
 
          (db-assert/assert-datomic-temp-message-count 2))))))
@@ -79,11 +80,12 @@
 (demonictest test-delete-temp-message
   (personas/in-social-lab
    (let [mickey (fb-lab/create-user "Mickey" "Mouse")
-         db-mickey (personas/create-db-user-from-fb-user mickey)]
+         db-mickey (personas/create-db-user-from-fb-user mickey)
+         db-mickey-ui (-> db-mickey :user/user-identities first)]
 
      (db-assert/assert-datomic-temp-message-count 0)
 
-     (let [tm1 (personas/create-temp-message db-mickey "to-uid1" "Hello")
+     (let [tm1 (personas/create-temp-message db-mickey db-mickey-ui "to-uid1" "Hello")
            u-db-mickey (m-store/append-temp-message db-mickey tm1)]
 
        (is (not (nil? (:user/temp-messages u-db-mickey))))

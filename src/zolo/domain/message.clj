@@ -99,6 +99,12 @@
     (:temp-message/done m)
     (:message/done m)))
 
+(defn message-ui-guid [m]
+  (-> (if (is-temp-message? m)
+        (:temp-message/user-identity m)
+        (:message/user-identity m))
+      :identity/guid))
+
 (defn- update-buckets-for [buckets m contact-ids]
   (let [updater (fn [b contact-id]
                   (update-in b [[(message-provider m) contact-id]] conj m))]
@@ -210,6 +216,7 @@
            (assoc :message/done (message-done? message))
            (assoc :message/date m-date)
            (assoc :message/subject (message-subject message))
+           (assoc :message/ui-guid (message-ui-guid message))
            (assoc :message/text (message-text message))
            (assoc :message/snippet (snippet message))
            (assoc :message/sent is-sent)
@@ -219,9 +226,10 @@
                                                   (reply-to-for-distillation-from-from u message is-sent))))))))
 
 ;;TODO test
-(defn create-temp-message [from-uid to-uids provider thread-id subject text]
+(defn create-temp-message [from-ui from-uid to-uids provider thread-id subject text]
   (zmaps/remove-nil-vals
    {:temp-message/provider provider
+    :temp-message/user-identity (:db/id from-ui)
     :temp-message/from from-uid
     :temp-message/to to-uids
     :temp-message/text text

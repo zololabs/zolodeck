@@ -14,6 +14,9 @@
             [zolo.utils.calendar :as zolo-cal]
             [zolo.test.web-utils :as w-utils]))
 
+(defn- put-thread-url [u-guid ui-guid m-id]
+  (str "/users/" u-guid "/ui/" ui-guid "/threads/" m-id))
+
 (demonictest test-find-reply-to-threads
   (let [shy (shy-persona/create)
         vincent (vincent-persona/create)
@@ -119,31 +122,43 @@
           (doseq [m (:messages f1-thread)]
             (has-keys m [:message_id :guid :provider :thread_id :from :to :date :text :snippet])))))))
 
+
 (demonictest test-mark-as-done
   (let [vincent (vincent-persona/create)
+        shy (shy-persona/create)
+        vincent-uid (-> vincent :user/user-identities first :identity/guid)
         last-m-id (->> vincent :user/messages (reverse-sort-by m/message-date) first m/message-id)]
 
     (testing "User is not present, it should return nil"
-      (let [resp (w-utils/authed-request vincent :put (str "/users/" (random-guid-str) "/threads/" last-m-id) {:done true})]
+      (let [resp (w-utils/authed-request vincent :put (put-thread-url (random-guid-str) vincent-uid last-m-id) {:done true})]
+        (is (= 404 (:status resp)))))
+
+    (testing "User Identity is not present, it should return nil"
+      (let [resp (w-utils/authed-request vincent :put (put-thread-url (:user/guid vincent) (random-guid-str) last-m-id) {:done true})]
+        (is (= 404 (:status resp)))))
+
+    (testing "User Identity of a different user is used, it should return nil"
+      (let [resp (w-utils/authed-request shy :put (put-thread-url (:user/guid shy) vincent-uid  last-m-id) {:done true})]
         (is (= 404 (:status resp)))))
 
     (testing "Message not present, it should return nil"
-      (let [resp (w-utils/authed-request vincent :put (str "/users/" (:user/guid vincent) "/threads/" (random-guid-str)) {:done true})]
+      (let [resp (w-utils/authed-request vincent :put (put-thread-url (:user/guid vincent) vincent-uid (random-guid-str)) {:done true})]
         (is (= 404 (:status resp)))))
 
     (testing "Both user and message present, should return message as done"
-      (let [resp (w-utils/authed-request vincent :put (str "/users/" (:user/guid vincent) "/threads/" last-m-id) {:done true})]
+      (let [resp (w-utils/authed-request vincent :put (put-thread-url (:user/guid vincent) vincent-uid last-m-id) {:done true})]
         (is (= 200 (:status resp)))
         (is (get-in resp [:body :done]))))))
 
 (demonictest test-reply-to-after-marked-done
   (testing "Once you mark as done, thread shouldn't show up in reply-to view"
     (let [vincent (vincent-persona/create)
+          vincent-uid (-> vincent :user/user-identities first :identity/guid)
           last-m-id (->> vincent :user/messages (reverse-sort-by m/message-date) first m/message-id)
           resp (w-utils/authed-request vincent :get (str "/users/" (:user/guid vincent) "/threads") {:action zolo.service.thread-service/REPLY-TO})]
       (is (= 1 (count (get-in resp [:body]))))
 
-      (w-utils/authed-request vincent :put (str "/users/" (:user/guid vincent) "/threads/" last-m-id) {:done true})
+      (w-utils/authed-request vincent :put (put-thread-url (:user/guid vincent) vincent-uid last-m-id) {:done true})
       
       (let [resp (w-utils/authed-request vincent :get (str "/users/" (:user/guid vincent) "/threads") {:action zolo.service.thread-service/REPLY-TO})]
         (is (zero? (count (get-in resp [:body]))))))))

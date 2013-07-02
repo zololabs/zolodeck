@@ -6,16 +6,21 @@
             [zolo.demonic.core :as demonic]
             [zolo.store.user-store :as u-store]))
 
-(defn find-entity-id-by-id [m-id]
-  (when m-id
-    (->> m-id
-         (demonic/run-query '[:find ?m :in $ ?m-id :where [?m :message/message-id ?m-id]])
-         ffirst)))
+(defn find-entity-id-by-ui-guid-and-id [ui-guid m-id]
+  (when (and ui-guid m-id)
+    (-> (demonic/run-query '[:find ?m :in $ ?ui-guid ?m-id
+                             :where
+                             [?m :message/message-id ?m-id]
+                             [?m :message/user-identity ?ui]
+                             [?ui :identity/guid ?ui-guid]
+                             ]
+                           (to-uuid ui-guid) m-id)
+        ffirst)))
 
-(defn find-by-id [m-id]
-  (-> m-id
-      find-entity-id-by-id
-      demonic/load-entity))
+(defn find-by-ui-guid-and-id [ui-guid m-id]
+  (->> m-id
+       (find-entity-id-by-ui-guid-and-id ui-guid)
+       demonic/load-entity))
 
 (defn delete-temp-messages [u]
   (->> u

@@ -14,14 +14,14 @@
      :body threads}
     (resource-not-found "Thread")))
 
-(defn load-thread [user-guid message-id]
-  (if-let [t (t-service/load-thread-details user-guid message-id)]
+(defn load-thread [user-guid ui-guid message-id]
+  (if-let [t (print-vals (t-service/load-thread-details user-guid ui-guid message-id))]
     {:status (STATUS-CODES :ok)
      :body t}
     (resource-not-found "Thread")))
 
-(defn update-thread [user-guid message-id {done? :done :as params}]
-  (if-let [t (t-service/update-thread-details user-guid message-id done?)]
+(defn update-thread [user-guid ui-guid message-id {done? :done :as params}]
+  (if-let [t (t-service/update-thread-details user-guid ui-guid message-id done?)]
     {:status (STATUS-CODES :ok)
      :body t}
     (resource-not-found "Thread")))

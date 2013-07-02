@@ -36,6 +36,7 @@
        :thread/subject (or (:thread/subject thread)
                            (-> distilled-msgs first subject-from-people))
        :thread/lm-from-contact (lm-from-to u (first distilled-msgs))
+       :thread/ui-guid (-> distilled-msgs first :message/ui-guid)
        :thread/provider (-> thread :thread/messages first :message/provider)
        :thread/messages distilled-msgs})))
 

@@ -82,7 +82,7 @@
            thread-id :thread_id reply-to-message-id :reply_to_message_id subject :subject text :text} params
            provider (service/provider-string->provider-enum to-provider)
            from-ui (ui/find-by-provider-uid u from-uid)
-           tmp-msg (message/create-temp-message from-uid to-provider-uids provider thread-id subject text)]
+           tmp-msg (message/create-temp-message from-ui from-uid to-provider-uids provider thread-id subject text)]
       (social/send-message provider (:identity/auth-token from-ui) from-uid to-provider-uids thread-id reply-to-message-id subject text)
       (m-store/append-temp-message u tmp-msg)
       (temp-message-distilled u))))
