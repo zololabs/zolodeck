@@ -145,3 +145,95 @@
           
           (doseq [m (:messages r-thread)]
             (has-keys m [:message_id :guid :provider :thread_id :from :to :date :text :snippet])))))))
+
+
+(demonictest test-find-follow-up-contacts
+  (let [follow-up-options {:selectors ["follow_up"]}
+        shy (shy-persona/create)
+        winnie (pgen/generate {:SPECS {:first-name "Winnie"
+                                       :last-name "Cooper"
+                                       :friends [(pgen/create-friend-spec "Jack" "Daniels" 2 3)
+                                                 (pgen/create-friend-spec "Jill" "Ferry" 1 2)]}})
+
+        winnie-ui (-> winnie :user/user-identities first)
+        winnie-uid (:identity/provider-uid winnie-ui)
+
+        jill-si (-> winnie :user/contacts first :contact/social-identities first)
+        jill-sid (:social/provider-uid jill-si)
+        
+        jack-si (-> winnie :user/contacts second :contact/social-identities first)
+        jack-sid (:social/provider-uid jack-si)]
+
+    (testing "Unauthenticated user should be denied permission"
+      (let [resp (w-utils/web-request :get (str "/users/" (:user/guid shy) "/contacts") follow-up-options)]
+        (is (= 404 (:status resp)))))
+
+    (testing "when user is not present, it should return 404"
+      (let [resp (w-utils/authed-request shy :get (str "/users/" (random-guid-str) "/contacts") follow-up-options)]
+        (is (= 404 (:status resp)))))
+
+    (testing "when user with no messages is present, it should return empty"
+      (let [resp (w-utils/authed-request shy :get (str "/users/" (:user/guid shy) "/contacts") follow-up-options)]
+        (is (= 200 (:status resp)))
+        (is (empty? (get-in resp [:body])))))
+
+    (testing "when not passed the right selector query, should return error"
+      (let [resp (w-utils/authed-request winnie :get (str "/users/" (:user/guid winnie) "/contacts") {:junk "param"})]
+        (is (= 500 (:status resp)))))
+    
+    (testing "when user with 2 friends, and 1 reply-to thread, it should return the friend who has reply to"
+      (let [resp (w-utils/authed-request winnie :get (str "/users/" (:user/guid winnie) "/contacts") follow-up-options)]
+        (is (= 200 (:status resp)))
+
+        (let [f-contacts (-> resp :body)
+              jill-f-threads (-> f-contacts first :follow_up_threads)
+              jill-f-thread (-> jill-f-threads first)
+              jill-f-message (-> jill-f-thread :messages first)
+              lm-from-c (:lm_from_contact jill-f-thread)
+
+              jack-f-threads (-> f-contacts second :follow_up_threads)
+              jack-f-thread (-> jack-f-threads first)              
+              jack-f-message (-> jack-f-thread :messages first)]
+
+          (is (= 2 (count f-contacts)))
+          (is (= 2 (count (:messages jill-f-thread))))
+          (is (:guid jill-f-thread))
+          (is (= (str "Conversation with " (:social/first-name jill-si) " " (:social/last-name jill-si)) (:subject jill-f-thread)))
+          (assert-map-values jill-si [:social/first-name :social/last-name :social/photo-url]
+                             lm-from-c [:first_name :last_name :picture_url])
+          
+          (is (= [jill-sid] (:to jill-f-message)))
+          (is (= winnie-uid (:from jill-f-message)))
+
+          (let [author (:author jill-f-message)]
+            (is (= (:identity/first-name winnie-ui) (:first_name author)))
+            (is (= (:identity/last-name winnie-ui) (:last_name author)))
+            (is (= (:identity/photo-url winnie-ui) (:picture_url author))))
+
+          (let [reply-tos (:reply_to jill-f-message)
+                reply-to (first reply-tos)]
+            (is (= (:social/first-name jill-si) (:first_name reply-to)))
+            (is (= (:social/last-name jill-si) (:last_name reply-to)))
+            (is (= (:social/provider-uid jill-si) (:provider_uid reply-to))))
+          
+          (doseq [m (:messages jill-f-thread)]
+            (has-keys m [:message_id :guid :provider :thread_id :from :to :date :text :snippet]))
+
+          (is (= 2 (count (:messages jack-f-thread))))
+          
+          (is (= [jack-sid] (:to jack-f-message)))
+          (is (= winnie-uid (:from jack-f-message)))
+
+          (let [author (:author jack-f-message)]
+            (is (= (:identity/first-name winnie-ui) (:first_name author)))
+            (is (= (:identity/last-name winnie-ui) (:last_name author)))
+            (is (= (:identity/photo-url winnie-ui) (:picture_url author))))
+
+          (let [reply-tos (:reply_to jack-f-message)
+                reply-to (first reply-tos)]
+            (is (= (:social/first-name jack-si) (:first_name reply-to)))
+            (is (= (:social/last-name jack-si) (:last_name reply-to)))
+            (is (= (:social/provider-uid jack-si) (:provider_uid reply-to))))
+
+          (doseq [m (:messages jill-f-thread)]
+            (has-keys m [:message_id :guid :provider :thread_id :from :to :date :text :snippet])))))))

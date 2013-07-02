@@ -45,6 +45,11 @@
   (map #(dummy-message u friend thread-id % m-date)
        (range 1 (+ 1 no-of-msgs))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; FACEBOOK - EVEN message count means, last is SENT, means FOLLOW-UP
+;; FACEBOOK - ODD  message count means, last is RECD, means REPLY-TO
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defn- generate-messages [u friend no-of-i no-of-m]
   (let [no-of-msgs-per-interaction (no-of-msgs-per-interaction no-of-i no-of-m)]
     (mapcat (fn [[thread-id no-of-msgs] m-date]
