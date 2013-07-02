@@ -7,28 +7,10 @@
             [zolo.utils.string :as zstring]
             [zolo.utils.maps :as zmaps]))
 
+(def PENTO-BATCH-SIZE 500)
+
 (defn pento-url []
   (str "http://" (conf/pento-host) "/classify"))
-
-;; (defn classify-url [email-address name sent-count received-count]
-;;   (->> {:email email-address :sent_count sent-count :received_count received-count :name name}
-;;        zmaps/remove-nil-vals
-;;        zstring/make-query-string
-;;        (str (pento-url) "?")
-;;        print-vals))
-
-;; (defn pento-score [email-address name sent-count received-count]
-;;   (let [json-map (-> (classify-url email-address name sent-count received-count)
-;;                      http/get
-;;                      :body
-;;                      print-vals
-;;                      json/read-json)]
-;;     (-> email-address keyword json-map)))
-
-;; (defn score [email-address name sent-count received-count]
-;;   (float
-;;    (let [s (try (pento-score email-address name sent-count received-count) (catch Exception e))]
-;;      (or s 0.0))))
 
 (defn- request-payload [email-info-list]
   {:body (-> email-info-list json/json-str (str "\n"))})
@@ -43,7 +25,7 @@
 
 (defn score-all [all-email-info-list]
   (it-> all-email-info-list
-        (partition-all 500 it)
+        (partition-all PENTO-BATCH-SIZE it)
         (mapcat scores it)
         (apply merge it)
         (zmaps/transform-vals-with it #(float %2))))
