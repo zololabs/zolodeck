@@ -13,8 +13,8 @@
 (defn contact-stats [u]
   (when u
     (d-core/run-in-tz-offset (:user/login-tz u)
-                             (let [ibc (interaction/ibc u)
-                                   contacts (sort-by contact/contact-score (contact/person-contacts u))]
+                             (let [contacts (sort-by contact/contact-score (contact/person-contacts u))
+                                   ibc (interaction/ibc u contacts)]
                                {:total (count contacts)
                                 :strong (count (contact/strong-contacts u))
                                 :medium (count (contact/medium-contacts u))
@@ -25,7 +25,8 @@
 
 (defn interaction-stats [u]
   (d-core/run-in-tz-offset (:user/login-tz u)
-                           (let [ibc (interaction/ibc u)
+                           (let [contacts (sort-by contact/contact-score (contact/person-contacts u))
+                                 ibc (interaction/ibc u contacts)
                                  interactions (interaction/interactions-from-ibc ibc)]
                              {:best-week-interaction-count
                               (s-int-dist/best-week-interaction-count interactions)

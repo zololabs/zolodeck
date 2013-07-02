@@ -29,7 +29,7 @@
         (ss/suggestion-set it ss-name)))
 
 (defn- find-or-create-suggestion-set [u]
-  (let [ibc (interaction/ibc u)
+  (let [ibc (interaction/ibc u (contact/person-contacts u))
         ss-name (suggestion-set-name u)]
     (-> (or (ss/suggestion-set u ss-name)
             (create-suggestion-set u ss-name))

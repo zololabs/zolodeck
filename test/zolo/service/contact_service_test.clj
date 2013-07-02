@@ -139,7 +139,7 @@
   (d-core/run-in-gmt-tz
    (run-as-of "2012-05-11"
      (let [u (pgen/generate {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
-           ibc (interaction/ibc u)
+           ibc (interaction/ibc u (:user/contacts u))
            jack (first (:user/contacts u))]
 
        (testing "When user is not present it should return nil"

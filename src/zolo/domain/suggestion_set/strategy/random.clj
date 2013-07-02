@@ -5,7 +5,7 @@
             [zolo.domain.contact :as contact]))
 
 (defn compute [u]
-  (let [ibc (interaction/ibc u)]
+  (let [ibc (interaction/ibc u (contact/person-contacts u))]
     (->> u
          contact/person-contacts         
          (remove contact/is-muted?)
