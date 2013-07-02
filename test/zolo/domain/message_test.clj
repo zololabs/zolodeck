@@ -125,7 +125,7 @@
         (is (= (:social/provider-uid amrut-ui) (:reply-to/provider-uid reply-to)))))
 
     (testing "when a temp message is created, it can be distilled properly"
-      (let [tm (message/create-temp-message u-uid [amrut-uid] (:identity/provider u-ui) "thread-id" "subject" "text")
+      (let [tm (message/create-temp-message u-ui u-uid [amrut-uid] (:identity/provider u-ui) "thread-id" "subject" "text")
             dtm (message/distill u tm)]
         (is (= "text" (:message/text dtm)))
         (is (= [amrut-uid] (:message/to dtm)))
@@ -146,8 +146,9 @@
 
 (deftest test-mark-as-done
   (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Amrut" "Indya" 1 1)]}})
+        u-ui (-> u :user/user-identities first)
         m (->> u :user/messages first (message/distill u))
-        tm (message/create-temp-message "from" ["to"] :provider/facebook "thread-id" "subject" "text")]
+        tm (message/create-temp-message u-ui "from" ["to"] :provider/facebook "thread-id" "subject" "text")]
     (is (not (message/message-done? m)))
     (is (message/message-done? (message/set-doneness m true)))
     (is (not (message/message-done? tm)))

@@ -48,6 +48,10 @@
   ([u t]
      (zcal/in-time-zone t (or (:user/login-tz u) 0))))
 
+(defn ui-from-guid [u ui-guid]
+  (-> (filter #(= ui-guid (:identity/guid %)) (:user/user-identities u))
+      first))
+
 (defn update-with-extended-fb-auth-token [u token]
   (let [fb-ui (user-identity/fb-user-identity u)
         updated (merge fb-ui {:identity/auth-token token})]

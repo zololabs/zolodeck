@@ -122,6 +122,7 @@
 
 (schema-set "TEMP MESSAGE ENTITY FACTS"
  (uuid-fact-schema     :temp-message/guid         "A GUID for temporary messages" :uniqueness :db.unique/identity)
+ (ref-fact-schema      :temp-message/user-identity "The UI this message was sourced from")           
  (enum-fact-schema     :temp-message/provider     "The provider platform of this temp message")
  (string-fact-schema   :temp-message/subject      "The subject of this temp message" :index? true)
  (string-fact-schema   :temp-message/text         "The body of this message" :index? true)

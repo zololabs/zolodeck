@@ -148,8 +148,9 @@
       create-domain-user-from-email-user
       u-store/save))
 
-(defn create-temp-message [u to-user-provider-id text]
-  (message/create-temp-message (user/provider-id u :provider/facebook)
+(defn create-temp-message [u ui to-user-provider-id text]
+  (message/create-temp-message ui
+                               (user/provider-id u :provider/facebook)
                                to-user-provider-id
                                :provider/facebook
                                "thread-id"

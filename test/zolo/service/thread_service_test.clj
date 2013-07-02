@@ -38,10 +38,10 @@
            
            (let [all-t (->> u u-store/reload t/all-threads)
                  dt (->> all-t second (t/distill u))]
-             (has-keys dt [:thread/guid :thread/subject :thread/lm-from-contact :thread/provider :thread/messages])
+             (has-keys dt [:thread/guid :thread/subject :thread/lm-from-contact :thread/provider :thread/messages :thread/ui-guid])
              (has-keys (:thread/lm-from-contact dt) [:contact/first-name :contact/last-name :contact/guid :contact/muted :contact/picture-url :contact/social-identities])
              (doseq [m (:thread/messages dt)]
-               (has-keys m [:message/message-id :message/guid :message/provider :message/thread-id :message/from :message/to :message/date :message/text :message/snippet :message/sent :message/author :message/reply-to])
+               (has-keys m [:message/message-id :message/guid :message/provider :message/thread-id :message/from :message/to :message/date :message/text :message/snippet :message/sent :message/author :message/reply-to :message/ui-guid])
                (has-keys (:message/author m) [:author/first-name :author/last-name :author/picture-url])
                (doseq [r (:message/reply-to m)]
                  (has-keys r [:reply-to/first-name :reply-to/last-name :reply-to/provider-uid]))))))))))
@@ -182,15 +182,29 @@
 (deftest test-mark-as-done
  
   (demonic-testing "User is not present, it should return nil"
-    (is (nil? (t-service/update-thread-details nil "message-id" true)))
-    (is (nil? (t-service/update-thread-details (random-guid-str) "message-id" true))))
- 
-  (demonic-testing "User present, but has no specified message, it should return empty"
-    (let [vincent (vincent-persona/create)]
-      (is (nil? (t-service/update-thread-details (:user/guid vincent) "message-id" true)))))
+    (is (nil? (t-service/update-thread-details nil "ui-guid" "message-id" true)))
+    (is (nil? (t-service/update-thread-details (random-guid-str) "ui-guid" "message-id" true))))
 
+  (demonic-testing "UI is not present, it should return nil"
+    (let [vincent (vincent-persona/create)]
+      (is (nil? (t-service/update-thread-details (:user/guid vincent) nil  "message-id" true)))
+      (is (nil? (t-service/update-thread-details (:user/guid vincent) (random-guid-str) "message-id" true)))))
+
+  (demonic-testing "UI is from a different user, it should return nil"
+    (let [vincent (vincent-persona/create)
+          shy (shy-persona/create)
+          vincent-ui-guid (-> vincent :user/user-identities first :identity/guid)
+          m-id (-> vincent :user/messages last m/message-id)]
+      (is (nil? (t-service/update-thread-details (:user/guid shy) vincent-ui-guid m-id true)))))
+  
   (demonic-testing "User present, but has no specified message, it should return empty"
     (let [vincent (vincent-persona/create)
+          vincent-ui-guid (-> vincent :user/user-identities first :identity/guid)]
+      (is (nil? (t-service/update-thread-details (:user/guid vincent) vincent-ui-guid "message-id" true)))))
+
+  (demonic-testing "Message should get updated"
+    (let [vincent (vincent-persona/create)
+          vincent-ui-guid (-> vincent :user/user-identities first :identity/guid)
           m-id (-> vincent :user/messages last m/message-id)]
-      (is (not (:message/done (t-service/update-thread-details (:user/guid vincent) m-id false))))      
-      (is (:message/done (t-service/update-thread-details (:user/guid vincent) m-id true))))))
+      (is (not (:message/done (t-service/update-thread-details (:user/guid vincent) vincent-ui-guid m-id false))))      
+      (is (:message/done (t-service/update-thread-details (:user/guid vincent) vincent-ui-guid m-id true))))))
