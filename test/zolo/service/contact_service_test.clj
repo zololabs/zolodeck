@@ -272,3 +272,66 @@
         (is (= 2 (count reply-to-contacts)))))))
 
 
+(deftest test-find-follow-up-contacts
+
+  (let [follow-up-options {:selectors ["follow_up"]}]
+    
+    (demonic-testing "User is not present, it should return nil"
+      (is (empty? (c-service/list-contacts nil follow-up-options))))
+    
+    (demonic-testing "User present, but has no messages, it should return empty"
+      (let [shy (shy-persona/create)]
+        (is (empty? (c-service/list-contacts shy follow-up-options)))))
+    
+    (demonic-testing "User has both 2 contacts, that both have follow-up threads, it should return both the contacts"
+      (let [vincent (vincent-persona/create)
+            vincent-ui (-> vincent :user/user-identities first)
+            vincent-uid (:identity/provider-uid vincent-ui)
+
+            [jack jill] (->> vincent :user/contacts (sort-by :contact/first-name))
+            
+            jill-ui (-> jill :contact/social-identities first)
+            jill-uid (:social/provider-uid jill-ui)
+            
+            jack-ui (-> jack :contact/social-identities first)
+            jack-uid (:social/provider-uid jack-ui)
+            
+            follow-contacts (c-service/list-contacts vincent follow-up-options)
+            follow-threads-jill (-> follow-contacts first :follow-up-threads)
+            follow-threads-jack (-> follow-contacts second :follow-up-threads)
+            
+            jill-messages (-> follow-threads-jill first :thread/messages)          
+            jack-messages (-> follow-threads-jack first :thread/messages)
+            
+            jack-last-m (first jack-messages)
+            jill-last-m (first jill-messages)]
+
+        (is (= 2 (count follow-contacts)))
+        
+        (is (= (str "Conversation with " (:social/first-name jill-ui) " " (:social/last-name jill-ui))
+               (-> follow-threads-jill first :thread/subject)))
+        (is (= (str "Conversation with " (:social/first-name jack-ui) " " (:social/last-name jack-ui))
+               (-> follow-threads-jack first :thread/subject)))
+        
+        (is (= 2 (count jack-messages)))
+        (is (= 2 (count jill-messages)))
+        (is (= vincent-uid (:message/from jack-last-m)))
+        (is (= #{jack-uid} (:message/to jack-last-m)))
+        (is (:message/snippet jack-last-m))
+        (is (:message/sent jack-last-m))
+        
+        (let [lm-from-c (-> follow-threads-jack first :thread/lm-from-contact)]
+          (is (= (:social/first-name jack-ui) (:contact/first-name lm-from-c)))
+          (is (= (:social/last-name jack-ui) (:contact/last-name lm-from-c)))
+          (is (= (:social/photo-url jack-ui) (:contact/picture-url lm-from-c))))
+        
+        (let [author (:message/author jack-last-m)]
+          (is (= (:identity/first-name vincent-ui) (:author/first-name author)))
+          (is (= (:identity/last-name vincent-ui) (:author/last-name author)))
+          (is (= (:identity/photo-url vincent-ui) (:author/picture-url author))))
+        
+        (let [reply-tos (:message/reply-to jack-last-m)
+              reply-to (first reply-tos)]
+          (is (= (:social/first-name jack-ui) (:reply-to/first-name reply-to)))
+          (is (= (:social/last-name jack-ui) (:reply-to/last-name reply-to)))
+          (is (= (:social/provider-uid jack-ui) (:reply-to/provider-uid reply-to))))))))
