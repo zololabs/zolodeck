@@ -37,7 +37,10 @@
    :permissions_granted [:required]
    :login_tz [:required :integer]
    :guid [:optional :string]
-   :updated [:optional]})
+   :updated [:optional]
+   :data_ready_in [:optional]
+   :all_permissions_granted [:optional]
+   :emails [:optional]})
 
 ;; Services
 (defmulti additional-login-processing (fn [u params] (social/login-dispatcher params)))
@@ -54,6 +57,7 @@
       user/distill))
 
 (defn update-user [guid request-params]
+  (service/validate-request! request-params val-request)
   (-not-nil-> (u-store/find-by-guid guid)
               (user/update-permissions-granted (:permissions_granted request-params))
               (user/update-tz-offset (:login_tz request-params))
