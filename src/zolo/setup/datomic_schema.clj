@@ -118,7 +118,8 @@
  (string-fact-schema  :message/icon              "an icon to represent this message")
  (string-fact-schema  :message/picture           "a picture about this message")
  (string-fact-schema  :message/link              "a link about this message")
- (boolean-fact-schema :message/done              "True if the thread this message belongs to is done"))
+ (boolean-fact-schema :message/done              "True if the thread this message belongs to is done")
+ (instant-fact-schema :message/follow-up-on      "Timestamp of when this thread needs follow up") )
 
 (schema-set "TEMP MESSAGE ENTITY FACTS"
  (uuid-fact-schema     :temp-message/guid         "A GUID for temporary messages" :uniqueness :db.unique/identity)

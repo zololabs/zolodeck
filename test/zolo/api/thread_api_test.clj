@@ -44,3 +44,22 @@
         (is (= 200 (:status resp)))
         (is (get-in resp [:body :done]))))))
 
+
+(demonictest test-mark-follow-up
+  (let [vincent (vincent-persona/create)
+        shy (shy-persona/create)
+        vincent-uid (-> vincent :user/user-identities first :identity/guid)]
+
+    (testing "Both user and received message present, should return message with follow-up set"
+      (let [r-m-id (->> vincent :user/messages (filter #(m/is-received-by-user? vincent %)) (reverse-sort-by m/message-date) first m/message-id)
+            resp (w-utils/authed-request vincent :put (put-thread-url (:user/guid vincent) vincent-uid r-m-id) {:follow_up_on "2013-07-03T16:58:04.003Z"})]
+        (is (= 200 (:status resp)))
+        (is (= "2013-07-03 04:58" (get-in resp [:body :follow_up_on])))))
+
+    (testing "Both user and received message present, shouldn't disturb done-ness if only follow-up is set"
+      (let [r-m-id (->> vincent :user/messages (filter #(m/is-received-by-user? vincent %)) (reverse-sort-by m/message-date) first m/message-id)
+            _ (w-utils/authed-request vincent :put (put-thread-url (:user/guid vincent) vincent-uid r-m-id) {:done true})
+            resp (w-utils/authed-request vincent :put (put-thread-url (:user/guid vincent) vincent-uid r-m-id) {:follow_up_on "2013-07-03T16:58:04.003Z"})]
+        (is (= 200 (:status resp)))
+        (is (= "2013-07-03 04:58" (get-in resp [:body :follow_up_on])))
+        (is (get-in resp [:body :done]))))))

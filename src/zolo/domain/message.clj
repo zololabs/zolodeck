@@ -1,6 +1,7 @@
 (ns zolo.domain.message
   (:use zolo.utils.debug
-        zolo.utils.clojure)
+        zolo.utils.clojure
+        [slingshot.slingshot :only [throw+ try+]])
   (:require [clojure.set :as set]
             [zolo.utils.maps :as zmaps]
             [zolo.utils.calendar :as zcal]
@@ -98,6 +99,11 @@
   (if (is-temp-message? m)
     (:temp-message/done m)
     (:message/done m)))
+
+(defn follow-up-on [m]
+  (if (is-temp-message? m)
+    (:temp-message/follow-up-on m)
+    (:message/follow-up-on m)))
 
 (defn message-ui-guid [m]
   (-> (if (is-temp-message? m)
@@ -202,10 +208,7 @@
   ([u message]
      (distill u nil message))
   ([u tz-offset-minutes message]
-     (let [is-sent (is-sent-by-user? u message)
-           m-date (if tz-offset-minutes
-                    (message-date message tz-offset-minutes)
-                    (message-date message))]
+     (let [is-sent (is-sent-by-user? u message)]
        (-> {}
            (assoc :message/message-id (message-id message))
            (assoc :message/guid (message-guid message))
@@ -214,7 +217,8 @@
            (assoc :message/from (message-from message))
            (assoc :message/to (message-to message))
            (assoc :message/done (message-done? message))
-           (assoc :message/date m-date)
+           (assoc :message/follow-up-on (follow-up-on message))
+           (assoc :message/date (message-date message))
            (assoc :message/subject (message-subject message))
            (assoc :message/ui-guid (message-ui-guid message))
            (assoc :message/text (message-text message))
@@ -238,9 +242,18 @@
     :temp-message/date (zcal/now-instant)}))
 
 (defn set-doneness [m done?]
-  (if (is-temp-message? m)
-    (assoc m :temp-message/done done?)
-    (assoc m :message/done done?)))
+  (if (nil? done?)
+    m
+    (if (is-temp-message? m)
+      (assoc m :temp-message/done done?)
+      (assoc m :message/done done?))))
+
+(defn set-follow-up-on [m follow-up-on-inst]
+  (if (nil? follow-up-on-inst)
+    m
+    (if (is-temp-message? m)
+      (throw+ {:type :bad-request :message "Can't set follow-up on a temp-message."})
+      (assoc m :message/follow-up-on follow-up-on-inst))))
 
 ;; (defn feeds-start-time-seconds []
 ;;   (-> (zcal/now-joda)
