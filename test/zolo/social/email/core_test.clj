@@ -18,7 +18,6 @@
    (let [mickey (email-lab/create-account "Mickey" "Mouse" "Mickey.Mouse@gmail.com")
          params (personas/email-request-params mickey true)
          canonical-user (social/fetch-user-identity params)]
-     (print-vals canonical-user)
      ;;(c-assert/assert-user-identity mickey canonical-user)
      )))
 
