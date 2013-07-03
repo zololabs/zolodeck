@@ -16,7 +16,8 @@
             [clojure.data.json :as json]
             [zolo.service.user-service :as u-service]
             [zolo.core :as server]
-            [zolo.personas.generator :as pgen]))
+            [zolo.personas.generator :as pgen]
+            [zolo.personas.factory :as personas]))
 
 (deftest test-new-user
   (demonic-testing "New User Signup - good request"
@@ -53,7 +54,7 @@
   (let [u (pgen/generate {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})]
 
     (testing "Unauthenticated user should be denied permission"
-      (let [resp (w-utils/web-request  :put (str "/users/" (:user/guid u)) {:permissions_granted false})]
+      (let [resp (w-utils/web-request  :put (str "/users/" (:user/guid u)) (personas/user-request-params  u))]
         (is (= 404 (:status resp)))))
 
     (testing "when user is not present, it should return 404"
@@ -62,7 +63,7 @@
 
     (testing "when user is present, it should return updated distilled user"
       (personas/in-social-lab
-       (let [resp (w-utils/authed-request u  :put (str "/users/" (:user/guid u)) {:login_provider "FACEBOOK" :permissions_granted false :login_tz 420})]
+       (let [resp (w-utils/authed-request u  :put (str "/users/" (:user/guid u)) (personas/user-request-params  u))]
 
          (is (= 200 (:status resp)))
          (is (= (str (:user/guid u)) (get-in resp [:body :guid]))))))))

@@ -21,7 +21,8 @@
             [zolo.domain.core :as d-core]
             [zolo.domain.contact :as contact]
             [zolo.social.facebook.chat :as fb-chat]
-            [zolo.test.assertions.datomic :as db-assert]))
+            [zolo.test.assertions.datomic :as db-assert]
+            [zolo.personas.factory :as personas]))
 
 (defn contacts-url [u c]
   (str "/users/" (or (:user/guid u) (random-guid-str))
@@ -56,8 +57,8 @@
           (are [expected user method url params] (= expected (-> (w-utils/authed-request user method url params) :status))
 
                ;;Users
-               404 hacker :put  (user-url owner)             {:login_provider "FACEBOOK" :permissions_granted false :login_tz 420}
-               200 owner  :put  (user-url owner)             {:login_provider "FACEBOOK" :permissions_granted false :login_tz 420}
+               404 hacker :put  (user-url owner)             (personas/user-request-params owner)
+               200 owner  :put  (user-url owner)             (personas/user-request-params owner)
 
                404 hacker :get  (user-url owner)             {}
                200 owner  :get  (user-url owner)             {}

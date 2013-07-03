@@ -57,13 +57,15 @@
       user/distill))
 
 (defn update-user [guid request-params]
-  (service/validate-request! request-params val-request)
-  (-not-nil-> (u-store/find-by-guid guid)
-              (user/update-permissions-granted (:permissions_granted request-params))
-              (user/update-tz-offset (:login_tz request-params))
-              (additional-login-processing request-params)
-              u-store/save
-              user/distill))
+  (if-let [u (u-store/find-by-guid guid)]
+    (do
+      (service/validate-request! request-params val-request)
+      (-> u
+          (user/update-permissions-granted (:permissions_granted request-params))
+          (user/update-tz-offset (:login_tz request-params))
+          (additional-login-processing request-params)
+          u-store/save
+          user/distill))))
 
 (defn get-users [request-params]
   (-> (find-user request-params)
