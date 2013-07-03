@@ -19,6 +19,14 @@
             [zolo.utils.calendar :as zcal]
             [zolo.utils.maps :as zmaps]))
 
+(defn user-request-params [u]
+  {:login_provider "FACEBOOK"
+   :guid (:guid u)
+   :login_tz 0
+   :permissions_granted true
+   :access_token "access_token"
+   :login_provider_uid "dummy"})
+
 (defn fb-request-params
   ([fb-user permission-granted?]
      (fb-request-params fb-user permission-granted? 420))

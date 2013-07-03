@@ -25,7 +25,7 @@
 (deftest test-inbox-messages-by-contacts
   (testing "when no messages are present"
     (let [shy (shy-persona/create-domain)
-          imbc (message/messages-by-contacts shy)]
+          imbc (message/messages-by-contacts shy (:user/contacts shy))]
 
       (is (not (nil? imbc)))
 
@@ -39,7 +39,7 @@
 
   (testing "when messages are present"
     (let [vincent (vincent-persona/create-domain)
-          imbc (message/messages-by-contacts vincent)]
+          imbc (message/messages-by-contacts vincent (:user/contacts vincent))]
       
       (is (not (nil? imbc)))
 
@@ -64,7 +64,9 @@
   (testing "When there is no sent messages it should return nil"
     (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
           jack (first (:user/contacts u))
-          msgs (-> u interaction/ibc interaction/messages-from-ibc)]
+          msgs (-> u
+                   (interaction/ibc (:user/contacts u))
+                   interaction/messages-from-ibc)]
       (is (nil? (message/last-sent-message jack msgs)))))
 
   (testing "When only temp message is present it should return the last temp message")
@@ -73,7 +75,9 @@
     (d-core/run-in-gmt-tz
       (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 5 15)]}})
             jack (first (:user/contacts u))
-            msgs (-> u interaction/ibc interaction/messages-from-ibc)
+            msgs (-> u
+                     (interaction/ibc (:user/contacts u))
+                     interaction/messages-from-ibc)
             l-msg (message/last-sent-message jack msgs)]
         (is (not (nil? l-msg)))
         (is (= #inst "2012-05-14T00:02:00.000000000-00:00" (message/message-date l-msg))))))

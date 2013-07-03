@@ -92,7 +92,7 @@
   (-> (ibc c)
       messages-from-interactions))
 
-(defn ibc [user]
+(defn ibc [user contacts]
   (-> user
-      message/messages-by-contacts
+      (message/messages-by-contacts contacts)
       interactions-by-contacts))

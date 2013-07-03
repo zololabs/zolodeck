@@ -84,15 +84,13 @@
 
 (defn update-scores [u]
   (when u
-    (let [ibc (-> u
-                  message/messages-by-contacts
-                  interaction/interactions-by-contacts)]
+    (let [ibc (interaction/ibc u (:user/contacts u))]
       (doeach #(contact/update-score ibc %) (:user/contacts u))
       (u-store/reload u))))
 
 (defn get-contact-by-guid [u guid]
   (d-core/run-in-tz-offset (:user/login-tz u)
-                           (if-let [ibc (interaction/ibc u)]
+                           (if-let [ibc (interaction/ibc u (:user/contacts u))]
                              (-> (c-store/find-by-guid guid)
                                  (contact/distill ibc)))))
 
@@ -105,7 +103,7 @@
                                                    (merge c it)
                                                    (c-store/save it))
                                    u (u-store/reload u)
-                                   ibc (interaction/ibc u)]
+                                   ibc (interaction/ibc u (:user/contacts u))]
                                (contact/distill updated-c ibc)))))
 
 

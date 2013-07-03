@@ -44,16 +44,6 @@
     (:temp-message/thread-id m)
     (:message/thread-id m)))
 
-;;TODO test
-;; (defn get-last-message-date [u]
-;;   (or (->> u
-;;            :user/messages
-;;            (remove is-temp-message?)
-;;            (sort-by :message/date)
-;;            last
-;;            :message/date)
-;;       MESSAGES-START-TIME))
-
 (defn get-last-message-date [ui]
   (->> ui
        ui/message-entitites
@@ -131,17 +121,15 @@
        :contact/social-identities
        (reduce (partial bucket-si c) buckets)))
 
-(defn- contacts-by-social-identifier [u]
-  (->> u
-       :user/contacts
-       (reduce bucket-contact {})))
+(defn- contacts-by-social-identifier [contacts]
+  (reduce bucket-contact {} contacts))
 
 ;;TODO Test this function
 (defn all-messages [u]
   (concat (:user/messages u) (:user/temp-messages u)))
 
-(defn messages-by-contacts [u]
-  (let [contacts-lookup (contacts-by-social-identifier u)
+(defn messages-by-contacts [u contacts]
+  (let [contacts-lookup (contacts-by-social-identifier contacts)
         mbc (reduce bucket-message {} (all-messages u))]
     (reduce #(assoc-in %1 [(contacts-lookup %2)] (sort-by message-date (mbc %2))) {} (keys contacts-lookup))))
 

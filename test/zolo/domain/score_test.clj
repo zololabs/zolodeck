@@ -14,7 +14,7 @@
 (deftest test-calculate
   (testing "when no messages are send it should be 0"
     (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 0 0)]}})
-          ibc (interaction/ibc u)]
+          ibc (interaction/ibc u (:user/contacts u))]
       
       (let [[jack] (sort-by contact/first-name (:user/contacts u))]
         (is (= 0 (score/calculate ibc jack))))))
@@ -23,7 +23,7 @@
     (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 3 10)
                                                         (pgen/create-friend-spec "Jill" "Ferry" 4 10)
                                                         (pgen/create-friend-spec "Dont" "Care" 0 0)]}})
-          ibc (interaction/ibc u)]
+          ibc (interaction/ibc u (:user/contacts u))]
       
       (let [[dontcare jack jill] (sort-by contact/first-name (:user/contacts u))]
         (is (= 0 (score/calculate ibc dontcare)))

@@ -88,7 +88,7 @@
 (deftest test-days-not-contacted
   (testing "when never contacted it should return -1"
     (let [shy (shy-persona/create-domain)
-          ibc (interaction/ibc shy)]
+          ibc (interaction/ibc shy (:user/contacts shy))]
 
       (let [[jack jill] (sort-by contact/first-name (:user/contacts shy))]
         (is (= -1 (contact/days-not-contacted jack ibc)))
@@ -97,13 +97,13 @@
   (testing "when contacted today it should return 0"
     (run-as-of "2012-05-10"
       (let [u (pgen/generate-domain {:SPECS { :friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
-            ibc (interaction/ibc u)]
+            ibc (interaction/ibc u (:user/contacts u))]
 
         (is (= 0 (contact/days-not-contacted (first (:user/contacts u)) ibc))))))
 
   (testing "when contacted some day ago it should return proper dates"
     (let [u (pgen/generate-domain {:SPECS { :friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
-          ibc (interaction/ibc u)]
+          ibc (interaction/ibc u (:user/contacts u))]
 
       (are [expected as-of-date] (= expected (run-as-of as-of-date
                                                (contact/days-not-contacted (first (:user/contacts u)) ibc)))
@@ -116,7 +116,7 @@
   (d-core/run-in-gmt-tz
    (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)
                                                     (pgen/create-friend-spec "Jill" "Ferry" 3 6)]}})
-         ibc (interaction/ibc u)]
+         ibc (interaction/ibc u (:user/contacts u))]
      
      (let [[jack jill] (sort-by contact/first-name (:user/contacts u))]
        (testing "When not contacted"
@@ -133,7 +133,7 @@
   (d-core/run-in-gmt-tz
    (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 0 0)
                                                     (pgen/create-friend-spec "Jill" "Ferry" 3 6)]}})
-         ibc (interaction/ibc u)]
+         ibc (interaction/ibc u (:user/contacts u))]
      
      (let [[jack jill] (sort-by contact/first-name (:user/contacts u))]
        (run-as-of "2012-05-22"
@@ -208,13 +208,13 @@
 (deftest test-distill
   (testing "When nil is passed it should return nil"
     (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
-         ibc (interaction/ibc u)]
+         ibc (interaction/ibc u (:user/contacts u))]
       (is (nil? (contact/distill nil ibc)))))
 
   (testing "When proper contact without interactions is passed"
     (d-core/run-in-gmt-tz
      (let [shy (shy-persona/create-domain)
-           ibc (interaction/ibc shy)]
+           ibc (interaction/ibc shy (:user/contacts shy))]
 
        (let [[jack jill] (sort-by contact/first-name (:user/contacts shy))
              distilled-jack (contact/distill jack ibc)]
@@ -235,7 +235,7 @@
                                                         ;"Jill"
                                                         ;"Ferry" 3 3)
                                                         ]}})
-             ibc (interaction/ibc u)]
+             ibc (interaction/ibc u (:user/contacts u))]
          
          (let [[jack jill] (sort-by contact/first-name (:user/contacts u))
                distilled-jack (contact/distill jack ibc)]
@@ -252,7 +252,7 @@
     (run-as-of "2012-05-10"
       (d-core/run-in-gmt-tz
        (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 2)]}})
-             ibc (interaction/ibc u)]
+             ibc (interaction/ibc u (:user/contacts u))]
          
          (let [jack (first (:user/contacts u))
                distilled-jack (contact/distill jack ibc)]

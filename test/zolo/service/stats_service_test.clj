@@ -30,7 +30,7 @@
                                               (pgen/create-friend-spec "Weak1" "Contact1" 5 5)
                                               (pgen/create-friend-spec "Weak2" "Contact2" 0 0)]}})
           [medium strong weak1 weak2] (sort-by contact/first-name (:user/contacts u))
-          ibc (interaction/ibc u)]
+          ibc (interaction/ibc u (:user/contacts u))]
 
       (run-as-of "2012-07-1"
         (let [c-stats (s-service/contact-stats u)]
@@ -62,7 +62,7 @@
                                               (pgen/create-friend-spec "admin" "thoughtworks" 1 1)]}
                             :UI-IDS-ALLOWED [:EMAIL]})
           [medium strong weak1 weak2 admin] (sort-by contact/first-name (:user/contacts u))
-          ibc (interaction/ibc u)]
+          ibc (interaction/ibc u (contact/person-contacts u))]
       
       (run-as-of "2012-07-1"
         (let [c-stats (s-service/contact-stats u)]
@@ -77,8 +77,8 @@
                  (:weakest-contact c-stats)))))
 
       (run-as-of "2014-07-01"
-        (is (= 5 (:quartered (s-service/contact-stats u)))))
+        (is (= 4 (:quartered (s-service/contact-stats u)))))
 
       (run-as-of "2012-09-01"
-        (is (= 4 (:quartered (s-service/contact-stats u))))))))
+        (is (= 3 (:quartered (s-service/contact-stats u))))))))
 

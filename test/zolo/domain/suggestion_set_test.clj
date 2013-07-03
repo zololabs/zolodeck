@@ -55,7 +55,7 @@
 
        (testing "Contact is empty it should return proper ss name"
          (let [u (pgen/generate-domain {:SPECS {:friends []}})
-               ibc (interaction/ibc u)
+               ibc (interaction/ibc u (:user/contacts u))
                ss (create-ss "ss-2012-05-01" (:user/contacts u))
                distilled-ss (ss/distill ss ibc)]
            (is (= "ss-2012-05-01" (:suggestion-set/name distilled-ss)))
@@ -64,7 +64,7 @@
        (testing "has many contacts"
          (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels")
                                                              (pgen/create-friend-spec "Jill" "Ferry")]}})
-               ibc (interaction/ibc u)
+               ibc (interaction/ibc u (:user/contacts u))
                ss (create-ss "ss-2012-05-01" (:user/contacts u))
                distilled-ss (ss/distill ss ibc)]
 
@@ -73,7 +73,7 @@
 
        (testing "Contact has not been contacted at all"
          (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels")]}})
-               ibc (interaction/ibc u)
+               ibc (interaction/ibc u (:user/contacts u))
                ss (create-ss "ss-2012-05-01" (:user/contacts u))
                distilled-ss (ss/distill ss ibc)]
            (is (= "ss-2012-05-01" (:suggestion-set/name distilled-ss)))
@@ -87,7 +87,7 @@
        (testing "Contact has been contacted last month"
          (run-as-of "2012-06-10"
            (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
-                 ibc (interaction/ibc u)
+                 ibc (interaction/ibc u (:user/contacts u))
                  ss (create-ss "ss-2012-05-01" (:user/contacts u))
                  distilled-ss (ss/distill ss ibc)]
              (is (= "ss-2012-05-01" (:suggestion-set/name distilled-ss)))

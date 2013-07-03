@@ -27,7 +27,7 @@
 (deftest test-interactions-by-contacts
   (testing "when no messages are present"
     (let [shy (shy-persona/create-domain)
-          imbc (message/messages-by-contacts shy)
+          imbc (message/messages-by-contacts shy (:user/contacts shy))
           ibc (interaction/interactions-by-contacts imbc)]
 
       (is (not (nil? ibc)))
@@ -42,7 +42,7 @@
 
   (testing "when messages are present"
     (let [vincent (vincent-persona/create-domain)
-          imbc (message/messages-by-contacts vincent)
+          imbc (message/messages-by-contacts vincent (:user/contacts vincent))
           ibc (interaction/interactions-by-contacts imbc)]
       
       (is (not (nil? ibc)))
@@ -61,7 +61,7 @@
 (deftest test-ibc
   (testing "when no messages are present"
     (let [shy (shy-persona/create-domain)
-          ibc (interaction/ibc shy)]
+          ibc (interaction/ibc shy (:user/contacts shy))]
 
       (is (not (nil? ibc)))
 
@@ -75,7 +75,7 @@
 
   (testing "when messages are present"
     (let [vincent (vincent-persona/create-domain)
-          ibc (interaction/ibc vincent)]
+          ibc (interaction/ibc vincent (:user/contacts vincent))]
       
       (is (not (nil? ibc)))
 
@@ -93,7 +93,7 @@
 (deftest test-interaction-date
   (testing "When timezone offset is not set it should throw exception "
     (let [vincent (vincent-persona/create-domain)
-          ibc (interaction/ibc vincent)
+          ibc (interaction/ibc vincent (:user/contacts vincent))
           i (d-core/run-in-gmt-tz (-> ibc interaction/interactions-from-ibc first))]
       (is (thrown-with-msg? RuntimeException #"User TZ is not set" (interaction/interaction-date i)))))
 
@@ -105,13 +105,13 @@
     (testing "When only one message is present it should return the first message date"
       (d-core/run-in-gmt-tz
        (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
-             ibc (interaction/ibc u)
+             ibc (interaction/ibc u (:user/contacts u))
              i (-> ibc interaction/interactions-from-ibc first)]
          (c-assert/assert-same-day? "2012-5-10" (interaction/interaction-date i)))))
 
     (testing "Date should be changed if tz is passed"
       (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
-            ibc (interaction/ibc u)]
+            ibc (interaction/ibc u (:user/contacts u))]
         (are [expected tz-offset]
           (c-assert/is-same-day? expected
                                  (d-core/run-in-tz-offset tz-offset
@@ -126,7 +126,7 @@
 (deftest test-interactions-from-ibc
   (testing "When timezone offset is not set it should throw exception "
     (let [vincent (vincent-persona/create-domain)
-          ibc (interaction/ibc vincent)]
+          ibc (interaction/ibc vincent (:user/contacts vincent))]
       (is (thrown-with-msg? RuntimeException #"User TZ is not set"
             (interaction/interactions-from-ibc ibc)))))
 
@@ -134,13 +134,13 @@
     (testing "When no message is present it should return empty"
       (d-core/run-in-gmt-tz
        (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 0 0)]}})
-             ibc (interaction/ibc u)]
+             ibc (interaction/ibc u (:user/contacts u))]
          (is (empty? (interaction/interactions-from-ibc ibc))))))
     
     (testing "When only one interaction is present"
       (d-core/run-in-gmt-tz
        (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
-             ibc (interaction/ibc u)
+             ibc (interaction/ibc u (:user/contacts u))
              interactions (interaction/interactions-from-ibc ibc)]
          (is (= 1 (count interactions)))
          (c-assert/assert-same-day? "2012-5-10" (interaction/interaction-date (first interactions))))))
@@ -149,7 +149,7 @@
       (d-core/run-in-gmt-tz
        (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)
                                                            (pgen/create-friend-spec "Jill" "Ferry" 2 3)]}})
-             ibc (interaction/ibc u)
+             ibc (interaction/ibc u (:user/contacts u))
              interactions (interaction/interactions-from-ibc ibc)]
          (is (= 3 (count interactions)))
          
@@ -165,7 +165,7 @@
 (deftest test-daily-counts
   (testing "When timezone offset is not set it should throw exception "
     (let [vincent (vincent-persona/create-domain)
-          ibc (interaction/ibc vincent)
+          ibc (interaction/ibc vincent (:user/contacts vincent))
           interactions (d-core/run-in-gmt-tz (interaction/interactions-from-ibc ibc))]
       (is (thrown-with-msg? RuntimeException #"User TZ is not set"
             (interaction/daily-counts interactions)))))
@@ -174,7 +174,7 @@
     (run-as-of "2012-05-13"
       (d-core/run-in-gmt-tz
        (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 0 0)]}})
-             ibc (interaction/ibc u)
+             ibc (interaction/ibc u (:user/contacts u))
              interactions (interaction/interactions-from-ibc ibc)]
          (is (empty? (interaction/daily-counts interactions)))))))
 
@@ -184,7 +184,7 @@
                                                           (pgen/create-friend-spec "Jill" "Ferry" 2 5)
                                                           (pgen/create-friend-spec "Mary" "Fern"  3 12)
                                                           (pgen/create-friend-spec "Dont" "Care"  0 0)]}})
-            ibc (interaction/ibc u)
+            ibc (interaction/ibc u (:user/contacts u))
             interactions (d-core/run-in-gmt-tz (interaction/interactions-from-ibc ibc))]
         
         (are [expected tz-offset] (=  expected
