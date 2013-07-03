@@ -157,3 +157,17 @@
     (is (message/message-done? (message/set-doneness m true)))
     (is (not (message/message-done? tm)))
     (is (message/message-done? (message/set-doneness tm true)))))
+
+
+(deftest test-mark-follow-up
+  (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Amrut" "Indya" 1 1)]}})
+        u-ui (-> u :user/user-identities first)
+        m (->> u :user/messages first (message/distill u))
+        tm (message/create-temp-message u-ui "from" ["to"] :provider/facebook "thread-id" "subject" "text")
+        fud #inst"2017-07-07T17:17:17.003Z"]
+
+    (is (not (message/follow-up-on m)))
+    (is (= fud (message/follow-up-on (message/set-follow-up-on m fud))))
+
+    (is (not (message/message-done? tm)))
+    (is (thrown? RuntimeException (message/set-follow-up-on tm fud)))))
