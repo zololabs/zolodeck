@@ -13,8 +13,8 @@
      :body t}
     (resource-not-found "Thread")))
 
-(defn update-thread [user-guid ui-guid message-id {done? :done :as params}]
-  (if-let [t (t-service/update-thread-details user-guid ui-guid message-id done?)]
+(defn update-thread [user-guid ui-guid message-id {done? :done follow-up-on :follow_up_on :as params}]
+  (if-let [t (t-service/update-thread-details user-guid ui-guid message-id done? follow-up-on)]
     {:status (STATUS-CODES :ok)
      :body t}
     (resource-not-found "Thread")))

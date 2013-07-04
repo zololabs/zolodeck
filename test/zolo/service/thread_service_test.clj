@@ -50,29 +50,29 @@
 (deftest test-mark-as-done
  
   (demonic-testing "User is not present, it should return nil"
-    (is (nil? (t-service/update-thread-details nil "ui-guid" "message-id" true)))
-    (is (nil? (t-service/update-thread-details (random-guid-str) "ui-guid" "message-id" true))))
+    (is (nil? (t-service/update-thread-details nil "ui-guid" "message-id" true "2017-07-07T17:17:17.003Z")))
+    (is (nil? (t-service/update-thread-details (random-guid-str) "ui-guid" "message-id" true "2017-07-07T17:17:17.003Z"))))
 
   (demonic-testing "UI is not present, it should return nil"
     (let [vincent (vincent-persona/create)]
-      (is (nil? (t-service/update-thread-details (:user/guid vincent) nil  "message-id" true)))
-      (is (nil? (t-service/update-thread-details (:user/guid vincent) (random-guid-str) "message-id" true)))))
+      (is (nil? (t-service/update-thread-details (:user/guid vincent) nil  "message-id" true "2017-07-07T17:17:17.003Z")))
+      (is (nil? (t-service/update-thread-details (:user/guid vincent) (random-guid-str) "message-id" true "2017-07-07T17:17:17.003Z")))))
 
   (demonic-testing "UI is from a different user, it should return nil"
     (let [vincent (vincent-persona/create)
           shy (shy-persona/create)
           vincent-ui-guid (-> vincent :user/user-identities first :identity/guid)
           m-id (-> vincent :user/messages last m/message-id)]
-      (is (nil? (t-service/update-thread-details (:user/guid shy) vincent-ui-guid m-id true)))))
+      (is (nil? (t-service/update-thread-details (:user/guid shy) vincent-ui-guid m-id true "2017-07-07T17:17:17.003Z")))))
   
   (demonic-testing "User present, but has no specified message, it should return empty"
     (let [vincent (vincent-persona/create)
           vincent-ui-guid (-> vincent :user/user-identities first :identity/guid)]
-      (is (nil? (t-service/update-thread-details (:user/guid vincent) vincent-ui-guid "message-id" true)))))
+      (is (nil? (t-service/update-thread-details (:user/guid vincent) vincent-ui-guid "message-id" true "2017-07-07T17:17:17.003Z")))))
 
   (demonic-testing "Message should get updated"
     (let [vincent (vincent-persona/create)
           vincent-ui-guid (-> vincent :user/user-identities first :identity/guid)
           m-id (-> vincent :user/messages last m/message-id)]
-      (is (not (:message/done (t-service/update-thread-details (:user/guid vincent) vincent-ui-guid m-id false))))      
-      (is (:message/done (t-service/update-thread-details (:user/guid vincent) vincent-ui-guid m-id true))))))
+      (is (not (:message/done (t-service/update-thread-details (:user/guid vincent) vincent-ui-guid m-id false "2017-07-07T17:17:17.003Z"))))      
+      (is (:message/done (t-service/update-thread-details (:user/guid vincent) vincent-ui-guid m-id true "2017-07-07T17:17:17.003Z"))))))

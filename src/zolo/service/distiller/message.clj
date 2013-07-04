@@ -39,10 +39,7 @@
   ([u message]
      (distill u nil message))
   ([u tz-offset-minutes message]
-     (let [is-sent (m/is-sent-by-user? u message)
-           m-date (if tz-offset-minutes
-                    (m/message-date message tz-offset-minutes)
-                    (m/message-date message))]
+     (let [is-sent (m/is-sent-by-user? u message)]
        (-> {}
            (assoc :message/message-id (m/message-id message))
            (assoc :message/guid (m/message-guid message))
@@ -51,7 +48,8 @@
            (assoc :message/from (m/message-from message))
            (assoc :message/to (m/message-to message))
            (assoc :message/done (m/message-done? message))
-           (assoc :message/date m-date)
+           (assoc :message/follow-up-on (m/follow-up-on message))
+           (assoc :message/date (m/message-date message))
            (assoc :message/subject (m/message-subject message))
            (assoc :message/ui-guid (m/message-ui-guid message))
            (assoc :message/text (m/message-text message))

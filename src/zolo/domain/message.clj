@@ -1,6 +1,7 @@
 (ns zolo.domain.message
   (:use zolo.utils.debug
-        zolo.utils.clojure)
+        zolo.utils.clojure
+        [slingshot.slingshot :only [throw+ try+]])
   (:require [clojure.set :as set]
             [zolo.utils.maps :as zmaps]
             [zolo.utils.calendar :as zcal]
@@ -89,6 +90,11 @@
     (:temp-message/done m)
     (:message/done m)))
 
+(defn follow-up-on [m]
+  (if (is-temp-message? m)
+    (:temp-message/follow-up-on m)
+    (:message/follow-up-on m)))
+
 (defn message-ui-guid [m]
   (-> (if (is-temp-message? m)
         (:temp-message/user-identity m)
@@ -157,6 +163,7 @@
         (map :identity/provider-uid it)
         (remove (fn [to-uid] (some #{to-uid} it)) message-to-uids)))
 
+
 ;;TODO test
 (defn create-temp-message [from-ui from-uid to-uids provider thread-id subject text]
   (zmaps/remove-nil-vals
@@ -170,9 +177,18 @@
     :temp-message/date (zcal/now-instant)}))
 
 (defn set-doneness [m done?]
-  (if (is-temp-message? m)
-    (assoc m :temp-message/done done?)
-    (assoc m :message/done done?)))
+  (if (nil? done?)
+    m
+    (if (is-temp-message? m)
+      (assoc m :temp-message/done done?)
+      (assoc m :message/done done?))))
+
+(defn set-follow-up-on [m follow-up-on-inst]
+  (if (nil? follow-up-on-inst)
+    m
+    (if (is-temp-message? m)
+      (throw+ {:type :bad-request :message "Can't set follow-up on a temp-message."})
+      (assoc m :message/follow-up-on follow-up-on-inst))))
 
 ;; (defn feeds-start-time-seconds []
 ;;   (-> (zcal/now-joda)

@@ -23,7 +23,8 @@
             [zolo.personas.shy :as shy-persona]
             [zolo.personas.vincent :as vincent-persona]
             [zolo.test.assertions.datomic :as db-assert]
-            [zolo.test.assertions.domain :as d-assert]))
+            [zolo.test.assertions.domain :as d-assert]
+            [zolo.utils.calendar :as zcal]))
 
 (defn- contacts-url [u c]
   (str "/users/" (or (:user/guid u) (random-guid-str))
@@ -172,6 +173,7 @@
 
         winnie-ui (-> winnie :user/user-identities first)
         winnie-uid (:identity/provider-uid winnie-ui)
+        winnie-ui-guid (:identity/guid winnie-ui)
 
         jill-si (-> winnie :user/contacts first :contact/social-identities first)
         jill-sid (:social/provider-uid jill-si)
@@ -196,7 +198,7 @@
       (let [resp (w-utils/authed-request winnie :get (str "/users/" (:user/guid winnie) "/contacts") {:junk "param"})]
         (is (= 500 (:status resp)))))
     
-    (testing "when user with 2 friends, and 1 reply-to thread, it should return the friend who has reply to"
+    (testing "when user with 2 friends, and a follow-up thread each, it should return both"
       (let [resp (w-utils/authed-request winnie :get (str "/users/" (:user/guid winnie) "/contacts") follow-up-options)]
         (is (= 200 (:status resp)))
 
@@ -251,4 +253,17 @@
             (is (= (:social/provider-uid jack-si) (:provider_uid reply-to))))
 
           (doseq [m (:messages jill-f-thread)]
-            (has-keys m [:message_id :guid :provider :thread_id :from :to :date :text :snippet])))))))
+            (has-keys m [:message_id :guid :provider :thread_id :from :to :date :text :snippet])))))
+
+    (testing "when user has 2 friends, with a follow-up thread each, but one is marked for 2 days later, it should return just the one"
+      (let [resp (w-utils/authed-request winnie :get (str "/users/" (:user/guid winnie) "/contacts") follow-up-options)
+            last-r-m-id (->> resp :body first :follow_up_threads first :messages (remove :sent) first :message_id)
+            three-days-later (-> (zcal/now-joda) (zcal/plus 3 :days) (zcal/dt->iso-string))]
+        (is (= 2 (-> resp :body count)))
+
+        (w-utils/authed-request winnie :put (put-thread-url (:user/guid winnie) winnie-ui-guid last-r-m-id) {:follow_up_on three-days-later})
+
+        (let [resp (w-utils/authed-request winnie :get (str "/users/" (:user/guid winnie) "/contacts") follow-up-options)]
+          (is (= 1 (-> resp :body count)))
+
+        )))))
