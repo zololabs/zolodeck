@@ -25,7 +25,8 @@
             [zolo.utils.calendar :as zolo-cal]
             [zolo.personas.shy :as shy-persona]
             [zolo.personas.vincent :as vincent-persona]
-            [zolo.personas.generator :as pgen]))
+            [zolo.personas.generator :as pgen]
+            [zolo.service.distiller.contact :as c-distiller]))
 
 (deftest test-update-contacts-for-user
   (demonic-testing "when user is not present, it should return nil"
@@ -162,7 +163,7 @@
            (is (contact/is-muted? updated-jack))
            (is (contact/is-muted? (c-store/find-by-guid (:contact/guid jack))))
 
-           (is (= (dissoc (contact/distill jack ibc) :contact/muted)
+           (is (= (dissoc (c-distiller/distill jack ibc) :contact/muted)
                   (dissoc updated-jack :contact/muted))))
 
          (let [updated-jack (c-service/update-contact u jack {:person true :muted false})]
@@ -173,7 +174,7 @@
             (is (contact/is-a-person? updated-jack))
             (is (contact/is-a-person? (c-store/find-by-guid (:contact/guid jack))))
             
-            (is (= (dissoc (contact/distill jack ibc) :contact/is-a-person)
+            (is (= (dissoc (c-distiller/distill jack ibc) :contact/is-a-person)
                    (dissoc updated-jack :contact/is-a-person)))))))))
 
 

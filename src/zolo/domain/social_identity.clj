@@ -49,6 +49,3 @@
   (if-not (is-email? si)
     true
     (> (:social/email-person-score si) 0)))
-
-(defn distill [si]
-  (select-keys si [:social/provider :social/provider-uid :social/ui-provider-uid]))

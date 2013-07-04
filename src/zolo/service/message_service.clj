@@ -14,7 +14,8 @@
             [zolo.store.message-store :as m-store]
             [zolo.demonic.core :as demonic]
             [zolo.utils.calendar :as zcal]
-            [clj-time.coerce :as ctc]))
+            [clj-time.coerce :as ctc]
+            [zolo.service.distiller.message :as m-distiller]))
 
 (def INITIAL-PULL-DATE-FACEBOOK #inst "2000-10-22")
 
@@ -71,7 +72,7 @@
          :user/temp-messages
          (sort-by message/message-date)
          last
-         (message/distill reloaded-u))))
+         (m-distiller/distill reloaded-u))))
 
 ;; params should have either thread_id or reply_to_message_id
 ;; Facebook uses thread_id and emails use reply_to_message_id

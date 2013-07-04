@@ -16,7 +16,8 @@
             [zolo.service.core :as service]
             [zolo.store.suggestion-set-store :as ss-store]
             [zolo.utils.calendar :as zolo-cal]
-            [zolo.domain.suggestion-set.strategy.random :as ss-s-random]))
+            [zolo.domain.suggestion-set.strategy.random :as ss-s-random]
+            [zolo.service.distiller.suggestion-set :as ss-distiller]))
 
 (defn- suggestion-set-name [u]
   (-> u
@@ -33,7 +34,7 @@
         ss-name (suggestion-set-name u)]
     (-> (or (ss/suggestion-set u ss-name)
             (create-suggestion-set u ss-name))
-        (ss/distill ibc))))
+        (ss-distiller/distill ibc))))
 
 (defn find-suggestion-set-for-today [user-guid]
   (if-let [u (u-store/find-by-guid user-guid)]

@@ -205,62 +205,6 @@
      (is (= #{weak1 weak2} (set (contact/weak-contacts u))))
      )))
 
-(deftest test-distill
-  (testing "When nil is passed it should return nil"
-    (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
-         ibc (interaction/ibc u (:user/contacts u))]
-      (is (nil? (contact/distill nil ibc)))))
-
-  (testing "When proper contact without interactions is passed"
-    (d-core/run-in-gmt-tz
-     (let [shy (shy-persona/create-domain)
-           ibc (interaction/ibc shy (:user/contacts shy))]
-
-       (let [[jack jill] (sort-by contact/first-name (:user/contacts shy))
-             distilled-jack (contact/distill jack ibc)]
-         (is (= "Jack" (:contact/first-name distilled-jack)))
-         (is (= "Daniels" (:contact/last-name distilled-jack)))
-         (is (= (:contact/guid jack) (:contact/guid distilled-jack)))
-         (is (= (contact/picture-url jack) (:contact/picture-url distilled-jack)))
-         (is (not (:contacted-today distilled-jack)))
-         (is (not (:contact/muted distilled-jack)))
-         (is (:contact/person distilled-jack))
-         (is (empty? (:contact/interaction-daily-counts distilled-jack)))))))
-
-  (testing "When proper contact with interactions is passed"
-    (run-as-of "2012-05-10"
-      (d-core/run-in-gmt-tz
-       (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 2)
-                                                        ;(pgen/create-friend-spec
-                                                        ;"Jill"
-                                                        ;"Ferry" 3 3)
-                                                        ]}})
-             ibc (interaction/ibc u (:user/contacts u))]
-         
-         (let [[jack jill] (sort-by contact/first-name (:user/contacts u))
-               distilled-jack (contact/distill jack ibc)]
-           (is (= "Jack" (:contact/first-name distilled-jack)))
-           (is (= "Daniels" (:contact/last-name distilled-jack)))
-           (is (= (:contact/guid jack) (:contact/guid distilled-jack)))
-           (is (= (contact/picture-url jack) (:contact/picture-url distilled-jack)))
-           (is (:contacted-today distilled-jack))
-           (is (not (:contact/muted distilled-jack)))
-           (is (= [["2012-05-10" 1]] (:contact/interaction-daily-counts distilled-jack))))))))
-
-
-  (testing "Social Idenitity should be also there as part of distilled user"
-    (run-as-of "2012-05-10"
-      (d-core/run-in-gmt-tz
-       (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 2)]}})
-             ibc (interaction/ibc u (:user/contacts u))]
-         
-         (let [jack (first (:user/contacts u))
-               distilled-jack (contact/distill jack ibc)]
-
-           (is (= 1 (count (:contact/social-identities distilled-jack))))
-           (is (= [(si/distill (first (:contact/social-identities jack)))]
-                  (:contact/social-identities distilled-jack)))))))))
-
 ;; (demonictest test-contact-list
 ;;   (personas/in-social-lab
 ;;      (let [mickey (fb-lab/create-user "Mickey" "Mouse")

@@ -17,7 +17,8 @@
             [zolo.personas.generator :as pgen]
             [zolo.utils.calendar :as zolo-cal]
             [zolo.service.stats-service :as s-service]
-            [zolo.domain.core :as d-core]))
+            [zolo.domain.core :as d-core]
+            [zolo.service.distiller.contact :as c-distiller]))
 
 (deftest test-contact-stats
   (testing "When user is nil it should return nil"
@@ -39,9 +40,9 @@
           (is (= 1 (:medium c-stats)))
           (is (= 2 (:weak c-stats)))
 
-          (is (= (d-core/run-in-tz-offset (:user/login-tz u) (contact/distill strong ibc))
+          (is (= (d-core/run-in-tz-offset (:user/login-tz u) (c-distiller/distill strong ibc))
                  (:strongest-contact c-stats)))
-          (is (= (d-core/run-in-tz-offset (:user/login-tz u) (contact/distill weak2 ibc))
+          (is (= (d-core/run-in-tz-offset (:user/login-tz u) (c-distiller/distill weak2 ibc))
                  (:weakest-contact c-stats)))))
 
       (run-as-of "2014-07-01"
@@ -71,9 +72,9 @@
           (is (= 1 (:medium c-stats)))
           (is (= 2 (:weak c-stats)))
 
-          (is (= (d-core/run-in-tz-offset (:user/login-tz u) (contact/distill strong ibc))
+          (is (= (d-core/run-in-tz-offset (:user/login-tz u) (c-distiller/distill strong ibc))
                  (:strongest-contact c-stats)))
-          (is (= (d-core/run-in-tz-offset (:user/login-tz u) (contact/distill weak2 ibc))
+          (is (= (d-core/run-in-tz-offset (:user/login-tz u) (c-distiller/distill weak2 ibc))
                  (:weakest-contact c-stats)))))
 
       (run-as-of "2014-07-01"

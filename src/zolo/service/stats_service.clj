@@ -7,7 +7,8 @@
             [zolo.domain.interaction :as interaction]
             [zolo.domain.stats.interaction-distribution :as s-int-dist]
             [zolo.domain.core :as d-core]
-            [zolo.utils.math :as zmath]))
+            [zolo.utils.math :as zmath]
+            [zolo.service.distiller.contact :as c-distiller]))
 
 
 (defn contact-stats [u]
@@ -20,8 +21,8 @@
                                 :medium (count (contact/medium-contacts u))
                                 :weak   (count (contact/weak-contacts u))
                                 :quartered (count (contact/contacts-not-contacted-for-days ibc 90))
-                                :strongest-contact (contact/distill (last contacts) ibc)
-                                :weakest-contact (contact/distill (first contacts) ibc)}))))
+                                :strongest-contact (c-distiller/distill (last contacts) ibc)
+                                :weakest-contact (c-distiller/distill (first contacts) ibc)}))))
 
 (defn interaction-stats [u]
   (d-core/run-in-tz-offset (:user/login-tz u)

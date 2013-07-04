@@ -7,7 +7,9 @@
             [zolo.store.user-store :as u-store]
             [zolo.store.message-store :as m-store]
             [zolo.domain.core :as d-core]
-            [zolo.social.email.messages :as messages]))
+            [zolo.social.email.messages :as messages]
+            [zolo.service.distiller.message :as m-distiller]
+            [zolo.service.distiller.thread :as t-distiller]))
 
 ;;TODO Only will work for email
 (defn load-thread-details [user-guid ui-guid message-id]
@@ -19,7 +21,7 @@
                                    (->> (messages/get-messages-for-thread account-id message-id)
                                         (t/messages->threads u)
                                         first
-                                        (t/distill u))))))))
+                                        (t-distiller/distill u))))))))
 
 (defn update-thread-details [user-guid ui-guid message-id done?]
   (if-let [u (u-store/find-entity-by-guid user-guid)]
@@ -29,4 +31,4 @@
                                  (it-> msg
                                        (m/set-doneness it done?)
                                        (m-store/update-message it)
-                                       (m/distill u it)))))))
+                                       (m-distiller/distill u it)))))))

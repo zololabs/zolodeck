@@ -84,74 +84,10 @@
 
   (testing "When temp and regular messages are present it should return the last sent message")) 
 
-(deftest test-distilled-messages
-  (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Amrut" "Indya" 1 2)]}})
-        u-ui (-> u :user/user-identities first)
-        u-uid (u-ui :identity/provider-uid)
-        amrut-ui (-> u :user/contacts first :contact/social-identities first)
-        amrut-uid (:social/provider-uid amrut-ui)
-
-        sm (->> u :user/messages first (message/distill u))
-        rm (->> u :user/messages second (message/distill u))
-        ]
-
-    (testing "basic information should be set on distilled messages"
-      (doseq [m [sm rm]]
-        (has-keys m [:message/message-id :message/guid :message/provider :message/thread-id
-                     :message/from :message/to :message/date :message/text :message/snippet :message/sent])))
-
-    (testing "when user himself sent a message, :message/sent should be set to true, and author should be user"
-      (is (:message/sent sm))
-      (is (= (:identity/first-name u-ui) (get-in sm [:message/author :author/first-name])))
-      (is (= (:identity/last-name u-ui) (get-in sm [:message/author :author/last-name])))
-      (is (= (:identity/photo-url u-ui) (get-in sm [:message/author :author/picture-url]))))
-
-    (testing "when user himself sent a message, reply-tos should reflect the contact"
-      (let [reply-tos (sm :message/reply-to)
-            reply-to (first reply-tos)]
-        (is (= 1 (count reply-tos)))
-        (is (= (:social/first-name amrut-ui) (:reply-to/first-name reply-to)))
-        (is (= (:social/last-name amrut-ui) (:reply-to/last-name reply-to)))
-        (is (= (:social/provider-uid amrut-ui) (:reply-to/provider-uid reply-to)))))
-
-    (testing "when user received a message, :message/sent should be set to false, and author should be contact"
-      (is-not (:message/sent rm))
-      (is (= (:social/first-name amrut-ui) (get-in rm [:message/author :author/first-name])))
-      (is (= (:social/last-name amrut-ui) (get-in rm [:message/author :author/last-name])))
-      (is (= (:social/photo-url amrut-ui) (get-in rm [:message/author :author/picture-url]))))
-
-    (testing "when user himself sent a message, reply-tos should reflect the contact"
-      (let [reply-tos (rm :message/reply-to)
-            reply-to (first reply-tos)]
-        (is (= 1 (count reply-tos)))
-        (is (= (:social/first-name amrut-ui) (:reply-to/first-name reply-to)))
-        (is (= (:social/last-name amrut-ui) (:reply-to/last-name reply-to)))
-        (is (= (:social/provider-uid amrut-ui) (:reply-to/provider-uid reply-to)))))
-
-    (testing "when a temp message is created, it can be distilled properly"
-      (let [tm (message/create-temp-message u-ui u-uid [amrut-uid] (:identity/provider u-ui) "thread-id" "subject" "text")
-            dtm (message/distill u tm)]
-        (is (= "text" (:message/text dtm)))
-        (is (= [amrut-uid] (:message/to dtm)))
-        (is (nil? (:message/done dtm)))
-        (is (= u-uid (:message/from dtm)))
-        (is (:message/sent dtm))
-        (is (= "text" (:message/snippet dtm)))
-        (is (= "subject" (:message/subject dtm)))
-        (is (= "thread-id" (:message/thread-id dtm)))
-        (is (= "Amrut" (-> dtm :message/reply-to first :reply-to/first-name)))
-        (is (= "Indya" (-> dtm :message/reply-to first :reply-to/last-name)))
-        (is (= amrut-uid (-> dtm :message/reply-to first :reply-to/provider-uid)))
-        (is (= u-uid (-> dtm :message/reply-to first :reply-to/ui-provider-uid)))
-        (is (= (:identity/provider u-ui) (:message/provider dtm)))
-        (is (= (:identity/first-name u-ui) (get-in dtm [:message/author :author/first-name])))
-        (is (= (:identity/last-name u-ui) (get-in dtm [:message/author :author/last-name])))
-        (is (= (:identity/photo-url u-ui) (get-in dtm [:message/author :author/picture-url])))))))
-
 (deftest test-mark-as-done
   (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Amrut" "Indya" 1 1)]}})
         u-ui (-> u :user/user-identities first)
-        m (->> u :user/messages first (message/distill u))
+        m (->> u :user/messages first)
         tm (message/create-temp-message u-ui "from" ["to"] :provider/facebook "thread-id" "subject" "text")]
     (is (not (message/message-done? m)))
     (is (message/message-done? (message/set-doneness m true)))

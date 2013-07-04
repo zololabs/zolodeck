@@ -3,6 +3,7 @@
         zolo.utils.clojure
         [slingshot.slingshot :only [throw+ try+]])
   (:require [zolo.social.core :as social]
+            [zolo.service.distiller.user :as u-distiller]
             [zolo.domain.user :as user]
             [zolo.domain.message :as m]
             [zolo.store.user-store :as u-store]
@@ -54,7 +55,7 @@
       (user/update-tz-offset (:login_tz request-params))
       (additional-login-processing request-params)
       u-store/save
-      user/distill))
+      u-distiller/distill))
 
 (defn update-user [guid request-params]
   (if-let [u (u-store/find-by-guid guid)]
@@ -65,15 +66,15 @@
           (user/update-tz-offset (:login_tz request-params))
           (additional-login-processing request-params)
           u-store/save
-          user/distill))))
+          u-distiller/distill))))
 
 (defn get-users [request-params]
   (-> (find-user request-params)
-      user/distill))
+      u-distiller/distill))
 
 (defn get-user-by-guid [guid]
   (-> (u-store/find-by-guid guid)
-      user/distill))
+      u-distiller/distill))
 
 
 ;;TODO clean up

@@ -12,27 +12,4 @@
   (if-let [ss (ss-service/find-suggestion-set-for-today user-guid)]
     {:status (STATUS-CODES :ok)
      :body ss}
-    (resource-not-found "Suggestion Set"))
-  
-  ;; (let [u (user/find-by-guid-string user-id)
-  ;;       ibc (interaction/ibc u)]
-  ;;   (-> (client-date-inst (:client-date params))
-  ;;       (suggestion-set/find-first-by-client-date)
-  ;;       (suggestion-set/format ibc)))
-  )
-
-;; ;;GET /users/:guid/suggestion_set/:name
-;; (defn find-suggestion-set [user-id ss-name]
-;;   (let [u (user/find-by-guid-string user-id)
-;;         ibc (interaction/ibc u)]
-;;     (-> user-id
-;;         user/find-by-guid-string
-;;         (suggestion-set/suggestion-set ss-name)
-;;         (suggestion-set/format ibc)
-;;         web/status-404-if-nil)))
-
-;; ;; POST /users/:guid/suggestion_set
-;; (defn new-suggestion-set [user-id request-params]
-;;   (->> user-id
-;;        user/find-by-guid-string
-;;        (suggestion-set/new-suggestion-set {:name request-params})))
+    (resource-not-found "Suggestion Set")))
