@@ -17,7 +17,9 @@
             [zolo.setup.config :as conf]
             [zolo.service.core :as service]
             [zolo.domain.core :as d-core]
-            [zolo.utils.maps :as zmaps]))
+            [zolo.utils.maps :as zmaps]
+            [zolo.service.distiller.contact :as c-distiller]
+            [zolo.service.distiller.thread :as t-distiller]))
 
 (def REPLY-TO "reply_to")
 (def FOLLOW-UP "follow_up")
@@ -92,7 +94,7 @@
   (d-core/run-in-tz-offset (:user/login-tz u)
                            (if-let [ibc (interaction/ibc u (:user/contacts u))]
                              (-> (c-store/find-by-guid guid)
-                                 (contact/distill ibc)))))
+                                 (c-distiller/distill u ibc)))))
 
 (defn update-contact [u c params]
   (when (and u c)
@@ -104,19 +106,19 @@
                                                    (c-store/save it))
                                    u (u-store/reload u)
                                    ibc (interaction/ibc u (:user/contacts u))]
-                               (contact/distill updated-c ibc)))))
+                               (c-distiller/distill updated-c u ibc)))))
 
 
 (defn contacts-for-reply-to [u]
   (->> u
        t/find-reply-to-threads
-       (t/distill-by-contacts u)
+       (t-distiller/distill-by-contacts u)
        (map (fn [[c threads]] (merge c {:reply-to-threads threads})))))
 
 (defn contacts-for-follow-up [u]
   (->> u
        t/find-follow-up-threads
-       (t/distill-by-contacts u)
+       (t-distiller/distill-by-contacts u)
        (map (fn [[c threads]] (merge c {:follow-up-threads threads})))))
 
 (defn selector-contacts [u selector]

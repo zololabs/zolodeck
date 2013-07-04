@@ -44,60 +44,6 @@
        (is (not (nil? (ss/suggestion-set d-mickey "ss-2012-12-21"))))
        (is (= ["c1" "c2"] (:suggestion-set/contacts (ss/suggestion-set d-mickey "ss-2012-12-21"))))))))
 
-(deftest test-distill
-  (testing "When nil ss is passed it should return nil"
-    (is (nil? (ss/distill nil nil))))
-
-  (testing "When proper ss is passed and"
-
-    (run-as-of "2012-05-11"
-      (d-core/run-in-gmt-tz
-
-       (testing "Contact is empty it should return proper ss name"
-         (let [u (pgen/generate-domain {:SPECS {:friends []}})
-               ibc (interaction/ibc u (:user/contacts u))
-               ss (create-ss "ss-2012-05-01" (:user/contacts u))
-               distilled-ss (ss/distill ss ibc)]
-           (is (= "ss-2012-05-01" (:suggestion-set/name distilled-ss)))
-           (is (= [] (:suggestion-set/contacts distilled-ss)))))
-
-       (testing "has many contacts"
-         (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels")
-                                                             (pgen/create-friend-spec "Jill" "Ferry")]}})
-               ibc (interaction/ibc u (:user/contacts u))
-               ss (create-ss "ss-2012-05-01" (:user/contacts u))
-               distilled-ss (ss/distill ss ibc)]
-
-           (is (= "ss-2012-05-01" (:suggestion-set/name distilled-ss)))
-           (is (= 2 (count (:suggestion-set/contacts distilled-ss))))))
-
-       (testing "Contact has not been contacted at all"
-         (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels")]}})
-               ibc (interaction/ibc u (:user/contacts u))
-               ss (create-ss "ss-2012-05-01" (:user/contacts u))
-               distilled-ss (ss/distill ss ibc)]
-           (is (= "ss-2012-05-01" (:suggestion-set/name distilled-ss)))
-           (is (= 1 (count (:suggestion-set/contacts distilled-ss))))
-
-           (let [jack (first (:user/contacts u))
-                 jack-from-ss (first (:suggestion-set/contacts distilled-ss))]
-             (is (= (contact/distill jack ibc) (dissoc jack-from-ss :contact/reason-to-connect)))
-             (is (= "You haven't connected in a while" (:contact/reason-to-connect jack-from-ss))))))
-
-       (testing "Contact has been contacted last month"
-         (run-as-of "2012-06-10"
-           (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})
-                 ibc (interaction/ibc u (:user/contacts u))
-                 ss (create-ss "ss-2012-05-01" (:user/contacts u))
-                 distilled-ss (ss/distill ss ibc)]
-             (is (= "ss-2012-05-01" (:suggestion-set/name distilled-ss)))
-             (is (= 1 (count (:suggestion-set/contacts distilled-ss))))
-
-             (let [jack (first (:user/contacts u))
-                   jack-from-ss (first (:suggestion-set/contacts distilled-ss))]
-               (is (= (contact/distill jack ibc) (dissoc jack-from-ss :contact/reason-to-connect)))
-               (is (= "Your last interaction was 31 days ago" (:contact/reason-to-connect jack-from-ss)))))))))))
-
 (deftest test-new-suggestion-set
   (testing "When nil user is passed"
     (let [ss (ss/new-suggestion-set nil "ss-2012-12-01" :random)]

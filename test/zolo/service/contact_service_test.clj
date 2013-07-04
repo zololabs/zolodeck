@@ -25,7 +25,8 @@
             [zolo.utils.calendar :as zolo-cal]
             [zolo.personas.shy :as shy-persona]
             [zolo.personas.vincent :as vincent-persona]
-            [zolo.personas.generator :as pgen]))
+            [zolo.personas.generator :as pgen]
+            [zolo.service.distiller.contact :as c-distiller]))
 
 (deftest test-update-contacts-for-user
   (demonic-testing "when user is not present, it should return nil"
@@ -162,8 +163,8 @@
            (is (contact/is-muted? updated-jack))
            (is (contact/is-muted? (c-store/find-by-guid (:contact/guid jack))))
 
-           (is (= (dissoc (contact/distill jack ibc) :contact/muted)
-                  (dissoc updated-jack :contact/muted))))
+           (is (= (dissoc (c-distiller/distill jack u ibc) :contact/muted :contact/history)
+                  (dissoc updated-jack :contact/muted :contact/history))))
 
          (let [updated-jack (c-service/update-contact u jack {:person true :muted false})]
             
@@ -173,7 +174,7 @@
             (is (contact/is-a-person? updated-jack))
             (is (contact/is-a-person? (c-store/find-by-guid (:contact/guid jack))))
             
-            (is (= (dissoc (contact/distill jack ibc) :contact/is-a-person)
+            (is (= (dissoc (c-distiller/distill jack u ibc) :contact/is-a-person)
                    (dissoc updated-jack :contact/is-a-person)))))))))
 
 
@@ -297,8 +298,9 @@
             jack-uid (:social/provider-uid jack-ui)
             
             follow-contacts (c-service/list-contacts vincent follow-up-options)
-            follow-threads-jill (-> follow-contacts first :follow-up-threads)
-            follow-threads-jack (-> follow-contacts second :follow-up-threads)
+            [jack-fc jill-fc] (sort-by :contact/first-name follow-contacts)
+            follow-threads-jill (:follow-up-threads jill-fc)
+            follow-threads-jack (:follow-up-threads jack-fc)
             
             jill-messages (-> follow-threads-jill first :thread/messages)          
             jack-messages (-> follow-threads-jack first :thread/messages)

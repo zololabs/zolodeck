@@ -157,65 +157,12 @@
 
 (def is-received-by-user? (complement is-sent-by-user?))
 
-(defn- author-for-distillation [u m is-sent]
-  (if is-sent
-    (let [author-ui (ui/find-by-provider-uid u (message-from m))]
-      {:author/first-name (:identity/first-name author-ui)
-       :author/last-name (:identity/last-name author-ui)
-       :author/picture-url (:identity/photo-url author-ui)})
-    (let [author-si (si/find-by-provider-uid u (message-from m))]
-      {:author/first-name (:social/first-name author-si)
-       :author/last-name (:social/last-name author-si)
-       :author/picture-url (:social/photo-url author-si)})))
-
-(defn- remove-user-from-reply-to [u message-to-uids]
+(defn remove-user-from-reply-to [u message-to-uids]
   (it-> u
         (:user/user-identities it)
         (map :identity/provider-uid it)
         (remove (fn [to-uid] (some #{to-uid} it)) message-to-uids)))
 
-(defn- reply-to-for-distillation-from-to [u m]
-  ;; [to *] minus author 
-  (->> (message-to m)
-       (remove-user-from-reply-to u)
-       (map #(si/find-by-provider-uid u %))
-       (map (fn [si] {:reply-to/first-name (:social/first-name si)
-                     :reply-to/last-name (:social/last-name si)
-                     :reply-to/provider-uid (:social/provider-uid si)
-                     :reply-to/ui-provider-uid (:social/ui-provider-uid si)}))))
-
-(defn- reply-to-for-distillation-from-from [u m is-sent]
-  (if (not is-sent)
-    (let [from-si (si/find-by-provider-uid u (message-from m))]
-      {:reply-to/first-name (:social/first-name from-si)
-       :reply-to/last-name (:social/last-name from-si)
-       :reply-to/provider-uid (:social/provider-uid from-si)
-       :reply-to/ui-provider-uid (:social/ui-provider-uid from-si)})))
-
-(defn distill
-  ([u message]
-     (distill u nil message))
-  ([u tz-offset-minutes message]
-     (let [is-sent (is-sent-by-user? u message)]
-       (-> {}
-           (assoc :message/message-id (message-id message))
-           (assoc :message/guid (message-guid message))
-           (assoc :message/provider (message-provider message))
-           (assoc :message/thread-id (thread-id message))
-           (assoc :message/from (message-from message))
-           (assoc :message/to (message-to message))
-           (assoc :message/done (message-done? message))
-           (assoc :message/follow-up-on (follow-up-on message))
-           (assoc :message/date (message-date message))
-           (assoc :message/subject (message-subject message))
-           (assoc :message/ui-guid (message-ui-guid message))
-           (assoc :message/text (message-text message))
-           (assoc :message/snippet (snippet message))
-           (assoc :message/sent is-sent)
-           (assoc :message/author (author-for-distillation u message is-sent))
-           (assoc :message/reply-to (remove nil?
-                                            (conj (reply-to-for-distillation-from-to u message)
-                                                  (reply-to-for-distillation-from-from u message is-sent))))))))
 
 ;;TODO test
 (defn create-temp-message [from-ui from-uid to-uids provider thread-id subject text]

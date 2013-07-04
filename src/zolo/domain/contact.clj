@@ -156,21 +156,6 @@
   ([u number]
      (take number (weak-contacts u))))
 
-(defn distill-basic [c]
-  {:contact/first-name (first-name c)
-   :contact/last-name (last-name c)
-   :contact/guid (:contact/guid c)
-   :contact/muted (is-muted? c)
-   :contact/person (is-a-person? c)
-   :contact/picture-url (picture-url c)
-   :contact/social-identities (map si/distill (:contact/social-identities c))})
-
-(defn distill [c ibc]
-  (when c
-    (let [interactions (ibc c)]
-      (merge (distill-basic c) {:contacted-today (is-contacted-today? c ibc)
-                                :contact/interaction-daily-counts (interaction/daily-counts interactions)}))))
-
 
 ;; (defn contacts-of-strength [u strength-as-keyword]
 ;;   (condp = strength-as-keyword

@@ -8,6 +8,8 @@
             [zolo.store.message-store :as m-store]
             [zolo.domain.core :as d-core]
             [zolo.social.email.messages :as messages]
+            [zolo.service.distiller.message :as m-distiller]
+            [zolo.service.distiller.thread :as t-distiller]
             [zolo.utils.calendar :as zcal]))
 
 ;;TODO Only will work for email
@@ -18,9 +20,9 @@
                                (if-let [m (m-store/find-by-ui-guid-and-id (:identity/guid ui) message-id)]
                                  (if-let [account-id (-> m :message/user-identity :identity/auth-token)]
                                    (->> (messages/get-messages-for-thread account-id message-id)
-                                        (t/messages->threads u)
+                                        t/messages->threads
                                         first
-                                        (t/distill u))))))))
+                                        (t-distiller/distill u))))))))
 
 (defn update-thread-details [user-guid ui-guid message-id done? follow-up-on]
   (if-let [u (u-store/find-entity-by-guid user-guid)]
@@ -31,4 +33,4 @@
                                        (m/set-doneness it done?)
                                        (m/set-follow-up-on it (zcal/iso-string->inst follow-up-on))
                                        (m-store/update-message it)
-                                       (m/distill u it)))))))
+                                       (m-distiller/distill u it)))))))

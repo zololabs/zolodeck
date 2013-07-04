@@ -21,7 +21,8 @@
             [zolo.domain.core :as d-core]
             [zolo.personas.shy :as shy-persona]
             [zolo.personas.vincent :as vincent-persona]
-            [zolo.utils.calendar :as zolo-cal]))
+            [zolo.utils.calendar :as zolo-cal]
+            [zolo.service.distiller.thread :as t-distiller]))
  
 (deftest test-distilled-threads-with-temps
   (demonic-testing "When user has a thread with some temp-messages, distillation should still work"
@@ -37,7 +38,7 @@
              (m-service/new-message u {:text "Hey hello" :provider "facebook" :from u-uid :guid (-> u :user/guid str) :to [f-uid]}))
            
            (let [all-t (->> u u-store/reload t/all-threads)
-                 dt (->> all-t second (t/distill u))]
+                 dt (->> all-t second (t-distiller/distill u))]
              (has-keys dt [:thread/guid :thread/subject :thread/lm-from-contact :thread/provider :thread/messages :thread/ui-guid])
              (has-keys (:thread/lm-from-contact dt) [:contact/first-name :contact/last-name :contact/guid :contact/muted :contact/picture-url :contact/social-identities])
              (doseq [m (:thread/messages dt)]

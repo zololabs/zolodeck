@@ -72,12 +72,3 @@
   (if (:user/data-ready-in u)
     (- (zcal/to-seconds (:user/data-ready-in u)) (zcal/to-seconds (zcal/now)))
     0))
-
-(defn distill [u]
-  (when u 
-    {:user/guid (str (:user/guid u))
-     :user/emails (user-identity/email-ids u)
-     :user/data-ready-in (data-ready-in-remaining-seconds u)
-     :user/updated (not (nil? (:user/last-updated u)))
-     ;;TODO test
-     :user/all-permissions-granted (all-permissions-granted? u)}))

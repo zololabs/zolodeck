@@ -129,27 +129,6 @@
       (assert-same-day? "2012-12-21" (user/client-date-time {:user/login-tz -330} t))
       (assert-same-day? "2012-12-20" (user/client-date-time {:user/login-tz 420} t)))))
 
-(deftest test-distill
-  (testing "Should return nil when Nil is passed"
-    (is (nil? (user/distill nil))))
-  
-  (testing "Email should be empty if no user-identities are present"
-    (let [du (user/distill {:user/guid "abc" :user/data-ready-in (zcal/now)})]
-      (is (= "abc" (:user/guid du)))
-      (is (empty? (:user/email du)))))
-
-  (testing "Updated flag should be returned properly"
-    (is (:user/updated (user/distill {:user/last-updated "sometime" :user/data-ready-in (zcal/now)})))
-    (is (not (:user/updated (user/distill {:user/guid "abc" :user/data-ready-in (zcal/now)})))))
-  
-  (demonic-testing "Should return properly distilled user"
-    (personas/in-social-lab
-     (let [mickey (fb-lab/create-user "Mickey" "Mouse")
-           d-mickey (personas/create-domain-user-from-fb-user mickey)
-           du (user/distill d-mickey)]
-       (is (= (str (:user/guid d-mickey)) (:user/guid du)))
-       (is (= ["Mickey.Mouse@gmail.com"] (:user/emails du)))))))
-
 
 (deftest test-provider-id
   (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})]

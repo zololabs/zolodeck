@@ -7,42 +7,8 @@
             [clojure.string :as str]
             [zolo.utils.calendar :as zcal]))
 
-(defn- last-message [thread]
+(defn last-message [thread]
   (-> thread :thread/messages first))
-
-(defn- lm-contact [u last-message selector-fn]
-  (it-> last-message
-        (c/find-by-provider-and-provider-uid u (:message/provider it) (selector-fn it))
-        (c/distill-basic it)))
-
-(defn- lm-from-to [u last-m]
-  (if (:message/sent last-m)
-    (lm-contact u last-m #(first (:message/to %)))
-    (lm-contact u last-m :message/from)))
-
-(defn- person-name [p]
-  (str (:reply-to/first-name p) " " (:reply-to/last-name p)))
-
-(defn- subject-from-people [distilled-message]
-  (it-> distilled-message
-        (:message/reply-to it)
-        (map person-name it)
-        (str/join ", " it)
-        (str "Conversation with " it)))
-
-(defn distill [u thread]
-  (when thread
-    (let [distilled-msgs (domap #(m/distill u (u/tz-offset-minutes) %) (:thread/messages thread))]
-      {:thread/guid (-> distilled-msgs last :message/message-id)
-       :thread/subject (or (:thread/subject thread)
-                           (-> distilled-msgs first subject-from-people))
-       :thread/lm-from-contact (lm-from-to u (first distilled-msgs))
-       :thread/ui-guid (-> distilled-msgs first :message/ui-guid)
-       :thread/provider (-> thread :thread/messages first :message/provider)
-       :thread/messages distilled-msgs})))
-
-(defn distill-by-contacts [u threads]
-  (group-by :thread/lm-from-contact (domap #(distill u %) threads)))
 
 (defn- messages->thread [[thread-id msgs]]
   {:thread/guid thread-id
@@ -63,13 +29,17 @@
 (defn follow-up-contact-exists? [u thread]
   (contact-exists? u thread #(first (:message/to %))))
 
+(defn sort-by-recent-threads [threads]
+  (reverse-sort-by #(-> % :thread/messages first m/message-date) threads))
+
 ;; TODO - filtering group-chats is temporary, remove this once we support reply-to-multiple
-(defn messages->threads [u msgs]
+(defn messages->threads [msgs]
   (if (empty? msgs)
     []
     (->> msgs
          (group-by m/thread-id)
-         (map messages->thread))))
+         (map messages->thread)
+         sort-by-recent-threads)))
 
 (defn is-done? [thread]
   (-> thread :thread/messages first  m/message-done?))
@@ -105,13 +75,10 @@
   (and (is-follow-up-candidate? u thread)
        (is-after-follow-up-on-time? u thread)))
 
-(defn- sort-by-recent-threads [threads]
-  (reverse-sort-by #(-> % :thread/messages first m/message-date) threads))
-
 (defn all-threads [u]
   (it-> u
         (m/all-messages it)
-        (messages->threads u it)))
+        (messages->threads it)))
 
 (defn find-reply-to-threads [u]
   (it-> u

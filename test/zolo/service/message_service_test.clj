@@ -19,7 +19,8 @@
             [zolo.marconi.facebook.core :as fb-lab]
             [zolo.social.facebook.chat :as fb-chat]
             [zolo.social.email.gateway :as e-gateway]
-            [zolo.personas.generator :as pgen]))
+            [zolo.personas.generator :as pgen]
+            [zolo.service.distiller.message :as m-distiller]))
 
 (demonictest test-update-inbox-messages
   (testing "when user is not present, it should return nil"
@@ -174,7 +175,7 @@
         (m-service/new-message vincent {:text "Hey" :provider "facebook" :from vincent-uid :guid vincent-guid :to [jill-uid]}))
       (let [vincent (u-store/reload vincent)
             last-tm (->> vincent :user/temp-messages last)
-            d-last-tm (->> last-tm (message/distill vincent))]
+            d-last-tm (->> last-tm (m-distiller/distill vincent))]
 
         (is (= (:temp-message/message-id last-tm) (:message/message-id d-last-tm)))
         (is (= (:temp-message/provider last-tm) (:message/provider d-last-tm)))

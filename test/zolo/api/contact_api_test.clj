@@ -203,12 +203,13 @@
         (is (= 200 (:status resp)))
 
         (let [f-contacts (-> resp :body)
-              jill-f-threads (-> f-contacts first :follow_up_threads)
+              [jack jill] (sort-by :contact/first-name f-contacts)
+              jill-f-threads (:follow_up_threads jill)
               jill-f-thread (-> jill-f-threads first)
               jill-f-message (-> jill-f-thread :messages first)
               lm-from-c (:lm_from_contact jill-f-thread)
 
-              jack-f-threads (-> f-contacts second :follow_up_threads)
+              jack-f-threads (:follow_up_threads jack)
               jack-f-thread (-> jack-f-threads first)              
               jack-f-message (-> jack-f-thread :messages first)]
 
