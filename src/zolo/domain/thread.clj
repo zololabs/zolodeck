@@ -85,11 +85,21 @@
 (defn follow-up-on [thread]
   (->> thread :thread/messages (some :message/follow-up-on)))
 
+(defn last-sent-message-time [u thread]
+  (->> thread :thread/messages (filter #(m/is-sent-by-user? u %)) first m/message-date))
+
+(defn- is-last-sent-before-48-hours? [u thread]
+  (-> u
+      (last-sent-message-time thread)
+      (zcal/plus 48 :hours)
+      zcal/to-inst
+      (.before (zcal/now-instant))))
+
 (defn- is-after-follow-up-on-time? [u thread]
   (let [follow-up-on-inst (follow-up-on thread)]
     (if follow-up-on-inst
       (.after (zcal/now) follow-up-on-inst)
-      true)))
+      (is-last-sent-before-48-hours? u thread))))
 
 (defn is-follow-up? [u thread]
   (and (is-follow-up-candidate? u thread)

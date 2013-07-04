@@ -254,7 +254,7 @@
 
           (doseq [m (:messages jill-f-thread)]
             (has-keys m [:message_id :guid :provider :thread_id :from :to :date :text :snippet])))))
-
+    
     (testing "when user has 2 friends, with a follow-up thread each, but one is marked for 2 days later, it should return just the one"
       (let [resp (w-utils/authed-request winnie :get (str "/users/" (:user/guid winnie) "/contacts") follow-up-options)
             last-r-m-id (->> resp :body first :follow_up_threads first :messages (remove :sent) first :message_id)
@@ -264,6 +264,21 @@
         (w-utils/authed-request winnie :put (put-thread-url (:user/guid winnie) winnie-ui-guid last-r-m-id) {:follow_up_on three-days-later})
 
         (let [resp (w-utils/authed-request winnie :get (str "/users/" (:user/guid winnie) "/contacts") follow-up-options)]
-          (is (= 1 (-> resp :body count)))
+          (is (= 1 (-> resp :body count))))))))
 
-        )))))
+
+(demonictest test-default-follow-up-behavior
+  (let [follow-up-options {:selectors ["follow_up"]}
+        winnie (pgen/generate {:SPECS {:first-name "Winnie"
+                                       :last-name "Cooper"
+                                       :friends [(pgen/create-friend-spec "Jack" "Daniels" 2 3)
+                                                 (pgen/create-friend-spec "Jill" "Ferry" 1 2)]}})]
+    (run-as-of "2012-05-11"
+      (testing "User has both 2 contacts, both have follow-up candidates, but only 1 day has passed: it should return neither"
+        (let [resp (w-utils/authed-request winnie :get (str "/users/" (:user/guid winnie) "/contacts") follow-up-options)]
+          (is (zero? (-> resp :body count))))))
+
+        (run-as-of "2012-05-14"
+      (testing "User has both 2 contacts, both have follow-up candidates, but only 3 days have passed: it should return both"
+        (let [resp (w-utils/authed-request winnie :get (str "/users/" (:user/guid winnie) "/contacts") follow-up-options)]
+          (is (= 2 (-> resp :body count))))))))
