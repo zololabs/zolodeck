@@ -20,7 +20,7 @@
                                (if-let [m (m-store/find-by-ui-guid-and-id (:identity/guid ui) message-id)]
                                  (if-let [account-id (-> m :message/user-identity :identity/auth-token)]
                                    (->> (messages/get-messages-for-thread account-id message-id)
-                                        (t/messages->threads u)
+                                        t/messages->threads
                                         first
                                         (t-distiller/distill u))))))))
 

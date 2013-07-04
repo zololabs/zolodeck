@@ -21,8 +21,8 @@
                                 :medium (count (contact/medium-contacts u))
                                 :weak   (count (contact/weak-contacts u))
                                 :quartered (count (contact/contacts-not-contacted-for-days ibc 90))
-                                :strongest-contact (c-distiller/distill (last contacts) ibc)
-                                :weakest-contact (c-distiller/distill (first contacts) ibc)}))))
+                                :strongest-contact (c-distiller/distill (last contacts) u ibc)
+                                :weakest-contact (c-distiller/distill (first contacts) u ibc)}))))
 
 (defn interaction-stats [u]
   (d-core/run-in-tz-offset (:user/login-tz u)

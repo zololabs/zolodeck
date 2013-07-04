@@ -5,14 +5,14 @@
             [zolo.domain.suggestion-set :as s-set]
             [zolo.service.distiller.contact :as c-distiller]))
 
-(defn- contact-info [c ibc]
+(defn- contact-info [c u ibc]
   (-> c
-      (c-distiller/distill ibc)
+      (c-distiller/distill u ibc)
       (assoc :contact/reason-to-connect (s-set/reason-for-suggesting c ibc))))
 
-(defn distill [ss ibc]
+(defn distill [ss u ibc]
   (when ss
     {:suggestion-set/name (:suggestion-set/name ss)
      :suggestion-set/contacts (if (nil? ibc)
                                 []
-                                (domap #(contact-info % ibc) (:suggestion-set/contacts ss)))}))
+                                (domap #(contact-info % u ibc) (:suggestion-set/contacts ss)))}))

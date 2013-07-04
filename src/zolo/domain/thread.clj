@@ -29,13 +29,17 @@
 (defn follow-up-contact-exists? [u thread]
   (contact-exists? u thread #(first (:message/to %))))
 
+(defn sort-by-recent-threads [threads]
+  (reverse-sort-by #(-> % :thread/messages first m/message-date) threads))
+
 ;; TODO - filtering group-chats is temporary, remove this once we support reply-to-multiple
-(defn messages->threads [u msgs]
+(defn messages->threads [msgs]
   (if (empty? msgs)
     []
     (->> msgs
          (group-by m/thread-id)
-         (map messages->thread))))
+         (map messages->thread)
+         sort-by-recent-threads)))
 
 (defn is-done? [thread]
   (-> thread :thread/messages first  m/message-done?))
@@ -61,13 +65,10 @@
   (and (is-follow-up-candidate? u thread)
        (is-after-follow-up-on-time? u thread)))
 
-(defn- sort-by-recent-threads [threads]
-  (reverse-sort-by #(-> % :thread/messages first m/message-date) threads))
-
 (defn all-threads [u]
   (it-> u
         (m/all-messages it)
-        (messages->threads u it)))
+        (messages->threads it)))
 
 (defn find-reply-to-threads [u]
   (it-> u

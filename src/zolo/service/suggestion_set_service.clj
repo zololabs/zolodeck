@@ -34,7 +34,7 @@
         ss-name (suggestion-set-name u)]
     (-> (or (ss/suggestion-set u ss-name)
             (create-suggestion-set u ss-name))
-        (ss-distiller/distill ibc))))
+        (ss-distiller/distill u ibc))))
 
 (defn find-suggestion-set-for-today [user-guid]
   (if-let [u (u-store/find-by-guid user-guid)]

@@ -40,9 +40,9 @@
           (is (= 1 (:medium c-stats)))
           (is (= 2 (:weak c-stats)))
 
-          (is (= (d-core/run-in-tz-offset (:user/login-tz u) (c-distiller/distill strong ibc))
+          (is (= (d-core/run-in-tz-offset (:user/login-tz u) (c-distiller/distill strong u ibc))
                  (:strongest-contact c-stats)))
-          (is (= (d-core/run-in-tz-offset (:user/login-tz u) (c-distiller/distill weak2 ibc))
+          (is (= (d-core/run-in-tz-offset (:user/login-tz u) (c-distiller/distill weak2 u ibc))
                  (:weakest-contact c-stats)))))
 
       (run-as-of "2014-07-01"
@@ -72,9 +72,9 @@
           (is (= 1 (:medium c-stats)))
           (is (= 2 (:weak c-stats)))
 
-          (is (= (d-core/run-in-tz-offset (:user/login-tz u) (c-distiller/distill strong ibc))
+          (is (= (d-core/run-in-tz-offset (:user/login-tz u) (c-distiller/distill strong u ibc))
                  (:strongest-contact c-stats)))
-          (is (= (d-core/run-in-tz-offset (:user/login-tz u) (c-distiller/distill weak2 ibc))
+          (is (= (d-core/run-in-tz-offset (:user/login-tz u) (c-distiller/distill weak2 u ibc))
                  (:weakest-contact c-stats)))))
 
       (run-as-of "2014-07-01"

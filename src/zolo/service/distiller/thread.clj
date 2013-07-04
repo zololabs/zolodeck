@@ -6,13 +6,23 @@
             [zolo.domain.contact :as c]
             [zolo.domain.thread :as t]
             [clojure.string :as str]
-            [zolo.service.distiller.message :as m-distiller]
-            [zolo.service.distiller.contact :as c-distiller]))
+            [zolo.service.distiller.social-identity :as si-distiller]
+            [zolo.service.distiller.message :as m-distiller]))
+
+;;TODO because of cyclic dependency this function is here instead of c-distiller
+(defn distill-contact-basic [contact]
+  {:contact/first-name (c/first-name contact)
+   :contact/last-name (c/last-name contact)
+   :contact/guid (:contact/guid contact)
+   :contact/muted (c/is-muted? contact)
+   :contact/person (c/is-a-person? contact)
+   :contact/picture-url (c/picture-url contact)
+   :contact/social-identities (map si-distiller/distill (:contact/social-identities contact))})
 
 (defn- lm-contact [u last-message selector-fn]
   (it-> last-message
         (c/find-by-provider-and-provider-uid u (:message/provider it) (selector-fn it))
-        (c-distiller/distill-basic it)))
+        (distill-contact-basic it)))
 
 (defn- lm-from-to [u last-m]
   (if (:message/sent last-m)

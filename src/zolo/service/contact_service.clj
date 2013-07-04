@@ -94,7 +94,7 @@
   (d-core/run-in-tz-offset (:user/login-tz u)
                            (if-let [ibc (interaction/ibc u (:user/contacts u))]
                              (-> (c-store/find-by-guid guid)
-                                 (c-distiller/distill ibc)))))
+                                 (c-distiller/distill u ibc)))))
 
 (defn update-contact [u c params]
   (when (and u c)
@@ -106,7 +106,7 @@
                                                    (c-store/save it))
                                    u (u-store/reload u)
                                    ibc (interaction/ibc u (:user/contacts u))]
-                               (c-distiller/distill updated-c ibc)))))
+                               (c-distiller/distill updated-c u ibc)))))
 
 
 (defn contacts-for-reply-to [u]
