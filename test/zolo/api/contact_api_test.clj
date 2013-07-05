@@ -162,6 +162,34 @@
         (let [resp (w-utils/authed-request vincent :get (str "/users/" (:user/guid vincent) "/contacts") reply-to-options)]
           (is (zero? (count (get-in resp [:body])))))))))
 
+(demonictest test-find-reply-to-threads-pagination
+  (let [friendly (pgen/generate {:SPECS {:first-name "Friendly"
+                                         :last-name "Person"
+                                         :friends [(pgen/create-friend-spec "F1" "L1" 1 1)
+                                                   (pgen/create-friend-spec "F2" "L2" 1 3)
+                                                   (pgen/create-friend-spec "F3" "L3" 1 5)
+                                                   (pgen/create-friend-spec "F4" "L4" 1 7)
+                                                   (pgen/create-friend-spec "F5" "L5" 1 9)
+                                                   (pgen/create-friend-spec "F6" "L6" 1 11)
+                                                   (pgen/create-friend-spec "F7" "L7" 1 13)
+                                                   (pgen/create-friend-spec "F8" "L8" 1 15)
+                                                   (pgen/create-friend-spec "F9" "L9" 1 17)]}})
+        f-guid (:user/guid friendly)]
+
+    (is (= 9 (count (get-in (w-utils/authed-request friendly :get (str "/users/" f-guid "/contacts") {:selectors ["reply_to"]}) [:body]))))
+
+    (let [resp (get-in (w-utils/authed-request friendly :get (str "/users/" f-guid "/contacts") {:selectors ["reply_to"] :limit 5}) [:body])]
+      (is (= 5 (count resp)))
+      (same-value? ["F1" "F2" "F3" "F4" "F5"] (map :first_name resp)))
+
+    (let [resp (get-in (w-utils/authed-request friendly :get (str "/users/" f-guid "/contacts") {:selectors ["reply_to"] :offset 7}) [:body])]
+      (is (= 2 (count resp)))
+      (same-value? ["F8" "F9"] (map :first_name resp)))
+
+    (let [resp (get-in (w-utils/authed-request friendly :get (str "/users/" f-guid "/contacts") {:selectors ["reply_to"] :offset 3 :limit 3}) [:body])]
+      (is (= 3 (count resp)))
+      (same-value? ["F4" "F5" "F6"] (map :first_name resp)))))
+
 
 (demonictest test-find-follow-up-contacts
   (let [follow-up-options {:selectors ["follow_up"]}

@@ -137,5 +137,7 @@
 
 (defn list-contacts [user options]
   (d-core/run-in-tz-offset (:user/login-tz user)
-                           (let [{:keys [selectors]} options]
-                             (apply-selectors selectors user))))
+    (let [{:keys [selectors limit offset]} options]
+      (->> user
+           (apply-selectors selectors)
+           (apply-pagination limit offset)))))
