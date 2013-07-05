@@ -8,7 +8,7 @@
             [zolo.service.thread-service :as t-service]))
 
 (defn load-thread [user-guid ui-guid message-id]
-  (if-let [t (print-vals (t-service/load-thread-details user-guid ui-guid message-id))]
+  (if-let [t (t-service/load-thread-details user-guid ui-guid message-id)]
     {:status (STATUS-CODES :ok)
      :body t}
     (resource-not-found "Thread")))
