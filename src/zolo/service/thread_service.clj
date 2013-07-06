@@ -20,6 +20,7 @@
                                (if-let [m (m-store/find-by-ui-guid-and-id (:identity/guid ui) message-id)]
                                  (if-let [account-id (-> m :message/user-identity :identity/auth-token)]
                                    (->> (messages/get-messages-for-thread account-id message-id)
+                                        (map #(assoc % :message/user-identity (:message/user-identity m)))
                                         t/messages->threads
                                         first
                                         (t-distiller/distill u))))))))
@@ -28,9 +29,9 @@
   (if-let [u (u-store/find-entity-by-guid user-guid)]
     (let  [ui (user/ui-from-guid u (to-uuid ui-guid))]
       (d-core/run-in-tz-offset (:user/login-tz u)
-                               (if-let [msg (m-store/find-by-ui-guid-and-id (:identity/guid ui) message-id)]
-                                 (it-> msg
-                                       (m/set-doneness it done?)
-                                       (m/set-follow-up-on it (zcal/iso-string->inst follow-up-on))
-                                       (m-store/update-message it)
-                                       (m-distiller/distill u it)))))))
+        (if-let [msg (m-store/find-by-ui-guid-and-id (:identity/guid ui) message-id)]
+          (it-> msg
+                (m/set-doneness it done?)
+                (m/set-follow-up-on it (zcal/iso-string->inst follow-up-on))
+                (m-store/update-message it)
+                (m-distiller/distill u it)))))))

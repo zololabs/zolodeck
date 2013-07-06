@@ -4,6 +4,7 @@
   (:require [zolo.utils.logger :as logger]
             [zolo.social.core :as social]
             [zolo.demonic.core :as demonic]
+            [zolo.demonic.helper :as dh]
             [zolo.store.user-store :as u-store]))
 
 (defn find-entity-id-by-ui-guid-and-id [ui-guid m-id]
@@ -21,6 +22,11 @@
   (->> m-id
        (find-entity-id-by-ui-guid-and-id ui-guid)
        demonic/load-entity))
+
+(defn find-entity-by-ui-guid-and-id [ui-guid m-id]
+  (->> m-id
+       (find-entity-id-by-ui-guid-and-id ui-guid)
+       dh/load-from-db))
 
 (defn delete-temp-messages [u]
   (->> u
