@@ -38,7 +38,7 @@
              (m-service/new-message u {:text "Hey hello" :provider "facebook" :from u-uid :guid (-> u :user/guid str) :to [f-uid]}))
            
            (let [all-t (->> u u-store/reload t/all-threads)
-                 dt (->> all-t second (t-distiller/distill u))]
+                 dt (it-> all-t (second it) (t-distiller/distill u it "include_messages"))]
              (has-keys dt [:thread/guid :thread/subject :thread/lm-from-contact :thread/provider :thread/messages :thread/ui-guid])
              (has-keys (:thread/lm-from-contact dt) [:contact/first-name :contact/last-name :contact/guid :contact/muted :contact/picture-url :contact/social-identities])
              (doseq [m (:thread/messages dt)]

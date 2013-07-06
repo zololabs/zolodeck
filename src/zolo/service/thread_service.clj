@@ -19,11 +19,11 @@
       (d-core/run-in-tz-offset (:user/login-tz u)
                                (if-let [m (m-store/find-by-ui-guid-and-id (:identity/guid ui) message-id)]
                                  (if-let [account-id (-> m :message/user-identity :identity/auth-token)]
-                                   (->> (messages/get-messages-for-thread account-id message-id)
-                                        (map #(assoc % :message/user-identity (:message/user-identity m)))
-                                        t/messages->threads
-                                        first
-                                        (t-distiller/distill u))))))))
+                                   (it-> (messages/get-messages-for-thread account-id message-id)
+                                         (map #(assoc % :message/user-identity (:message/user-identity m)) it)
+                                         (t/messages->threads it)
+                                         (first it)
+                                         (t-distiller/distill u it "include_messages"))))))))
 
 (defn update-thread-details [user-guid ui-guid message-id done? follow-up-on]
   (if-let [u (u-store/find-entity-by-guid user-guid)]

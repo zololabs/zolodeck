@@ -39,16 +39,18 @@
         (str/join ", " it)
         (str "Conversation with " it)))
 
-(defn distill [u thread]
+(defn distill [u thread & expansions]
   (when thread
-    (let [distilled-msgs (domap #(m-distiller/distill u (u/tz-offset-minutes) %) (:thread/messages thread))]
-      {:thread/guid (-> distilled-msgs last :message/message-id)
-       :thread/subject (or (:thread/subject thread)
-                           (-> distilled-msgs first subject-from-people))
-       :thread/lm-from-contact (lm-from-to u (first distilled-msgs))
-       :thread/ui-guid (-> distilled-msgs first :message/ui-guid)
-       :thread/provider (-> thread :thread/messages first :message/provider)
-       :thread/messages distilled-msgs})))
+    (let [distilled-msgs (domap #(m-distiller/distill u (u/tz-offset-minutes) %) (:thread/messages thread))
+          basic-thread       {:thread/guid (-> distilled-msgs last :message/message-id)
+                              :thread/subject (or (:thread/subject thread)
+                                                  (-> distilled-msgs first subject-from-people))
+                              :thread/lm-from-contact (lm-from-to u (first distilled-msgs))
+                              :thread/ui-guid (-> distilled-msgs first :message/ui-guid)
+                              :thread/provider (-> thread :thread/messages first :message/provider)}]
+      (if (some #{"include_messages"} expansions)
+        (assoc basic-thread :thread/messages distilled-msgs)
+        basic-thread))))
 
 (defn distill-by-contacts [u threads]
-  (group-by :thread/lm-from-contact (domap #(distill u %) threads)))
+  (group-by :thread/lm-from-contact (domap #(distill u % "include_messages") threads)))
