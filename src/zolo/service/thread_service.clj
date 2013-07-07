@@ -29,9 +29,12 @@
   (if-let [u (u-store/find-entity-by-guid user-guid)]
     (let  [ui (user/ui-from-guid u (to-uuid ui-guid))]
       (d-core/run-in-tz-offset (:user/login-tz u)
-        (if-let [msg (m-store/find-by-ui-guid-and-id (:identity/guid ui) message-id)]
-          (it-> msg
-                (m/set-doneness it done?)
-                (m/set-follow-up-on it (zcal/iso-string->inst follow-up-on))
-                (m-store/update-message it)
-                (m-distiller/distill u it)))))))
+                               (if-let [msg (m-store/find-by-ui-guid-and-id (:identity/guid ui) message-id)]
+                                 (do (it-> msg
+                                           (m/set-doneness it done?)
+                                           (m/set-follow-up-on it (zcal/iso-string->inst follow-up-on))
+                                           (m-store/update-message it))
+                                     (->> (m-store/find-messages-by-ui-guid-and-thread-guid (:identity/guid ui) (:message/thread-id msg))
+                                          t/messages->threads
+                                          first
+                                          (t-distiller/distill u))))))))

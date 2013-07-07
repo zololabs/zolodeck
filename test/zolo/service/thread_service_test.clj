@@ -71,8 +71,8 @@
       (is (nil? (t-service/update-thread-details (:user/guid vincent) vincent-ui-guid "message-id" true "2017-07-07T17:17:17.003Z")))))
 
   (demonic-testing "Message should get updated"
-    (let [vincent (vincent-persona/create)
-          vincent-ui-guid (-> vincent :user/user-identities first :identity/guid)
-          m-id (-> vincent :user/messages last m/message-id)]
-      (is (not (:message/done (t-service/update-thread-details (:user/guid vincent) vincent-ui-guid m-id false "2017-07-07T17:17:17.003Z"))))      
-      (is (:message/done (t-service/update-thread-details (:user/guid vincent) vincent-ui-guid m-id true "2017-07-07T17:17:17.003Z"))))))
+    (let [u (pgen/generate {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 1)]}})          
+          u-ui-guid (-> u :user/user-identities first :identity/guid)
+          m-id (-> u :user/messages last m/message-id)]
+      (is (not (:thread/done (t-service/update-thread-details (:user/guid u) u-ui-guid m-id false "2017-07-07T17:17:17.003Z"))))      
+      (is (:thread/done (t-service/update-thread-details (:user/guid u) u-ui-guid m-id true "2017-07-07T17:17:17.003Z"))))))

@@ -42,13 +42,15 @@
 (defn distill [u thread & expansions]
   (when thread
     (let [distilled-msgs (domap #(m-distiller/distill u (u/tz-offset-minutes) %) (:thread/messages thread))
-          basic-thread       {:thread/guid (-> distilled-msgs last :message/message-id)
-                              :thread/subject (or (:thread/subject thread)
-                                                  (-> distilled-msgs first subject-from-people))
-                              :thread/lm-from-contact (lm-from-to u (first distilled-msgs))
-                              :thread/ui-guid (-> distilled-msgs first :message/ui-guid)
-                              :thread/provider (-> thread :thread/messages first :message/provider)}]
-      (if (some #{"include_messages"} expansions)
+          basic-thread {:thread/guid (-> distilled-msgs last :message/message-id)
+                        :thread/subject (or (:thread/subject thread)
+                                            (-> distilled-msgs first subject-from-people))
+                        :thread/lm-from-contact (lm-from-to u (first distilled-msgs))
+                        :thread/ui-guid (-> distilled-msgs first :message/ui-guid)
+                        :thread/provider (-> thread :thread/messages first :message/provider)
+                        :thread/done (-> thread :thread/messages first :message/done)
+                        :thread/follow-up-on (-> thread :thread/messages first :message/follow-up-on)}]
+      (if true
         (assoc basic-thread :thread/messages distilled-msgs)
         basic-thread))))
 
