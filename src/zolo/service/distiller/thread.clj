@@ -50,7 +50,7 @@
                         :thread/provider (-> thread :thread/messages first :message/provider)
                         :thread/done (-> thread :thread/messages first :message/done)
                         :thread/follow-up-on (-> thread :thread/messages first :message/follow-up-on)}]
-      (if true
+      (if (some #{"include_messages"} expansions)
         (assoc basic-thread :thread/messages distilled-msgs)
         basic-thread))))
 
