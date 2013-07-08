@@ -123,9 +123,10 @@
   (nil? (#{"/server/status"} (:uri request))))
 
 (defn- user-guid-from-request [request]
-  (let [splitted-uri (->> request :uri (zolo-str/split "/"))]
-    (when (=  (second splitted-uri) "users")
-      (nth splitted-uri 2))))
+  (or (-> request :params :guid)
+      (let [splitted-uri (->> request :uri (zolo-str/split "/"))]    
+        (when (and (>= (count splitted-uri) 3) (= (second splitted-uri) "users"))
+          (nth splitted-uri 2)))))
 
 (defn wrap-user-info-logging [handler]
   (fn [request]
