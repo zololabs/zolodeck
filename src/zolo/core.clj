@@ -83,14 +83,15 @@
       (nested-params-mw/wrap-nested-params
        (wrap-json-params
         (kw-params-mw/wrap-keyword-params
-         (web/wrap-request-logging
-          (web/wrap-error-handling
-           (web/wrap-jsonify
-            (web/wrap-accept-header-validation
-             (friend/authenticate APP-ROUTES {:allow-anon? true
-                                              :workflows [zauth/authenticate]
-                                              :unauthenticated-handler #'zauth/return-forbidden
-                                              :unauthorized-handler #'zauth/return-forbidden})))))))))))))
+         (web/wrap-user-info-logging
+          (web/wrap-request-logging
+           (web/wrap-error-handling
+            (web/wrap-jsonify
+             (web/wrap-accept-header-validation
+              (friend/authenticate APP-ROUTES {:allow-anon? true
+                                               :workflows [zauth/authenticate]
+                                               :unauthenticated-handler #'zauth/return-forbidden
+                                               :unauthorized-handler #'zauth/return-forbidden}))))))))))))))
 
 (defn start-api
   ([]

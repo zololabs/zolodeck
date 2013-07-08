@@ -14,7 +14,8 @@ lib/*
 .lein-failures
 pom.xml
 config/zolo.clj
-
+logs/*.log
+logs/*.gz
 /devops/nginx/logs/access.log
 /devops/nginx/logs/error.log
 /devops/nginx/nginx.conf

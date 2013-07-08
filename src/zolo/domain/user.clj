@@ -9,10 +9,6 @@
 
 (def ^:dynamic *tz-offset-minutes* nil)
 
-(defn current-user []
-  ;;(dissoc (sandbar/current-user) :username :roles)
-  )
-
 (defn- value-from-ui [u key]
   (-> u
       :user/user-identities

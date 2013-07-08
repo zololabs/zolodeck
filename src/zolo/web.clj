@@ -8,7 +8,8 @@
             [zolo.utils.logger :as logger]
             [zolo.setup.config :as config]
             [zolo.utils.calendar :as zolo-cal]
-            [zolo.utils.maps :as zolo-maps]))
+            [zolo.utils.maps :as zolo-maps]
+            [zolo.utils.string :as zolo-str]))
 
 (def ^:dynamic *ZOLO-REQUEST*)
 
@@ -121,12 +122,16 @@
 (defn not-ignore-logging? [request]
   (nil? (#{"/server/status"} (:uri request))))
 
+(defn- user-guid-from-request [request]
+  (let [splitted-uri (->> request :uri (zolo-str/split "/"))]
+    (when (=  (second splitted-uri) "users")
+      (nth splitted-uri 2))))
+
 (defn wrap-user-info-logging [handler]
   (fn [request]
     (if (not-ignore-logging? request)
       (do
-        (logger/debug "Current User loaded? : " (not (nil? (user/current-user))))
-        (logger/with-logging-context {:guid (:user/guid (user/current-user))}
+        (logger/with-logging-context {:guid (user-guid-from-request request)}
           (handler request)))
       (handler request))))
 
@@ -147,8 +152,7 @@
    (select-keys request [:request-method :query-string :uri :server-name])
    {:trace-id (trace-id request)
     :env (config/environment)
-    :ip-address (get-in request [:headers "x-real-ip"])
-    :guid (guid-from-cookie request)}))
+    :ip-address (get-in request [:headers "x-real-ip"])}))
 
 (defn wrap-request-logging [handler]
   (fn [request]
@@ -156,7 +160,6 @@
       (logger/with-logging-context (logging-context request)
         (logger/debug "REQUEST : " request)
         (let [response (handler request)]
-          (logger/debug "RESPONSE : " (assoc response :body "FILTERED")
-                        )
+          (logger/debug "RESPONSE : " (assoc response :body "FILTERED"))
           response))
       (handler request))))
