@@ -38,8 +38,7 @@
            ] provider p-name p-value)
         ffirst
         demonic-helper/load-from-db
-        :user/_user-identities
-        loadable/entity->loadable)))
+        :user/_user-identities)))
 
 (defn find-by-provider-and-provider-uid [provider provider-uid]
   (find-by-provider-and-property provider :identity/provider-uid provider-uid))

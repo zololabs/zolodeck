@@ -1,7 +1,8 @@
 (ns zolo.store.user-store-test
   (:use clojure.test
         zolo.utils.debug
-        zolo.demonic.test)
+        zolo.demonic.test
+        zolo.test.assertions.core)
   (:require [zolo.store.user-store :as u-store]
             [zolo.test.assertions.datomic :as db-assert]
             [zolo.personas.factory :as personas]
@@ -13,10 +14,18 @@
          fb-user2 (fb-lab/create-user "first2" "last2")
          db-user1 (personas/create-db-user-from-fb-user fb-user1)
          db-user2 (personas/create-db-user-from-fb-user fb-user2)]
-     
-     (is (= db-user2 (u-store/find-by-provider-and-provider-uid :provider/facebook (:id fb-user2))))
-     (is (= db-user1 (u-store/find-by-provider-and-provider-uid :provider/facebook (:id fb-user1))))
-     
+
+
+     (assert-map-values db-user2
+                        [:db/id :user/guid :user/data-ready-in :user/login-tz]
+                        (u-store/find-by-provider-and-provider-uid :provider/facebook (:id fb-user2))
+                        [:db/id :user/guid :user/data-ready-in :user/login-tz])
+
+     (assert-map-values db-user1
+                        [:db/id :user/guid :user/data-ready-in :user/login-tz]
+                        (u-store/find-by-provider-and-provider-uid :provider/facebook (:id fb-user1))
+                        [:db/id :user/guid :user/data-ready-in :user/login-tz])
+          
      (is (nil? (u-store/find-by-provider-and-provider-uid :provider/twitter (:id fb-user1))))
      (is (nil? (u-store/find-by-provider-and-provider-uid  nil (:id fb-user1))))
      (is (nil? (u-store/find-by-provider-and-provider-uid :junk (:id fb-user1))))

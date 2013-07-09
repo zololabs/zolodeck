@@ -6,7 +6,8 @@
   (:require [zolo.social.core :as social]
             [zolo.social.facebook.messages :as fb-messages]
             [zolo.utils.calendar :as zolo-cal]
-            [zolo.demonic.core :as demonic]))
+            [zolo.demonic.core :as demonic]
+            [zolo.demonic.loadable :as loadable]))
 
 (defn same-value? [v1 v2]
   (cond
@@ -18,12 +19,14 @@
     (is (some #{k} (keys m)) (str "Value for key: " k " missing in map: " m))))
 
 (defn assert-map-values [m1 m1-keys m2 m2-keys]
-  (is (= (count m1-keys) (count m2-keys)) "No of keys don't match")
+  (let [m1 (loadable/entity->loadable m1)
+        m2 (loadable/entity->loadable m2)]
+    (is (= (count m1-keys) (count m2-keys)) "No of keys don't match")
 
-  (doall (map #(is (not (nil? (m1 %))) (str % " shouldn't be nil in m1")) m1-keys))
-  (doall (map #(is (not (nil? (m2 %))) (str % " shouldn't be nil in m2")) m2-keys))
+    (doall (map #(is (not (nil? (m1 %))) (str % " shouldn't be nil in m1")) m1-keys))
+    (doall (map #(is (not (nil? (m2 %))) (str % " shouldn't be nil in m2")) m2-keys))
 
-  (doall (map #(is (same-value? (%1 m1) (%2 m2)) (str %1 " does not match " %2)) m1-keys m2-keys)))
+    (doall (map #(is (same-value? (%1 m1) (%2 m2)) (str %1 " does not match " %2)) m1-keys m2-keys))))
 
 (defn is-same-day? [yyyy-MM-dd-str dt]
   (= yyyy-MM-dd-str
