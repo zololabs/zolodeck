@@ -180,7 +180,7 @@
 
 (deftest test-find-reply-to-contacts
 
-  (let [reply-to-options {:selectors ["reply_to"]}]
+  (let [reply-to-options {:selectors ["reply_to"] :thread_limit 50 :thread_offset 0}]
     
     (demonic-testing "User is not present, it should return nil"
       (is (empty? (c-service/list-contacts nil reply-to-options))))
@@ -275,7 +275,7 @@
 
 (deftest test-find-follow-up-contacts
 
-  (let [follow-up-options {:selectors ["follow_up"]}]
+  (let [follow-up-options {:selectors ["follow_up"] :thread_limit 50 :thread_offset 0}]
     
     (demonic-testing "User is not present, it should return nil"
       (is (empty? (c-service/list-contacts nil follow-up-options))))

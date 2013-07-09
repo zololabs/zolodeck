@@ -93,7 +93,7 @@
         (is (get-in resp [:body :person]))))))
 
 (demonictest test-find-reply-to-contacts
-  (let [reply-to-options {:selectors ["reply_to"]}
+  (let [reply-to-options {:selectors ["reply_to"] :thread_limit 50 :thread_offset 0}
         shy (shy-persona/create)
 
         vincent (vincent-persona/create)
@@ -176,23 +176,27 @@
                                                    (pgen/create-friend-spec "F9" "L9" 1 17)]}})
         f-guid (:user/guid friendly)]
 
-    (is (= 9 (count (get-in (w-utils/authed-request friendly :get (str "/users/" f-guid "/contacts") {:selectors ["reply_to"]}) [:body]))))
+    (is (= 9 (count (get-in (w-utils/authed-request friendly :get (str "/users/" f-guid "/contacts")
+                                                    {:selectors ["reply_to"] :thread_limit 50 :thread_offset 0}) [:body]))))
 
-    (let [resp (get-in (w-utils/authed-request friendly :get (str "/users/" f-guid "/contacts") {:selectors ["reply_to"] :limit 5}) [:body])]
+    (let [resp (get-in (w-utils/authed-request friendly :get (str "/users/" f-guid "/contacts")
+                                               {:selectors ["reply_to"] :thread_limit 50 :thread_offset 0 :limit 5}) [:body])]
       (is (= 5 (count resp)))
       (same-value? ["F1" "F2" "F3" "F4" "F5"] (map :first_name resp)))
 
-    (let [resp (get-in (w-utils/authed-request friendly :get (str "/users/" f-guid "/contacts") {:selectors ["reply_to"] :offset 7}) [:body])]
+    (let [resp (get-in (w-utils/authed-request friendly :get (str "/users/" f-guid "/contacts")
+                                               {:selectors ["reply_to"] :thread_limit 50 :thread_offset 0 :offset 7}) [:body])]
       (is (= 2 (count resp)))
       (same-value? ["F8" "F9"] (map :first_name resp)))
 
-    (let [resp (get-in (w-utils/authed-request friendly :get (str "/users/" f-guid "/contacts") {:selectors ["reply_to"] :offset 3 :limit 3}) [:body])]
+    (let [resp (get-in (w-utils/authed-request friendly :get (str "/users/" f-guid "/contacts")
+                                               {:selectors ["reply_to"] :thread_limit 50 :thread_offset 0 :offset 3 :limit 3}) [:body])]
       (is (= 3 (count resp)))
       (same-value? ["F4" "F5" "F6"] (map :first_name resp)))))
 
 
 (demonictest test-find-follow-up-contacts
-  (let [follow-up-options {:selectors ["follow_up"]}
+  (let [follow-up-options {:selectors ["follow_up"] :thread_limit 50 :thread_offset 0}
         shy (shy-persona/create)
         winnie (pgen/generate {:SPECS {:first-name "Winnie"
                                        :last-name "Cooper"
@@ -231,7 +235,7 @@
         (is (= 200 (:status resp)))
 
         (let [f-contacts (-> resp :body)
-              [jack jill] (sort-by :contact/first-name f-contacts)
+              [jack jill] (sort-by :first_name f-contacts)
               jill-f-threads (:follow_up_threads jill)
               jill-f-thread (-> jill-f-threads first)
               jill-f-message (-> jill-f-thread :messages first)
@@ -297,7 +301,7 @@
 
 
 (demonictest test-default-follow-up-behavior
-  (let [follow-up-options {:selectors ["follow_up"]}
+  (let [follow-up-options {:selectors ["follow_up"] :thread_limit 50 :thread_offset 0}
         winnie (pgen/generate {:SPECS {:first-name "Winnie"
                                        :last-name "Cooper"
                                        :friends [(pgen/create-friend-spec "Jack" "Daniels" 2 3)

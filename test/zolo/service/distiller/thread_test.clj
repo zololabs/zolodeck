@@ -18,6 +18,10 @@
             [zolo.test.assertions.domain :as d-assert]
             [zolo.service.distiller.thread :as t-distiller]))
 
+(def THREAD-LIMIT 20)
+
+(def THREAD-OFFSET 0)
+
 (deftest test-distilled-threads
   (testing "When user has a thread with all regular messages, distillation should work"
     (d-core/run-in-gmt-tz
@@ -25,7 +29,7 @@
        (pgen/run-demarcated-generative-tests u {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 9)]}
                                                 :UI-IDS-ALLOWED [:FACEBOOK]
                                                 :UI-IDS-COUNT 1}
-                                             (let [dt (it-> u (t/all-threads it) (first it) (t-distiller/distill u it "include_messages"))]
+                                             (let [dt (it-> u (t/all-threads it THREAD-LIMIT THREAD-OFFSET) (first it) (t-distiller/distill u it "include_messages"))]
                                                (has-keys dt [:thread/guid :thread/subject :thread/lm-from-contact :thread/provider :thread/messages])
                                                (has-keys (:thread/lm-from-contact dt) [:contact/first-name :contact/last-name :contact/guid :contact/muted :contact/picture-url :contact/social-identities])
                                                (doseq [m (:thread/messages dt)]

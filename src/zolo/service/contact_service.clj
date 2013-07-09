@@ -101,35 +101,35 @@
                                (c-distiller/distill updated-c u ibc)))))
 
 
-(defn contacts-for-reply-to [u]
-  (->> u
-       t/find-reply-to-threads
-       (t-distiller/distill-by-contacts u)
-       (map (fn [[c threads]] (merge c {:reply-to-threads threads})))))
+(defn contacts-for-reply-to [u thread-limit thread-offset]
+  (it-> u
+        (t/find-reply-to-threads it thread-limit thread-offset)
+        (t-distiller/distill-by-contacts u it)
+        (map (fn [[c threads]] (merge c {:reply-to-threads threads})) it)))
 
-(defn contacts-for-follow-up [u]
-  (->> u
-       t/find-follow-up-threads
-       (t-distiller/distill-by-contacts u)
-       (map (fn [[c threads]] (merge c {:follow-up-threads threads})))))
+(defn contacts-for-follow-up [u thread-limit thread-offset]
+  (it-> u
+        (t/find-follow-up-threads it thread-limit thread-offset)
+        (t-distiller/distill-by-contacts u it)
+        (map (fn [[c threads]] (merge c {:follow-up-threads threads})) it)))
 
-(defn selector-contacts [u selector]
+(defn selector-contacts [u selector thread-limit thread-offset]
   (condp = selector
-    REPLY-TO (contacts-for-reply-to u)
-    FOLLOW-UP (contacts-for-follow-up u)
+    REPLY-TO (contacts-for-reply-to u thread-limit thread-offset)
+    FOLLOW-UP (contacts-for-follow-up u thread-limit thread-offset)
     (throw+ {:type :bad-request :message (str "Unknown Contacts selector : " selector)})))
 
-(defn apply-selectors [selectors user]
+(defn apply-selectors [selectors thread-limit thread-offset user]
   (if (empty? selectors)
     (:user/contacts user)
     (->> selectors
          distinct
-         (map #(selector-contacts user %))
+         (map #(selector-contacts user % thread-limit thread-offset))
          (apply concat))))
 
 (defn list-contacts [user options]
   (d-core/run-in-tz-offset (:user/login-tz user)
-                           (let [{:keys [selectors limit offset]} options]
+                           (let [{:keys [selectors thread_limit thread_offset limit offset]} options]
                              (->> user
-                                  (apply-selectors selectors)
+                                  (apply-selectors selectors thread_limit thread_offset)
                                   (apply-pagination limit offset)))))

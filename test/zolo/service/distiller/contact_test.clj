@@ -4,6 +4,7 @@
         zolo.demonic.core
         zolo.test.core-utils
         zolo.utils.debug
+        zolo.utils.clojure
         [clojure.test :only [run-tests deftest is are testing]]
         conjure.core)
   (:require [zolo.personas.factory :as personas]
@@ -25,6 +26,10 @@
             [zolo.service.distiller.thread :as t-distiller]
             [zolo.service.distiller.contact :as c-distiller]
             [zolo.service.distiller.social-identity :as si-distiller]))
+
+(def THREAD-LIMIT 20)
+
+(def THREAD-OFFSET 0)
 
 (deftest test-distill
   (testing "When nil is passed it should return nil"
@@ -91,7 +96,7 @@
       (d-core/run-in-gmt-tz
        (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 2)]}})
              ibc (interaction/ibc u (:user/contacts u))
-             dt (->> u t/all-threads first (t-distiller/distill u))]
+             dt (it-> u (t/all-threads it THREAD-LIMIT THREAD-OFFSET) (first it) (t-distiller/distill u it))]
          
          (let [jack (-> u :user/contacts first)
                distilled-jack (c-distiller/distill jack u ibc)

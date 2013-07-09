@@ -75,22 +75,25 @@
   (and (is-follow-up-candidate? u thread)
        (is-after-follow-up-on-time? u thread)))
 
-(defn all-threads [u]
+(defn all-threads [u thread-limit thread-offset]
   (it-> u
         (m/all-messages it)
-        (messages->threads it)))
+        (reverse-sort-by m/message-date it)
+        (messages->threads it)
+        (drop thread-offset it)
+        (take thread-limit it)))
 
-(defn find-reply-to-threads [u]
+(defn find-reply-to-threads [u thread-limit thread-offset]
   (it-> u
-        (all-threads it)        
+        (all-threads it thread-limit thread-offset)        
         (filter #(is-reply-to? u %) it)
         (filter #(reply-to-contact-exists? u %) it)
         (remove is-done? it)
         (sort-by-recent-threads it)))
 
-(defn find-follow-up-threads [u]
+(defn find-follow-up-threads [u thread-limit thread-offset]
   (it-> u
-        (all-threads it)
+        (all-threads it thread-limit thread-offset)
         (filter #(is-follow-up? u %) it)
         (filter #(follow-up-contact-exists? u %) it)
         (sort-by-recent-threads it)))
