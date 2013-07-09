@@ -117,8 +117,8 @@
         (is (empty? (get-in resp [:body])))))
 
     (testing "when not passed the right selector query, should return error"
-      (let [resp (w-utils/authed-request vincent :get (str "/users/" (:user/guid vincent) "/contacts") {:junk "param"})]
-        (is (= 500 (:status resp)))))
+      (let [resp (w-utils/authed-request vincent :get (str "/users/" (:user/guid vincent) "/contacts") {:selectors ["junk"]})]
+        (is (= 400 (:status resp)))))
     
     (testing "when user with 2 friends, and 1 reply-to thread, it should return the friend who has reply to"
       (let [resp (w-utils/authed-request vincent :get (str "/users/" (:user/guid vincent) "/contacts") reply-to-options)]
@@ -223,8 +223,8 @@
         (is (empty? (get-in resp [:body])))))
 
     (testing "when not passed the right selector query, should return error"
-      (let [resp (w-utils/authed-request winnie :get (str "/users/" (:user/guid winnie) "/contacts") {:junk "param"})]
-        (is (= 500 (:status resp)))))
+      (let [resp (w-utils/authed-request winnie :get (str "/users/" (:user/guid winnie) "/contacts") {:selectors ["junk"]})]
+        (is (= 400 (:status resp)))))
     
     (testing "when user with 2 friends, and a follow-up thread each, it should return both"
       (let [resp (w-utils/authed-request winnie :get (str "/users/" (:user/guid winnie) "/contacts") follow-up-options)]

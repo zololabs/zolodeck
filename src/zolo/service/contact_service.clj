@@ -24,14 +24,6 @@
 (def REPLY-TO "reply_to")
 (def FOLLOW-UP "follow_up")
 
-;; (defn pento-score [{email-address :social/provider-uid person-name :social/nickname sent-count :social/sent-count received-count :social/received-count}]
-;;   (pento/score email-address person-name sent-count received-count))
-
-;; (defn set-person-score [si]
-;;   (if-not (si/is-email? si)
-;;     si
-;;     (assoc si :social/email-person-score (pento-score si))))
-
 (defn select-pento-keys [si]
   (let [key-names {:social/provider-uid :email
                    :social/nickname :name
@@ -93,7 +85,7 @@
 (defn get-contact-by-guid [u guid]
   (d-core/run-in-tz-offset (:user/login-tz u)
                            (if-let [ibc (interaction/ibc u (:user/contacts u))]
-                             (-> (c-store/find-by-guid guid)
+                             (-> (c-store/find-entity-by-guid guid)
                                  (c-distiller/distill u ibc)))))
 
 (defn update-contact [u c params]
@@ -125,7 +117,7 @@
   (condp = selector
     REPLY-TO (contacts-for-reply-to u)
     FOLLOW-UP (contacts-for-follow-up u)
-    (throw+ {:type :severe :message (str "Unknown Contacts selector : " selector)})))
+    (throw+ {:type :bad-request :message (str "Unknown Contacts selector : " selector)})))
 
 (defn apply-selectors [selectors user]
   (if (empty? selectors)
@@ -137,7 +129,7 @@
 
 (defn list-contacts [user options]
   (d-core/run-in-tz-offset (:user/login-tz user)
-    (let [{:keys [selectors limit offset]} options]
-      (->> user
-           (apply-selectors selectors)
-           (apply-pagination limit offset)))))
+                           (let [{:keys [selectors limit offset]} options]
+                             (->> user
+                                  (apply-selectors selectors)
+                                  (apply-pagination limit offset)))))
