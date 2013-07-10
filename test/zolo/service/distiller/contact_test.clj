@@ -96,7 +96,7 @@
       (d-core/run-in-gmt-tz
        (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 2)]}})
              ibc (interaction/ibc u (:user/contacts u))
-             dt (it-> u (t/all-threads it THREAD-LIMIT THREAD-OFFSET) (first it) (t-distiller/distill u it))]
+             dt (it-> u (t/all-threads it THREAD-LIMIT THREAD-OFFSET) (first it) (t-distiller/distill u it "include_messages"))]
          
          (let [jack (-> u :user/contacts first)
                distilled-jack (c-distiller/distill jack u ibc)
