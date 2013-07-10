@@ -8,7 +8,7 @@
         zolo.utils.debug
         zolo.utils.test
         zolo.demonic.core
-        zolo.web.status-codes)
+        zolo.utils.http-status-codes)
   (:require [zolo.setup.config :as conf]
             [zolo.setup.datomic-schema :as schema]
             [zolo.facebook.gateway :as fb-gateway]

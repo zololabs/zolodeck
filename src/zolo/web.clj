@@ -3,22 +3,18 @@
         zolo.utils.debug
         clojure.stacktrace)
   (:require [clojure.data.json :as json]
-            [zolo.web.status-codes :as http-status]
+            [zolo.utils.http-status-codes :as http-status]
             [zolo.domain.user :as user]
             [zolo.utils.logger :as logger]
+            [zolo.utils.web :as zweb]
             [zolo.setup.config :as config]
             [zolo.utils.calendar :as zolo-cal]
-            [zolo.utils.maps :as zolo-maps]
+            [zolo.utils.maps :as zmaps]
             [zolo.utils.string :as zolo-str]))
-
-(def ^:dynamic *ZOLO-REQUEST*)
 
 (def RANDOM-PROCESS-ID (java.util.UUID/randomUUID))
 
 (def PROCESS-COUNTER (atom 0))
-
-(defn request-origin []
-  (get-in *ZOLO-REQUEST* [:headers "origin"]))
 
 (defn- write-json-uuid [x out escape-unicode?]
   (.print out (str "\"" x "\"")))
@@ -42,54 +38,6 @@
 ;;         {:write-json (fn [x out escape-unicode?] (.print out
 ;;         (json/json-str(.m x))))})
 
-(defn status-404-if-nil [o]
-  (if-not o
-    (throw+ {:type :not-found :message "Not Found"})
-    o))
-
-;;TODO Two json response functions ...need to clean up
-(defn json-response [data & [status]]
-  {:status (or status 200)
-   :headers {"Content-Type" "application/json; charset=utf-8"
-             "Access-Control-Allow-Origin" (request-origin)
-             "Access-Control-Allow-Credentials" "true"
-             "Cache-Control:" "max-age=0, no-cache,  must-revalidate"}
-   :body (json/json-str (zolo-maps/to-underscore-keys data))})
-
-(defn jsonify [response-map]
-  (-> {:headers (merge {"Content-Type" "application/json; charset=utf-8"
-                        "Access-Control-Allow-Origin" (request-origin)
-                        "Access-Control-Allow-Credentials" "true"}
-                       (:headers response-map))}
-      (assoc :body (json/json-str (zolo-maps/to-underscore-keys (:body response-map))))
-      (assoc :status (:status response-map))))
-
-(defn error-response [error-object]
-  (json-response {:error (:message error-object)}
-                 (http-status/STATUS-CODES (:type error-object))))
-
-(defn wrap-jsonify [handler]
-  (fn [request]
-    (-> (handler request)
-        jsonify)))
-
-(defn wrap-error-handling [handler]
-  (fn [request]
-    (try+
-     (handler request)
-     (catch [:type :bad-request] e
-       (logger/error e "Bad Request :")
-       (error-response e))
-     (catch [:type :not-found] e
-       (logger/error e "Not found :")
-       (error-response e))
-     (catch [:type :forbidden] e
-       (logger/error e "Permission denied :")
-       (error-response e))
-     (catch Exception e
-       (logger/error e "Exception Occured :")
-       (json-response {:error (.getMessage e)} 500)))))
-
 (defn valid-version? [uri accept-header-value]
   (or (= "/server/status" uri)
       (= "application/vnd.zololabs.zolodeck.v1+json" accept-header-value)))
@@ -104,15 +52,10 @@
     (run-accept-header-validation request)
     (handler request)))
 
-(defn wrap-request-binding [handler]
-  (fn [request]
-    (binding [*ZOLO-REQUEST* request]
-      (handler request))))
-
 (defn wrap-options [handler]
   (fn [request]
     (if (= :options (request :request-method))
-      { :headers {"Access-Control-Allow-Origin" (request-origin)
+      { :headers {"Access-Control-Allow-Origin" (zweb/request-origin)
                   "Access-Control-Allow-Methods" "GET,POST,PUT,OPTIONS,DELETE"
                   "Access-Control-Allow-Headers" "access-control-allow-origin,authorization,Content-Type,origin,X-requested-with,accept"
                   "Access-Control-Allow-Credentials" "true"
@@ -155,12 +98,3 @@
     :env (config/environment)
     :ip-address (get-in request [:headers "x-real-ip"])}))
 
-(defn wrap-request-logging [handler]
-  (fn [request]
-    (if (not-ignore-logging? request)
-      (logger/with-logging-context (logging-context request)
-        (logger/debug "REQUEST : " request)
-        (let [response (handler request)]
-          (logger/debug "RESPONSE : " (assoc response :body "FILTERED"))
-          response))
-      (handler request))))

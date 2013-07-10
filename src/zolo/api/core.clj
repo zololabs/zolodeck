@@ -1,7 +1,7 @@
 (ns zolo.api.core
   (:use zolo.utils.debug
         zolo.utils.clojure
-        zolo.web.status-codes
+        zolo.utils.http-status-codes
         [slingshot.slingshot :only [throw+ try+]])
   (:require [zolo.utils.logger :as logger]))
 

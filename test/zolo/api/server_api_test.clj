@@ -5,7 +5,7 @@
         zolo.utils.debug
         zolo.utils.clojure
         zolo.test.core-utils
-        zolo.web.status-codes)
+        zolo.utils.http-status-codes)
   (:require [zolo.test.web-utils :as w-utils]
             [clojure.data.json :as json]
             [zolo.personas.shy :as shy]))

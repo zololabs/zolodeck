@@ -5,7 +5,8 @@
             [zolo.utils.calendar :as zcal]
             [zolo.utils.string :as zstring]
             [clojure.data.json :as json]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [zolo.gateway.pento.core :as pento]))
 
 (defn all-contacts-details- [cio-account-id]
   (email/get-contacts cio-account-id (zcal/to-seconds #inst "2000-01-01")))
@@ -59,6 +60,12 @@
     (dump-file (concat to-data (list (last from-data))) to-file))
   (print-vals "Undo complete!"))
 
+(defn print-contact-info [cd score]
+  (print-vals "Contact:" (:name cd) "|" (:email cd) "| Pento:" score))
+
+(defn write-person [cd file]
+ (spit file (contact-json cd) :append true))
+
 (defn classify [contact-details person-file not-person-file]
   (print-vals "Starting...")
   (print-vals "Will process" (count contact-details) "contacts...")
@@ -68,25 +75,26 @@
            remaining (rest contact-details)]
       (print-vals "Remaining count:" (count remaining))
       (if-not (processed? cd person-progress not-person-progress)
-        (do
-          (print-vals "Contact:" (:name cd) "|" (:email cd))
-          (println "Person? [y]/n/uy/un/x:")
-          (let [choice (user-choice)]
-            (print-vals "OK," choice)
-            (condp = choice
-              "" (spit person-file (contact-json cd) :append true)
-              "Y" (spit person-file (contact-json cd) :append true)
-              "N" (spit not-person-file (contact-json cd) :append true)
-              "UY" (swap-last person-file not-person-file)
-              "UN" (swap-last not-person-file person-file)
-              (print-vals "Quiting."))
-            (condp = choice
-              "UY" (recur cd remaining)
-              "UN" (recur cd remaining)
-              "Y" (recur (first remaining) (rest remaining))
-              "N" (recur (first remaining) (rest remaining))
-              "" (recur (first remaining) (rest remaining))
-              (print-vals "Done."))))
+        (let [score (pento/score-all [cd])]
+          (do
+            (print-contact-info cd score)
+            (println "Person? [y]/n/uy/un/x:")
+            (let [choice (user-choice)]
+              (print-vals "OK," choice)
+              (condp = choice
+                "" (write-person cd person-file)
+                "Y" (write-person cd person-file)
+                "N" (write-person cd not-person-file)
+                "UY" (swap-last person-file not-person-file)
+                "UN" (swap-last not-person-file person-file)
+                (print-vals "Quiting."))
+              (condp = choice
+                "UY" (recur cd remaining)
+                "UN" (recur cd remaining)
+                "Y" (recur (first remaining) (rest remaining))
+                "N" (recur (first remaining) (rest remaining))
+                "" (recur (first remaining) (rest remaining))
+                (print-vals "Done.")))))
         (recur (first remaining) (rest remaining))))))
 
 (defn go! [cio-account-id person-output-file not-person-output-file]

@@ -122,7 +122,6 @@
 
   :main zolo.core
 
-  :jvm-opts ["-Xmx1g"
-             "-server"
-             ;; "-agentpath:/Applications/YourKit_Java_Profiler_11.0.9.app/bin/mac/libyjpagent.jnilib"
+  :jvm-opts ["-Xmx1g" "-server"
+             "-agentpath:/Applications/YourKit_Java_Profiler_11.0.9.app/bin/mac/libyjpagent.jnilib"
              ])

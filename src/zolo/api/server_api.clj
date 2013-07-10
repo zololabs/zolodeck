@@ -1,6 +1,6 @@
 (ns zolo.api.server-api
   (:use zolo.utils.debug
-        zolo.web.status-codes)
+        zolo.utils.http-status-codes)
   (:require
    [zolo.store.user-store :as u-store]
    [zolo.utils.calendar :as zcal]

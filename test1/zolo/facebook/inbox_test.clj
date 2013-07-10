@@ -6,7 +6,7 @@
         zolo.utils.debug
         zolo.utils.test
         zolo.utils.test-utils
-        zolo.web.status-codes
+        zolo.utils.http-status-codes
         zolo.marconi.facebook.core)
   (:require [zolo.facebook.inbox :as inbox]
             [zolo.api.user-api :as user-api]))

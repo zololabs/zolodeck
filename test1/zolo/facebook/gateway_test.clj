@@ -5,7 +5,7 @@
         zolo.test.web-utils
         zolo.utils.debug
         zolo.utils.test-utils
-        zolo.web.status-codes)
+        zolo.utils.http-status-codes)
   (:require [zolo.setup.config :as conf]
             [zolo.facebook.gateway :as gateway]
             [zolo.api.user-api :as user-api]))
