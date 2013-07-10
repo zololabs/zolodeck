@@ -55,7 +55,7 @@
 (defn wrap-options [handler]
   (fn [request]
     (if (= :options (request :request-method))
-      { :headers {"Access-Control-Allow-Origin" (request-origin)
+      { :headers {"Access-Control-Allow-Origin" (zweb/request-origin)
                   "Access-Control-Allow-Methods" "GET,POST,PUT,OPTIONS,DELETE,PATCH"
                   "Access-Control-Allow-Headers" "access-control-allow-origin,authorization,Content-Type,origin,X-requested-with,accept"
                   "Access-Control-Allow-Credentials" "true"
