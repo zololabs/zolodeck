@@ -93,7 +93,7 @@
         (is (get-in resp [:body :person]))))))
 
 (demonictest test-find-reply-to-contacts
-  (let [reply-to-options {:selectors ["reply_to"] :thread_limit 50 :thread_offset 0}
+  (let [reply-to-options {:selectors ["reply_to"] :thread_limit "50" :thread_offset "0"}
         shy (shy-persona/create)
 
         vincent (vincent-persona/create)
@@ -117,7 +117,7 @@
         (is (empty? (get-in resp [:body])))))
 
     (testing "when not passed the right selector query, should return error"
-      (let [resp (w-utils/authed-request vincent :get (str "/users/" (:user/guid vincent) "/contacts") {:selectors ["junk"]})]
+      (let [resp (w-utils/authed-request vincent :get (str "/users/" (:user/guid vincent) "/contacts") {:selectors ["junk"] :thread_limit "50" :thread_offset "0"})]
         (is (= 400 (:status resp)))))
     
     (testing "when user with 2 friends, and 1 reply-to thread, it should return the friend who has reply to"
@@ -227,7 +227,7 @@
         (is (empty? (get-in resp [:body])))))
 
     (testing "when not passed the right selector query, should return error"
-      (let [resp (w-utils/authed-request winnie :get (str "/users/" (:user/guid winnie) "/contacts") {:selectors ["junk"]})]
+      (let [resp (w-utils/authed-request winnie :get (str "/users/" (:user/guid winnie) "/contacts") {:selectors ["junk"] :thread_limit "50" :thread_offset 0})]
         (is (= 400 (:status resp)))))
     
     (testing "when user with 2 friends, and a follow-up thread each, it should return both"

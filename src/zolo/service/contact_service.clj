@@ -131,5 +131,5 @@
   (d-core/run-in-tz-offset (:user/login-tz user)
                            (let [{:keys [selectors thread_limit thread_offset limit offset]} options]
                              (->> user
-                                  (apply-selectors selectors thread_limit thread_offset)
+                                  (apply-selectors selectors (parse-int thread_limit) (parse-int thread_offset))
                                   (apply-pagination limit offset)))))
