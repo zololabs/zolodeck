@@ -73,9 +73,8 @@
       u-distiller/distill))
 
 (defn get-user-by-guid [guid]
-  (-> (u-store/find-by-guid guid)
+  (-> (u-store/find-entity-by-guid guid)
       u-distiller/distill))
-
 
 ;;TODO clean up
 (defn refresh-user-data [u]

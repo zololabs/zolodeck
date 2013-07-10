@@ -10,7 +10,7 @@
             [zolo.store.contact-store :as c-store]))
 
 (defn find-contact [u-guid c-guid]
-  (if-let [distilled-c (c-service/get-contact-by-guid (u-store/find-by-guid u-guid) c-guid)]
+  (if-let [distilled-c (c-service/get-contact-by-guid (u-store/find-entity-by-guid u-guid) c-guid)]
     {:status (STATUS-CODES :ok)
      :body distilled-c}
     (resource-not-found "Contact")))
@@ -24,7 +24,7 @@
     (resource-not-found "Contact")))
 
 (defn list-contacts [u-guid params]
-  (if-let [contacts (c-service/list-contacts (u-store/find-by-guid u-guid) params)]
+  (if-let [contacts (c-service/list-contacts (u-store/find-entity-by-guid u-guid) params)]
     {:status (STATUS-CODES :ok)
      :body contacts}
     (resource-not-found "Contact")))

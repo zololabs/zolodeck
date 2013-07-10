@@ -23,7 +23,11 @@
             [zolo.personas.vincent :as vincent-persona]
             [zolo.utils.calendar :as zolo-cal]
             [zolo.service.distiller.thread :as t-distiller]))
- 
+
+(def THREAD-LIMIT 20)
+
+(def THREAD-OFFSET 0)
+
 (deftest test-distilled-threads-with-temps
   (demonic-testing "When user has a thread with some temp-messages, distillation should still work"
     (d-core/run-in-gmt-tz
@@ -37,7 +41,7 @@
            (mocking [fb-chat/send-message]
              (m-service/new-message u {:text "Hey hello" :provider "facebook" :from u-uid :guid (-> u :user/guid str) :to [f-uid]}))
            
-           (let [all-t (->> u u-store/reload t/all-threads)
+           (let [all-t (it-> u (u-store/reload it) (t/all-threads it THREAD-LIMIT THREAD-OFFSET))
                  dt (it-> all-t (second it) (t-distiller/distill u it "include_messages"))]
              (has-keys dt [:thread/guid :thread/subject :thread/lm-from-contact :thread/provider :thread/messages :thread/ui-guid])
              (has-keys (:thread/lm-from-contact dt) [:contact/first-name :contact/last-name :contact/guid :contact/muted :contact/picture-url :contact/social-identities])
