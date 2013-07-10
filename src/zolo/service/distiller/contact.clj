@@ -10,7 +10,7 @@
 (defn- connection-history [u contact ibc]
   (->> (interaction/messages-from-ibc-for-contact contact ibc)
        t/messages->threads
-       (domap #(t-distiller/distill u %))))
+       (domap #(t-distiller/distill u % "include_messages"))))
 
 (defn distill [contact u ibc]
   (when (and u contact)

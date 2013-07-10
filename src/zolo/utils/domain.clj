@@ -1,5 +1,6 @@
 (ns zolo.utils.domain
-  (:use [zolo.utils.debug])
+  (:use [zolo.utils.debug]
+        [zolo.utils.clojure])
   (:require [zolo.utils.maps :as zolo-maps]
             [zolo.demonic.schema :as schema]))
 
@@ -20,14 +21,16 @@
       (zolo-maps/transform-vals-with force-schema-attrib)
       (zolo-maps/select-keys-if (fn [k v] (not (nil? v))))))
 
-(defn update-fresh-entities-with-db-id [existing-entities fresh-entities group-by-fn guid-key]
+(defn update-fresh-entities-with-db-id [existing-entities fresh-entities group-by-fn & copy-keys]
   (if (empty? existing-entities)
     fresh-entities
     (let [existing-entities-grouped (zolo-maps/group-first-by group-by-fn existing-entities)
           fresh-entities-grouped (zolo-maps/group-first-by group-by-fn fresh-entities)]
       (map
        (fn [[obj-id fresh-obj]]
-         (-> fresh-obj
-           (assoc :db/id (:db/id (existing-entities-grouped obj-id)))
-           (assoc guid-key (guid-key (existing-entities-grouped obj-id)))))
+         (it-> fresh-obj
+               (assoc it :db/id (:db/id (existing-entities-grouped obj-id)))
+               (reduce (fn[a k]
+                         (assoc a k (k (existing-entities-grouped obj-id))))
+                       it copy-keys)))
        fresh-entities-grouped))))

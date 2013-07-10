@@ -28,7 +28,7 @@
 
 (extend java.util.Date json/Write-JSON
         {:write-json (fn [d out escape-unicode?]
-                       (.print out (str "\"" (zolo-cal/date-to-string d (zolo-cal/simple-date-format "yyyy-MM-dd hh:mm")) "\"")))})
+                       (.print out (str "\"" (zolo-cal/date-to-string d (zolo-cal/simple-date-format "yyyy-MM-dd HH:mm")) "\"")))})
 
 (extend org.joda.time.DateTime json/Write-JSON
         {:write-json (fn [d out escape-unicode?]
@@ -55,8 +55,8 @@
 (defn wrap-options [handler]
   (fn [request]
     (if (= :options (request :request-method))
-      { :headers {"Access-Control-Allow-Origin" (zweb/request-origin)
-                  "Access-Control-Allow-Methods" "GET,POST,PUT,OPTIONS,DELETE"
+      { :headers {"Access-Control-Allow-Origin" (request-origin)
+                  "Access-Control-Allow-Methods" "GET,POST,PUT,OPTIONS,DELETE,PATCH"
                   "Access-Control-Allow-Headers" "access-control-allow-origin,authorization,Content-Type,origin,X-requested-with,accept"
                   "Access-Control-Allow-Credentials" "true"
                   "Access-Control-Max-Age" "60"}}
@@ -96,5 +96,6 @@
    (select-keys request [:request-method :query-string :uri :server-name])
    {:trace-id (trace-id request)
     :env (config/environment)
+    :facility "api"
     :ip-address (get-in request [:headers "x-real-ip"])}))
 

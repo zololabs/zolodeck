@@ -49,7 +49,7 @@
                         :thread/ui-guid (-> distilled-msgs first :message/ui-guid)
                         :thread/provider (-> thread :thread/messages first :message/provider)
                         :thread/done (-> thread :thread/messages last :message/done)
-                        :thread/follow-up-on (-> thread :thread/messages first :message/follow-up-on)}]
+                        :thread/follow-up-on (-> thread :thread/messages last :message/follow-up-on)}]
       (if (some #{"include_messages"} expansions)
         (assoc basic-thread :thread/messages distilled-msgs)
         basic-thread))))

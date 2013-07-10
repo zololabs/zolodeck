@@ -8,6 +8,7 @@
          '[zolo.domain.user-identity :as ui]
 
          '[zolo.store.user-store :as u-store]
+         '[zolo.store.message-store :as m-store]
          '[zolo.store.user-identity-store :as ui-store]
 
          '[zolo.utils.calendar :as zolo-cal]

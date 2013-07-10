@@ -95,17 +95,18 @@
     (datomic/init-connection)
     (let [guid (.getStringByField tuple "user-guid")
           u (demonic/in-demarcation (u-store/find-by-guid guid))]
-      (logger/info "Processing user:" (user/first-name u))
-      (demonic/in-demarcation
-       (u-service/refresh-user-data u))
-      (demonic/in-demarcation
-       (u-service/refresh-user-scores (u-store/reload u)))
-      (demonic/in-demarcation
-       (logger/info "Completed bolt for " (user/first-name u) " with " (count (:user/contacts (u-store/reload u))) " contacts"))
-      (if (and (> (count (:user/contacts u)) 0)
-               (> (- (count (:user/contacts (demonic/in-demarcation (u-store/reload u))))
-                     (count (:user/contacts u))) 10))
-        (throw (RuntimeException. (str "Zombie warning for " (user/first-name u))))))
+      (logger/with-logging-context {:guid guid}
+        (logger/info "Processing user:" (user/first-name u))
+        (demonic/in-demarcation
+         (u-service/refresh-user-data u))
+        (demonic/in-demarcation
+         (u-service/refresh-user-scores (u-store/reload u)))
+        (demonic/in-demarcation
+         (logger/info "Completed bolt for " (user/first-name u) " with " (count (:user/contacts (u-store/reload u))) " contacts"))
+        (if (and (> (count (:user/contacts u)) 0)
+                 (> (- (count (:user/contacts (demonic/in-demarcation (u-store/reload u))))
+                       (count (:user/contacts u))) 10))
+          (throw (RuntimeException. (str "Zombie warning for " (user/first-name u)))))))
     (catch Exception e
       (logger/error e "Exception in bolt! Occured while processing tuple:" tuple))))
 
