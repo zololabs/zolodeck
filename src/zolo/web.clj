@@ -32,7 +32,7 @@
 
 (extend java.util.Date json/Write-JSON
         {:write-json (fn [d out escape-unicode?]
-                       (.print out (str "\"" (zolo-cal/date-to-string d (zolo-cal/simple-date-format "yyyy-MM-dd hh:mm")) "\"")))})
+                       (.print out (str "\"" (zolo-cal/date-to-string d (zolo-cal/simple-date-format "yyyy-MM-dd HH:mm")) "\"")))})
 
 (extend org.joda.time.DateTime json/Write-JSON
         {:write-json (fn [d out escape-unicode?]
