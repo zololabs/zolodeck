@@ -85,6 +85,9 @@
 (defn fake-fetch-email-messages [account-id date-in-seconds]
   (fake-email/fetch-messages account-id))
 
+(defn fake-get-email-thread [account-id message-id-in-thread]
+  (fake-email/fetch-thread-messages account-id message-id-in-thread))
+
 (defn fake-pento-score-all [email-address-info-list]
   (let [defaults (zipmap (map :email email-address-info-list) (repeat 100))
         results (merge defaults {"admin@thoughtworks.com" -10.23
@@ -101,6 +104,7 @@
                email-gateway/get-account fake-email-account
                email-gateway/get-contacts fake-fetch-email-contacts 
                email-gateway/get-messages fake-fetch-email-messages
+               email-gateway/get-thread fake-get-email-thread
                pento/score-all fake-pento-score-all]
       ~@body)))
 
@@ -109,6 +113,7 @@
     (stubbing [email-gateway/get-account fake-email-account
                email-gateway/get-contacts fake-fetch-email-contacts 
                email-gateway/get-messages fake-fetch-email-messages
+               email-gateway/get-thread fake-get-email-thread
                pento/score-all fake-pento-score-all]
       ~@body)))
 

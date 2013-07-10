@@ -22,6 +22,7 @@
             [zolo.personas.shy :as shy-persona]
             [zolo.personas.vincent :as vincent-persona]
             [zolo.utils.calendar :as zolo-cal]
+            [zolo.marconi.context-io.core :as e-lab]
             [zolo.service.distiller.thread :as t-distiller]))
 
 (def THREAD-LIMIT 20)
@@ -80,3 +81,39 @@
           m-id (->> u :user/messages (sort-by :message/date) first m/message-id)]
       (is (not (:thread/done (t-service/update-thread-details (:user/guid u) u-ui-guid m-id false "2017-07-07T17:17:17.003Z"))))      
       (is (:thread/done (t-service/update-thread-details (:user/guid u) u-ui-guid m-id true "2017-07-07T17:17:17.003Z"))))))
+
+
+(demonictest test-load-thread-details
+
+  (personas/in-email-lab
+   (let [mickey-email "mickey@gmail.com"
+         mickey (e-lab/create-account "Mickey" "Mouse" mickey-email)
+         db-mickey (personas/create-db-user-from-email-user mickey)]
+     
+     (let [m1 (e-lab/send-message mickey-email "donald@gmail.com" "s1" "t1" "Hi, what's going on?" "2012-05-01 00:00")
+           m2 (e-lab/send-message "donald@gmail.com" mickey-email "s2" "t1" "Nothing, just work." "2012-05-02 00:00")
+           m3 (e-lab/send-message mickey-email "donald@gmail.com" "s3" "t1" "OK, groceries?" "2012-05-03 00:00")
+           m10 (e-lab/send-message "daisy@gmail.com" mickey-email "s11" "t4" "Nothing, just work." "2012-05-04 00:00")
+           m11 (e-lab/send-message mickey-email "daisy@gmail.com" "s12" "t4" "OK, groceries?" "2012-05-05 00:00")
+           m12 (e-lab/send-message mickey-email "admin@thoughtworks.com" "s13" "t6" "Special Deal!" "2012-05-05 00:00")]
+       
+       (let [u (pgen/refresh-everything db-mickey)
+             u-ui-guid (-> u :user/user-identities first :identity/guid)
+             m-id (->> u :user/messages (sort-by :message/date) first m/message-id)]
+
+         (testing "when zolo is upto date with social"
+           (let [td (t-service/load-thread-details (:user/guid u) u-ui-guid m-id)]
+             (is (= 3 (count (:thread/messages td))))
+             (is (= ["s1" "s2" "s3"] (map :message/subject (sort-by m/message-date (:thread/messages td)))))))
+
+         (testing "when new messages came to social layer and zolo hasnt refreshed"
+           (let [m4 (e-lab/send-message mickey-email "donald@gmail.com" "s4" "t1" "yah sure" "2012-05-04 00:00")
+                 td (t-service/load-thread-details (:user/guid u) u-ui-guid m-id)]
+             (is (= 3 (count (:thread/messages td))))
+             (is (= ["s1" "s2" "s3"] (map :message/subject (sort-by m/message-date (:thread/messages td)))))))
+
+         (testing "when new messages came to social layer and zolo got refreshed after that"
+           (let [u (pgen/refresh-everything u)
+                 td (t-service/load-thread-details (:user/guid u) u-ui-guid m-id)]
+             (is (= 4 (count (:thread/messages td))))
+             (is (= ["s1" "s2" "s3" "s4"] (map :message/subject (sort-by m/message-date (:thread/messages td))))))))))))
