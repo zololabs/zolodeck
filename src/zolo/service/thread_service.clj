@@ -22,7 +22,7 @@
                                  (if-let [account-id (-> m :message/user-identity :identity/auth-token)]
                                    (let [existing-messages (m-store/find-messages-by-ui-guid-and-thread-id (:identity/guid ui) (:message/thread-id m))]
                                      (it-> (messages/get-messages-for-thread account-id message-id)
-                                           (d-utils/update-fresh-entities-with-db-id existing-messages it :message/:message-id :message/guid :message/done :message/follow-up-on)
+                                           (d-utils/update-fresh-entities-with-db-id existing-messages it :message/message-id :message/guid :message/done :message/follow-up-on)
                                            (map #(assoc % :message/user-identity (:message/user-identity m)) it)
                                            (t/messages->threads it)
                                            (first it)
