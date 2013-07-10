@@ -14,6 +14,7 @@
              [zolo.social.bootstrap]
              [zolo.service.bootstrap]
              [zolo.web :as web]
+             [zolo.utils.web :as zweb]
              [compojure.route :as route]
              [ring.middleware.keyword-params :as kw-params-mw]
              [ring.middleware.params :as params-mw]
@@ -77,7 +78,7 @@
   (route/not-found "Page not found"))
 
 (def app
-  (web/wrap-request-binding
+  (zweb/wrap-request-binding
    (web/wrap-options
     (demonic/wrap-demarcation
      (params-mw/wrap-params
@@ -85,9 +86,9 @@
        (wrap-json-params
         (kw-params-mw/wrap-keyword-params
          (web/wrap-user-info-logging
-          (web/wrap-request-logging
-           (web/wrap-error-handling
-            (web/wrap-jsonify
+          (zweb/wrap-request-logging web/not-ignore-logging? web/logging-context
+           (zweb/wrap-error-handling
+            (zweb/wrap-jsonify
              (web/wrap-accept-header-validation
               (friend/authenticate APP-ROUTES {:allow-anon? true
                                                :workflows [zauth/authenticate]

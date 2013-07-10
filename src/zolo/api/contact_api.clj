@@ -1,7 +1,7 @@
 (ns zolo.api.contact-api
   (:use zolo.utils.debug
         zolo.utils.clojure
-        zolo.web.status-codes
+        zolo.utils.http-status-codes
         zolo.api.core)
   (:require [zolo.service.contact-service :as c-service]
             [zolo.domain.contact :as contact]

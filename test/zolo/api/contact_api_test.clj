@@ -6,7 +6,7 @@
         zolo.utils.debug
         zolo.utils.clojure
         zolo.test.core-utils
-        zolo.web.status-codes)
+        zolo.utils.http-status-codes)
   (:require [zolo.domain.user :as user]
             [zolo.test.web-utils :as w-utils]
             [zolo.api.user-api :as user-api]

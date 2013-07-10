@@ -1,6 +1,6 @@
 (ns zolo.api.context-io-api
   (:use zolo.utils.debug
-        zolo.web.status-codes)
+        zolo.utils.http-status-codes)
   (:require [zolo.utils.logger :as logger]
             [clj-http.client :as http]
             [zolo.social.email.gateway :as e-gateway]
