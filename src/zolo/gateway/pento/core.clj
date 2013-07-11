@@ -7,7 +7,7 @@
             [zolo.utils.string :as zstring]
             [zolo.utils.maps :as zmaps]))
 
-(def PENTO-BATCH-SIZE 100)
+(def PENTO-BATCH-SIZE 1000)
 
 (defn pento-url []
   (str "http://" (conf/pento-host) "/classify"))
