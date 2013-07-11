@@ -24,6 +24,8 @@ namespace :api do
       info "Generating API config for #{@zolodeck_env} environment"
 
       @env = "development"
+      @context = "api"
+      
       @new_user_freshness_minutes = 1
       @user_update_wait_minutes = 10
       @datomic_uri = "datomic:free://localhost:4334/zolodeck-dev"
