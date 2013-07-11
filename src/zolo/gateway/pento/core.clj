@@ -7,13 +7,15 @@
             [zolo.utils.string :as zstring]
             [zolo.utils.maps :as zmaps]))
 
-(def PENTO-BATCH-SIZE 100)
+(def PENTO-BATCH-SIZE 1000)
 
 (defn pento-url []
   (str "http://" (conf/pento-host) "/classify"))
 
 (defn- request-payload [email-info-list]
-  {:body (-> email-info-list json/json-str (str "\n"))})
+  {:body (-> {:emails email-info-list}
+             json/json-str)
+   :content-type "application/json"})
 
 (defn process-response [pento-response]
   (if pento-response
@@ -32,6 +34,6 @@
 (defn score-all [all-email-info-list]
   (it-> all-email-info-list
         (partition-all PENTO-BATCH-SIZE it)
-        (mapcat scores it)
+        (map scores it)
         (apply merge it)
         (zmaps/transform-vals-with it #(float %2))))
