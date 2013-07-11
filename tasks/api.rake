@@ -24,7 +24,6 @@ namespace :api do
       info "Generating API config for #{@zolodeck_env} environment"
 
       @env = "development"
-      @context = "api"
       
       @new_user_freshness_minutes = 1
       @user_update_wait_minutes = 10
@@ -47,8 +46,8 @@ namespace :api do
 
       info "Generating logback config"
 
-      @graylog2_host = "monitor.zolodeck.com"
       @env = "development"
+      @context = "api"
 
       Config.generate binding, Dir.pwd + "/../zolo-repo/site-cookbooks/api/templates/default/logback.xml.erb", File.expand_path("~/.zolo/logback.xml")
 
