@@ -10,7 +10,7 @@
 (def PENTO-BATCH-SIZE 1000)
 
 (defn pento-url []
-  (str "http://" (conf/pento-host) "/classify"))
+  (str "https://" (conf/pento-host) "/classify"))
 
 (defn- request-payload [email-info-list]
   {:body (-> {:emails email-info-list}
