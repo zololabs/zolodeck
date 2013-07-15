@@ -64,8 +64,15 @@
 (defn get-env-var [v]
   (.get (System/getenv) v))
 
+;;TODO duplication
 (defrunonce setup-config []
   (let [config-file (str (System/getProperty "user.home") "/.zolo/zolo.clj")]
+    (logger/trace "Loading config file:" config-file)
+    (load-config config-file)
+    (set-system-properties (system-properties))))
+
+(defrunonce setup-config-from-classpath []
+  (let [config-file (java-io/resource "zolo.clj")]
     (logger/trace "Loading config file:" config-file)
     (load-config config-file)
     (set-system-properties (system-properties))))

@@ -16,7 +16,8 @@
             [clojure.tools.cli :as cli]
             [zolo.store.user-store :as u-store]
             [zolo.service.user-service :as u-service]
-            [zolo.social.bootstrap])
+            [zolo.social.bootstrap]
+            [zolo.service.bootstrap])
   (:import [backtype.storm StormSubmitter LocalCluster]
            [storm.trident TridentTopology]
            ;[zolo.storm.fns PrintVals UpdateContacts UpdateMessages]
@@ -46,7 +47,7 @@
 (defspout refresh-user-spout ["user-guid"]
   [conf context collector]
   (logger/trace "RefreshSpout, initializing Datomic...")
-  (config/setup-config)
+  (config/setup-config-from-classpath)
   (datomic/init-connection)
   (let [guids (atom nil)]
     (spout
@@ -70,7 +71,7 @@
 (defspout new-user-tx-spout ["user-guid"]
   [conf context collector]
   (logger/trace "NewUserSpout, initializing Datomic...")
-  (config/setup-config)
+  (config/setup-config-from-classpath)
   (datomic/init-connection)
   (let [trq (demonic/transactions-report-queue)]    
     (spout
@@ -91,7 +92,7 @@
 
 (defbolt process-user [] [tuple collector]
   (try
-    (config/setup-config)
+    (config/setup-config-from-classpath)
     (datomic/init-connection)
     (let [guid (.getStringByField tuple "user-guid")
           u (demonic/in-demarcation (u-store/find-by-guid guid))]
@@ -129,7 +130,7 @@
 
 ;; (defn run-local! [millis]
 ;;   (future
-;;     (config/setup-config)
+;;     (config/setup-config-from-classpath)
 ;;     (datomic/init-connection)
 ;;     (let [cluster (LocalCluster.)]
 ;;       (logger/trace "Submitting topology...")

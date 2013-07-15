@@ -33,7 +33,6 @@
                  [com.fasterxml.jackson.core/jackson-databind "2.2.2"]
                  [org.slf4j/slf4j-api "1.7.0"]
                  [clj-logging-config "1.9.10" :exclusions [log4j]]
-                 [me.moocar/logback-gelf "0.9.6p2"]
 
                  [org.clojure/tools.cli "0.2.2"]
 
@@ -42,7 +41,7 @@
                  [zololabs/demonic "0.1.0-SNAPSHOT" :exclusions [com.datomic/datomic-free]]
 
                  [zololabs/zolo-utils "0.1.0-SNAPSHOT"]
-                 [world-country-list "1.0.0-SNAPSHOT"]
+                 [zololabs/world-country-list "1.1.0"]
                  
                  [org.clojure/tools.cli "0.2.2"]
                  ]
@@ -61,11 +60,14 @@
                clj-time
                org.netflix.curator/curator-framework
                commons-logging/commons-logging
-               org.clojure/tools.logging]
+               org.clojure/tools.logging
+               org.clojure/clojure-contrib]
 
   :plugins [[lein-pprint "1.1.1"]
             [lein-ring "0.6.2"]
             [lein-cloverage "1.0.2"]]
+
+  :resource-paths [~(str (System/getProperty "user.home") "/.zolo")]
 
   :profiles {:dev {:dependencies [[clj-stacktrace "0.2.4"]
                                   [ring-serve "0.1.2"]
@@ -73,13 +75,20 @@
                                   [org.clojars.runa/conjure "2.1.1"]
                                   [difform "1.1.2"]
                                   [org.clojure/data.generators "0.1.0"]
-                                  [org.clojure/math.combinatorics "0.0.4"]]
-                   :resource-paths [~(str (System/getProperty "user.home") "/.zolo")]}
-
+                                  [org.clojure/math.combinatorics "0.0.4"]
+                                  [storm/storm-lib "0.8.2"]]}
+             :1.4 [:dev
+                   {:dependencies [[org.clojure/clojure "1.4.0"]]}]
              :storm [:dev
-                     {:dependencies [[storm/storm-lib "0.9.0-wip16"]]
-                      :source-paths ["src" "storm-src"]
-                      :main zolo.storm.core
+                     :1.4
+                     {:source-paths ["storm-src"]
+                      :resource-paths ^:replace ["/Users/siva/work/zolo/zolodeck/devops/config/prod"]
+                      :jar-exclusions [#"log4j\.properties" #"backtype" #"trident"
+                                       #"META-INF" #"meta-inf" #"\.yaml" #"org\/slf4j\/"]
+                      :uberjar-exclusions [#"log4j\.properties" #"backtype" #"trident"
+                                           #"META-INF" #"meta-inf" #"\.yaml" #"org\/slf4j\/"]
+                      :aot :all
+                      :main zolo.storm.facebook
                       :uberjar-name ~(str "zolodeck-storm-"
                                           (or (System/getenv "BUILD_NUMBER") "local")
                                           "-"

@@ -21,7 +21,7 @@ namespace :uberjar do
   desc "For Storm"
   task :storm do
     sh "lein clean"
-    sh "lein with-profile storm uberjar zolo.storm.core"
+    sh "lein with-profile storm uberjar zolo.storm.facebook"
   end
 
 end
@@ -61,7 +61,7 @@ namespace :test do
     sh "lein clean"
     info "Running API Unit and Integration Tests using Storm Profile"
     Rake::Task["api:config:generate"].invoke("test")
-    sh "lein with-profile storm test :storm"
+    sh "lein with-profile 1.4 test :storm"
     Rake::Task["api:config:generate"].invoke
   end
 end
