@@ -105,6 +105,7 @@
                email-gateway/get-contacts fake-fetch-email-contacts 
                email-gateway/get-messages fake-fetch-email-messages
                email-gateway/get-thread fake-get-email-thread
+               email-gateway/reset-account-status identity
                pento/score-all fake-pento-score-all]
       ~@body)))
 
@@ -114,6 +115,7 @@
                email-gateway/get-contacts fake-fetch-email-contacts 
                email-gateway/get-messages fake-fetch-email-messages
                email-gateway/get-thread fake-get-email-thread
+               email-gateway/reset-account-status identity               
                pento/score-all fake-pento-score-all]
       ~@body)))
 

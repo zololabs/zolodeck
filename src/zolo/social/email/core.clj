@@ -29,6 +29,7 @@
   (si/get-social-identities access-token user-id date-in-seconds))
 
 (defmethod social/fetch-messages :provider/email [provider access-token user-id date-in-seconds]
+  (gateway/reset-account-status access-token)
   (messages/get-messages access-token date-in-seconds))
 
 (defmethod social/send-message :provider/email [provider access-token from-email to-emails thead-id reply-to-message-id subject message]
