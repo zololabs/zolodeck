@@ -86,7 +86,8 @@
   (let [to (string/join "," to-emails)
         m-string (rfc822-message from-email to reply-to-message-id subject message)]
     (context-io/create-account-exit (context-io-creds) :params {:account-id account-id :message m-string :rcpt to})
-    (mark-as-read account-id reply-to-message-id)))
+    (when reply-to-message-id
+      (mark-as-read account-id reply-to-message-id))))
 
 (defn reset-account-status [account-id]
   (context-io/edit-account-source (context-io-creds) :params {:account-id account-id :label 0 :status 1}))
