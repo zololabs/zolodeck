@@ -49,7 +49,8 @@
 
          (let [d2-m-contacts (contact/updated-contacts d-m-contacts
                                                        [])]
-           (is (= d-m-contacts d2-m-contacts))))
+           (is (= (sort-by #(-> % :contact/social-identities first :social/first-name) d-m-contacts)
+                  (sort-by #(-> % :contact/social-identities first :social/first-name) d2-m-contacts)))))
        
        (testing "Contact not present with given si should return append a new contact"
 
