@@ -86,7 +86,7 @@
        (wrap-json-params
         (kw-params-mw/wrap-keyword-params
          (web/wrap-user-info-logging
-          (zweb/wrap-request-logging web/not-ignore-logging? web/logging-context
+          (zweb/wrap-request-logging web/not-ignore-logging? web/logging-context identity #(assoc % :body "FILTERED")
            (zweb/wrap-error-handling
             (zweb/wrap-jsonify
              (web/wrap-accept-header-validation
