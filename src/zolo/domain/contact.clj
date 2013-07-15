@@ -4,7 +4,7 @@
         zolo.utils.debug
         [slingshot.slingshot :only [throw+ try+]])
   (:require [zolo.utils.string :as zolo-str]
-            [zolo.utils.maps :as zolo-maps]
+            [zolo.utils.maps :as zmaps]
             [zolo.utils.calendar :as zcal]
             [zolo.utils.logger :as logger]
             [zolo.utils.domain :as utils-domain]
@@ -21,38 +21,6 @@
 
 (defn- base-contact [si]
   {:contact/social-identities [si]})
-
-(defn- contact-has-si? [c si]
-  (some #(= (si/social-identity-info %)
-            (si/social-identity-info si))
-        (:contact/social-identities c)))
-
-(defn- find-contact-with-si [cs si]
-  (-> (filter #(contact-has-si? % si) cs)
-      first))
-
-(defn find-by-provider-and-provider-uid [user social-provider social-provider-uid]
-  (find-contact-with-si (:user/contacts user)
-                        {:social/provider social-provider :social/provider-uid social-provider-uid}))
-
-(defn- update-si-in-contact [c fresh-si]
-  (let [updated-si (-> (:contact/social-identities c)
-                       (si/social-identity (si/social-identity-info fresh-si))
-                       (merge fresh-si))]
-    (zolo-maps/update-in-when c
-                              [:contact/social-identities]
-                              #(si/has-id? % (si/social-identity-info fresh-si))
-                              updated-si)))
-
-(defn- update-contacts-with-si [cs fresh-si]
-  (if-let [c (find-contact-with-si cs fresh-si)]
-    (map (fn [c] (if (contact-has-si? c fresh-si)
-                  (update-si-in-contact c fresh-si)
-                  c))
-         cs)
-    (->> fresh-si
-         base-contact
-         (conj cs))))
 
 (defn- value-from-si [c key]
   (-> c
@@ -75,12 +43,52 @@
     :provider/facebook (si/fb-id c)
     (throw (RuntimeException. (str "Unknown provider specified: " provider)))))
 
-(defn updated-contacts [cs sis]
+(defn- contact-and-si-infos [contact]
+  (->> contact
+       :contact/social-identities
+       (mapcat (fn [si] [(si/social-identity-info si) contact]))))
+
+(defn- build-contacts-lookup-by-si [contacts]
+  (->> contacts
+       (mapcat contact-and-si-infos)
+       (apply hash-map)))
+
+(defn- contact-has-si? [c si]
+  (some #(= (si/social-identity-info %)
+            (si/social-identity-info si))
+        (:contact/social-identities c)))
+
+(defn- find-contact-with-si [cs si]
+  (-> (filter #(contact-has-si? % si) cs)
+      first))
+
+(defn find-by-provider-and-provider-uid [user social-provider social-provider-uid]
+  (find-contact-with-si (:user/contacts user)
+                        {:social/provider social-provider :social/provider-uid social-provider-uid}))
+
+(defn- update-si-in-contact [c fresh-si]
+  (let [updated-si (-> (:contact/social-identities c)
+                       (si/social-identity (si/social-identity-info fresh-si))
+                       (merge fresh-si))]
+    (zmaps/update-in-when c
+                              [:contact/social-identities]
+                              #(si/has-id? % (si/social-identity-info fresh-si))
+                              updated-si)))
+
+(defn- update-contacts-with-si [fresh-si contacts-by-si-info]
+  (if-let [c (-> fresh-si si/social-identity-info contacts-by-si-info)]
+    (assoc contacts-by-si-info (-> fresh-si si/social-identity-info) (update-si-in-contact c fresh-si))
+    (assoc contacts-by-si-info (-> fresh-si si/social-identity-info) (base-contact fresh-si))))
+
+(defn update-all-contacts [sis contacts-by-si-info]     
   (if (empty? sis)
-    cs
-    (-> cs
-        (update-contacts-with-si (first sis))
-        (updated-contacts (rest sis)))))
+    (vals contacts-by-si-info)
+    (->> contacts-by-si-info
+         (update-contacts-with-si (first sis))
+         (recur (rest sis)))))
+
+(defn updated-contacts [cs sis]
+  (update-all-contacts sis (build-contacts-lookup-by-si cs)))
 
 (defn days-not-contacted [c ibc]
   (let [interactions  (ibc c)]
