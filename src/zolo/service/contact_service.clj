@@ -26,7 +26,7 @@
 
 (defn select-pento-keys [si]
   (let [key-names {:social/provider-uid :email
-                   :social/nickname :name
+;                   :social/nickname :name
                    :social/sent-count :sent_count
                    :social/received-count :received_count}]
     (-> si
