@@ -11,7 +11,7 @@
 
 (defn start-storm []
   (zolo.setup.datomic-setup/init-datomic)
-  (logger/with-logging-context {:env (config/environment)
+  (logger/with-logging-context {:env config/ENV
                                 :facility "storm"}
     (fb/run-local-forever!)))
 
