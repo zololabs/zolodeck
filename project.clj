@@ -79,6 +79,9 @@
                                   [storm/storm-lib "0.8.2"]]}
              :1.4 [:dev
                    {:dependencies [[org.clojure/clojure "1.4.0"]]}]
+             :storm-local [:dev
+                           :1.4
+                           {:main zolo.storm.core}]
              :storm [:dev
                      :1.4
                      {:resource-paths ^:replace [~(str "devops/config/prod")]
