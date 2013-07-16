@@ -83,7 +83,7 @@
   (get-in request [:cookies "zolo_guid" :value]))
 
 (defn trace-id [request]
-  (str ".env-" (config/environment)
+  (str ".env-" config/ENV
        ".h-" (:host request)
        ".rh-" RANDOM-PROCESS-ID
        ".c-" @PROCESS-COUNTER
@@ -95,7 +95,7 @@
   (merge
    (select-keys request [:request-method :query-string :uri :server-name])
    {:trace-id (trace-id request)
-    :env (config/environment)
+    :env config/ENV
     :facility "api"
     :ip-address (get-in request [:headers "x-real-ip"])}))
 

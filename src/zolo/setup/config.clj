@@ -7,13 +7,10 @@
 (declare CONFIG-MAP)
 (declare ^:dynamic ENV)
 
-(defn environment []
-  (get-in CONFIG-MAP [:zolodeck-env]))
-
 (defn load-config [config-file]
   (let [config-map (load-string (slurp config-file))]
     (def CONFIG-MAP config-map)
-    (def ^:dynamic ENV (environment))))
+    (def ^:dynamic ENV (get-in CONFIG-MAP [:zolodeck-env]))))
 
 (defn production-mode? []
   (= :production ENV))
