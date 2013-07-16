@@ -3,6 +3,7 @@
         zolo.demonic.test
         zolo.demonic.core
         zolo.test.core-utils
+        zolo.test.assertions.core
         zolo.utils.clojure
         zolo.utils.debug
         [clojure.test :only [run-tests deftest is are testing]]
@@ -17,6 +18,7 @@
             [zolo.service.message-service :as m-service]
             [zolo.domain.interaction :as interaction]
             [zolo.domain.message :as message]
+            [zolo.domain.thread :as thread]
             [zolo.domain.core :as d-core]
             [zolo.store.user-store :as u-store]
             [zolo.store.contact-store :as c-store]
@@ -259,6 +261,7 @@
         
         (is (= 1 (count reply-to-contacts)))
         (is (= 2 (count reply-threads)))
+        (is-reverse-sorted-by thread/most-recent-message-date-from-thread reply-threads)
         
         (is (= (:social/first-name jack-ui) (:contact/first-name thread-contact)))
         (is (= (:social/last-name jack-ui) (:contact/last-name thread-contact)))

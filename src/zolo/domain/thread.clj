@@ -10,6 +10,12 @@
 (defn last-message [thread]
   (-> thread :thread/messages first))
 
+(defn most-recent-message-date-from-thread [thread]
+  (-> thread :thread/messages first m/message-date))
+
+(defn most-recent-message-date-from-threads [threads]
+  (-> threads first most-recent-message-date-from-thread))
+
 (defn- messages->thread [[thread-id msgs]]
   {:thread/guid thread-id
    :thread/subject (-> msgs first :message/subject)

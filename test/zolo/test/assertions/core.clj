@@ -54,3 +54,13 @@
   `(check-throw+-info ~expected-info
                       (fn [] ~form)
                       '~form))
+
+(defn is-sorted-by [sort-by-fn coll]
+  (let [actual-seq (map sort-by-fn coll)
+        expected-seq (sort actual-seq)]
+    (is (= expected-seq actual-seq) "Sort order is different!")))
+
+(defn is-reverse-sorted-by [sort-by-fn coll]
+  (let [actual-seq (map sort-by-fn coll)
+        expected-seq (map sort-by-fn (reverse-sort-by sort-by-fn coll))]
+    (is (= expected-seq actual-seq) "Sort order is different!")))
