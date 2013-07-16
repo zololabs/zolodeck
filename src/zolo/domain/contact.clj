@@ -51,7 +51,8 @@
 (defn- build-contacts-lookup-by-si [contacts]
   (->> contacts
        (mapcat contact-and-si-infos)
-       (apply hash-map)))
+       (partition 2)
+       (reduce (fn [m [k v]] (if (m k) m (assoc m k v))) {})))
 
 (defn- contact-has-si? [c si]
   (some #(= (si/social-identity-info %)
