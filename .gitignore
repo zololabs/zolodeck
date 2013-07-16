@@ -30,3 +30,5 @@ logs/*.gz
 /zolodeck-api-storm-0.1.0-SNAPSHOT-standalone.jar
 /zolodeck-api-storm-0.1.0-SNAPSHOT.jar
 /.lein-repl-history
+/devops/config/prod/logback.xml
+/devops/config/prod/zolo.clj
