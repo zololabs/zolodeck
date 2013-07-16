@@ -81,7 +81,7 @@
                    {:dependencies [[org.clojure/clojure "1.4.0"]]}]
              :storm [:dev
                      :1.4
-                     {:resource-paths ^:replace ["/Users/siva/work/zolo/zolodeck/devops/config/prod"]
+                     {:resource-paths ^:replace [~(str "devops/config/prod")]
                       :jar-exclusions [#"log4j\.properties" #"backtype" #"trident"
                                        #"META-INF" #"meta-inf" #"\.yaml" #"org\/slf4j\/"]
                       :uberjar-exclusions [#"log4j\.properties" #"backtype" #"trident"
