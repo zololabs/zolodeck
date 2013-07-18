@@ -21,7 +21,7 @@
                  [org.clojure/core.match "0.2.0-alpha11"]
 
                  [org.scribe/scribe "1.3.2"] ;;oauth for LinkedIn
-                 [zololabs/context-io-clj "e114172"]
+                 [zololabs/context-io-clj "f70a910"]
                  
                  ;;Logging Related Stuff
                  [org.clojure/tools.logging "0.2.4"]
