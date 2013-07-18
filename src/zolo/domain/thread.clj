@@ -48,7 +48,7 @@
          sort-by-recent-threads)))
 
 (defn is-done? [thread]
-  (-> thread :thread/messages first  m/message-done?))
+  (-> thread :thread/messages last m/message-done?))
 
 (defn- is-follow-up-candidate? [u thread]
   (let [last-m (-> thread :thread/messages first)
