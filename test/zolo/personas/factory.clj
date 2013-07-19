@@ -125,8 +125,7 @@
                fb-gateway/friends-list fake-friends-list
                fb-messages/fetch-inbox fake-fetch-inbox
                fb-stream/recent-activity fake-fetch-feed
-               fb-gateway/extended-access-token fake-extended-access-token
-               pento/score-all fake-pento-score-all]
+               fb-gateway/extended-access-token fake-extended-access-token]
       ~@body)))
 
 (defn fetch-fb-ui [fb-user]

@@ -40,6 +40,7 @@
 
 (defn set-person-scores [si-list]
   (let [scores (->> si-list
+                    (remove si/is-fb?)
                     (map select-pento-keys)
                     pento/score-all)]
     (map #(set-person-score % scores) si-list)))

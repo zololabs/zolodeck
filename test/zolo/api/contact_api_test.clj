@@ -155,11 +155,14 @@
             (has-keys m [:message_id :guid :provider :thread_id :from :to :date :text :snippet])))))
 
     (testing "after marking as done, reply-to contact shouldn't show up"
-      (let [resp (w-utils/authed-request vincent :get (str "/users/" (:user/guid vincent) "/contacts") reply-to-options)
-            last-m-id (-> resp :body first :reply_to_threads first :messages first :message_id)]
+      (let [dude (pgen/generate {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 3)]}})
+            dude-ui-guid (-> dude :user/user-identities first :identity/guid)
+            resp (w-utils/authed-request dude :get (str "/users/" (:user/guid dude) "/contacts") reply-to-options)
+            msgs (->> resp :body first :reply_to_threads first :messages (sort-by :date))
+            earliest-m-id (-> msgs first :message_id)]
         (is (= 1 (count (get-in resp [:body]))))
-        (w-utils/authed-request vincent :put (put-thread-url (:user/guid vincent) vincent-ui-guid last-m-id) {:done true})
-        (let [resp (w-utils/authed-request vincent :get (str "/users/" (:user/guid vincent) "/contacts") reply-to-options)]
+        (w-utils/authed-request dude :put (put-thread-url (:user/guid dude) dude-ui-guid earliest-m-id) {:done true})
+        (let [resp (w-utils/authed-request dude :get (str "/users/" (:user/guid dude) "/contacts") reply-to-options)]
           (is (zero? (count (get-in resp [:body])))))))))
 
 (demonictest test-find-reply-to-threads-pagination

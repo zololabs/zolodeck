@@ -30,11 +30,12 @@
                                               (pgen/create-friend-spec "Medium" "Contact" 10 10)
                                               (pgen/create-friend-spec "Weak1" "Contact1" 5 5)
                                               (pgen/create-friend-spec "Weak2" "Contact2" 0 0)]}})
+          u-guid (:user/guid u)
           [medium strong weak1 weak2] (sort-by contact/first-name (:user/contacts u))
           ibc (interaction/ibc u (:user/contacts u))]
 
       (run-as-of "2012-07-1"
-        (let [c-stats (s-service/contact-stats u)]
+        (let [c-stats (s-service/contact-stats u-guid)]
           (is (= 4 (:total c-stats)))
           (is (= 1 (:strong c-stats)))
           (is (= 1 (:medium c-stats)))
@@ -46,13 +47,13 @@
                  (:weakest-contact c-stats)))))
 
       (run-as-of "2014-07-01"
-        (is (= 4 (:quartered (s-service/contact-stats u)))))
+        (is (= 4 (:quartered (s-service/contact-stats u-guid)))))
 
       (run-as-of "2012-09-01"
-        (is (= 3 (:quartered (s-service/contact-stats u)))))
+        (is (= 3 (:quartered (s-service/contact-stats u-guid)))))
       
       (run-as-of "2012-07-01"
-                 (is (= 1 (:quartered (s-service/contact-stats u)))))))
+        (is (= 1 (:quartered (s-service/contact-stats u-guid)))))))
 
 
   (demonic-testing "When user is present, and has email friends"
@@ -62,11 +63,12 @@
                                               (pgen/create-friend-spec "Weak2" "Contact2" 1 1)
                                               (pgen/create-friend-spec "admin" "thoughtworks" 1 1)]}
                             :UI-IDS-ALLOWED [:EMAIL]})
+          u-guid (:user/guid u)
           [medium strong weak1 weak2 admin] (sort-by contact/first-name (:user/contacts u))
           ibc (interaction/ibc u (contact/person-contacts u))]
       
       (run-as-of "2012-07-1"
-        (let [c-stats (s-service/contact-stats u)]
+        (let [c-stats (s-service/contact-stats u-guid)]
           (is (= 4 (:total c-stats)))
           (is (= 1 (:strong c-stats)))
           (is (= 1 (:medium c-stats)))
@@ -78,8 +80,8 @@
                  (:weakest-contact c-stats)))))
 
       (run-as-of "2014-07-01"
-        (is (= 4 (:quartered (s-service/contact-stats u)))))
+        (is (= 4 (:quartered (s-service/contact-stats u-guid)))))
 
       (run-as-of "2012-09-01"
-        (is (= 3 (:quartered (s-service/contact-stats u))))))))
+        (is (= 3 (:quartered (s-service/contact-stats u-guid))))))))
 

@@ -38,7 +38,9 @@ namespace :uberjar do
 
     sh "lein clean"
     if !debug
-      sh "rm devops/config/prod/zolo.clj"
+      if File.exists? "devops/config/prod/zolo.clj"
+        sh "rm devops/config/prod/zolo.clj"
+      end
       Rake::Task["prod:config:download"].invoke
     end
     sh "lein with-profile storm uberjar zolo.storm.facebook"
