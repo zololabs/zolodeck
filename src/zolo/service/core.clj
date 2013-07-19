@@ -21,6 +21,9 @@
 (defn missing-user-error [user-guid]
   (str "User not found for USER-GUID: [" user-guid "]"))
 
+(defn missing-contact-error [c-guid]
+  (str "User not found for CONTACT-GUID: [" c-guid "]"))
+
 (defmacro let-user-entity [[user-sym user-guid] & body]
   `(zolo.utils.clojure/unless-log [~user-sym (zolo.store.user-store/find-entity-by-guid ~user-guid)] (zolo.service.core/missing-user-error ~user-guid)
                                   ~@body))
@@ -32,4 +35,14 @@
 (defmacro let-message-entity [[message-sym ui-guid message-id] & body]
   `(zolo.utils.clojure/unless-log
     [~message-sym (zolo.store.message-store/find-by-ui-guid-and-id ~ui-guid ~message-id)] (zolo.service.core/missing-message-error ~ui-guid ~message-id)
-      ~@body))
+    ~@body))
+
+(defmacro let-contact [[contact-sym c-guid] & body]
+  `(zolo.utils.clojure/unless-log
+    [~contact-sym (zolo.store.contact-store/find-by-guid ~c-guid)] (zolo.service.core/missing-contact-error ~c-guid)
+    ~@body))
+
+(defmacro let-contact-entity [[contact-sym c-guid] & body]
+  `(zolo.utils.clojure/unless-log
+    [~contact-sym (zolo.store.contact-store/find-entity-by-guid ~c-guid)] (zolo.service.core/missing-contact-error ~c-guid)
+    ~@body))
