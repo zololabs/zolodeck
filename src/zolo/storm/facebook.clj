@@ -111,7 +111,8 @@
           (throw (RuntimeException. (str "Zombie warning for " (user/first-name u)))))))
     (catch Exception e
       (logger/error e "Exception in bolt! Occured while processing tuple:" tuple)
-      (report-error! collector tuple))))
+      ;(report-error! collector tuple)
+      )))
 
 (defn fb-topology []
   (topology
@@ -120,7 +121,7 @@
    {"3" (bolt-spec {"1" :shuffle
                     "2" :shuffle}
                    process-user
-                   :p 2)}))
+                   :p 5)}))
 
 ;; (defn fb-trident []
 ;;   (let [t (TridentTopology.)]

@@ -2,6 +2,7 @@
   (:use zolo.utils.debug
         zolo.utils.clojure
         zolo.demonic.test
+        zolo.test.core-utils
         conjure.core)
   (:require [clojure.math.combinatorics :as combo]
             [zolo.marconi.facebook.core :as fb-lab]
@@ -123,7 +124,7 @@
 
 (defn setup-email-ui [specs]
   (let [{first-name :first-name last-name :last-name :as specs} (merge DEFAULT-SPECS specs)
-        u (email-lab/create-account first-name last-name (str first-name "@" last-name ".com"))]
+        u (email-lab/create-account first-name last-name (str first-name "@" last-name "-" (random-str) ".com"))]
     (doseq [{no-of-messages :no-of-messages no-of-interactions :no-of-interactions :as friend} (:friends specs)]
       (let [friend-email (str (:first-name friend) "@" (:last-name friend) ".com")]
         (doall
@@ -173,10 +174,11 @@
           u spec-combos))
 
 (defn generate-user [spec-combo]
-  (personas/in-social-lab
-   (let [u (signup-with-first-ui (first spec-combo))
-         u (add-other-uis u (rest spec-combo))]
-     u)))
+  (run-as-of "2012-05-12"
+    (personas/in-social-lab
+     (let [u (signup-with-first-ui (first spec-combo))
+           u (add-other-uis u (rest spec-combo))]
+       u))))
 
 (defn- get-spec-combos [specs]
   ;; TODO - use (:UI-IDS-COUNT specs) instead of (count (:UI-IDS-ALLOWED specs))  

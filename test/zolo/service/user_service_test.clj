@@ -197,72 +197,73 @@
 
 
 (demonictest ^:storm test-refresh-user-data-and-scores-for-email
-  (personas/in-email-lab
-   (let [mickey-email "mickey@gmail.com"
-         mickey (e-lab/create-account "Mickey" "Mouse" mickey-email)
-         db-mickey (personas/create-db-user-from-email-user mickey)]
-     
-     (let [m1 (e-lab/send-message mickey-email "donald@gmail.com" "s1" "t1" "Hi, what's going on?" "2012-05-01 00:00")
-           m2 (e-lab/send-message "donald@gmail.com" mickey-email "s2" "t2" "Nothing, just work." "2012-05-02 00:00")
-           m3 (e-lab/send-message mickey-email "donald@gmail.com" "s3" "t3" "OK, groceries?" "2012-05-03 00:00")
-
-           m4 (e-lab/send-message "daisy@gmail.com" mickey-email "s4" "t4" "Nothing, just work." "2012-05-04 00:00")
-           m5 (e-lab/send-message mickey-email "daisy@gmail.com" "s5" "t4" "OK, groceries?" "2012-05-05 00:00")
-
-           m6 (e-lab/send-message mickey-email "admin@thoughtworks.com" "s6" "t6" "Special Deal!" "2012-05-05 00:00")]
+  (run-as-of "2012-05-07"
+    (personas/in-email-lab
+     (let [mickey-email "mickey@gmail.com"
+           mickey (e-lab/create-account "Mickey" "Mouse" mickey-email)
+           db-mickey (personas/create-db-user-from-email-user mickey)]
        
-       (db-assert/assert-datomic-message-count 0)
+       (let [m1 (e-lab/send-message mickey-email "donald@gmail.com" "s1" "t1" "Hi, what's going on?" "2012-05-01 00:00")
+             m2 (e-lab/send-message "donald@gmail.com" mickey-email "s2" "t2" "Nothing, just work." "2012-05-02 00:00")
+             m3 (e-lab/send-message mickey-email "donald@gmail.com" "s3" "t3" "OK, groceries?" "2012-05-03 00:00")
 
-       (let [refreshed-mickey (pgen/refresh-everything db-mickey)]
+             m4 (e-lab/send-message "daisy@gmail.com" mickey-email "s4" "t4" "Nothing, just work." "2012-05-04 00:00")
+             m5 (e-lab/send-message mickey-email "daisy@gmail.com" "s5" "t4" "OK, groceries?" "2012-05-05 00:00")
 
-         (testing "should stamp refresh start time"
-           (is (not (nil? (:user/refresh-started refreshed-mickey)))))
-
-         (testing "should update contacts"
-
-           (let [[db-tw db-daisy db-donald] (->> refreshed-mickey
-                                                 :user/contacts
-                                                 (sort-by contact/first-name))]
-
-             (db-assert/assert-datomic-contact-count 3)
-             (db-assert/assert-datomic-social-count 3)
-
-             (is (= "admin@thoughtworks.com" (-> db-tw :contact/social-identities first :social/provider-uid)))
-             (is (= "admin@thoughtworks.com" (-> db-tw :contact/social-identities first :social/email)))
-
-             (is (= "daisy@gmail.com" (-> db-daisy :contact/social-identities first :social/provider-uid)))
-             (is (= "daisy@gmail.com" (-> db-daisy :contact/social-identities first :social/email)))
-
-             (is (= "donald@gmail.com" (-> db-donald :contact/social-identities first :social/provider-uid)))
-             (is (= "donald@gmail.com" (-> db-donald :contact/social-identities first :social/email)))))
-
-         (testing "should update messages"
-           (db-assert/assert-datomic-message-count 6)
-
-           (d-assert/messages-list-are-same [m1 m2 m3 m4 m5 m6] (->> refreshed-mickey
-                                                                     :user/messages
-                                                                     (sort-by message/message-date))))
-
-         (testing "should know about person/not-a-person"
-           (let [[db-tw db-daisy db-donald] (->> refreshed-mickey
-                                                 :user/contacts
-                                                 (sort-by contact/first-name))]
-
-             (is (-> db-daisy  :contact/social-identities first si/is-a-person?))
-             (is (-> db-donald :contact/social-identities first si/is-a-person?))
-             (is (not (-> db-tw :contact/social-identities first si/is-a-person?)))))
+             m6 (e-lab/send-message mickey-email "admin@thoughtworks.com" "s6" "t6" "Special Deal!" "2012-05-05 00:00")]
          
-         (testing "should update scores"
-           (let [[db-tw db-daisy db-donald] (->> refreshed-mickey
-                                           :user/contacts
-                                           (sort-by contact/first-name))]
+         (db-assert/assert-datomic-message-count 0)
 
-             (is (= 10 (:contact/score db-tw)))
-             (is (= 20 (:contact/score db-daisy)))
-             (is (= 30 (:contact/score db-donald)))))
+         (let [refreshed-mickey (pgen/refresh-everything db-mickey)]
 
-         (testing "should stamp last updated date"
-           (is (not (nil? (:user/last-updated refreshed-mickey))))))))))
+           (testing "should stamp refresh start time"
+             (is (not (nil? (:user/refresh-started refreshed-mickey)))))
+
+           (testing "should update contacts"
+
+             (let [[db-tw db-daisy db-donald] (->> refreshed-mickey
+                                                   :user/contacts
+                                                   (sort-by contact/first-name))]
+
+               (db-assert/assert-datomic-contact-count 3)
+               (db-assert/assert-datomic-social-count 3)
+
+               (is (= "admin@thoughtworks.com" (-> db-tw :contact/social-identities first :social/provider-uid)))
+               (is (= "admin@thoughtworks.com" (-> db-tw :contact/social-identities first :social/email)))
+
+               (is (= "daisy@gmail.com" (-> db-daisy :contact/social-identities first :social/provider-uid)))
+               (is (= "daisy@gmail.com" (-> db-daisy :contact/social-identities first :social/email)))
+
+               (is (= "donald@gmail.com" (-> db-donald :contact/social-identities first :social/provider-uid)))
+               (is (= "donald@gmail.com" (-> db-donald :contact/social-identities first :social/email)))))
+
+           (testing "should update messages"
+             (db-assert/assert-datomic-message-count 6)
+
+             (d-assert/messages-list-are-same [m1 m2 m3 m4 m5 m6] (->> refreshed-mickey
+                                                                       :user/messages
+                                                                       (sort-by message/message-date))))
+
+           (testing "should know about person/not-a-person"
+             (let [[db-tw db-daisy db-donald] (->> refreshed-mickey
+                                                   :user/contacts
+                                                   (sort-by contact/first-name))]
+
+               (is (-> db-daisy  :contact/social-identities first si/is-a-person?))
+               (is (-> db-donald :contact/social-identities first si/is-a-person?))
+               (is (not (-> db-tw :contact/social-identities first si/is-a-person?)))))
+           
+           (testing "should update scores"
+             (let [[db-tw db-daisy db-donald] (->> refreshed-mickey
+                                                   :user/contacts
+                                                   (sort-by contact/first-name))]
+
+               (is (= 10 (:contact/score db-tw)))
+               (is (= 20 (:contact/score db-daisy)))
+               (is (= 30 (:contact/score db-donald)))))
+
+           (testing "should stamp last updated date"
+             (is (not (nil? (:user/last-updated refreshed-mickey)))))))))))
 
 (demonictest ^:storm test-refresh-user-data-and-scores-using-gen
   (personas/in-social-lab

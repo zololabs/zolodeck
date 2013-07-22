@@ -100,7 +100,7 @@
 (schema-set "MESSAGE ENTITY FACTS"
  (uuid-fact-schema    :message/guid              "A GUID for messages" :uniqueness :db.unique/identity)
  (ref-fact-schema     :message/user-identity     "The UI this message was sourced from")
- (string-fact-schema  :message/message-id        "ID for this message" :uniqueness :db.unique/identity)
+ (string-fact-schema  :message/message-id        "ID for this message")
  ;;TODO Need to store this
  (enum-fact-schema    :message/provider          "The platform: Facebook, LinkedIn, etc")
  ;;TODO Need to change this to enum

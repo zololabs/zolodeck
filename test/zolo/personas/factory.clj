@@ -83,7 +83,7 @@
   (fake-email/fetch-contacts account-id))
 
 (defn fake-fetch-email-messages [account-id date-in-seconds]
-  (fake-email/fetch-messages account-id))
+  (fake-email/fetch-messages account-id date-in-seconds))
 
 (defn fake-get-email-thread [account-id message-id-in-thread]
   (fake-email/fetch-thread-messages account-id message-id-in-thread))
