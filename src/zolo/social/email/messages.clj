@@ -49,6 +49,11 @@
         (select-valid it)
         (domap cio-message->message it)))
 
+(defn get-deleted-messages [cio-account-id date-in-seconds]
+  (it-> cio-account-id
+        (gateway/get-deleted-messages it date-in-seconds)
+        (domap cio-message->message it)))
+
 (defn get-messages-for-thread [cio-account-id any-message-id-in-thread]
   (it-> cio-account-id
         (gateway/get-thread it any-message-id-in-thread)

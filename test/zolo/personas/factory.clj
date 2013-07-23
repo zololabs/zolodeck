@@ -85,6 +85,9 @@
 (defn fake-fetch-email-messages [account-id date-in-seconds]
   (fake-email/fetch-messages account-id date-in-seconds))
 
+(defn fake-fetch-deleted-email-messages [account-id date-in-seconds]
+  (fake-email/fetch-deleted-messages account-id date-in-seconds))
+
 (defn fake-get-email-thread [account-id message-id-in-thread]
   (fake-email/fetch-thread-messages account-id message-id-in-thread))
 
@@ -104,6 +107,7 @@
                email-gateway/get-account fake-email-account
                email-gateway/get-contacts fake-fetch-email-contacts 
                email-gateway/get-messages fake-fetch-email-messages
+               email-gateway/get-deleted-messages fake-fetch-deleted-email-messages               
                email-gateway/get-thread fake-get-email-thread
                email-gateway/reset-account-status identity
                pento/score-all fake-pento-score-all]
@@ -114,6 +118,7 @@
     (stubbing [email-gateway/get-account fake-email-account
                email-gateway/get-contacts fake-fetch-email-contacts 
                email-gateway/get-messages fake-fetch-email-messages
+               email-gateway/get-deleted-messages fake-fetch-deleted-email-messages
                email-gateway/get-thread fake-get-email-thread
                email-gateway/reset-account-status identity               
                pento/score-all fake-pento-score-all]

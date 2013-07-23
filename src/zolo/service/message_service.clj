@@ -9,6 +9,7 @@
             [zolo.domain.message :as message]
             [zolo.store.user-store :as u-store]
             [zolo.utils.logger :as logger]
+            [zolo.utils.maps :as zmaps]            
             [zolo.social.facebook.chat :as fb-chat]
             [zolo.service.core :as service]
             [zolo.store.message-store :as m-store]
@@ -36,9 +37,7 @@
   (assoc m :message/user-identity (:db/id ui)))
 
 (defn- get-messages-for-user-identity [user-identity]
-  (let [{provider :identity/provider
-         access-token :identity/auth-token
-         provider-uid :identity/provider-uid} user-identity
+  (let [{provider :identity/provider access-token :identity/auth-token provider-uid :identity/provider-uid} user-identity
          last-updated-seconds (last-updated-time-seconds user-identity)]
     (->> (social/fetch-messages provider access-token provider-uid last-updated-seconds)
          (map #(tag-user-identity % user-identity)))))
@@ -48,13 +47,34 @@
        :user/user-identities
        (mapcat get-messages-for-user-identity)))
 
+(defn- get-deleted-messages-for-user-identity [user-identity]
+  (let [{provider :identity/provider access-token :identity/auth-token provider-uid :identity/provider-uid} user-identity
+         last-updated-seconds (last-updated-time-seconds user-identity)]
+    (->> (social/fetch-deleted-messages provider access-token provider-uid last-updated-seconds)
+         (map #(tag-user-identity % user-identity)))))
+
+(defn- matched-deleted-messages [u deleted-messages]
+  (->> deleted-messages
+       (map #(zmaps/collect-vals % :message/message-id :message/user-identity))
+       (m-store/find-message-entities-by-message-ids-and-ui-ids)))
+
+(defn- get-deleted-messages-for-user [u]
+  (->> u
+       :user/user-identities
+       (mapcat get-deleted-messages-for-user-identity)))
+
  ;; Services
 (defn update-inbox-messages [u]
   (when u
     (->> u
          m-store/delete-temp-messages
          get-inbox-messages-for-user
-         (m-store/append-messages u))))
+         (m-store/append-messages u))
+    (->> u
+         u-store/reload
+         get-deleted-messages-for-user
+         (matched-deleted-messages u)
+         (m-store/delete-messages u))))
 
 (def val-request
   {:provider [:required :string :empty-not-allowed]

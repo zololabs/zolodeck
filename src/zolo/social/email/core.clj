@@ -32,5 +32,8 @@
   (gateway/reset-account-status access-token)
   (messages/get-messages access-token date-in-seconds))
 
+(defmethod social/fetch-deleted-messages :provider/email [provider access-token user-id date-in-seconds]
+  (messages/get-deleted-messages access-token date-in-seconds))
+
 (defmethod social/send-message :provider/email [provider access-token from-email to-emails thead-id reply-to-message-id subject message]
   (gateway/send-email access-token from-email to-emails reply-to-message-id subject message))

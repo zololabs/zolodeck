@@ -46,10 +46,27 @@
        (find-message-ids-by-ui-guid-and-thread-id ui-guid)
        (map dh/load-from-db)))
 
+(defn find-message-entity-ids-by-message-ids-and-ui-guids [message-id-and-ui-id-pairs]
+  (->> (demonic/run-query '[:find ?m :in $ [[?m-id ?ui-id]]
+                            :where
+                            [?m :message/message-id ?m-id]
+                            [?m :message/user-identity ?ui-id]]
+                          message-id-and-ui-id-pairs)
+       (map first)))
+
+(defn find-message-entities-by-message-ids-and-ui-ids [message-id-and-ui-id-pairs]
+  (->> message-id-and-ui-id-pairs
+       find-message-entity-ids-by-message-ids-and-ui-guids
+       (map dh/load-from-db)))
+
 (defn delete-temp-messages [u]
   (->> u
        :user/temp-messages
        (doeach demonic/delete))
+  (u-store/reload u))
+
+(defn delete-messages [u messages]
+  (doeach demonic/delete messages)
   (u-store/reload u))
 
 (defn append-messages [u messages]

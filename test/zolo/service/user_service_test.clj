@@ -265,6 +265,33 @@
            (testing "should stamp last updated date"
              (is (not (nil? (:user/last-updated refreshed-mickey)))))))))))
 
+(demonictest test-refresh-user-data-and-scores-for-deleted-emails
+  (run-as-of "2012-05-07"
+    (personas/in-email-lab
+     (let [mickey-email "mickey@gmail.com"
+           mickey (e-lab/create-account "Mickey" "Mouse" mickey-email)
+           db-mickey (personas/create-db-user-from-email-user mickey)]
+       
+       (let [m1 (e-lab/send-message mickey-email "donald@gmail.com" "s1" "t1" "Hi, what's going on?" "2012-05-01 00:00")
+             m2 (e-lab/send-message "donald@gmail.com" mickey-email "s2" "t2" "Nothing, just work." "2012-05-02 00:00")
+             m3 (e-lab/send-message mickey-email "donald@gmail.com" "s3" "t3" "OK, groceries?" "2012-05-03 00:00")
+
+             m4 (e-lab/send-message "daisy@gmail.com" mickey-email "s4" "t4" "Nothing, just work." "2012-05-04 00:00")
+             m5 (e-lab/send-message mickey-email "daisy@gmail.com" "s5" "t4" "OK, groceries?" "2012-05-05 00:00")]
+         
+         (testing "should fetch and update messages"
+           (let [refreshed-mickey (pgen/refresh-everything db-mickey)]
+             (db-assert/assert-datomic-message-count 5)
+             (is (= 5 (count (:user/messages refreshed-mickey))))))
+
+         (testing "should fetch and update deleted messages also"
+           (let [m6 (e-lab/send-message mickey-email "admin@thoughtworks.com" "s6" "t6" "Special Deal!" "2012-05-06 00:00")
+                 _ (e-lab/delete-messages m1 m2 m3)
+                 refreshed-mickey (pgen/refresh-everything db-mickey)]
+             (db-assert/assert-datomic-message-count 3)
+             (is (= 3 (count (:user/messages refreshed-mickey))))
+             (d-assert/messages-list-are-same [m4 m5 m6] (->> refreshed-mickey :user/messages (sort-by message/message-date))))))))))
+
 (demonictest ^:storm test-refresh-user-data-and-scores-using-gen
   (personas/in-social-lab
    (run-as-of "2012-05-12"

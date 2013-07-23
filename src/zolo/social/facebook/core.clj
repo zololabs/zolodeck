@@ -35,6 +35,9 @@
   ;(logger/trace "FetchMessages:" provider)
   (messages/fetch-messages access-token user-id date))
 
+(defmethod social/fetch-deleted-messages :provider/facebook [provider access-token user-id date]
+  [])
+
 (defmethod social/fetch-feed :provider/facebook [provider access-token user-id date]
   ;(logger/trace "FetchFeed:" provider user-id)
   (messages/fetch-feed access-token user-id date))
