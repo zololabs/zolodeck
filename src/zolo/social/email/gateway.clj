@@ -19,14 +19,15 @@
    :port 993
    :type "IMAP"
    :sync_period "1h"
+   :sync_all_folders 1
    :provider_token access-token
    :provider_refresh_token refresh-token
    :provider_token_secret (conf/google-secret)
    :provider_consumer_key (conf/google-key)})
 
 (defn get-data- [data-fn account-id limit offset other-params results-key-seq results]
-  (let [resp (time (data-fn (context-io-creds) :params (merge {:account-id account-id :limit limit :offset offset}
-                                                              other-params)))]
+  (let [resp (data-fn (context-io-creds) :params (merge {:account-id account-id :limit limit :offset offset}
+                                                        other-params))]
     (if (not= 200 (get-in resp [:status :code]))
       results
       (let [cs (get-in resp results-key-seq)
@@ -61,6 +62,9 @@
      (get-data- context-io/list-account-messages account-id 1000 0 {:date_after date-after-in-seconds} [:body] []))
   ([account-id date-after-in-seconds date-before-in-seconds]
      (get-data- context-io/list-account-messages account-id 1000 0 {:date_after date-after-in-seconds :date_before date-before-in-seconds} [:body] [])))
+
+(defn get-deleted-messages [account-id date-after-in-seconds]
+  (get-data- context-io/list-account-messages account-id 1000 0 {:date_after date-after-in-seconds :folder "\\Trash"} [:body] []))
 
 (defn- gmail-prefixed [thread-id]
   (if (.startsWith thread-id "gm-")
