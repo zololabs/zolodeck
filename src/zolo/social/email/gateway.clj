@@ -21,7 +21,6 @@
    :sync_period "1h"
    :provider_token access-token
    :provider_refresh_token refresh-token
-   :provider_token_secret (conf/google-secret)
    :provider_consumer_key (conf/google-key)})
 
 (defn get-data- [data-fn account-id limit offset other-params results-key-seq results]
