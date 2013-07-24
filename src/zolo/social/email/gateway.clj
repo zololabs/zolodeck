@@ -93,4 +93,4 @@
       (mark-as-read account-id reply-to-message-id))))
 
 (defn reset-account-status [account-id]
-  (context-io/edit-account-source (context-io-creds) :params {:account-id account-id :label 0 :status 1}))
+  (context-io/edit-account-source (context-io-creds) :params {:account-id account-id :label 0 :status 1 :sync_period "1h" :sync_all_folders 1}))
