@@ -43,7 +43,7 @@
   ;;Contacts
   (GET "/contacts" [guid & params] (c-api/list-contacts guid params))
   (GET "/contacts/:c-guid" [guid c-guid] (c-api/find-contact guid c-guid))
-  (PUT "/contacts/:c-guid" [guid c-guid & params] (c-api/update-contact guid c-guid params))
+  (PATCH "/contacts/:c-guid" [guid c-guid & params] (c-api/update-contact guid c-guid params))
   
   ;;Messages
   (POST "/messages" [guid :as {params :params}] (m-api/send-message guid params))
