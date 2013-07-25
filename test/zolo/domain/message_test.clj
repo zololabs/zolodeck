@@ -92,7 +92,7 @@
     (is (not (message/message-done? m)))
     (is (message/message-done? (message/set-doneness m true)))
     (is (not (message/message-done? tm)))
-    (is (message/message-done? (message/set-doneness tm true)))))
+    (is (thrown? RuntimeException (message/set-doneness tm true)))))
 
 (deftest test-mark-follow-up
   (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Amrut" "Indya" 1 1)]}})
