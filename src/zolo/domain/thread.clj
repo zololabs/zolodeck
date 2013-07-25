@@ -74,7 +74,7 @@
 (defn- is-after-follow-up-on-time? [u thread]
   (let [follow-up-on-inst (follow-up-on thread)]
     (if follow-up-on-inst
-      (.after (zcal/now) follow-up-on-inst)
+      (.after (zcal/now-instant) follow-up-on-inst)
       (is-last-sent-before-48-hours? u thread))))
 
 (defn is-follow-up? [u thread]
