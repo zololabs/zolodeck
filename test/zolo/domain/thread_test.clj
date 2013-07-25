@@ -63,7 +63,7 @@
                  
         (is (empty? (t/find-reply-to-threads u THREAD-LIMIT THREAD-OFFSET)))))))
 
-(deftest test-find-follow-up-threads
+(deftest test-find-follow-up-threads-with-default-follow-up-date
   (run-as-of "2012-05-12"
     (testing "When user does not have any messages it should return empty"
       (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 0 0)]}})]
@@ -84,7 +84,7 @@
                                               (is (-> threads first :thread/guid))
                                               (is (= (set (m/all-messages u)) (set (:thread/messages (first threads))))))))
     
-    (testing "When user has 2 friends, with a reply-to and replied-to threads each, it should return reply-to"
+    (testing "When user has 2 friends, one with a follow-up and the other with reply-to threads, it should return only friend with follow-up"
       (let [u (pgen/generate-domain {:SPECS {:friends [(pgen/create-friend-spec "Jack" "Daniels" 1 9)
                                                        (pgen/create-friend-spec "Jim" "Beam" 1 10)]}})
             

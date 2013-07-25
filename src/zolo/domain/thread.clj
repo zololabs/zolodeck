@@ -7,6 +7,9 @@
             [clojure.string :as str]
             [zolo.utils.calendar :as zcal]))
 
+(defn earliest-message [thread]
+  (-> thread :thread/messages last))
+
 (defn last-message [thread]
   (-> thread :thread/messages first))
 
@@ -58,11 +61,16 @@
 
 (def ^:private is-reply-to? (complement is-follow-up-candidate?))
 
-(defn follow-up-on [thread]
-  (->> thread :thread/messages (some :message/follow-up-on)))
-
 (defn last-sent-message-time [u thread]
   (->> thread :thread/messages (filter #(m/is-sent-by-user? u %)) first m/message-date))
+
+(defn follow-up-updated [thread]
+  (-> thread earliest-message :message/follow-up-updated))
+
+(defn follow-up-on [u thread]
+  (if-let [follow-up-updated-inst (follow-up-updated thread)]
+    (when (.before (last-sent-message-time u thread) follow-up-updated-inst)
+      (-> thread earliest-message :message/follow-up-on))))
 
 (defn- is-last-sent-before-48-hours? [u thread]
   (-> u
@@ -72,7 +80,7 @@
       (.before (zcal/now-instant))))
 
 (defn- is-after-follow-up-on-time? [u thread]
-  (let [follow-up-on-inst (follow-up-on thread)]
+  (let [follow-up-on-inst (follow-up-on u thread)]
     (if follow-up-on-inst
       (.after (zcal/now-instant) follow-up-on-inst)
       (is-last-sent-before-48-hours? u thread))))
