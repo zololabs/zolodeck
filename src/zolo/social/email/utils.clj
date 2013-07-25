@@ -19,3 +19,13 @@
   (-> {:from from :subject subject :body message}
       http/generate-query-string
       java.net.URLEncoder/encode))
+
+(defn in-folder? [message folder]
+  (some #{folder} (:folders message)))
+
+(defn is-spam-or-trash? [message]
+  (or (in-folder? message "\\Trash")
+      (in-folder? message "\\Spam")))
+
+(defn remove-spam-and-trash [messages]
+  (remove is-spam-or-trash? messages))
