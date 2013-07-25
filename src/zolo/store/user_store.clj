@@ -62,6 +62,11 @@
       find-entity-id-by-guid
       demonic/load-entity))
 
+(defn to-loadable [u]
+  (if (loadable/is-loadable? u)
+    u
+    (loadable/entity->loadable u)))
+
 ;; TODO use datalog to only find users with permissions granted
 ;;TODO test
 (defn find-all-users-for-refreshes []

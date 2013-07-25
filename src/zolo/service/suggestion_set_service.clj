@@ -37,6 +37,6 @@
         (ss-distiller/distill u ibc))))
 
 (defn find-suggestion-set-for-today [user-guid]
-  (service/let-user [u user-guid]
+  (service/let-user-entity [u user-guid]
     (d-core/run-in-tz-offset (:user/login-tz u)
       (find-or-create-suggestion-set u))))

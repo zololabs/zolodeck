@@ -9,5 +9,5 @@
 (defn append-suggestion-set [u suggestion-set]
   (->> suggestion-set
        (conj (:user/suggestion-sets u))
-       (assoc u :user/suggestion-sets)
+       (assoc (u-store/to-loadable u) :user/suggestion-sets)
        demonic/insert-and-reload))
