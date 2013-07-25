@@ -188,7 +188,9 @@
     m
     (if (is-temp-message? m)
       (throw+ {:type :bad-request :message "Can't set follow-up on a temp-message."})
-      (assoc m :message/follow-up-on follow-up-on-inst))))
+      (-> m
+          (assoc :message/follow-up-on follow-up-on-inst)
+          (assoc :message/follow-up-updated (zcal/now-instant))))))
 
 ;; (defn feeds-start-time-seconds []
 ;;   (-> (zcal/now-joda)

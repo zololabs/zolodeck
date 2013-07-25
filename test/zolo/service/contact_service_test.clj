@@ -9,19 +9,24 @@
         [clojure.test :only [run-tests deftest is are testing]]
         conjure.core)
   (:require [zolo.personas.factory :as personas]
+            [zolo.marconi.context-io.core :as e-lab]
+            [zolo.domain.message :as m]
             [zolo.domain.user :as user]
             [zolo.domain.contact :as contact]
             [zolo.social.core :as social]
             [zolo.test.assertions.datomic :as db-assert]
             [zolo.test.assertions.domain :as d-assert]
             [zolo.service.contact-service :as c-service]
+            [zolo.service.thread-service :as t-service]
             [zolo.service.message-service :as m-service]
             [zolo.domain.interaction :as interaction]
             [zolo.domain.message :as message]
             [zolo.domain.thread :as thread]
             [zolo.domain.core :as d-core]
             [zolo.store.user-store :as u-store]
+            [zolo.store.message-store :as m-store]
             [zolo.store.contact-store :as c-store]
+            [zolo.utils.calendar :as zcal]
             [zolo.social.facebook.chat :as fb-chat]
             [zolo.marconi.facebook.core :as fb-lab]
             [zolo.utils.calendar :as zolo-cal]
@@ -340,3 +345,41 @@
           (is (= (:social/first-name jack-ui) (:reply-to/first-name reply-to)))
           (is (= (:social/last-name jack-ui) (:reply-to/last-name reply-to)))
           (is (= (:social/provider-uid jack-ui) (:reply-to/provider-uid reply-to))))))))
+
+
+(demonictest test-find-follow-up-contacts-with-set-follow-up
+  (let [follow-up-options {:selectors ["follow_up"] :thread_limit 50 :thread_offset 0}]
+    (personas/in-email-lab
+     (let [mickey-email "mickey@gmail.com"
+           mickey (e-lab/create-account "Mickey" "Mouse" mickey-email)
+           db-mickey (personas/create-db-user-from-email-user mickey)]
+       
+       (run-as-of "2012-05-03"
+         (e-lab/send-message mickey-email "donald@gmail.com" "s1" "t1" "Hi, what's going on?" "2012-05-01 00:00")
+         (let [u (pgen/refresh-everything db-mickey)
+               u-ui-guid (-> u :user/user-identities first :identity/guid)
+               m-id (-> (->> u :user/messages (sort-by :message/date) first)  m/message-id)]
+
+           (testing "should return as the message was send on 5/1 and default follow up was set"
+             (is (= 1 (count (c-service/list-contacts u follow-up-options)))))
+           
+           (t-service/update-thread-details (:user/guid u) u-ui-guid m-id false "2012-05-10T00:00:00.000Z")
+           (testing "should not return on 5/3 as follow is set for 5/10"
+             (is (= 0 (count (c-service/list-contacts (u-store/reload  u) follow-up-options)))))
+
+           (testing "should return on 5/10 as follow is set for 5/10"
+             (run-as-of "2012-05-10"
+               (is (= 1 (count (c-service/list-contacts (u-store/reload  u) follow-up-options))))))
+
+           (e-lab/send-message mickey-email "donald@gmail.com" "s1" "t1" "Hi, what's going on?" "2012-05-10 00:00")
+
+           (let [u (pgen/refresh-everything db-mickey)]
+             (run-as-of "2012-05-10"
+
+               (testing "should not return on 5/10 as there is another message send on 5/10 with default follow up"
+                 (is (= 0 (count (c-service/list-contacts (u-store/reload  u) follow-up-options))))))
+
+             (run-as-of "2012-05-12"
+
+               (testing "should return on 5/12 as there is another message send on 5/10 with default follow up"
+                 (is (= 1 (count (c-service/list-contacts (u-store/reload  u) follow-up-options)))))))))))))

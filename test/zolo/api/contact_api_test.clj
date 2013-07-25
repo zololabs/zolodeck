@@ -314,7 +314,7 @@
         (let [resp (w-utils/authed-request winnie :get (str "/users/" (:user/guid winnie) "/contacts") follow-up-options)]
           (is (zero? (-> resp :body count))))))
 
-        (run-as-of "2012-05-14"
+    (run-as-of "2012-05-14"
       (testing "User has both 2 contacts, both have follow-up candidates, but only 3 days have passed: it should return both"
         (let [resp (w-utils/authed-request winnie :get (str "/users/" (:user/guid winnie) "/contacts") follow-up-options)]
           (is (= 2 (-> resp :body count))))))))
