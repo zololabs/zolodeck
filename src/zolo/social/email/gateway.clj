@@ -58,9 +58,11 @@
 
 (defn get-messages
   ([account-id date-after-in-seconds]
-     (get-data- context-io/list-account-messages account-id 1000 0 {:date_after date-after-in-seconds} [:body] []))
+     (->> (get-data- context-io/list-account-messages account-id 1000 0 {:date_after date-after-in-seconds} [:body] [])
+          (remove-spam-and-trash)))
   ([account-id date-after-in-seconds date-before-in-seconds]
-     (get-data- context-io/list-account-messages account-id 1000 0 {:date_after date-after-in-seconds :date_before date-before-in-seconds} [:body] [])))
+     (->> (get-data- context-io/list-account-messages account-id 1000 0 {:date_after date-after-in-seconds :date_before date-before-in-seconds} [:body] [])
+          (remove-spam-and-trash))))
 
 (defn get-deleted-messages [account-id date-after-in-seconds]
   (get-data- context-io/list-account-messages account-id 1000 0 {:date_after date-after-in-seconds :folder "\\Trash"} [:body] []))
