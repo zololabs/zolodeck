@@ -67,15 +67,20 @@
     u
     (loadable/entity->loadable u)))
 
+(defn find-all-users []
+  (->> (demonic/run-query '[:find ?u :where [?u :user/guid]])
+       (map first)
+       (map demonic-helper/load-from-db)))
+
 ;; TODO use datalog to only find users with permissions granted
 ;;TODO test
 (defn find-all-users-for-refreshes []
-  (->> (demonic/run-query '[:find ?u :where [?u :user/guid]])
-       (map first)
-       (map demonic-helper/load-from-db)
+  (->> (find-all-users)
        ;(map #(select-keys % [:user/guid :user/last-updated :user/refresh-started :user/fb-permissions-time]))
        (map user-for-refresh)
        doall))
+
+
 
 (defn stamp-updated-time [u]
   (-not-nil!-> u
