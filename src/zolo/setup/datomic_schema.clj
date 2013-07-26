@@ -119,6 +119,7 @@
  (string-fact-schema  :message/picture           "a picture about this message")
  (string-fact-schema  :message/link              "a link about this message")
  (boolean-fact-schema :message/done              "True if the thread this message belongs to is done")
+ (instant-fact-schema :message/done-updated      "Timestamp of when user set doneness")
  (instant-fact-schema :message/follow-up-on      "Timestamp of when this thread needs follow up")
  (instant-fact-schema :message/follow-up-updated "Timestamp of when user set follow-up") )
 
@@ -131,8 +132,7 @@
  (instant-fact-schema  :temp-message/date         "The date this message was received/sent")
  (string-fact-schema   :temp-message/from         "The platform ID of the sender")
  (strings-fact-schema  :temp-message/to           "The platform IDs of the receivers")
- (string-fact-schema   :temp-message/thread-id    "The Thread ID of this message")
- (boolean-fact-schema  :temp-message/done         "True if the thread this message belongs to is done"))
+ (string-fact-schema   :temp-message/thread-id    "The Thread ID of this message"))
 
 (schema-set "SERVER STATS"
  (uuid-fact-schema :server/guid                  "A GUID for the server stats object" :uniqueness :db.unique/identity )

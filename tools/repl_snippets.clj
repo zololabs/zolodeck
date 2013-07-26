@@ -15,6 +15,7 @@
 
          '[zolo.api.user-api :as uapi]
          '[datomic.api :as db]
+         '[zolo.demonic.core :as demonic]
          '[zolo.demonic.helper :as dh] )
 
 

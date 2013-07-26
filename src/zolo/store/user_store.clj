@@ -1,19 +1,19 @@
 (ns zolo.store.user-store
   (:use zolo.utils.debug
         zolo.utils.clojure
-        [zolo.demonic.core :only [insert run-query load-entity] :as demonic]
         [zolo.demonic.helper :only [load-from-db] :as demonic-helper]
         [zolo.demonic.loadable :only [entity->loadable] :as loadable])
   (:require [zolo.utils.logger :as logger]
+            [zolo.demonic.core :as demonic]
             [zolo.social.core :as social]
             [zolo.utils.calendar :as zolo-cal]
             [zolo.domain.user-identity :as user-identity]))
 
 (defn creation-time [u]
   (->> (:user/guid u)
-       (run-query '[:find ?tx :in $ ?g :where [?u :user/guid ?g ?tx]])
+       (demonic/run-query '[:find ?tx :in $ ?g :where [?u :user/guid ?g ?tx]])
        ffirst
-       load-entity
+       demonic/load-entity
        :db/txInstant))
 
 ;;TODO test
@@ -67,15 +67,20 @@
     u
     (loadable/entity->loadable u)))
 
+(defn find-all-users []
+  (->> (demonic/run-query '[:find ?u :where [?u :user/guid]])
+       (map first)
+       (map demonic-helper/load-from-db)))
+
 ;; TODO use datalog to only find users with permissions granted
 ;;TODO test
 (defn find-all-users-for-refreshes []
-  (->> (demonic/run-query '[:find ?u :where [?u :user/guid]])
-       (map first)
-       (map demonic-helper/load-from-db)
+  (->> (find-all-users)
        ;(map #(select-keys % [:user/guid :user/last-updated :user/refresh-started :user/fb-permissions-time]))
        (map user-for-refresh)
        doall))
+
+
 
 (defn stamp-updated-time [u]
   (-not-nil!-> u
@@ -94,3 +99,6 @@
 (defn save [new-values]
   (-> new-values
       demonic/insert-and-reload))
+
+(defn delete [u]
+  (demonic/delete u))

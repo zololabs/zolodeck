@@ -1,11 +1,17 @@
 (ns zolo.store.user-store-test
   (:use clojure.test
+        zolo.utils.clojure
         zolo.utils.debug
         zolo.demonic.test
         zolo.test.assertions.core)
   (:require [zolo.store.user-store :as u-store]
+            [zolo.store.message-store :as m-store]
+            [zolo.store.suggestion-set-store :as ss-store]
+            [zolo.domain.suggestion-set :as ss]
             [zolo.test.assertions.datomic :as db-assert]
             [zolo.personas.factory :as personas]
+            [zolo.personas.vincent :as vincent-persona]
+            [zolo.personas.shy :as shy-persona]
             [zolo.marconi.facebook.core :as fb-lab]))
 
 (demonictest test-find-by-provider-info
@@ -101,3 +107,46 @@
    (testing "when nil is passed it should throw exception"
      (is (thrown?  IllegalArgumentException (u-store/stamp-refresh-start nil)))
      (is (thrown?  IllegalArgumentException (u-store/stamp-updated-time nil))))))
+
+
+(demonictest test-delete
+  (let [vincent (vincent-persona/create)
+        shy (shy-persona/create)]
+    
+    (it-> vincent
+          (ss/new-suggestion-set it "ss1" :user/contacts)
+          (ss-store/append-suggestion-set vincent it))
+
+    (it-> vincent
+          (personas/create-temp-message it (-> it :user/user-identities first) "some" "Great Awesome")
+          (m-store/append-temp-message vincent it))
+    
+    (db-assert/assert-datomic-user-count 2)
+    (db-assert/assert-datomic-user-identity-count 2)
+    (db-assert/assert-datomic-contact-count 4)
+    (db-assert/assert-datomic-social-count 4)
+    (db-assert/assert-datomic-message-count 5)
+    (db-assert/assert-datomic-temp-message-count 1)
+    (db-assert/assert-datomic-suggestion-set-count 1)
+
+
+    (u-store/delete vincent)
+
+    (db-assert/assert-datomic-user-count 1)
+    (db-assert/assert-datomic-user-identity-count 1)
+    (db-assert/assert-datomic-contact-count 2)
+    (db-assert/assert-datomic-social-count 2)
+    (db-assert/assert-datomic-message-count 0)
+    (db-assert/assert-datomic-temp-message-count 0)
+    (db-assert/assert-datomic-suggestion-set-count 0)
+
+
+    (u-store/delete shy)
+
+    (db-assert/assert-datomic-user-count 0)
+    (db-assert/assert-datomic-user-identity-count 0)
+    (db-assert/assert-datomic-contact-count 0)
+    (db-assert/assert-datomic-social-count 0)
+    (db-assert/assert-datomic-message-count 0)
+    (db-assert/assert-datomic-temp-message-count 0)
+    (db-assert/assert-datomic-suggestion-set-count 0)))

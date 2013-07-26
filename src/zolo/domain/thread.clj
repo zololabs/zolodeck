@@ -50,9 +50,6 @@
          (map messages->thread)
          sort-by-recent-threads)))
 
-(defn is-done? [thread]
-  (-> thread :thread/messages last m/message-done?))
-
 (defn- is-follow-up-candidate? [u thread]
   (let [last-m (-> thread :thread/messages first)
         m-info [(:message/provider last-m) (:message/from last-m)]
@@ -63,6 +60,14 @@
 
 (defn last-sent-message-time [u thread]
   (->> thread :thread/messages (filter #(m/is-sent-by-user? u %)) first m/message-date))
+
+(defn done-updated [thread]
+  (-> thread earliest-message :message/done-updated))
+
+(defn is-done? [u thread]
+  (if-let [done-updated-inst (done-updated thread)]
+    (when (.before (last-sent-message-time u thread) done-updated-inst)
+      (-> thread earliest-message m/message-done?))))
 
 (defn follow-up-updated [thread]
   (-> thread earliest-message :message/follow-up-updated))
@@ -102,7 +107,7 @@
         (all-threads it thread-limit thread-offset)        
         (filter #(is-reply-to? u %) it)
         (filter #(reply-to-contact-exists? u %) it)
-        (remove is-done? it)
+        (remove #(is-done? u %) it)
         (sort-by-recent-threads it)))
 
 (defn find-follow-up-threads [u thread-limit thread-offset]
@@ -110,5 +115,6 @@
         (all-threads it thread-limit thread-offset)
         (filter #(is-follow-up? u %) it)
         (filter #(follow-up-contact-exists? u %) it)
+        (remove #(is-done? u %)  it)
         (sort-by-recent-threads it)))
 

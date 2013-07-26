@@ -383,3 +383,45 @@
 
                (testing "should return on 5/12 as there is another message send on 5/10 with default follow up"
                  (is (= 1 (count (c-service/list-contacts (u-store/reload  u) follow-up-options)))))))))))))
+
+
+(demonictest test-find-follow-up-contacts-with-doneness-twist
+  (let [follow-up-options {:selectors ["follow_up"] :thread_limit 50 :thread_offset 0}]
+    (personas/in-email-lab
+     (let [mickey-email "mickey@gmail.com"
+           mickey (e-lab/create-account "Mickey" "Mouse" mickey-email)
+           db-mickey (personas/create-db-user-from-email-user mickey)]
+       
+       (run-as-of "2012-05-03"
+         (e-lab/send-message mickey-email "donald@gmail.com" "s1" "t1" "Hi, what's going on?" "2012-05-01 00:00")
+         (let [u (pgen/refresh-everything db-mickey)
+               u-ui-guid (-> u :user/user-identities first :identity/guid)
+               m-id (-> (->> u :user/messages (sort-by :message/date) first)  m/message-id)]
+
+           (testing "should return as the message was send on 5/1 and default follow up was set"
+             (is (= 1 (count (c-service/list-contacts u follow-up-options)))))
+           
+           (t-service/update-thread-details (:user/guid u) u-ui-guid m-id true nil)
+           
+           (testing "should not return on 5/3 as doneness is set"
+             (is (= 0 (count (c-service/list-contacts (u-store/reload  u) follow-up-options)))))
+
+           (testing "should not return on 5/10 also as doneness is set"
+             (run-as-of "2012-05-10"
+               (is (= 0 (count (c-service/list-contacts (u-store/reload  u) follow-up-options))))))
+
+           (e-lab/send-message mickey-email "donald@gmail.com" "s1" "t1" "Hi, what's going on?" "2012-05-10 00:00")
+
+           (let [u (pgen/refresh-everything db-mickey)]
+             (run-as-of "2012-05-10"
+
+               (testing "should not return on 5/10 as there is another message send on 5/10 with default follow up"
+                 (is (= 0 (count (c-service/list-contacts (u-store/reload  u) follow-up-options))))))
+
+             (run-as-of "2012-05-12"
+
+               (testing "should return on 5/12 as there is another message send on 5/10 with default follow up eventhough doneness was set before"
+                 (is (= 1 (count (c-service/list-contacts (u-store/reload  u) follow-up-options)))))))))))))
+
+
+

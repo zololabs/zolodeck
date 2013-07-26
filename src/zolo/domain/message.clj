@@ -180,8 +180,10 @@
   (if (nil? done?)
     m
     (if (is-temp-message? m)
-      (assoc m :temp-message/done done?)
-      (assoc m :message/done done?))))
+      (throw+ {:type :bad-request :message "Can't set doneness on a temp-message."})
+      (-> m
+          (assoc :message/done done?)
+          (assoc :message/done-updated (zcal/now-instant))))))
 
 (defn set-follow-up-on [m follow-up-on-inst]
   (if (nil? follow-up-on-inst)
