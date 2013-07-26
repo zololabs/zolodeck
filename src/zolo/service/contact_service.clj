@@ -107,14 +107,14 @@
         (t/find-reply-to-threads it thread-limit thread-offset)
         (t-distiller/distill-by-contacts u it)
         (map (fn [[c threads]] (merge c {:reply-to-threads threads})) it)
-        (reverse-sort-by #(-> % :reply-to-threads t/most-recent-message-date-from-threads) it)))
+        (reverse-sort-by #(-> % :reply-to-threads t/recent-message-date-from-threads) it)))
 
 (defn contacts-for-follow-up [u thread-limit thread-offset]
   (it-> u
         (t/find-follow-up-threads it thread-limit thread-offset)
         (t-distiller/distill-by-contacts u it)
         (map (fn [[c threads]] (merge c {:follow-up-threads threads})) it)
-        (reverse-sort-by #(-> % :follow-up-threads t/most-recent-message-date-from-threads) it)))
+        (reverse-sort-by #(-> % :follow-up-threads t/recent-message-date-from-threads) it)))
 
 (defn selector-contacts [u selector thread-limit thread-offset]
   (condp = selector

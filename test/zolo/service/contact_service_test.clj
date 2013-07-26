@@ -266,7 +266,7 @@
         
         (is (= 1 (count reply-to-contacts)))
         (is (= 2 (count reply-threads)))
-        (is-reverse-sorted-by thread/most-recent-message-date-from-thread reply-threads)
+        (is-reverse-sorted-by thread/recent-message-date-from-thread reply-threads)
         
         (is (= (:social/first-name jack-ui) (:contact/first-name thread-contact)))
         (is (= (:social/last-name jack-ui) (:contact/last-name thread-contact)))
@@ -346,6 +346,34 @@
           (is (= (:social/last-name jack-ui) (:reply-to/last-name reply-to)))
           (is (= (:social/provider-uid jack-ui) (:reply-to/provider-uid reply-to))))))))
 
+(demonictest test-find-reply-to-contacts-with-doneness-twist
+  (let [reply-to-options {:selectors ["reply_to"] :thread_limit 50 :thread_offset 0}]
+    (personas/in-email-lab
+     (let [mickey-email "mickey@gmail.com"
+           mickey (e-lab/create-account "Mickey" "Mouse" mickey-email)
+           db-mickey (personas/create-db-user-from-email-user mickey)]
+       
+       (run-as-of "2012-05-03"
+         (e-lab/send-message "donald@gmail.com" mickey-email "s1" "t1" "Hi, what's going on?" "2012-05-01 00:00")
+         (let [u (pgen/refresh-everything db-mickey)
+               u-ui-guid (-> u :user/user-identities first :identity/guid)
+               m-id (-> (->> u :user/messages (sort-by :message/date) first)  m/message-id)]
+
+           (testing "should return as the message was received on 5/1"
+             (is (= 1 (count (c-service/list-contacts u reply-to-options)))))
+           
+           (t-service/update-thread-details (:user/guid u) u-ui-guid m-id true nil)
+           
+           (testing "should not return on 5/3 as doneness is set"
+             (is (= 0 (count (c-service/list-contacts (u-store/reload  u) reply-to-options)))))
+
+           (e-lab/send-message "donald@gmail.com" mickey-email "s1" "t1" "Hi, what's going on?" "2012-05-10 00:00")
+           
+           (let [u (pgen/refresh-everything db-mickey)]
+             (run-as-of "2012-05-12"
+
+               '(testing "should return on 5/12 as there is another message received on 5/10 eventhough doneness was set before"
+                 (is (= 1 (count (c-service/list-contacts (u-store/reload  u) reply-to-options)))))))))))))
 
 (demonictest test-find-follow-up-contacts-with-set-follow-up
   (let [follow-up-options {:selectors ["follow_up"] :thread_limit 50 :thread_offset 0}]
