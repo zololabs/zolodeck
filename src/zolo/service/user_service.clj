@@ -17,14 +17,19 @@
             [zolo.service.message-service :as m-service]
             [zolo.utils.calendar :as zcal]))
 
-(defn- approx-two-hours-from-now []
+(defn- minimum-minutes [min max-variance]
   (-> (zcal/now-joda)
-      (zcal/plus (+ 90 (rand-int 60)) :minutes)
+      (zcal/plus (+ min (rand-int max-variance)) :minutes)
       zcal/to-inst))
+
+(defn- wait-time [ui]
+  (if (user-identity/is-fb? ui)
+    (minimum-minutes 2 4)
+    (minimum-minutes 90 60)))
 
 (defn create-new-user [ui]
   {:user/user-identities [ui]
-   :user/data-ready-in (approx-two-hours-from-now)})
+   :user/data-ready-in (wait-time ui)})
 
 (defn- find-user [request-params]
   (u-store/find-by-provider-and-provider-uid
