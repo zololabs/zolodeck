@@ -100,8 +100,10 @@
         (logger/info "Processing user:" (user/first-name u))
         (demonic/in-demarcation
          (u-service/refresh-user-data u))
+        (logger/info "Refreshed User Data for :" (user/first-name u))
         (demonic/in-demarcation
          (u-service/refresh-user-scores (u-store/reload u)))
+        (logger/info "Refreshed User Scores for :" (user/first-name u))
         (demonic/in-demarcation
          (logger/info "Completed bolt for " (user/first-name u) " with " (count (:user/contacts (u-store/reload u))) " contacts"))
         (ack! collector tuple)
@@ -121,7 +123,7 @@
    {"3" (bolt-spec {"1" :shuffle
                     "2" :shuffle}
                    process-user
-                   :p 5)}))
+                   :p 2)}))
 
 ;; (defn fb-trident []
 ;;   (let [t (TridentTopology.)]
