@@ -113,6 +113,7 @@
           (throw (RuntimeException. (str "Zombie warning for " (user/first-name u)))))))
     (catch Exception e
       (logger/error e "Exception in bolt! Occured while processing tuple:" tuple)
+      (fail! collector tuple)
       ;(report-error! collector tuple)
       )))
 
