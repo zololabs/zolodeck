@@ -19,7 +19,8 @@
    :port 993
    :type "IMAP"
    :sync_period "1h"
-   :sync_all_folders 1
+;   :sync_all_folders 1
+   :sync_folders "All,Trash"
    :provider_token access-token
    :provider_refresh_token refresh-token
    :provider_consumer_key (conf/google-key)})
