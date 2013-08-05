@@ -23,6 +23,11 @@
            ;[zolo.storm.fns PrintVals UpdateContacts UpdateMessages]
            ))
 
+(def id-counter (atom 0))
+
+(defn next-message-id []
+  (swap! id-counter inc))
+
 (defn init-refresh-guids [guids-atom]
   ;;(logger/info "InitRefreshGuids...")  
   (reset! guids-atom (s-service/refresh-guids-to-process))
@@ -57,7 +62,7 @@
                    (let [u (u-store/find-by-guid n)]
                      (u-store/stamp-refresh-start u)
                      (logger/info "RefreshUserSpout emitting GUID:" n " for " (user/first-name u) " " (user/last-name u))
-                     (emit-spout! collector [n])))))
+                     (emit-spout! collector [n] :id (next-message-id))))))
      (ack [id]))))
 
 (defn emit-new-or-perm-user [guid new-or-perm collector]
@@ -66,7 +71,7 @@
      (when-not (ui/is-provider? :provider/email (-> u :user/user-identities first))
        (u-store/stamp-refresh-start u)
        (logger/info "NewPermSpout emitting " new-or-perm " user guid" guid " for " (user/first-name u) " " (user/last-name u))
-       (emit-spout! collector [guid])))))
+       (emit-spout! collector [guid] :id (next-message-id))))))
 
 (defspout new-user-tx-spout ["user-guid"]
   [conf context collector]
