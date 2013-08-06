@@ -28,7 +28,9 @@
              [zolo.api.stats-api :as s-api]
              [zolo.api.thread-api :as t-api]
              [zolo.api.server-api :as server-api]
-             [zolo.api.context-io-api :as cio-api]))
+             [zolo.api.context-io-api :as cio-api]
+             [metrics.ring.expose :as metrics-json]
+             [metrics.ring.instrument :as metrics-inst]))
 
 (derive :zolo.roles/owner :zolo.roles/user)
 
@@ -78,22 +80,24 @@
   (route/not-found "Page not found"))
 
 (def app
-  (zweb/wrap-request-binding
-   (web/wrap-options
-    (demonic/wrap-demarcation
-     (params-mw/wrap-params
-      (nested-params-mw/wrap-nested-params
-       (wrap-json-params
-        (kw-params-mw/wrap-keyword-params
-         (web/wrap-user-info-logging
-          (zweb/wrap-request-logging web/not-ignore-logging? web/logging-context identity #(assoc % :body "FILTERED")
-           (zweb/wrap-error-handling
-            (zweb/wrap-jsonify
-             (web/wrap-accept-header-validation
-              (friend/authenticate APP-ROUTES {:allow-anon? true
-                                               :workflows [zauth/authenticate]
-                                               :unauthenticated-handler #'zauth/return-forbidden
-                                               :unauthorized-handler #'zauth/return-forbidden}))))))))))))))
+  (metrics-json/expose-metrics-as-json 
+   (metrics-inst/instrument
+    (zweb/wrap-request-binding
+     (web/wrap-options
+      (demonic/wrap-demarcation
+       (params-mw/wrap-params
+        (nested-params-mw/wrap-nested-params
+         (wrap-json-params
+          (kw-params-mw/wrap-keyword-params
+           (web/wrap-user-info-logging
+            (zweb/wrap-request-logging web/not-ignore-logging? web/logging-context identity #(assoc % :body "FILTERED")
+                                       (zweb/wrap-error-handling
+                                        (zweb/wrap-jsonify
+                                         (web/wrap-accept-header-validation
+                                          (friend/authenticate APP-ROUTES {:allow-anon? true
+                                                                           :workflows [zauth/authenticate]
+                                                                           :unauthenticated-handler #'zauth/return-forbidden
+                                                                           :unauthorized-handler #'zauth/return-forbidden})))))))))))))) "/server/metrics" ))
 
 (defn start-api
   ([]
