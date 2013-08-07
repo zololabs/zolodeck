@@ -90,7 +90,6 @@
                       :uberjar-exclusions [#"log4j\.properties" #"backtype" #"trident"
                                            #"META-INF" #"meta-inf" #"\.yaml" #"org\/slf4j\/"]
                       :aot :all
-                      :target-path "storm_target/"
                       :main zolo.storm.facebook
                       :uberjar-name ~(str "zolodeck-storm-"
                                           (or (System/getenv "BUILD_NUMBER") "local")
