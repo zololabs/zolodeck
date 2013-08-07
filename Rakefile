@@ -36,7 +36,7 @@ namespace :uberjar do
 
     debug = args[:debug] || false
 
-    sh "lein clean"
+    sh "lein with-profile storm clean"
     if !debug
       if File.exists? "devops/config/prod/zolo.clj"
         sh "rm devops/config/prod/zolo.clj"
