@@ -60,7 +60,7 @@
                            :client_secret app-secret}))
 
 (defn app-access-token [app-id app-secret]
-  (print-vals "Getting App Access Token")
+  (logger/info "Getting App Access Token")
   (->> (access-token-request app-id app-secret) 
        (http/post (app-access-token-url))
        :body
@@ -85,7 +85,7 @@
 (defn- get-pages [payload items-done-tester-fn]
   (let [data (:data payload)
         has-next-url (get-in payload [:paging :next])]
-    (print-vals "Get-pages, data payload count:" (count data))
+    (logger/info "Get-pages, data payload count:" (count data))
     (if (and has-next-url (not (items-done-tester-fn (last data))))
       (lazy-cat data (get-pages (get-json-body has-next-url) items-done-tester-fn))
       data)))
@@ -106,12 +106,12 @@
       (get-pages (constantly false))))
 
 (defn run-fql [access-token fql-string]
-  (print-vals "RunFQL: " fql-string)
+  (logger/info "RunFQL: " fql-string)
   (-> (get-json "https://graph.facebook.com/fql" access-token {:q fql-string})
       :data))
 
 (defn run-fql-multi [access-token fql-strings-as-map]
-  ;; (print-vals "RunMultiFQL: " fql-strings-as-map)
+  ;; (logger/info "RunMultiFQL: " fql-strings-as-map)
   (->> {:q (json/json-str fql-strings-as-map)}
        (get-json "https://graph.facebook.com/fql" access-token)
        :data))

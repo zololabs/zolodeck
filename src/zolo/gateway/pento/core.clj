@@ -2,6 +2,7 @@
   (:use zolo.utils.debug
         zolo.utils.clojure)
   (:require [zolo.setup.config :as conf]
+            [zolo.utils.logger :as logger]
             [clj-http.client :as http]
             [clojure.data.json :as json]
             [zolo.utils.string :as zstring]
@@ -20,10 +21,10 @@
 (defn process-response [pento-response]
   (if pento-response
     (json/read-json pento-response false)
-    (print-vals "Got empty response..." [])))
+    (logger/info "Got empty response..." [])))
 
 (defn scores [email-info-list]
-  (print-vals "Scoring contact batch of size:" (count email-info-list))
+  (logger/info "Scoring contact batch of size:" (count email-info-list))
   (time
    (->> email-info-list
         request-payload

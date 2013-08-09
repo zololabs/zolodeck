@@ -6,7 +6,8 @@
             [zolo.setup.config :as conf]
             [clojure.walk :as walk]
             [zolo.social.core :as social]
-            [zolo.social.linkedin.token :as token]))
+            [zolo.social.linkedin.token :as token]
+            [zolo.utils.logger :as logger]))
 
 (defmethod social/provider-uid social/LINKEDIN [request-params]
   ;; (-> (get-in cookies [(conf/li-auth-cookie-name) :value])
@@ -19,7 +20,7 @@
   (let [auth-cookie-string (get-in cookies [(conf/li-auth-cookie-name) :value])
         parsed-cookie (token/parse-oauth-cookie auth-cookie-string)
         li-at (token/access-token (:access_token parsed-cookie))]
-    (print-vals "LI-AT:" li-at)
+    (logger/info "LI-AT:" li-at)
     (users/user-identity li-at)))
 
 (defmethod social/fetch-social-identities :provider/linkedin [provider access-token user-id]
@@ -28,5 +29,5 @@
     (doall (map contacts/contact-object contacts))))
 
 (defmethod social/fetch-messages :provider/linkedin [provider access-token user-id]
-  (print-vals "FetchMessages Not Support:" provider)
+  (logger/info "FetchMessages Not Support:" provider)
   [])
