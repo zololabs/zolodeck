@@ -29,8 +29,8 @@
              [zolo.api.thread-api :as t-api]
              [zolo.api.server-api :as server-api]
              [zolo.api.context-io-api :as cio-api]
-             [metrics.ring.expose :as metrics-json]
-             [metrics.ring.instrument :as metrics-inst]))
+             [zolo.metrics-ring.expose :as metrics-json]
+             [zolo.metrics-ring.instrument :as metrics-inst]))
 
 (derive :zolo.roles/owner :zolo.roles/user)
 

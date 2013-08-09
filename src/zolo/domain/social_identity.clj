@@ -38,6 +38,11 @@
        (filter is-fb?)
        first))
 
+(defn email-social-identities [c]
+  (->> c
+       :contact/social-identities
+       (filter is-email?)))
+
 (defn fb-id [c]
   (-> c fb-social-identity :social/provider-uid))
 

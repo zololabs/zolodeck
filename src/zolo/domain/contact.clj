@@ -134,10 +134,16 @@
         iap
         (every? #(si/is-a-person? %) (:contact/social-identities c))))))
 
+(defn is-legit-email-contact? [c]
+  (let [email-sis (si/email-social-identities c)]
+    (or (empty? email-sis)         
+        (some #(-> % :social/sent-count (> 0)) email-sis))))
+
 (defn person-contacts [u]
   (->> u
        :user/contacts
-       (filter is-a-person?)))
+       (filter is-a-person?)
+       (filter is-legit-email-contact?)))
 
 (defn contact-score [c]
   (or (:contact/score c) 0))

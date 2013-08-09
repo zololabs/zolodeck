@@ -27,7 +27,7 @@
 (defn interaction-stats [user-guid]
   (service/let-user-entity [u user-guid]
     (d-core/run-in-tz-offset (:user/login-tz u)
-      (let [contacts (sort-by contact/contact-score (contact/person-contacts u))
+      (let [contacts (contact/person-contacts u)
             ibc (interaction/ibc u contacts)
             interactions (interaction/interactions-from-ibc ibc)]
         {:best-week-interaction-count

@@ -113,16 +113,15 @@
 (defn- contact-identifier [c]
   [(:social/provider c) (:social/provider-uid c)])
 
-(defn- bucket-si [c buckets si]
-  (assoc-in buckets [(contact-identifier si)] c))
-
-(defn- bucket-contact [buckets c]
+(defn- contact-with-each-si [c]
   (->> c
-       :contact/social-identities
-       (reduce (partial bucket-si c) buckets)))
+       :contact/social-identities       
+       (mapcat #(list (contact-identifier %) c))))
 
 (defn- contacts-by-social-identifier [contacts]
-  (reduce bucket-contact {} contacts))
+  (->> contacts
+       (mapcat contact-with-each-si)
+       (apply hash-map)))
 
 ;;TODO Test this function
 (defn all-messages [u]
