@@ -26,4 +26,5 @@
 ;; TODO - enable mutli user chat here
 (defn send-message [fb-id access-token to-uids message]
   (connect-user! fb-id access-token)
-  (.sendMessage (@CONNECTIONS fb-id) (-> to-uids first jid-for) message))
+  (doseq [to-uid to-uids]
+    (.sendMessage (@CONNECTIONS fb-id) (jid-for to-uid) message)))
