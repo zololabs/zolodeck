@@ -24,7 +24,7 @@
 
 (defn- wait-time [ui]
   (if (user-identity/is-fb? ui)
-    (minimum-minutes 2 4)
+    (minimum-minutes 1 2)
     (minimum-minutes 90 60)))
 
 (defn create-new-user [ui]
