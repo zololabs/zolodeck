@@ -30,7 +30,8 @@
              [zolo.api.server-api :as server-api]
              [zolo.api.context-io-api :as cio-api]
              [zolo.metrics-ring.expose :as metrics-json]
-             [zolo.metrics-ring.instrument :as metrics-inst]))
+             [zolo.metrics-ring.instrument :as metrics-inst]
+             [zolo.service.metrics-collector :as metrics-collector]))
 
 (derive :zolo.roles/owner :zolo.roles/user)
 
@@ -104,6 +105,7 @@
      (start-api 4000))
   ([port]
      (zolo.setup.datomic-setup/init-datomic)
+     (metrics-collector/start)
      (run-jetty (var app) {:port port
                            :join? false})))  
 

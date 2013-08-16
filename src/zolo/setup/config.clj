@@ -51,6 +51,12 @@
 (defn pento-host []
   (get-in CONFIG-MAP [:configs ENV :pento-host]))
 
+(defn librato-username []
+  (get-in CONFIG-MAP [:configs ENV :librato-username]))
+
+(defn librato-key []
+  (get-in CONFIG-MAP [:configs ENV :librato-key]))
+
 (defn system-properties []
   (get-in CONFIG-MAP [:configs ENV :system-properties]))
 
