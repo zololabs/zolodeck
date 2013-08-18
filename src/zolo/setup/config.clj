@@ -15,6 +15,12 @@
 (defn production-mode? []
   (= :production ENV))
 
+(defn server-machine-name []
+  "server0")
+
+(defn server-process-name []
+  "p0")
+
 (defn datomic-db-name [] 
   (get-in CONFIG-MAP [:configs ENV :datomic-db]))
 

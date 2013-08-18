@@ -8,7 +8,7 @@
             [zolo.utils.logger :as logger]))
 
 (defn metrics-name-for [mname]
-  (str "api.server0.p0." mname))
+  (str "api." (conf/server-machine-name) "." (conf/server-process-name) "." mname))
 
 (defmulti harvest-value (fn [metrics-name metrics-map] (:type metrics-map)))
 
