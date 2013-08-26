@@ -17,6 +17,8 @@
                  [slingshot "0.10.3"]
 
                  [org.clojars.amit/zolo_fb_chat "0.0.1"]
+
+                 [clojurewerkz/mailer "1.0.0-SNAPSHOT"]
                  
                  [org.clojure/core.match "0.2.0-alpha11"]
 
@@ -71,7 +73,7 @@
             [lein-ring "0.6.2"]
             [lein-cloverage "1.0.2"]]
 
-  :resource-paths [~(str (System/getProperty "user.home") "/.zolo")]
+  :resource-paths [~(str (System/getProperty "user.home") "/.zolo") ~(str (System/getProperty "user.home")) "resources"]
 
   :profiles {:dev {:dependencies [[clj-stacktrace "0.2.4"]
                                   [ring-serve "0.1.2"]
