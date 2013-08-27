@@ -2,18 +2,20 @@
   (:use zolo.utils.clojure
         zolo.utils.debug)
   (:require [clojure.java.io :as java-io]
+            [clojurewerkz.mailer.core :as mailer]
             [zolo.utils.logger :as logger]))
 
 (declare CONFIG-MAP)
 (declare ^:dynamic ENV)
 
+(defn production-mode? []
+  (= :production ENV))
+
 (defn load-config [config-file]
   (let [config-map (load-string (slurp config-file))]
     (def CONFIG-MAP config-map)
-    (def ^:dynamic ENV (get-in CONFIG-MAP [:zolodeck-env]))))
-
-(defn production-mode? []
-  (= :production ENV))
+    (def ^:dynamic ENV (get-in CONFIG-MAP [:zolodeck-env]))
+    (mailer/delivery-mode! (if (production-mode?) :smtp :test))))
 
 (defn server-machine-name []
   "server0")
@@ -62,6 +64,15 @@
 
 (defn librato-key []
   (get-in CONFIG-MAP [:configs ENV :librato-key]))
+
+(defn sendgrid-username []
+  (get-in CONFIG-MAP [:configs ENV :sendgrid-username]))
+
+(defn sendgrid-password []
+  (get-in CONFIG-MAP [:configs ENV :sendgrid-password]))
+
+(defn kiss-api-key []
+  (get-in CONFIG-MAP [:configs ENV :kiss-api]))
 
 (defn system-properties []
   (get-in CONFIG-MAP [:configs ENV :system-properties]))
