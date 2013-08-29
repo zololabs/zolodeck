@@ -56,6 +56,13 @@
         (remove recently-created-or-updated)
         (domap #(str (:user/guid %))))))
 
+(defn email-guids-to-process []
+  ;;(logger/info "Finding Email GUIDS to process...")
+  (demonic/in-demarcation
+   (->> (u-store/find-all-users-for-refreshes)
+        (filter user/needs-reminder-email?)
+        (domap #(str (:user/guid %))))))
+
 (defn permissions-granted-in-tx-report [tx-report]
   (demonic/in-demarcation
    (->> tx-report

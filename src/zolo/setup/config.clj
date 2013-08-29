@@ -71,6 +71,9 @@
 (defn sendgrid-password []
   (get-in CONFIG-MAP [:configs ENV :sendgrid-password]))
 
+(defn email-frequency-minutes []
+  (get-in CONFIG-MAP [:configs ENV :email-frequency-minutes]))
+
 (defn kiss-api-key []
   (get-in CONFIG-MAP [:configs ENV :kiss-api]))
 

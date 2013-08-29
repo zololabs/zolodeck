@@ -23,7 +23,7 @@
 
 ;; TODO get rid of -temp nomenclature for these computed fields 
 (defn- user-for-refresh [u]
-  (-> (select-keys u [:user/guid :user/last-updated :user/refresh-started :user/fb-permissions-time])
+  (-> (select-keys u [:user/guid :user/last-updated :user/refresh-started :user/emailing-start :user/email-reminder-sent :user/fb-permissions-time])
       (assoc :user-temp/fb-permissions-time (user-identity/fb-permissions-time u))
       (assoc :user-temp/creation-time (creation-time u))))
 
@@ -76,21 +76,25 @@
 ;;TODO test
 (defn find-all-users-for-refreshes []
   (->> (find-all-users)
-       ;(map #(select-keys % [:user/guid :user/last-updated :user/refresh-started :user/fb-permissions-time]))
        (map user-for-refresh)
        doall))
 
-
+(defn stamp-now [u attrib-name]
+  (-not-nil!-> u
+               (assoc attrib-name (zolo-cal/now-instant))
+               demonic/insert-and-reload))
 
 (defn stamp-updated-time [u]
-  (-not-nil!-> u
-               (assoc :user/last-updated (zolo-cal/now-instant))
-               demonic/insert-and-reload))
+  (stamp-now u :user/last-updated))
 
 (defn stamp-refresh-start [u]
-  (-not-nil!-> u
-               (assoc :user/refresh-started (zolo-cal/now-instant))
-               demonic/insert-and-reload))
+  (stamp-now u :user/refresh-started))
+
+(defn stamp-emailing-start [u]
+  (stamp-now u :user/emailing-start))
+
+(defn stamp-email-reminder-sent [u]
+  (stamp-now u :user/email-reminder-sent))
 
 (defn reload [u]
   (-not-nil!-> (:user/guid u)

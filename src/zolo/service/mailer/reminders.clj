@@ -1,7 +1,9 @@
 (ns zolo.service.mailer.reminders
+  (:use zolo.utils.debug)
   (:require [zolo.domain.core :as d-core]
             [zolo.domain.user :as user]
             [zolo.domain.user-identity :as ui]
+            [zolo.store.user-store :as u-store]
             [zolo.service.contact-service :as c-service]
             [zolo.service.mailer.postman :as postman]))
 
@@ -15,4 +17,5 @@
                                               (postman/with-base-info u
                                                 {:first-name (user/first-name u)
                                                  :reply-to-count reply-to-count
-                                                 :follow-up-count follow-up-count})))))
+                                                 :follow-up-count follow-up-count}))
+       (u-store/stamp-email-reminder-sent u))))

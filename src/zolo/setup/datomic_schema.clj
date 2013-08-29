@@ -13,6 +13,8 @@
  (long-fact-schema    :user/login-tz               "A user's timezone offset when she logged in")
  (instant-fact-schema :user/last-updated           "The most recent time for when the user was updated")
  (instant-fact-schema :user/refresh-started        "The most recent time for when the user update was attempted")
+ (instant-fact-schema :user/email-reminder-sent    "The most recent time for when we sent a daily reminder email")
+ (instant-fact-schema :user/emailing-start         "The most recent time for when we starting processing user emails")
 
  ;Social details
  (refs-fact-schema    :user/user-identities        "A user's social detail records" :component? true)   

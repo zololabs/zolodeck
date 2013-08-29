@@ -16,6 +16,7 @@
             [clojure.tools.cli :as cli]
             [zolo.store.user-store :as u-store]
             [zolo.service.user-service :as u-service]
+            [zolo.service.mailer.reminders :as reminders-service]
             [zolo.social.bootstrap]
             [zolo.service.bootstrap])
   (:import [backtype.storm StormSubmitter LocalCluster]
@@ -33,7 +34,15 @@
   (reset! guids-atom (s-service/refresh-guids-to-process))
   ;(logger/trace "Number of Refresh GUIDS:" (count @guids-at))
   (if (empty? @guids-atom)
-    (short-pause "Waiting for stale users..."))
+    (short-pause "InitRefreshGuids: Waiting for stale users..."))
+  nil)
+
+(defn init-email-guids [guids-atom]
+  ;;(logger/info "InitEmailGuids...")  
+  (reset! guids-atom (s-service/email-guids-to-process))
+  ;(logger/trace "Number of Email GUIDS:" (count @guids-at))
+  (if (empty? @guids-atom)
+    (short-pause "InitEmailGuids: Waiting for stale users..."))
   nil)
 
 (defn pop-guid [guids-atom]
@@ -41,11 +50,11 @@
     (swap! guids-atom rest)
     f))
 
-(defn next-refresh-guid [guids-atom]
+(defn next-refresh-guid [guids-atom init-fn]
   (if (empty? @guids-atom)
     (do
       (short-pause "Completed one pass of REFRESH GUIDS... now waiting...")
-      (init-refresh-guids guids-atom)
+      (init-fn guids-atom)
       nil)
     (pop-guid guids-atom)))
 
@@ -57,11 +66,27 @@
   (let [guids (atom nil)]
     (spout
      (nextTuple []
-                (when-let [n (next-refresh-guid guids)]
+                (when-let [n (next-refresh-guid guids init-refresh-guids)]
                   (demonic/in-demarcation
                    (let [u (u-store/find-by-guid n)]
                      (u-store/stamp-refresh-start u)
                      (logger/info "RefreshUserSpout emitting GUID:" n " for " (user/first-name u) " " (user/last-name u))
+                     (emit-spout! collector [n] :id (next-message-id))))))
+     (ack [id]))))
+
+(defspout email-user-spout ["user-guid"]
+  [conf context collector]
+  (logger/trace "EmailUserSpout, initializing Datomic...")
+  (config/setup-config-from-classpath)
+  (datomic/init-connection)
+  (let [guids (atom nil)]
+    (spout
+     (nextTuple []
+                (when-let [n (next-refresh-guid guids init-email-guids)]
+                  (demonic/in-demarcation
+                   (let [u (u-store/find-by-guid n)]
+                     (u-store/stamp-emailing-start u)
+                     (logger/info "EmailUserSpout emitting GUID:" n " for " (user/first-name u) " " (user/last-name u))
                      (emit-spout! collector [n] :id (next-message-id))))))
      (ack [id]))))
 
@@ -117,7 +142,25 @@
                        (count (:user/contacts u))) 10))
           (throw (RuntimeException. (str "Zombie warning for " (user/first-name u)))))))
     (catch Exception e
-      (logger/error e "Exception in bolt! Occured while processing tuple:" tuple)
+      (logger/error e "Exception in RefreshUser bolt! Occured while processing tuple:" tuple)
+      (fail! collector tuple)
+      ;(report-error! collector tuple)
+      )))
+
+(defbolt email-user [] [tuple collector]
+  (try
+    (config/setup-config-from-classpath)
+    (datomic/init-connection)
+    (let [guid (.getStringByField tuple "user-guid")
+          u (demonic/in-demarcation (u-store/find-by-guid guid))]
+      (logger/with-logging-context {:guid guid}
+        (logger/info "Emailing user:" (user/first-name u))
+        (demonic/in-demarcation
+         (reminders-service/send-daily-action-reminder u))
+        (logger/info "Emailed User :" (user/first-name u))
+        (ack! collector tuple)))
+    (catch Exception e
+      (logger/error e "Exception in EmailUser bolt! Occured while processing tuple:" tuple)
       (fail! collector tuple)
       ;(report-error! collector tuple)
       )))
@@ -125,10 +168,14 @@
 (defn fb-topology []
   (topology
    {"1" (spout-spec refresh-user-spout)
-    "2" (spout-spec new-user-tx-spout)}
-   {"3" (bolt-spec {"1" :shuffle
+    "2" (spout-spec new-user-tx-spout)
+    "3" (spout-spec email-user-spout)}
+   {"4" (bolt-spec {"1" :shuffle
                     "2" :shuffle}
                    process-user
+                   :p 5)
+    "5" (bolt-spec {"3" :shuffle}
+                   email-user
                    :p 5)}))
 
 ;; (defn fb-trident []
