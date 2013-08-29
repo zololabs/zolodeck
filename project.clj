@@ -73,7 +73,7 @@
             [lein-ring "0.6.2"]
             [lein-cloverage "1.0.2"]]
 
-  :resource-paths [~(str (System/getProperty "user.home") "/.zolo") ~(str (System/getProperty "user.home")) "resources"]
+  :resource-paths [~(str (System/getProperty "user.home") "/.zolo")  "resources"]
 
   :profiles {:dev {:dependencies [[clj-stacktrace "0.2.4"]
                                   [ring-serve "0.1.2"]
