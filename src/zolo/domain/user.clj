@@ -46,9 +46,11 @@
      (zcal/in-time-zone t (or (:user/login-tz u) 0))))
 
 (defn needs-reminder-email? [{guid :user/guid emailing-start :user/emailing-start email-reminder-sent :user/email-reminder-sent}]
-  (or (nil? email-reminder-sent)
-      (nil? emailing-start)
-      (and (.before (zcal/to-inst (zcal/plus emailing-start (conf/email-frequency-minutes) :minutes)) (zcal/now-instant))
+  (or (and (nil? email-reminder-sent)
+           (nil? emailing-start))
+      (and email-reminder-sent
+           emailing-start
+           (.before (zcal/to-inst (zcal/plus emailing-start (conf/email-frequency-minutes) :minutes)) (zcal/now-instant))
            (.before (zcal/to-inst (zcal/plus email-reminder-sent (conf/email-frequency-minutes) :minutes)) (zcal/now-instant)))))
 
 (defn ui-from-guid [u ui-guid]
