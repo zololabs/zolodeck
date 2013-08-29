@@ -35,6 +35,9 @@ namespace :api do
 
       @google_key = "899706640798-9h6p8ighe2ajq66mg9h8djqpd1fk6lr3.apps.googleusercontent.com"
       @google_secret = "3eTbg9vDw5Cchw8qOsZON--I"
+
+      @librato_username="siva@zololabs.com"
+      @librato_key="1859b1afa8aef09876aceef46ebba4fac39ba0400fb5f9c1956c583d26ce6573"
       
       @system_properties = "{}"
       
