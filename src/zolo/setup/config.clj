@@ -11,11 +11,14 @@
 (defn production-mode? []
   (= :production ENV))
 
+(defn test-mode? []
+  (= :test ENV))
+
 (defn load-config [config-file]
   (let [config-map (load-string (slurp config-file))]
     (def CONFIG-MAP config-map)
     (def ^:dynamic ENV (get-in CONFIG-MAP [:zolodeck-env]))
-    (mailer/delivery-mode! (if (production-mode?) :smtp :test))))
+    (mailer/delivery-mode! (if (test-mode?) :test :smtp))))
 
 (defn server-machine-name []
   "server0")
